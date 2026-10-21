@@ -18,7 +18,7 @@ function routesHTML(c) {
       ${c.routes
         .map(
           (r) => `<li class="route route--${r.key}">
-            <span class="route__count" data-route="${r.key}" aria-label="${r.count} baterías">0</span>
+            <span class="route__count" data-route="${r.key}" aria-hidden="true">0</span><span class="sr-only">${r.count} baterías: </span>
             <span class="route__text"><strong>${esc(r.name)}</strong><span>${esc(r.detail)}</span></span>
           </li>`,
         )

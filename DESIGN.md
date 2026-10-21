@@ -185,7 +185,9 @@ Below 900px scenes stack to a single bottom-anchored column, rail labels and key
 
 ## Elevation & Depth
 
-Depth belongs to the 3D world: ACES filmic tone mapping (exposure 1.05), exponential graphite fog, a cool hemisphere fill, a warm key and cool rim light, warm point lights inside each cutaway, a soft bloom (0.38) that only the emissive lime, amber and lamp materials reach, and a tilt-shift pass that sells the miniature scale. The HTML layer is flat; it separates from the world with translucent graphite backplates, a radial scrim and text shadows, all functional for projector legibility.
+Depth belongs to the 3D world: ACES filmic tone mapping (exposure 1.05), a light exponential graphite fog (0.0045) for distance only, a cool hemisphere fill, a warm key and cool rim light, warm spot lights inside each cutaway, and a tight bloom (strength 0.2, radius 0.12, threshold 2.2) that only lamp heads and light strips reach; graphite, concrete and screens never pick up a haze. There is no tilt-shift or depth-of-field pass: geometry and materials must hold up sharp, and neither bloom, fog nor blur may hide a defect. Every shot is layered as foreground, mid-ground and background, and transitions pass close to real props for parallax. The HTML layer is flat; it separates from the world with translucent graphite backplates, a radial scrim and text shadows, all functional for projector legibility.
+
+World material tints (albedos in `src/world/kit.js` and the station modules, such as warm concrete, brushed steel, painted car body or copper) describe physical surfaces, not interface colour; they sit outside the UI palette on purpose and never introduce a new accent light.
 
 ### Shadow Vocabulary
 - **Scene headline shadow** (`text-shadow: 0 2px 24px rgba(22, 24, 25, 0.9), 0 0 2px rgba(22, 24, 25, 0.6)`): headlines over the diorama.
@@ -200,7 +202,7 @@ Depth belongs to the 3D world: ACES filmic tone mapping (exposure 1.05), exponen
 
 ## Shapes
 
-Soft-industrial. Controls are pills (`pill`) or soft squares (`lg`); contained panels use `xl`; small inline marks use `sm`. Borders are 1px hairlines in ivory at low alpha, never solid ivory. Circles mark sequence: rail numbers and passport dots. In 3D, the same language holds: rounded boxes for batteries, cars and battery lids; flat-shaded low-poly icosahedra, cones and dodecahedra for trees and rocks; islands extruded from rounded rectangles and circles with a beveled rock edge and a thin graphite railing.
+Soft-industrial. Controls are pills (`pill`) or soft squares (`lg`); contained panels use `xl`; small inline marks use `sm`. Borders are 1px hairlines in ivory at low alpha, never solid ivory. Circles mark sequence: rail numbers and passport dots. In 3D, the same language holds: rounded boxes for batteries, cars and battery lids; leafy shrubs and trees with alpha-cut leaf cards; islands extruded from rounded rectangles and circles over layered rock strata, edged with segmented stone kerbs, square bollard lights and a thick flanged graphite handrail.
 
 ## Components
 
@@ -229,7 +231,7 @@ Confident and few: one lime pill per surface.
 A horizontal stepper of hollow circles joined by a 2px faint-ivory line. Steps light lime in sequence with the lime state glow as the 3D connections draw, echoing the trace.
 
 ### Scene Overlay (signature)
-Scene copy fades with scroll progress, rising 24px and un-blurring from 6px as it arrives; under reduced motion it cuts with no transform or blur. The camera scrubs with a 1.1s smoothing and settles still; direct navigation flies with `power2.inOut`, 1.5s plus 0.7s per chapter hop, capped at 4.5s.
+Scene copy fades with scroll progress, rising 24px and un-blurring from 6px as it arrives; under reduced motion it cuts with no transform or blur. The camera rides one continuous spline whose scroll length is shared out by visual effort (metres travelled plus gaze rotation), so speed changes continuously and never brakes between chapters. It follows the scroll through a critically damped spring (0.26s, capped at 0.32 of the route per second) and settles still. Chapter navigation moves the scroll target through its own damped spring (0.5s, at most 1.5 screens per second): a second press only moves the target, so chained presses keep their speed; wheel input cancels the flight. Jumps of two or more chapters fade the veil for 320ms and cut. The horizon stays level; the subject is composed to the right third so copy keeps the left, and in portrait each key lifts the subject above the copy. Under reduced motion the scene cuts once the scroll settles (at most twice a second), keys cut at once, ambient motion holds its final state and the canvas only redraws when the shot changes.
 
 ## Do's and Don'ts
 
@@ -239,7 +241,7 @@ Scene copy fades with scroll progress, rising 24px and un-blurring from 6px as i
 - **Do** set headlines and numerals in Archivo weight 800 at width 125, and reading text at default width.
 - **Do** anchor scene copy to a corner over a graphite scrim, with the scene text shadows, so it reads on a projector.
 - **Do** draw controls as thin graphite instruments: translucent graphite backplate, 1px low-alpha ivory hairline, lime only for state.
-- **Do** build 3D props from the shared material grammar: matte graphite and ivory, flat-shaded rock and foliage, emissive lime, amber and warm-lamp strips.
+- **Do** build 3D props from the shared material grammar: graphite, ivory, procedural concrete and brushed steel, layered rock and leafy foliage, emissive lime, amber and warm-lamp strips.
 - **Do** let the camera settle into a still frame before the presenter speaks; motion never advances content by itself.
 - **Do** keep a 2px lime focus ring (offset 3px) on every interactive element.
 

@@ -9,10 +9,10 @@ function rng(seed) {
 }
 
 // Ruido de valor repetible con periodo entero.
-function makeNoise(seed, period) {
+function makeNoise(seed, period, periodY = period) {
   const r = rng(seed);
-  const g = new Float32Array(period * period).map(() => r());
-  const at = (x, y) => g[(((y % period) + period) % period) * period + (((x % period) + period) % period)];
+  const g = new Float32Array(period * periodY).map(() => r());
+  const at = (x, y) => g[(((y % periodY) + periodY) % periodY) * period + (((x % period) + period) % period)];
   const fade = (t) => t * t * (3 - 2 * t);
   return (x, y) => {
     const xi = Math.floor(x);
@@ -126,18 +126,18 @@ function build(n, fn, normalStrength) {
 
 // Hormigón: grano fino, poros y juntas cada media tesela.
 export function concrete({ seed = 3, base = [143, 139, 131], joints = 2, n = 512 } = {}) {
-  const nz = makeNoise(seed, 64);
-  const pores = makeNoise(seed + 7, 128);
+  // periodos que dividen cada octava: la tesela repite sin costura aunque no haya junta en su borde
+  const nz = makeNoise(seed, 16);
+  const bl = makeNoise(seed + 5, 4);
   return build(n, (u, v) => {
     const grain = fbm(nz, u * 64, v * 64, 4, 0.25);
-    const blot = fbm(nz, u * 64, v * 64, 3, 0.05);
-    const pore = pores(u * 128, v * 128) > 0.86 ? 1 : 0;
+    const blot = fbm(bl, u * 64, v * 64, 3, 1 / 16);
     const ju = Math.min((u * joints) % 1, 1 - ((u * joints) % 1));
     const jv = Math.min((v * joints) % 1, 1 - ((v * joints) % 1));
-    const joint = Math.min(ju, jv) < 0.0045 ? 1 : 0;
-    const k = 0.86 + grain * 0.18 + (blot - 0.5) * 0.12 - pore * 0.12 - joint * 0.35;
-    return [base[0] * k, base[1] * k, base[2] * k, 0.78 + grain * 0.14 + joint * 0.1, grain * 0.4 - pore * 0.5 - joint * 1.6];
-  }, 2.2);
+    const joint = joints && Math.min(ju, jv) < 0.0045 ? 1 : 0;
+    const k = 0.86 + grain * 0.18 + (blot - 0.5) * 0.12 - joint * 0.35;
+    return [base[0] * k, base[1] * k, base[2] * k, 0.78 + grain * 0.14 + joint * 0.1, grain * 0.4 - joint * 1.6];
+  }, 1.4);
 }
 
 // Roca: celdas con grietas profundas y relieve fractal.
@@ -159,21 +159,22 @@ export function rock({ seed = 11, n = 512 } = {}) {
 
 // Metal cepillado: vetas alargadas en una dirección.
 export function brushed({ seed = 5, base = [150, 154, 158], n = 256 } = {}) {
-  const nz = makeNoise(seed, 256);
+  const nz = makeNoise(seed, 4, 256);
+  const sp = makeNoise(seed + 1, 64);
   return build(n, (u, v) => {
     const streak = fbm(nz, u * 4, v * 256, 3, 1);
-    const spot = fbm(nz, u * 256, v * 256, 2, 0.04);
-    const k = 0.9 + streak * 0.14 + (spot - 0.5) * 0.08;
-    return [base[0] * k, base[1] * k, base[2] * k, 0.28 + streak * 0.16 + spot * 0.08, streak * 0.25];
-  }, 0.8);
+    const spot = fbm(sp, u * 256, v * 256, 2, 0.25);
+    const k = 0.94 + streak * 0.07 + (spot - 0.5) * 0.05;
+    return [base[0] * k, base[1] * k, base[2] * k, 0.32 + streak * 0.015 + spot * 0.015, streak * 0.12];
+  }, 0.25);
 }
 
 // Plástico satinado y caucho: microtextura casi invisible que rompe el brillo uniforme.
-export function micro({ seed = 9, base = [40, 42, 44], rough = [0.42, 0.12], bump = 0.5, n = 256 } = {}) {
-  const nz = makeNoise(seed, 256);
+export function micro({ seed = 9, base = [40, 42, 44], rough = [0.42, 0.12], bump = 0.5, tint = 0.08, n = 256 } = {}) {
+  const nz = makeNoise(seed, 128);
   return build(n, (u, v) => {
     const g = fbm(nz, u * 256, v * 256, 3, 0.5);
-    const k = 0.96 + g * 0.08;
+    const k = 1 - tint / 2 + g * tint;
     return [base[0] * k, base[1] * k, base[2] * k, rough[0] + g * rough[1], g];
   }, bump);
 }

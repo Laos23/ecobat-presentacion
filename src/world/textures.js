@@ -9,11 +9,13 @@ export const PAL = {
   amber: '#E5AE50',
 };
 
+// Lienzos en memoria de CPU: subir a la GPU un lienzo acelerado obliga a sincronizarlo y, con varias pantallas
+// vivas en el mismo fotograma, retiene la GPU varios milisegundos; en CPU la subida es una copia directa.
 function canvas(w, h) {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
-  return [c, c.getContext('2d')];
+  return [c, c.getContext('2d', { willReadFrequently: true })];
 }
 
 function tex(c, srgb = true) {
@@ -299,16 +301,38 @@ export function groundTexture() {
 }
 
 export function pulseTexture() {
-  // Gradiente para el pulso que recorre la traza luminosa.
+  // Gradiente para el pulso que recorre la traza luminosa: en RGB (el material es opaco y no usa el alfa),
+  // con el tono de reposo al 78 % y una banda breve al 100 %.
   const [c, g] = canvas(256, 4);
   const grd = g.createLinearGradient(0, 0, 256, 0);
-  grd.addColorStop(0, 'rgba(255,255,255,0.25)');
-  grd.addColorStop(0.8, 'rgba(255,255,255,0.35)');
-  grd.addColorStop(0.92, 'rgba(255,255,255,1)');
-  grd.addColorStop(1, 'rgba(255,255,255,0.25)');
+  grd.addColorStop(0, 'rgb(200,200,200)');
+  grd.addColorStop(0.8, 'rgb(205,205,205)');
+  grd.addColorStop(0.92, 'rgb(255,255,255)');
+  grd.addColorStop(1, 'rgb(200,200,200)');
   g.fillStyle = grd;
   g.fillRect(0, 0, 256, 4);
   const t = tex(c, false);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   return t;
+}
+
+// Pantalla viva: un canvas que se redibuja con draw(g, w, h, t, story) a ritmo limitado (por defecto 12 fps).
+// Úsese para procesos que se explican solos: escaneo, gráficos que avanzan, contadores.
+export function liveScreen(w, h, draw, fps = 12) {
+  const [c, g] = canvas(w, h);
+  const texture = tex(c);
+  let last = -Infinity;
+  draw(g, w, h, 0, null);
+  texture.needsUpdate = true;
+  return {
+    texture,
+    canvas: c,
+    g,
+    update(t, story, force = false) {
+      if (!force && t - last < 1 / fps) return;
+      last = t;
+      draw(g, w, h, t, story);
+      texture.needsUpdate = true;
+    },
+  };
 }

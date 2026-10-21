@@ -202,6 +202,7 @@ export const annex = [
           'Las referencias visuales (panorámica, batería, taller, laboratorio, cruce, reciclaje, centro y borde de isla) se generaron con IA mediante Codex; son conceptuales y no muestran instalaciones reales',
           'Materiales PBR del mundo 3D (hormigón, roca, metal, plástico, caucho) generados por código; sin texturas ni modelos externos',
           'Los QR de las baterías del mundo son decorativos',
+          'Las pantallas del mundo 3D muestran datos ilustrativos (pesos, lotes, tensiones y gráficos); no son mediciones ni resultados reales',
         ],
       },
     ],
