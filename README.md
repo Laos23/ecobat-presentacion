@@ -98,6 +98,10 @@ Hechas con Playwright (Chromium) sobre `npm run dev` y sobre el build de producc
 | Anexos | Se abren con `A`; pestañas con teclado; `Esc` cierra y devuelve el foco |
 | Móvil (390×844) | Sin scroll horizontal; capítulo 4 legible; la versión estática se lee bien |
 | QR del cierre | Apunta a `https://laos23.github.io/ecobat-presentacion/` |
+| Revisión de diseño independiente | Dos rondas. Se corrigieron el contraste de los titulares sobre los interiores, la visibilidad de las tres rutas del capítulo 4, el horizonte del agua, la señal «Desliza o pulsa →», el encuadre móvil de la portada, las pestañas de los anexos y los encuadres del capítulo 6 y del cierre |
+| Web publicada | Carga sin errores ni avisos en consola en `https://laos23.github.io/ecobat-presentacion/` |
+
+Las capturas finales se tomaron con la ventana del navegador de pruebas limitada a ~1,5 fps (también le ocurría al build anterior, que antes iba a 240 fps). Cada captura esperó a que la cámara llegara a su encuadre.
 
 **Limitaciones conocidas**
 

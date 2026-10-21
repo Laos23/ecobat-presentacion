@@ -528,7 +528,7 @@ export function buildWorld(scene) {
     // Cada ruta termina en un tramo visible desde el encuadre del capítulo 4.
     service: new THREE.CatmullRomCurve3([...entry, V(14.6, y4, -10.6), V(15.5, y4, -12), V(16.2, y4, -16), V(16.6, y4, -17.8), V(17.3, y4 + 1.4, -21)]),
     second: new THREE.CatmullRomCurve3([...entry, V(16, y4, -11.8), V(19.2, y4, -9.6), V(20, y4, -8.2), V(23.5, y4, -8), V(26.8, y4, -8)]),
-    recycle: new THREE.CatmullRomCurve3([...entry, V(13.5, y4, -5.2), V(17.2, y4, -4.2), V(18.4, y4, -0.6), V(19, y4, 1.6), V(21.4, y4 - 1, 5.2)]),
+    recycle: new THREE.CatmullRomCurve3([...entry, V(13.5, y4, -5.2), V(17.2, y4, -4.2), V(18.4, y4, -0.6), V(19, y4, 1.6), V(20.4, y4 - 0.5, 3.6)]),
   };
   const plan = ['recycle', 'service', 'recycle', 'recycle', 'second', 'recycle', 'service', 'recycle', 'recycle', 'recycle'];
   const counters = { service: 0, second: 0, recycle: 0 };

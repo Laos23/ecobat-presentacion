@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T00:00:00Z",
+  "title": "Design System: EcoBat",
+  "extensions": {
+    "colorMeta": {
+      "graphite": { "role": "neutral", "displayName": "Night Graphite", "canonical": "#161819", "tonalRamp": ["#0b0c0d", "#161819", "#1d2022", "#272b2e", "#3d4246", "#5d6266", "#8f9599", "#d7dadc"] },
+      "graphite-2": { "role": "neutral", "displayName": "Panel Graphite", "canonical": "#1d2022", "tonalRamp": ["#0e1011", "#161819", "#1d2022", "#272b2e", "#33373a", "#5d6266", "#8f9599", "#d7dadc"] },
+      "graphite-3": { "role": "neutral", "displayName": "Scrollbar Graphite", "canonical": "#272b2e", "tonalRamp": ["#0e1011", "#161819", "#1d2022", "#272b2e", "#33373a", "#5d6266", "#8f9599", "#d7dadc"] },
+      "ivory": { "role": "neutral", "displayName": "Warm Ivory", "canonical": "#f1eee6", "tonalRamp": ["#2a2823", "#4a4741", "#6e6a62", "#8f8b83", "#b9b3a6", "#d4cdbf", "#e6e1d6", "#f1eee6"] },
+      "ivory-dim": { "role": "neutral", "displayName": "Dim Ivory", "canonical": "rgba(241, 238, 230, 0.72)", "tonalRamp": ["rgba(241,238,230,0.1)", "rgba(241,238,230,0.14)", "rgba(241,238,230,0.2)", "rgba(241,238,230,0.28)", "rgba(241,238,230,0.4)", "rgba(241,238,230,0.55)", "rgba(241,238,230,0.72)", "rgba(241,238,230,1)"] },
+      "ivory-faint": { "role": "neutral", "displayName": "Faint Ivory", "canonical": "rgba(241, 238, 230, 0.2)", "tonalRamp": ["rgba(241,238,230,0.1)", "rgba(241,238,230,0.14)", "rgba(241,238,230,0.2)", "rgba(241,238,230,0.28)", "rgba(241,238,230,0.4)", "rgba(241,238,230,0.55)", "rgba(241,238,230,0.72)", "rgba(241,238,230,1)"] },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "rgba(241, 238, 230, 0.1)", "tonalRamp": ["rgba(241,238,230,0.1)", "rgba(241,238,230,0.14)", "rgba(241,238,230,0.2)", "rgba(241,238,230,0.28)", "rgba(241,238,230,0.4)", "rgba(241,238,230,0.55)", "rgba(241,238,230,0.72)", "rgba(241,238,230,1)"] },
+      "lime": { "role": "primary", "displayName": "Trace Lime", "canonical": "#c2f230", "tonalRamp": ["#253004", "#3d500a", "#5a7412", "#7c9c1c", "#a2cc26", "#c2f230", "#d3ff4a", "#eeffbf"] },
+      "lime-hover": { "role": "primary", "displayName": "Lime Flare", "canonical": "#d3ff4a", "tonalRamp": ["#253004", "#3d500a", "#5a7412", "#7c9c1c", "#a2cc26", "#c2f230", "#d3ff4a", "#eeffbf"] },
+      "amber": { "role": "secondary", "displayName": "Lamp Amber", "canonical": "#e5ae50", "tonalRamp": ["#2e1f07", "#4d3510", "#73501a", "#9a6c25", "#c99945", "#e5ae50", "#f0c983", "#fbecd2"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The EcoBat wordmark on the intro and the loading veil only." },
+      "headline": { "displayName": "Headline", "purpose": "One per scene, max 13ch, balanced; closing headline steps down to 5rem and 20ch." },
+      "title": { "displayName": "Title", "purpose": "The tagline under the wordmark." },
+      "numeral": { "displayName": "Numeral", "purpose": "Route counts, static step numbers, calendar and goal keys; coloured by route." },
+      "body-lead": { "displayName": "Body lead", "purpose": "The one supporting sentence per scene, max 34ch." },
+      "body": { "displayName": "Body", "purpose": "Reading copy; annex prose at 1.05rem, max 65ch." },
+      "label": { "displayName": "Label", "purpose": "Rail labels, tags, passport steps, cue. Sentence case, no tracking." }
+    },
+    "shadows": [
+      { "name": "scene-headline", "value": "text-shadow: 0 2px 24px rgba(22, 24, 25, 0.9), 0 0 2px rgba(22, 24, 25, 0.6)", "purpose": "Headlines over the diorama, for projector legibility." },
+      { "name": "scene-body", "value": "text-shadow: 0 1px 14px rgba(22, 24, 25, 0.95), 0 0 2px rgba(22, 24, 25, 0.7)", "purpose": "Body lead over the diorama." },
+      { "name": "annex-sheet", "value": "-24px 0 60px rgba(0, 0, 0, 0.45)", "purpose": "The only lifted surface: the right-side annex sheet." },
+      { "name": "lime-state-glow", "value": "0 0 14px rgba(194, 242, 48, 0.55)", "purpose": "Active passport dot; UI echo of the emissive trace." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "All UI state transitions (0.2-0.6s) and the annex slide (0.55s)." },
+      { "name": "camera-scrub", "value": "GSAP ScrollTrigger scrub: 1.1, ease none", "purpose": "Camera follows scroll with smoothing and settles still when scroll stops." },
+      { "name": "chapter-flight", "value": "power2.inOut, min(1.5s + 0.7s per hop, 4.5s)", "purpose": "Direct chapter navigation; 0s under reduced motion." },
+      { "name": "scene-arrive", "value": "opacity 0 to 1, translateY 24px to 0, blur 6px to 0, scroll-linked", "purpose": "Scene copy arrival; reduced motion drops transform and blur." },
+      { "name": "veil-fade", "value": "opacity 0.9s ease-out", "purpose": "Loading veil exit; hard cut between chapters under reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "compact", "value": "560px" },
+      { "name": "narrow", "value": "900px" }
+    ],
+    "world": {
+      "renderer": "ACESFilmic tone mapping, exposure 1.05; FogExp2 #161819 density 0.0052; UnrealBloom strength 0.38 radius 0.42 threshold 1.0; tilt-shift H/V r 0.52",
+      "lights": "Hemisphere #4a535c/#0e1011 0.9; key directional #ffe0b5 1.5; rim directional #9fb6c8 0.35; warm point lights #ffb862-#ffd49a inside cutaways; hub point #e8ffb0",
+      "materials": "Matte MeshStandard grammar: concrete #8f8b83, floor #d4cdbf, ivory walls #d4c6ad, graphite #1f2224, graphite light #33373a, metal #5d6266, flat-shaded rock #4a4741/#2f2d2a and foliage #33502f/#243b25, water #0a0c0d; emissive lime #C2F230 (1.3), amber #E5AE50 (1.6), warm lamp #ffd9a0 (2.6), ivory glow #F1EEE6 (1.6)",
+      "forms": "Rounded-box batteries (graphite body, lime handle and stripe, QR label), cutaway buildings with partial roofs and warm light strips, rock-edged extruded islands with graphite railings, instanced low-poly trees, rocks and lamps"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single lime pill action per surface.",
+      "html": "<button class=\"ds-btn-primary\">Ver anexos <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 0.6rem; min-height: 3.25rem; padding: 0 1.4rem; border-radius: 999px; border: 1px solid transparent; background: var(--lime, #c2f230); color: var(--graphite, #161819); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-weight: 700; font-size: 1.05rem; cursor: pointer; transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-btn-primary:hover { background: #d3ff4a; transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: 2px solid #c2f230; outline-offset: 3px; }"
+    },
+    {
+      "name": "Icon Button",
+      "kind": "button",
+      "refersTo": "icon-button",
+      "description": "Thin graphite instrument for prev/next/fullscreen; lime on hover.",
+      "html": "<button class=\"ds-icon-btn\" aria-label=\"Siguiente\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M9 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-icon-btn { display: inline-grid; place-items: center; width: 3rem; height: 3rem; border-radius: 12px; border: 1px solid rgba(241, 238, 230, 0.16); background: rgba(29, 32, 34, 0.9); color: #f1eee6; cursor: pointer; transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1); } .ds-icon-btn svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } .ds-icon-btn:hover { border-color: #c2f230; color: #c2f230; } .ds-icon-btn:focus-visible { outline: 2px solid #c2f230; outline-offset: 3px; } .ds-icon-btn:disabled { opacity: 0.35; cursor: default; border-color: rgba(241, 238, 230, 0.16); color: #f1eee6; }"
+    },
+    {
+      "name": "Chapter Rail",
+      "kind": "nav",
+      "refersTo": "rail-item",
+      "description": "Dock navigation: circular numerals, current filled lime, done tinted lime.",
+      "html": "<nav class=\"ds-rail\"><button class=\"ds-rail__item is-done\"><span class=\"ds-rail__num\">1</span>Recogida</button><button class=\"ds-rail__item\" aria-current=\"step\"><span class=\"ds-rail__num\">2</span>Identificación</button><button class=\"ds-rail__item\"><span class=\"ds-rail__num\">3</span>Diagnóstico</button></nav>",
+      "css": ".ds-rail { display: flex; gap: 0.5rem; padding: 1rem; background: #161819; } .ds-rail__item { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 3rem; padding: 0 0.7rem 0 0.35rem; border: 0; border-radius: 999px; background: transparent; color: rgba(241, 238, 230, 0.72); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-weight: 600; font-size: 1rem; cursor: pointer; transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s cubic-bezier(0.16, 1, 0.3, 1); } .ds-rail__num { display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; border: 1px solid rgba(241, 238, 230, 0.28); font-weight: 700; font-variant-numeric: tabular-nums; transition: background 0.3s, color 0.3s, border-color 0.3s; } .ds-rail__item:hover { color: #f1eee6; } .ds-rail__item:hover .ds-rail__num { border-color: #c2f230; } .ds-rail__item:focus-visible { outline: 2px solid #c2f230; outline-offset: 3px; } .ds-rail__item[aria-current='step'] { color: #f1eee6; background: rgba(29, 32, 34, 0.9); } .ds-rail__item[aria-current='step'] .ds-rail__num { background: #c2f230; border-color: #c2f230; color: #161819; } .ds-rail__item.is-done .ds-rail__num { border-color: rgba(194, 242, 48, 0.6); color: #c2f230; }"
+    },
+    {
+      "name": "Annex Tabs",
+      "kind": "nav",
+      "refersTo": "annex-tab",
+      "description": "Outlined pills; selected tab lime-filled.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">Arquitectura</button><button role=\"tab\" aria-selected=\"false\">Calendario</button><button role=\"tab\" aria-selected=\"false\">Presupuesto</button></div>",
+      "css": ".ds-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 1rem; background: #1d2022; } .ds-tabs [role='tab'] { min-height: 2.6rem; padding: 0 1rem; border-radius: 999px; border: 1px solid rgba(241, 238, 230, 0.18); background: transparent; color: rgba(241, 238, 230, 0.72); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-weight: 600; font-size: 0.98rem; cursor: pointer; } .ds-tabs [role='tab']:hover { color: #f1eee6; border-color: rgba(241, 238, 230, 0.4); } .ds-tabs [role='tab']:focus-visible { outline: 2px solid #c2f230; outline-offset: 3px; } .ds-tabs [aria-selected='true'] { background: #c2f230; border-color: #c2f230; color: #161819; }"
+    },
+    {
+      "name": "Simulation Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Mandatory label on every hypothetical figure; amber swatch.",
+      "html": "<p class=\"ds-tag ds-tag--sim\">Simulación hipotética: 10 baterías</p>",
+      "css": ".ds-tag { display: inline-flex; align-items: center; gap: 0.5em; margin: 0; padding: 0.35em 0.8em; border: 1px solid rgba(241, 238, 230, 0.2); border-radius: 999px; background: rgba(22, 24, 25, 0.7); color: rgba(241, 238, 230, 0.72); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.95rem; font-weight: 600; } .ds-tag--sim::before { content: ''; width: 0.55em; height: 0.55em; border-radius: 2px; background: #e5ae50; }"
+    },
+    {
+      "name": "Routes Panel",
+      "kind": "card",
+      "refersTo": "routes-panel",
+      "description": "Chapter 4 aside: three routes, big numerals coloured by route, hairline rows.",
+      "html": "<ul class=\"ds-routes\"><li class=\"ds-route ds-route--service\"><span class=\"ds-route__count\">2</span><span class=\"ds-route__text\"><strong>Sigue en servicio</strong><span>Tras pruebas validadas</span></span></li><li class=\"ds-route ds-route--second\"><span class=\"ds-route__count\">1</span><span class=\"ds-route__text\"><strong>Evaluación especializada</strong><span>Posible segunda vida</span></span></li><li class=\"ds-route\"><span class=\"ds-route__count\">7</span><span class=\"ds-route__text\"><strong>Reciclaje autorizado</strong><span>Entrega documentada</span></span></li></ul>",
+      "css": ".ds-routes { list-style: none; margin: 0; display: grid; gap: 0.35rem; max-width: 30rem; padding: 0.75rem 1.25rem; background: rgba(22, 24, 25, 0.82); border: 1px solid rgba(241, 238, 230, 0.2); border-radius: 14px; color: #f1eee6; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-route { display: grid; grid-template-columns: 3.5ch 1fr; gap: 1rem; align-items: center; padding: 0.55rem 0; } .ds-route + .ds-route { border-top: 1px solid rgba(241, 238, 230, 0.1); } .ds-route__count { font-weight: 800; font-stretch: 125%; font-size: 2.6rem; line-height: 1; font-variant-numeric: tabular-nums; text-align: right; } .ds-route__text { display: grid; } .ds-route__text strong { font-size: 1.2rem; font-weight: 700; } .ds-route__text span { color: rgba(241, 238, 230, 0.72); font-size: 0.95rem; } .ds-route--service .ds-route__count, .ds-route--service strong { color: #c2f230; } .ds-route--second .ds-route__count, .ds-route--second strong { color: #e5ae50; }"
+    },
+    {
+      "name": "Passport Track",
+      "kind": "custom",
+      "refersTo": "passport-track",
+      "description": "Signature stepper; steps light lime in sequence with the trace.",
+      "html": "<ol class=\"ds-passport\"><li class=\"is-on\"><span class=\"ds-passport__dot\"></span>QR</li><li class=\"is-on\"><span class=\"ds-passport__dot\"></span>Diagnóstico</li><li><span class=\"ds-passport__dot\"></span>Ruta</li><li><span class=\"ds-passport__dot\"></span>Destino</li></ol>",
+      "css": ".ds-passport { list-style: none; display: flex; margin: 0; padding: 1rem; background: #161819; color: rgba(241, 238, 230, 0.72); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 1rem; font-weight: 600; } .ds-passport li { position: relative; flex: 1 1 0; padding-top: 1.6rem; padding-right: 1rem; transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1); } .ds-passport li::before { content: ''; position: absolute; top: 0.48rem; left: 0.9rem; right: 0; height: 2px; background: rgba(241, 238, 230, 0.2); } .ds-passport li:last-child::before { display: none; } .ds-passport__dot { position: absolute; top: 0; left: 0; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 2px solid rgba(241, 238, 230, 0.2); background: #161819; transition: background 0.5s, border-color 0.5s, box-shadow 0.5s; } .ds-passport li.is-on { color: #f1eee6; } .ds-passport li.is-on::before { background: rgba(194, 242, 48, 0.6); } .ds-passport li.is-on .ds-passport__dot { background: #c2f230; border-color: #c2f230; box-shadow: 0 0 14px rgba(194, 242, 48, 0.55); }"
+    },
+    {
+      "name": "Scene Headline Block",
+      "kind": "custom",
+      "refersTo": "scene-copy",
+      "description": "One expanded headline and one body-lead sentence over the diorama, with functional text shadows.",
+      "html": "<div class=\"ds-scene\"><h2>Cada batería tiene un QR</h2><p>Su historia empieza a registrarse en el taller.</p></div>",
+      "css": ".ds-scene { padding: 2rem; background: radial-gradient(130% 88% at 0% 100%, rgba(22,24,25,0.95) 0%, rgba(22,24,25,0.8) 42%, rgba(22,24,25,0) 72%), #2b3034; color: #f1eee6; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-scene h2 { margin: 0; font-weight: 800; font-stretch: 125%; font-size: 3.2rem; line-height: 0.98; letter-spacing: -0.03em; max-width: 13ch; text-wrap: balance; text-shadow: 0 2px 24px rgba(22, 24, 25, 0.9), 0 0 2px rgba(22, 24, 25, 0.6); } .ds-scene p { margin: 1.1rem 0 0; max-width: 34ch; font-size: 1.3rem; line-height: 1.32; text-shadow: 0 1px 14px rgba(22, 24, 25, 0.95), 0 0 2px rgba(22, 24, 25, 0.7); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Diorama",
+    "overview": "EcoBat is one continuous, night-lit miniature world: a premium industrial toy model floating in a graphite void, seen from a 3/4 aerial camera that rises, sweeps and dives between stations. Each stage of the battery's life is a real place on its own rock-edged island, not a slide. The HTML layer is subordinate to the world: large expanded headlines sit lower-left in a functional shadow, and the controls are drawn as thin graphite instruments that only light up in lime when they carry state.\n\nLight is the hierarchy. Graphite holds the night, warm ivory cutaway interiors glow under amber lamps, and a single lime trace is the only saturated light in the scene and the story's thread. The same rule governs the interface: lime marks the current, the done, the selected and the actionable; amber marks the hypothetical and the second-life route; everything else is ivory at full or reduced strength. Density is low and paced by the presenter: one idea per frame, held still for speaking.\n\nThe system is projector-first: high contrast on graphite, display sizes that read from the back of a classroom, full keyboard control, and a static fallback that keeps the same palette and type when motion or WebGL is unavailable.",
+    "keyCharacteristics": [
+      "Graphite night void, warm ivory interiors, amber lamps, one lime trace.",
+      "Archivo Variable at expanded width (125) and weight 800 for every headline and numeral; regular-width Archivo for reading.",
+      "Matte, toy-like hard-surface 3D: rounded boxes, low-poly flat-shaded rocks and foliage, emissive light strips.",
+      "Pill-shaped controls, hairline ivory borders, translucent graphite backplates.",
+      "Motion grammar: rise, sweep, settle into a still frame."
+    ],
+    "rules": [
+      { "name": "The One Saturated Light Rule", "body": "Lime is the only saturated light on screen, in the world and in the chrome; amber is lamp warmth, not a second accent. It marks state (current, done, selected, focus) or the single primary action; it is never decoration.", "section": "colors" },
+      { "name": "The Labelled Hypothesis Rule", "body": "Amber in the interface means \"simulación\": any hypothetical figure carries the amber-swatch tag. Amber is never used to decorate a real fact.", "section": "colors" },
+      { "name": "The Expanded-Is-Loud Rule", "body": "Width 125 is reserved for weight-800 headlines, the wordmark and numerals. Reading text never uses expanded width.", "section": "typography" },
+      { "name": "The One Sentence Rule", "body": "A scene carries one headline and one body-lead sentence at most, plus a tag when a figure is hypothetical.", "section": "typography" },
+      { "name": "The Scrim Serves Reading Rule", "body": "Graphite scrims and text shadows exist only to keep copy legible over the world. They follow the copy's anchor (bottom-left on chapters, top-left on intro) and never become decorative vignettes.", "section": "elevation" },
+      { "name": "The Glow Means Lit Rule", "body": "Glow is reserved for things that are lit in the world's logic: emissive lime, amber and lamp materials, and the lime state indicator. Nothing else glows.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep lime as the only saturated light, and spend it on state, the trace and the single primary action.",
+      "Do tag every hypothetical figure with the amber-swatch \"simulación\" tag.",
+      "Do set headlines and numerals in Archivo weight 800 at width 125, and reading text at default width.",
+      "Do anchor scene copy to a corner over a graphite scrim, with the scene text shadows, so it reads on a projector.",
+      "Do draw controls as thin graphite instruments: translucent graphite backplate, 1px low-alpha ivory hairline, lime only for state.",
+      "Do build 3D props from the shared material grammar: matte graphite and ivory, flat-shaded rock and foliage, emissive lime, amber and warm-lamp strips.",
+      "Do let the camera settle into a still frame before the presenter speaks; motion never advances content by itself.",
+      "Do keep a 2px lime focus ring (offset 3px) on every interactive element."
+    ],
+    "donts": [
+      "Don't introduce a new accent hue beyond lime and amber, or a lime gradient; the world has one trace.",
+      "Don't use amber to decorate real facts; it means hypothetical, warmth or the second-life route.",
+      "Don't use solid ivory borders or heavy drop shadows on chrome; the annex sheet is the only lifted surface.",
+      "Don't set reading copy in expanded width or headlines below weight 800.",
+      "Don't add glow to anything that is not lit in the world's logic."
+    ]
+  }
+}

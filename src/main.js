@@ -335,8 +335,8 @@ async function start3D() {
       // En vertical la cámara se aleja para que la estación quepa a lo ancho
       // y, en la portada, centra el diorama en la mitad inferior.
       const introW = cs.index === 0 ? cs.vis : 0;
-      camTgt.add(new THREE.Vector3(14, 0, 10).multiplyScalar(introW));
-      camPos.add(new THREE.Vector3(14, -4, 30).multiplyScalar(introW));
+      camTgt.add(new THREE.Vector3(10, 16, 6).multiplyScalar(introW));
+      camPos.add(new THREE.Vector3(10, 2, 14).multiplyScalar(introW));
       camPos.sub(camTgt).multiplyScalar(1 + (1 - camera.aspect) * 0.75).add(camTgt);
     }
     if (!reduced) {
