@@ -81,6 +81,14 @@ El workflow `.github/workflows/deploy.yml` compila y publica en cada push a `mai
 - Los QR de las baterías del mundo 3D son decorativos. El QR del cierre es funcional y abre esta web.
 - La ilustración `public/referencia-ecobat.png` es conceptual: se generó con la herramienta de imágenes de Codex como dirección artística. El mundo 3D está modelado con geometría procedural, sin modelos externos.
 
+## Materiales e iluminación
+
+- Materiales PBR con mapas de color, rugosidad y relieve generados por código en `src/world/pbr.js`: hormigón con grano y juntas, roca con grietas, metal cepillado claro y oscuro, plástico satinado y caucho. Las UV se proyectan en coordenadas de mundo para que la escala sea coherente en todo el diorama.
+- La batería sigue `context/ref-bateria.png`: carcasa grafito lisa, zócalo con asideros, línea lima fina, asa grafito con inserto lima discreto y QR pequeño abajo a la derecha.
+- Hay geometría de detalle (biseles, cajones, coche con capó abierto y llantas, elevador de dos columnas, panel de herramientas, comprobador con pinzas, lupa, cinta con rodillos, trituradora con andamio y tuberías). Todo lo fijo se fusiona por material (`bakeStatic`), así que el detalle no multiplica las llamadas de dibujo.
+- El bloom es suave. Hay sombras de contacto, focos cálidos en los interiores y charcos de luz simulados junto a las balizas.
+- Las referencias `context/ref-*.png` se generaron con IA mediante Codex. Se usaron como guía artística: no se aplican como texturas.
+
 ## Comprobaciones realizadas (21/10/2026)
 
 Hechas con Playwright (Chromium) sobre `npm run dev` y sobre el build de producción (`npm run preview`). Las capturas están en [`docs/evidencia/`](docs/evidencia/).

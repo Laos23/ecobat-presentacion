@@ -199,7 +199,8 @@ export const annex = [
         items: [
           'Mundo 3D modelado en tiempo real con Three.js; cámara con GSAP ScrollTrigger',
           'Tipografía Archivo (SIL Open Font License)',
-          'Ilustración de referencia generada con la herramienta de imágenes de Codex; es conceptual y no muestra instalaciones reales',
+          'Las referencias visuales (panorámica, batería, taller, laboratorio, cruce, reciclaje, centro y borde de isla) se generaron con IA mediante Codex; son conceptuales y no muestran instalaciones reales',
+          'Materiales PBR del mundo 3D (hormigón, roca, metal, plástico, caucho) generados por código; sin texturas ni modelos externos',
           'Los QR de las baterías del mundo son decorativos',
         ],
       },

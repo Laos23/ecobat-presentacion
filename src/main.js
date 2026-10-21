@@ -119,18 +119,19 @@ async function start3D() {
   scene.fog = new THREE.FogExp2('#161819', 0.0052);
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.32;
+  scene.environmentIntensity = 0.42;
 
   const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.5, 600);
 
-  scene.add(new THREE.HemisphereLight('#4a535c', '#0e1011', 0.9));
-  const key = new THREE.DirectionalLight('#ffe0b5', 1.5);
+  scene.add(new THREE.HemisphereLight('#46505a', '#1a1612', 0.75));
+  const key = new THREE.DirectionalLight('#ffd9aa', 1.9);
   key.position.set(-50, 90, 60);
   key.castShadow = true;
   key.shadow.mapSize.set(4096, 4096);
   Object.assign(key.shadow.camera, { left: -90, right: 90, top: 70, bottom: -70, near: 10, far: 260 });
-  key.shadow.bias = -0.0004;
-  key.shadow.normalBias = 0.04;
+  key.shadow.bias = -0.0002;
+  key.shadow.normalBias = 0.025;
+  key.shadow.radius = 3;
   scene.add(key);
   const rim = new THREE.DirectionalLight('#9fb6c8', 0.35);
   rim.position.set(80, 40, -80);
@@ -142,7 +143,7 @@ async function start3D() {
   const rt = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
   const composer = new EffectComposer(renderer, rt);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.38, 0.42, 1.0);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.2, 0.35, 1.12);
   composer.addPass(bloom);
   const tiltH = new ShaderPass(HorizontalTiltShiftShader);
   const tiltV = new ShaderPass(VerticalTiltShiftShader);
@@ -398,7 +399,7 @@ async function start3D() {
         pixelRatio = 1;
         renderer.setPixelRatio(1);
         tiltH.enabled = tiltV.enabled = false;
-        bloom.strength = 0.3;
+        bloom.strength = 0.16;
         layout();
       }
     }
