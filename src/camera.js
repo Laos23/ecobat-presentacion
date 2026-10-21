@@ -7,12 +7,12 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 export const POSES = [
   { pos: V(-14, 80, 104), target: V(-6, 0, -16) }, // apertura: el mundo entero
   { pos: V(-35, 9.5, 37), target: V(-58, 1.5, 19) }, // 1 recogida
-  { pos: V(-21, 12.5, 25), target: V(-33, 2.2, 1) }, // 2 taller
-  { pos: V(5, 12, 19), target: V(-9, 2, -3) }, // 3 diagnóstico
+  { pos: V(-21, 12.5, 25), target: V(-38.5, 2.2, 3.5) }, // 2 taller
+  { pos: V(5, 12, 19), target: V(-14.5, 2, -0.5) }, // 3 diagnóstico
   { pos: V(4, 30, 20), target: V(22, 1.5, -9) }, // 4 clasificación
   { pos: V(22, 20, 47), target: V(31, 0, 15) }, // 5 reciclaje
-  { pos: V(84, 27, 4), target: V(34, 2, -12) }, // 6 trazabilidad
-  { pos: V(44, 78, 104), target: V(6, 0, -4) }, // cierre
+  { pos: V(96, 33, 10), target: V(34, 2, -12) }, // 6 trazabilidad
+  { pos: V(30, 82, 106), target: V(-12, 0, -12) }, // cierre
 ];
 
 // Longitud relativa de cada tramo (en pantallas de scroll).

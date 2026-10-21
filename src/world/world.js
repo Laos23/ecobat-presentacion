@@ -76,7 +76,7 @@ export function buildWorld(scene) {
   const pulse = T.pulseTexture();
 
   // Agua oscura bajo todo el mundo.
-  const water = new THREE.Mesh(new THREE.CircleGeometry(260, 64), M.water);
+  const water = new THREE.Mesh(new THREE.CircleGeometry(1600, 96), M.water);
   water.rotation.x = -Math.PI / 2;
   water.position.y = -2.6;
   water.receiveShadow = true;
@@ -525,15 +525,16 @@ export function buildWorld(scene) {
   // ---------- Simulación del capítulo 4 (hipotética: 2 / 1 / 7) ----------
   const entry = [V(5, y2, -4.6), V(8, y4, -7.2), V(11.6, y4, -8)];
   const routeCurves = {
-    service: new THREE.CatmullRomCurve3([...entry, V(14.6, y4, -10.6), ...routeA.curve.points]),
-    second: new THREE.CatmullRomCurve3([...entry, V(16, y4, -11.8), V(19.2, y4, -9.6), ...routeB.curve.points]),
-    recycle: new THREE.CatmullRomCurve3([...entry, V(13.5, y4, -5.2), ...routeC.curve.points]),
+    // Cada ruta termina en un tramo visible desde el encuadre del capítulo 4.
+    service: new THREE.CatmullRomCurve3([...entry, V(14.6, y4, -10.6), V(15.5, y4, -12), V(16.2, y4, -16), V(16.6, y4, -17.8), V(17.3, y4 + 1.4, -21)]),
+    second: new THREE.CatmullRomCurve3([...entry, V(16, y4, -11.8), V(19.2, y4, -9.6), V(20, y4, -8.2), V(23.5, y4, -8), V(26.8, y4, -8)]),
+    recycle: new THREE.CatmullRomCurve3([...entry, V(13.5, y4, -5.2), V(17.2, y4, -4.2), V(18.4, y4, -0.6), V(19, y4, 1.6), V(21.4, y4 - 1, 5.2)]),
   };
   const plan = ['recycle', 'service', 'recycle', 'recycle', 'second', 'recycle', 'service', 'recycle', 'recycle', 'recycle'];
   const counters = { service: 0, second: 0, recycle: 0 };
   const tokens = plan.map((route, i) => {
     const slot = counters[route]++;
-    const b = K.makeBattery(M, { scale: 0.62, label: false, glow: route === 'service' });
+    const b = K.makeBattery(M, { scale: 0.72, label: false, glow: route === 'service' });
     root.add(b);
     return { b, route, slot, i };
   });
@@ -561,7 +562,7 @@ export function buildWorld(scene) {
   const hubTop = V(s6.x - 1.2, s6.y + 6.4, s6.z - 1.4);
   const arcs = [STATIONS.s1, STATIONS.s2, STATIONS.s3, STATIONS.s4, STATIONS.s5].map((s) => {
     const end = s.clone().add(V(0, 3, 0));
-    const mid = new THREE.Vector3().lerpVectors(hubTop, end, 0.5).add(V(0, 16 + hubTop.distanceTo(end) * 0.12, 0));
+    const mid = new THREE.Vector3().lerpVectors(hubTop, end, 0.5).add(V(0, 7 + hubTop.distanceTo(end) * 0.06, 0));
     const curve = new THREE.QuadraticBezierCurve3(hubTop, mid, end);
     const geom = new THREE.TubeGeometry(curve, 120, 0.065, 6, false);
     const m = new THREE.Mesh(geom, arcMat);

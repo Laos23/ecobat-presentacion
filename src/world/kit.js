@@ -11,7 +11,7 @@ export function makeMaterials() {
     concrete: std({ color: '#8f8b83', roughness: 0.92, map: ground }),
     concreteLight: std({ color: '#b9b3a6', roughness: 0.9, map: ground }),
     floor: std({ color: '#d4cdbf', roughness: 0.75 }),
-    ivory: std({ color: '#d8d1c3', roughness: 0.88 }),
+    ivory: std({ color: '#d4c6ad', roughness: 0.88 }),
     graphite: std({ color: '#1f2224', roughness: 0.62, metalness: 0.15 }),
     graphiteLight: std({ color: '#33373a', roughness: 0.55, metalness: 0.3 }),
     metal: std({ color: '#5d6266', roughness: 0.38, metalness: 0.75 }),
@@ -26,7 +26,7 @@ export function makeMaterials() {
     glass: new THREE.MeshPhysicalMaterial({
       color: '#b8c4c4', roughness: 0.08, metalness: 0, transmission: 0, transparent: true, opacity: 0.16,
     }),
-    water: std({ color: '#0b0d0e', roughness: 0.55, metalness: 0.1, envMapIntensity: 0.05 }),
+    water: std({ color: '#0a0c0d', roughness: 0.28, metalness: 0.35, envMapIntensity: 0.04 }),
     lime: new THREE.MeshStandardMaterial({ color: '#C2F230', emissive: '#C2F230', emissiveIntensity: 1.3, roughness: 0.5 }),
     limeMatte: std({ color: '#b5e02c', roughness: 0.55 }),
     amberGlow: new THREE.MeshStandardMaterial({ color: '#E5AE50', emissive: '#E5AE50', emissiveIntensity: 1.6 }),
@@ -170,7 +170,7 @@ export function makeCutaway(M, { w, d, h, glassFront = false, roofDepth = 0.55 }
   for (let i = -1; i <= 1; i++) {
     g.add(box(0.5, 0.12, 0.12, M.warmGlow, i * (w / 3), h * 0.62, -d / 2 + 0.25));
   }
-  const light = new THREE.PointLight('#ffcf8a', 15, Math.max(w, d) * 1.5, 1.6);
+  const light = new THREE.PointLight('#ffb862', 17, Math.max(w, d) * 1.5, 1.6);
   light.position.set(0, h - 1, -d * 0.1);
   g.add(light);
   return g;

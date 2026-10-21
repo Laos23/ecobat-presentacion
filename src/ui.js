@@ -74,6 +74,7 @@ export function buildChrome(root) {
   root.innerHTML = `
     <a class="brand" href="#" data-goto="0" aria-label="EcoBat, volver a la portada">Eco<span>Bat</span></a>
     <p class="keys" aria-hidden="true"><kbd>←</kbd><kbd>→</kbd> capítulos · <kbd>F</kbd> pantalla completa · <kbd>A</kbd> anexos</p>
+    <p class="cue" aria-hidden="true">Desliza o pulsa <kbd>→</kbd></p>
     <div class="dock">
       <div class="progress" aria-hidden="true"><span class="progress__fill"></span></div>
       <nav class="rail" aria-label="Capítulos">
