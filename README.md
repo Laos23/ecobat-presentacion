@@ -124,7 +124,8 @@ Hechas con Playwright sobre el build de producción, en el Chrome del sistema si
 | Build de producción | `vite build` sin errores. JS 1,2 MB (354 kB gzip), CSS 19 kB y la fuente Archivo autoalojada |
 | Consola en el build | 0 errores y 0 avisos durante la carga, un recorrido completo con rueda, los anexos e `Inicio` |
 | Carga en frío | Lista en 2,7–2,8 s en local: el mundo se construye en ~1,5 s y los 50 programas de sombreado se compilan en paralelo |
-| Render | 237 llamadas de dibujo y 898 000 triángulos en la vista general; 233–239 fps, fotograma p95 de 4,3 ms y máximo de 17 ms con scroll lento |
+| Render | 237 llamadas de dibujo y 872 000 triángulos en la vista general; 233–239 fps, fotograma p95 de 4,3 ms y máximo de 17 ms con scroll lento |
+| Parpadeo del suelo | Ninguna superficie opaca coplanar entre materiales distintos (escaneo de los 54 000 triángulos horizontales del mundo). Renderizando cada encuadre con el orden de dibujo invertido ya no cambia ninguna zona, solo líneas de contacto de 1 px; plano cercano a 0,5 m para separar marcas y suelos también en los planos lejanos |
 | Holgura | La cámara nunca pasa a menos de 1,237 m de un sólido, incluido el balanceo con el ratón (16 757 sólidos, 0 violaciones) |
 | Giros | Como mucho 63° por pantalla en tránsitos y 39° en ventanas de lectura; con rueda tranquila, 30°/s en el percentil 95 y 37°/s en el 99; horizonte siempre nivelado |
 | Scroll | Lento, rápido y hacia atrás recorren todos los capítulos en orden y terminan en el encuadre correcto |

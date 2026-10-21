@@ -128,6 +128,8 @@ function collectColliders(root) {
 export function buildWorld(scene, { debug = false } = {}) {
   performance.mark('eb:start');
   const M = K.makeMaterials();
+  // nombre de cada material compartido (depuración y perfiles)
+  Object.entries(M).forEach(([k, m]) => m?.isMaterial && !m.name && (m.name = k));
   performance.mark('eb:materials');
   const root = new THREE.Group();
   scene.add(root);
@@ -190,9 +192,8 @@ export function buildWorld(scene, { debug = false } = {}) {
     Array.from({ length: 24 }, (_, i) => V(s4.x + Math.cos((i / 24) * Math.PI * 2) * 4, y4, s4.z + Math.sin((i / 24) * Math.PI * 2) * 4)),
     '#C2F230', 0.18, true,
   );
-  mkTrace(TRACES.service, '#C2F230', 0.3);
-  // las ramas B y C arrancan sobre el anillo, a la misma cota: ganan siempre en profundidad (sin rayado)
-  [mkTrace(TRACES.second, '#E5AE50', 0.3), mkTrace(TRACES.recycle, '#F1EEE6', 0.3, false, 1.15)].forEach(({ mesh }) => {
+  // las tres ramas arrancan sobre el anillo, a la misma cota: ganan siempre en profundidad (sin rayado)
+  [mkTrace(TRACES.service, '#C2F230', 0.3), mkTrace(TRACES.second, '#E5AE50', 0.3), mkTrace(TRACES.recycle, '#F1EEE6', 0.3, false, 1.15)].forEach(({ mesh }) => {
     Object.assign(mesh.material, { polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 });
   });
   const hub = mkTrace(TRACES.hub, '#C2F230');
@@ -371,7 +372,8 @@ export function buildWorld(scene, { debug = false } = {}) {
   performance.mark('eb:trazas');
   const colliders = debug ? collectColliders(root) : null;
   // Todo lo fijo se fusiona por material: el detalle no multiplica las llamadas de dibujo.
-  K.bakeStatic(root);
+  // (con ?debug&nobake se conserva cada pieza por separado para poder identificarla en las pruebas)
+  if (!(debug && typeof location !== 'undefined' && location.search.includes('nobake'))) K.bakeStatic(root);
   // Un material compartido entre mallas normales e instanciadas (o instanciadas con y sin color por instancia)
   // obliga a recalcular la clave del programa en cada dibujo: cada variante instanciada recibe su clon. Los
   // materiales M.* no se modifican en tiempo de ejecución (los animados son propios de cada estación).

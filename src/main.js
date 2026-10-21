@@ -148,8 +148,9 @@ async function start3D() {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.42;
 
-  // plano cercano corto: la cámara pasa a la altura de los bancos, cerca de los objetos
-  const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.12, 700);
+  // plano cercano a 0,5 m: la cámara nunca pasa a menos de 1,2 m de un sólido (balanceo incluido) y las esquinas
+  // del plano quedan a menos de 0,7 m; con 0,12 la profundidad no separaba de lejos suelos y marcas a pocos mm
+  const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.5, 700);
 
   scene.add(new THREE.HemisphereLight('#46505a', '#1a1612', 0.75));
   const key = new THREE.DirectionalLight('#ffd9aa', 1.9);
@@ -536,6 +537,8 @@ async function start3D() {
       return pt.distanceTo(local);
     };
     return {
+      scene,
+      camera,
       setProgress(p) {
         window.scrollTo(0, p * scrollMax());
         trigger.update?.();

@@ -461,7 +461,7 @@ export function buildDepot(ctx) {
     g.add(cylAt(0.05, 0.05, CH - 0.1, M.darkSteel, 8, -4.75, 0, -1.4));
     // canaleta de recogida de derrames delante de la estantería
     g.add(K.box(8.4, 0.014, 0.24, M.darkSteel, 0, 0, RD / 2 + 0.45));
-    for (let i = 0; i < 28; i++) g.add(K.box(0.03, 0.016, 0.2, M.panel, -4.05 + i * 0.3, 0, RD / 2 + 0.45));
+    for (let i = 0; i < 28; i++) g.add(K.box(0.03, 0.03, 0.2, M.panel, -4.05 + i * 0.3, 0, RD / 2 + 0.45));
     place(g, RX, RZ, 0, 0, 'almacen');
     shadow(RX, RZ, 9.4, 2.0);
     // luz cálida bajo la marquesina (una de las dos luces nuevas de la estación), dirigida a los largueros
@@ -810,7 +810,7 @@ export function buildDepot(ctx) {
     col.add(K.box(0.1, 2.12, 0.1, M.graphite, 0, 0, 0));
     col.add(K.rbox(0.32, 0.26, 0.18, M.graphite, 0, 1.0, 0.1, 0.03));
     col.add(K.box(0.18, 0.05, 0.01, M.amberGlow, 0, 1.17, 0.195));
-    col.add(K.box(0.7, 0.06, 0.08, M.darkSteel, 0, 2.06, 0.02));
+    col.add(K.box(0.7, 0.06, 0.08, M.darkSteel, 0, 2.07, 0.02));
     const scr = K.framedScreen(M, display.texture, 1.3, 0.54, 0.85);
     scr.position.set(0, 2.42, 0.1);
     col.add(scr);
@@ -848,7 +848,7 @@ export function buildDepot(ctx) {
     const b = 0.15;
     [-1.1, 1.1].forEach((z) => g.add(K.box(W2 + 0.2, b, 0.3, M.concreteLight, 0, 0, z)));
     g.add(K.box(W2 - 0.12, H - 0.1, L - 0.1, M.graphiteLight, 0, b + 0.05, 0));
-    g.add(K.box(W2, 0.05, L, M.panel, 0, b + H - 0.05, 0));
+    g.add(K.box(W2, 0.05, L, M.panel, 0, b + H - 0.04, 0));
     // bastidor: postes de esquina, largueros y cantoneras
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
       g.add(K.box(0.16, H, 0.16, M.darkSteel, sx * (W2 / 2 - 0.08), b, sz * (L / 2 - 0.08)));

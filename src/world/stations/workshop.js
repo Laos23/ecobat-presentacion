@@ -167,7 +167,7 @@ function rack(ctx, { bays = 1, bayLen = 1.8, depth = 0.55, levels = [0.1, 0.72, 
   }
   levels.forEach((ly) => {
     [-1, 1].forEach((s) => g.add(K.box(len, 0.07, 0.04, M.graphite, 0, ly, s * (depth / 2 - 0.02))));
-    g.add(K.box(len - 0.04, 0.012, depth - 0.06, M.steel, 0, ly + 0.058, 0));
+    g.add(K.box(len - 0.04, 0.012, depth - 0.06, M.steel, 0, ly + 0.07, 0));
     // etiquetas de carga ámbar en el larguero frontal
     for (let b = 0; b < bays; b++) g.add(K.box(0.1, 0.035, 0.005, M.amberMatte, -len / 2 + (b + 0.5) * bayLen, ly + 0.017, depth / 2 + 0.001));
   });
@@ -721,7 +721,7 @@ export function buildWorkshop(ctx) {
   add(ctrl, LX, FY + 1.02, LZ + 1.55 + 0.21 + 0.075);
   [-1, 1].forEach((s) => ctx.add(K.box(0.03, 3.75, 0.03, M.rubber, LX + 0.24, s2.y + 0.15, LZ + s * 1.55 + 0.12)));
   ctx.add(K.box(0.34, 0.035, 2.7, M.darkSteel, LX + 0.45, FY, LZ));
-  [-1, 1].forEach((s) => ctx.add(K.box(0.04, 0.036, 2.7, M.amberMatte, LX + 0.45 + s * 0.17, FY, LZ)));
+  [-1, 1].forEach((s) => ctx.add(K.box(0.04, 0.045, 2.7, M.amberMatte, LX + 0.45 + s * 0.17, FY, LZ)));
   // zonas de seguridad ámbar en las bases y contorno lima del puesto
   [-1, 1].forEach((s) => {
     const cz = LZ + s * 1.55;
@@ -813,7 +813,7 @@ export function buildWorkshop(ctx) {
   }
   SH.levels.forEach((ly) => {
     ctx.add(K.box(SH.len + 0.06, 0.012, SH.depth, M.steel, shx, ly, shz));
-    ctx.add(K.box(SH.len + 0.06, 0.06, 0.035, M.graphite, shx, ly - 0.045, SH.z0 + SH.depth));
+    ctx.add(K.box(SH.len + 0.06, 0.06, 0.035, M.graphite, shx, ly - 0.035, SH.z0 + SH.depth));
     for (let b = 0; b < SH.bays; b++) ctx.add(K.box(0.09, 0.03, 0.004, M.amberMatte, SH.x0 + (b + 0.5) * bayLen, ly - 0.03, SH.z0 + SH.depth + 0.019));
   });
   // carga: cubetas de picking (grafito, ámbar para consumibles de seguridad) y cajas de cartón de baterías.
@@ -1079,7 +1079,7 @@ export function buildWorkshop(ctx) {
   shadow(s2.x + 6.65, s2.z + 2.35, 1.1, 0.75);
   // canal de desagüe con rejilla en el umbral
   ctx.add(K.box(15.2, 0.012, 0.24, M.panel, s2.x, FY - 0.004, s2.z + 4.78));
-  for (let x = -7.5; x <= 7.5; x += 0.25) ctx.add(K.box(0.03, 0.014, 0.22, M.darkSteel, s2.x + x, FY - 0.003, s2.z + 4.78));
+  for (let x = -7.5; x <= 7.5; x += 0.25) ctx.add(K.box(0.03, 0.026, 0.22, M.darkSteel, s2.x + x, FY - 0.003, s2.z + 4.78));
 
   // ---------- frente oeste: cajonera con batería (primer plano de la entrada) ----------
   add(rollCab(ctx, { w: 1.3, h: 1.0, d: 0.62, drawers: [1, 1, 1, 1.5, 1.5] }), s2.x - 6.4, FY, s2.z + 2.0, 0.25);

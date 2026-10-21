@@ -115,8 +115,9 @@ export function makeBattery(M, opts = {}) {
     t.position.set(x, 0.774, -0.21);
     g.add(t);
   });
+  // asa: dos tramos grafito a los lados del inserto lima (sin barra debajo del inserto, que asomaba de lejos)
   [-0.4, 0.4].forEach((x) => g.add(rbox(0.1, 0.13, 0.11, M.casing, x, 0.69, 0.02, 0.03)));
-  g.add(rbox(0.9, 0.065, 0.12, M.casing, 0, 0.8, 0.02, 0.03));
+  [-0.365, 0.365].forEach((x) => g.add(rbox(0.17, 0.065, 0.12, M.casing, x, 0.8, 0.02, 0.03)));
   g.add(rbox(0.56, 0.07, 0.125, M.limeInsert, 0, 0.8, 0.02, 0.03));
   if (opts.label !== false) {
     const qr = new THREE.Mesh(geo('batQR', () => new THREE.PlaneGeometry(0.095, 0.095)), M.qr);
@@ -157,7 +158,7 @@ export function batteryInstances(M, transforms) {
     [geo('biBody', () => new RoundedBoxGeometry(1.6, 0.7, 0.8, 1, 0.025)), M.casing, 0, 0.35, 0],
     [geo('biLine', () => new THREE.BoxGeometry(1.604, 0.016, 0.804)), M.batLine, 0, 0.56, 0],
     [geo('biTerms', () => mergeGeometries([-0.6, 0.6].map((x) => new THREE.CylinderGeometry(0.05, 0.05, 0.085, 8).translate(x, 0, -0.21)))), M.terminal, 0, 0.7425, 0],
-    [geo('biHandle', () => mergeGeometries([new RoundedBoxGeometry(0.9, 0.065, 0.12, 1, 0.03), ...[-0.4, 0.4].map((x) => new THREE.BoxGeometry(0.1, 0.13, 0.11).toNonIndexed().translate(x, -0.0775, 0))])), M.casing, 0, 0.8325, 0.02],
+    [geo('biHandle', () => mergeGeometries([...[-0.365, 0.365].map((x) => new THREE.BoxGeometry(0.17, 0.065, 0.12).toNonIndexed().translate(x, 0, 0)), ...[-0.4, 0.4].map((x) => new THREE.BoxGeometry(0.1, 0.13, 0.11).toNonIndexed().translate(x, -0.0775, 0))])), M.casing, 0, 0.8325, 0.02],
     [geo('biInsert', () => new THREE.BoxGeometry(0.56, 0.07, 0.125)), M.limeInsert, 0, 0.835, 0.02],
     [geo('biQR', () => new THREE.PlaneGeometry(0.095, 0.095)), M.qr, 0.66, 0.2, 0.402],
   ];
@@ -185,7 +186,8 @@ export function batteryInstances(M, transforms) {
 export function makeCutaway(M, { w, d, h, glassFront = false, roofDepth = 0.55, light = 17 }) {
   const g = new THREE.Group();
   const t = 0.35;
-  g.add(box(w + 1.2, 0.5, d + 1.2, M.concreteLight, 0, -0.5, 0));
+  // zócalo 1 cm bajo la tapa de la isla: a ras de ella, las dos caras coplanares parpadeaban
+  g.add(box(w + 1.2, 0.5, d + 1.2, M.concreteLight, 0, -0.51, 0));
   g.add(box(w, 0.06, d, M.floor, 0, 0, 0));
   // muros con zócalo oscuro y paneles verticales con junta
   g.add(box(w, h, t, M.ivory, 0, 0, -d / 2));
@@ -200,7 +202,8 @@ export function makeCutaway(M, { w, d, h, glassFront = false, roofDepth = 0.55, 
   g.add(rbox(w + 0.6, 0.35, roofD, M.panel, 0, h, -d / 2 + roofD / 2 - 0.2, 0.06));
   g.add(box(w + 0.8, 0.12, 0.3, M.darkSteel, 0, h + 0.35, -d / 2 + roofD - 0.2));
   for (let i = 0; i < 3; i++) g.add(box(w * 0.7, 0.06, 0.16, M.warmGlow, 0, h - 0.08, -d / 2 + 0.8 + i * (roofD / 3)));
-  [-w / 2, w / 2].forEach((x) => g.add(rbox(0.32, h, 0.32, M.darkSteel, x, 0, d / 2, 0.04)));
+  // pilares 2 cm más altos que los muros: sus tapas no coinciden con la coronación del muro
+  [-w / 2, w / 2].forEach((x) => g.add(rbox(0.32, h + 0.02, 0.32, M.darkSteel, x, 0, d / 2, 0.04)));
   if (glassFront) {
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(w, h), M.glass);
     glass.position.set(0, h / 2, d / 2);
@@ -800,11 +803,13 @@ export function scatterLamps(M, points) {
 
 // Sombras de contacto: manchas suaves bajo los objetos apoyados.
 export function contactShadows(items) {
-  const mat = new THREE.MeshBasicMaterial({ map: P.radial('rgba(8,8,8,0.62)', 'rgba(8,8,8,0)'), transparent: true, depthWrite: false });
+  // casi a ras del suelo (4 mm) y con desfase de profundidad: oscurece el suelo sin cortar tablas, chapas ni
+  // alfombrillas que asoman a 1–2 cm (a 2 cm se cruzaba con ellas y parpadeaba)
+  const mat = new THREE.MeshBasicMaterial({ map: P.radial('rgba(8,8,8,0.62)', 'rgba(8,8,8,0)'), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
   const m = new THREE.InstancedMesh(geo('contact', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), mat, items.length);
   const o = new THREE.Object3D();
   items.forEach((it, i) => {
-    o.position.set(it.x, it.y + 0.02, it.z);
+    o.position.set(it.x, it.y + 0.004, it.z);
     o.rotation.set(0, it.r || 0, 0);
     o.scale.set(it.w, 1, it.d);
     o.updateMatrix();
@@ -1073,7 +1078,8 @@ export function makePlatform(M, shape, top, opts = {}) {
   g.add(new THREE.Mesh(cliff, cliffMat));
 
   // canto de losa: banda de hormigón claro con chaflán y goterón (queda bajo el bordillo de piezas)
-  const prof = [[-0.12, top + 0.302], [0.05, top + 0.302], [0.088, top + 0.268], [0.088, top - 0.215], [0.06, top - 0.285], [-0.22, top - 0.3]];
+  // (el labio entra bajo la tapa 2,5 cm por debajo de ella: a 8 mm se disputaba la profundidad vista de lejos)
+  const prof = [[-0.12, top + 0.285], [0.05, top + 0.285], [0.088, top + 0.262], [0.088, top - 0.215], [0.06, top - 0.285], [-0.22, top - 0.3]];
   // (labio, chaflán y cara con `fasciaMat`; goterón y fondo con `dripMat`, más oscuro: sombra de contacto)
   const fp = [];
   const fnm = [];

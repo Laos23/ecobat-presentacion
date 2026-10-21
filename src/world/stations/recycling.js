@@ -478,7 +478,7 @@ export function buildRecycling(ctx) {
     [-1, 1].forEach((s) => {
       yard.add(K.box(w, h, t, M.graphiteLight, x, y, z + s * (d / 2 - t / 2)));
       yard.add(K.box(t, h, d - 2 * t, M.graphiteLight, x + s * (w / 2 - t / 2), y, z));
-      yard.add(K.box(w + 0.02, 0.025, 0.04, M.amberMatte, x, y + h - 0.025, z + s * (d / 2 - 0.01)));
+      yard.add(K.box(w + 0.02, 0.025, 0.04, M.amberMatte, x, y + h - 0.02, z + s * (d / 2 - 0.01)));
       yard.add(K.box(0.04, 0.025, d, M.amberMatte, x + s * (w / 2 - 0.01), y + h - 0.025, z));
       [-0.18, 0, 0.18].forEach((rx) => yard.add(K.box(0.03, h - 0.08, 0.012, M.graphiteLight, x + rx, y + 0.03, z + s * (d / 2 + 0.006))));
       yard.add(K.box(0.012, 0.05, 0.16, M.panel, x + s * (w / 2 + 0.006), y + h - 0.11, z));

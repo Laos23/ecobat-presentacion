@@ -922,7 +922,7 @@ function buildBridge(ctx, fr, islands, mats, glassList) {
   const mid = (x0 + x1) / 2;
   for (let k = -Math.floor((mid - x0 - 0.4) / JOINT_STEP); mid + k * JOINT_STEP < x1 - 0.4; k++) {
     const x = mid + k * JOINT_STEP;
-    ctx.add(chordPiece(unit, M.rubber, fr, x - 0.006, x + 0.006, 0, dTop + 0.003, 0.006, DECK_W - 0.1));
+    ctx.add(chordPiece(unit, M.rubber, fr, x - 0.006, x + 0.006, 0, dTop + 0.006, 0.009, DECK_W - 0.1));
   }
   // cantos del tablero: banda saliente que dibuja la línea del puente
   [-1, 1].forEach((sd) => {
@@ -1172,7 +1172,7 @@ function cornerPlanters(ctx, isl, occ, guard, trees, rnd, mats) {
     if (occ.hit(c.x, c.z, fl + 0.07, fl + 2.6, 0.75)) return;
     if (!guard.free(c.x, fl + 1.7, c.z, 0.95) || !guard.free(c.x, fl + 0.4, c.z, 0.7)) return;
     ctx.add(K.rbox(1.15, 0.48, 1.15, mats.stone, c.x, fl, c.z, 0.05));
-    ctx.add(K.box(0.99, 0.04, 0.99, M.trunk, c.x, fl + 0.44, c.z));
+    ctx.add(K.box(0.99, 0.04, 0.99, M.trunk, c.x, fl + 0.45, c.z));
     trees.push({ x: c.x, y: fl + 0.46, z: c.z, s: 0.72 + rnd() * 0.12, kind: 'tree', r: rnd() * 6.28 });
     trees.push({ x: c.x + 0.28, y: fl + 0.46, z: c.z - 0.22, s: 0.55, kind: 'low', r: rnd() * 6.28 });
     trees.push({ x: c.x - 0.25, y: fl + 0.46, z: c.z + 0.26, s: 0.5, kind: 'low', r: rnd() * 6.28 });

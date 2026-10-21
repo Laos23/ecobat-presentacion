@@ -595,7 +595,7 @@ export function buildHub(ctx) {
   [-1, 1].forEach((sx) => passport.add(K.box(0.035, 4.76, 0.024, M.lime, sx * 1.6, 0.64, 0.25)));
   [0.64, 5.365].forEach((y) => passport.add(K.box(3.235, 0.035, 0.024, M.lime, 0, y, 0.25)));
   // cornisa con luz cálida que baña la parte alta de la pantalla
-  passport.add(K.rbox(3.86, 0.12, 0.62, M.steel, 0, 5.68, 0.06, 0.03));
+  passport.add(K.rbox(3.86, 0.12, 0.62, M.steel, 0, 5.69, 0.06, 0.03));
   passport.add(K.box(3.3, 0.025, 0.03, M.warmGlow, 0, 5.645, 0.34));
   // emisor de los arcos de conexión (los arcos nacen en la cara superior, s6.y + 6,4)
   passport.add(K.cyl(0.17, 0.21, 0.08, M.darkSteel, 20).translateY(5.84));
@@ -641,7 +641,7 @@ export function buildHub(ctx) {
   // Aquí no hay asientos: mirarían a la espalda del monolito.
   [[214, 230], [250, 268]].forEach(([a0, a1]) => {
     arc(6.18, 6.64, a0, a1, 0.34, M.concreteLight, Y + 0.4);
-    arc(6.23, 6.59, a0 + 0.5, a1 - 0.5, 0.02, M.trunk, Y + 0.72);
+    arc(6.23, 6.59, a0 + 0.5, a1 - 0.5, 0.02, M.trunk, Y + 0.735);
     for (let a = a0 + 2.2; a < a1 - 1; a += 3.1) {
       const [x, z] = pol(a, 6.41);
       shrubs.push({ x, y: Y + 0.7, z, s: 0.72 + ((a * 5) % 3) * 0.07, kind: (a | 0) % 4 ? 'shrub' : 'low', r: a * 1.3 });
@@ -650,7 +650,7 @@ export function buildHub(ctx) {
   // jardineras corridas sobre el escalón alto, con arbustos
   [[200, 213], [234, 247], [273, 288]].forEach(([a0, a1]) => {
     arc(6.82, 7.3, a0, a1, 0.46, M.concreteLight, Y + 0.8);
-    arc(6.88, 7.24, a0 + 0.5, a1 - 0.5, 0.02, M.trunk, Y + 1.24);
+    arc(6.88, 7.24, a0 + 0.5, a1 - 0.5, 0.02, M.trunk, Y + 1.255);
     for (let a = a0 + 2.5; a < a1 - 1; a += 3.4) {
       const [x, z] = pol(a, 7.05);
       shrubs.push({ x, y: Y + 1.2, z, s: 0.85 + ((a * 7) % 3) * 0.08, kind: 'shrub', r: a });
@@ -707,7 +707,7 @@ export function buildHub(ctx) {
     const P0 = a - SA + 2.5;
     const P1 = a + SA - 2.5;
     arc(5.0, 5.8, P0, P1, 0.55, M.concreteLight);
-    arc(5.06, 5.74, P0 + 0.4, P1 - 0.4, 0.02, M.trunk, Y + 0.53);
+    arc(5.06, 5.74, P0 + 0.4, P1 - 0.4, 0.02, M.trunk, Y + 0.545);
     ring(4.996, 0.014, P0 + 0.3, P1 - 0.3, M.amberGlow, Y + 0.46);
     for (let k = 0; k < 7; k++) {
       const [px, pz] = pol(a - 18 + k * 6, 5.4 + (k % 2 ? 0.1 : -0.08));
@@ -750,7 +750,7 @@ export function buildHub(ctx) {
   const planter = (a, r, len, tree) => {
     const g = new THREE.Group();
     g.add(K.rbox(len, 0.58, 0.95, M.concreteLight, 0, 0, 0, 0.06));
-    g.add(K.box(len - 0.14, 0.02, 0.81, M.trunk, 0, 0.555, 0));
+    g.add(K.box(len - 0.14, 0.02, 0.81, M.trunk, 0, 0.57, 0));
     const [x, z] = pol(a, r);
     g.position.set(x, Y, z);
     g.rotation.y = faceIn(a);
@@ -841,7 +841,7 @@ export function buildHub(ctx) {
   // ---------- Jardineras curvas detrás de las gradas: arbolado bajo que cierra el fondo ----------
   [[204, 222], [231, 249], [258, 276], [284, 298]].forEach(([a0, a1], j) => {
     arc(7.78, 8.62, a0, a1, 0.55, M.concreteLight);
-    arc(7.84, 8.56, a0 + 0.4, a1 - 0.4, 0.02, M.trunk, Y + 0.53);
+    arc(7.84, 8.56, a0 + 0.4, a1 - 0.4, 0.02, M.trunk, Y + 0.545);
     const mid = (a0 + a1) / 2;
     const [tx, tz] = pol(mid + (j % 2 ? 2.5 : -2.5), 8.2);
     shrubs.push({ x: tx, y: Y + 0.55, z: tz, s: 0.9 + (j % 2) * 0.12, kind: 'tree', r: j * 1.7 });
