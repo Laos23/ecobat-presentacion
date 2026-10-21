@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.impeccable/review/
+.impeccable/mocks/
+*.log
+.DS_Store
+.playwright-mcp/
+context/
+.claude/settings.local.json
+.impeccable/hook.cache.json
