@@ -1,10 +1,10 @@
 # Rendimiento en gráficas integradas sin cambiar el diseño
 
-Fecha: 2026-10-21. Estado: aprobado (revisado por un constructor independiente; enmiendas de las tareas 7 y 8 aprobadas el 2026-10-22).
+Fecha: 2026-10-21. Estado: aprobado (revisado por un constructor independiente; enmienda de la tarea 7 aprobada el 2026-10-22; enmienda de la tarea 8 hecha el 2026-10-22, §11).
 
 Enmienda del 2026-10-22, hecha durante la implementación (tarea 7 del plan): §6.1, §6.2, §6.3, §6.4 y §8 recogen la guarda por píxel del sombreador inyectado, los conjuntos de luces por pieza y el relleno por parejas de tamaño. **La enmienda queda aprobada el 2026-10-22 por decisión del ejecutor autónomo, con la autorización general de la usuaria («evalúa lo que creas mejor y sigue»): conserva los píxeles idénticos y cumple el objetivo de GPU; si la usuaria la rechaza, §10 explica cómo deshacer cada parte.** §10 resume qué cambia respecto al texto del commit `723b652`, por qué, con qué medidas y cómo deshacer cada parte.
 
-Enmienda del 2026-10-22, hecha durante la implementación (tarea 8 del plan): §2, §6.4, §6.5, §6.6, §7.2 y §7.3 recogen el ritmo de la GPU (§6.7, nuevo), el límite de carga de 1,0 s en la RTX 5090 y la compilación del bloom a la vez que la del mundo. **Queda aprobada el 2026-10-22 por decisión del ejecutor autónomo, con la misma autorización general de la usuaria: conserva los píxeles idénticos y cumple la puerta de tirones, que el calentamiento por sí solo no cumplía.** §11 resume qué cambia, por qué, con qué medidas y cómo deshacer cada parte.
+Enmienda del 2026-10-22, hecha durante la implementación (tarea 8 del plan): §5, §6.4, §6.5, §6.6, §7.2, §7.3 y §8 recogen el ritmo de la GPU (§6.7, nuevo), un calentamiento que no toca el estado de las estaciones y la compilación del bloom a la vez que la del mundo. La hizo el ejecutor autónomo con la delegación general de la usuaria («evalúa lo que creas mejor y sigue»), porque las medidas muestran que el texto anterior no cumplía sus propios objetivos: con el calentamiento tal cual seguía habiendo fotogramas de más de 120 ms (la puerta dura de §2), y el estado que el calentamiento dejaba en las estaciones cambiaba la primera visita a los capítulos, sobre todo con movimiento reducido, que debe seguir funcionando igual (§2). Todo conserva los píxeles idénticos. §11 resume qué cambia, por qué, con qué medidas y cómo deshacer cada parte.
 
 ## 1. Intención
 
@@ -19,7 +19,7 @@ Objetivos:
 - En la integrada de referencia de este PC (§4), el tiempo de GPU por fotograma en cada anclaje baja al menos un 45 % (p. ej. de 55-77 ms a 30-40 ms). Extrapolado a una Vega 7, unas tres veces más rápida, eso son 60 fps estables.
 - Desaparecen los tirones al entrar por primera vez en cada zona: tras levantar el velo, ningún fotograma supera los 120 ms en un recorrido completo con rueda rápida y saltos por teclas, medido en la integrada de referencia. Esta es la puerta dura.
 - El coste de JS del hilo principal por fotograma no supera los 4 ms en este PC (hoy 1,1-2,2 ms).
-- La carga (velo) crece como mucho 3 s en la integrada de referencia (orientativo) y 1,0 s en la RTX 5090 (enmienda, §11; antes 0,5 s). Si en la referencia no caben la carga y los tirones a la vez, manda la navegación: se acepta hasta +4 s de carga en la referencia (≈ +1,5 s en una Vega 7) siempre que la barra del velo siga avanzando.
+- La carga (velo) crece como mucho 3 s en la integrada de referencia (orientativo) y 0,5 s en la RTX 5090. Si en la referencia no caben la carga y los tirones a la vez, manda la navegación: se acepta hasta +4 s de carga en la referencia (≈ +1,5 s en una Vega 7) siempre que la barra del velo siga avanzando.
 - `?debug`, `?debug&nobake`, el movimiento reducido, la versión estática y la publicación en GitHub Pages siguen funcionando igual.
 
 No objetivos (quedan fuera, decidido con la usuaria):
@@ -79,7 +79,7 @@ Carga: lista en 2,7-3,3 s; incluye una tarea larga síncrona de 1,5-1,6 s (gener
 1. Píxeles idénticos siempre (tolerancia de redondeo de §7.1). Sin escalones automáticos de calidad.
 2. Se elimina la degradación automática que ya existe en `src/main.js` (líneas 483-494: tras 2,5 s de fotogramas lentos baja el DPR a 1 y el bloom a 0,16). Se deriva de la decisión 1: hoy ya cambia píxeles en máquinas lentas, y en la integrada de referencia saltaría siempre y falsearía las medidas. Decisión del diseño; la usuaria la revisa al leer este documento.
 3. Un solo pase de escena. Las luces por fragmento se inyectan en clones de material (§6.3), no en pases de render por capas (ver §3, resolve por pase).
-4. Alcance: fragmentos y luces por fragmento (§6.1-6.3), compilación en paralelo de todas las variantes (§6.4), calentamiento bajo el velo (§6.5), verificación (§7). Nada más.
+4. Alcance: fragmentos y luces por fragmento (§6.1-6.3), compilación en paralelo de todas las variantes (§6.4), calentamiento bajo el velo (§6.5), ritmo de la GPU (§6.7; enmienda, §11), verificación (§7). Nada más.
 5. Si una parte no supera la verificación 7.1 por redondeo (no por error lógico), esa parte vuelve a su forma exacta (por ejemplo, el agua entera con todas las luces) y el resto se entrega. La tolerancia no se relaja más de lo que fija §7.1.
 
 ## 6. Diseño técnico
@@ -141,7 +141,7 @@ Antes del primer fotograma, y bajo el velo, se compila en paralelo (`KHR_paralle
 
 ### 6.5 Calentamiento bajo el velo
 
-Tras compilar, y antes de poner `is-ready`, se renderizan a través del compositor, a tamaño mínimo (orientación: 64×36 px, sin cambiar `pixelRatio`), unos 14 encuadres: los ocho anclajes (`tl.anchors`, portada en p = 0), las marcas `tl.marks.sim` y `tl.marks.conn`, y los tramos de vuelo 0,2525, 0,512, 0,668 y 0,915. En cada uno se coloca la cámara con `sample`, se fijan simulación y conexiones al valor del capítulo y se llama a `world.update` con el estado narrativo correspondiente para que cada pantalla viva se dibuje al menos una vez. Después se restaura el tamaño (`layout()`) y se dejan simulación y conexiones a 0.
+Tras compilar, y antes de poner `is-ready`, se renderizan a través del compositor, a tamaño mínimo (orientación: 64×36 px, sin cambiar `pixelRatio`), unos 14 encuadres: los ocho anclajes (`tl.anchors`, portada en p = 0), las marcas `tl.marks.sim` y `tl.marks.conn`, y los tramos de vuelo 0,2525, 0,512, 0,668 y 0,915. En cada uno se coloca la cámara con `sample` y se fijan simulación y conexiones al valor del encuadre (las dos son funciones puras de su valor). No se llama a `world.update` (enmienda, §11): las estaciones guardan estado entre fotogramas (pantallas vivas que solo se redibujan al cambiar su lectura, contadores, la baliza y la cinta del reciclaje, el desplazamiento de las trazas, el guion del taller) y lo que dejara el calentamiento se vería en la primera visita; con movimiento reducido, ese estado no se vuelve a escribir nunca. Después se dejan simulación y conexiones a 0 y la apertura de la cámara en su valor inicial, se pide regenerar el mapa de sombras y se restaura el tamaño (`layout()`). El primer encuadre genera el mapa de sombras con el mundo tal como sale de `buildWorld` (así compila y estrena sus materiales bajo el velo), y el primer fotograma real lo vuelve a generar después de su `world.update`, como sin calentamiento. El calentamiento se hace también con movimiento reducido: no deja nada visible. Las texturas de las pantallas vivas se suben durante la compilación (§6.4); sus redibujos siguen ocurriendo al visitarlas, como antes de este diseño.
 
 Esto obliga al driver a hacer en la carga todo lo que hoy hace la primera vez que un programa, un estado o una textura entran en cuadro (los picos de 570-605 ms de §4). No toca el DOM de los capítulos. La barra del velo debe seguir avanzando durante compilación y calentamiento (hoy se anima sola; basta con que el hilo principal no se bloquee más de unos 100 ms seguidos, que es lo que dan `compileAsync` y los fotogramas pequeños). Si el calentamiento se come el presupuesto de carga, se recortan primero los tramos de vuelo y nunca los anclajes, y se mide de nuevo el objetivo de tirones (§2): la navegación manda.
 
@@ -176,13 +176,15 @@ El mundo es determinista entre cargas (los generadores usan semillas; `groundTex
 
 ### 7.2 Rendimiento
 
-Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.mjs`, `sweep.mjs`, `gpuinfo.mjs`, `perfprobe.mjs`, hoy en `C:\Users\yamil\.claude\jobs\7b9bc624\tmp\`) se copian a `.verify/perf/` y se documenta su uso en `.verify/brief.md`. Se ejecutan contra `vite preview` del build `antes` y `después`, en la RTX 5090 y en la integrada (`CHROME_EXTRA="--use-adapter-luid=0,113510"`). Criterios: los de §2 (−45 % de GPU por anclaje en la integrada, ningún fotograma > 120 ms tras el velo, JS ≤ 4 ms, carga ≤ +3 s orientativo y ≤ +4 s duro en la referencia, ≤ +1,0 s en la 5090). Con el ritmo de §6.7 un rAF puede no dibujar, así que `perfprobe.mjs` mide los dos intervalos: entre rAF (`frames`) y entre fotogramas dibujados (`renders`, cuando cambia `renderer.info.render.frame`); la puerta de tirones exige que ninguno de los dos pase de 120 ms (enmienda, §11). Los números finales se recogen en el README (sección de rendimiento) con la fecha.
+Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.mjs`, `sweep.mjs`, `gpuinfo.mjs`, `perfprobe.mjs`, hoy en `C:\Users\yamil\.claude\jobs\7b9bc624\tmp\`) se copian a `.verify/perf/` y se documenta su uso en `.verify/brief.md`. Se ejecutan contra `vite preview` del build `antes` y `después`, en la RTX 5090 y en la integrada (`CHROME_EXTRA="--use-adapter-luid=0,113510"`). Criterios: los de §2 (−45 % de GPU por anclaje en la integrada, ningún fotograma > 120 ms tras el velo, JS ≤ 4 ms, carga ≤ +3 s orientativo y ≤ +4 s duro en la referencia, ≤ +0,5 s en la 5090). Con el ritmo de §6.7 un rAF puede no dibujar, así que `perfprobe.mjs` mide los dos intervalos: entre rAF (`frames`) y entre fotogramas dibujados (`renders`, cuando cambia `renderer.info.render.frame`); la puerta de tirones exige que ninguno de los dos pase de 120 ms (enmienda, §11). Los números finales se recogen en el README (sección de rendimiento) con la fecha.
 
 ### 7.3 Regresiones funcionales
 
 `node harness.mjs info|clearance|motion`, `node navprobe.mjs`, `node consoleprobe.mjs` (cero errores y avisos en consola), `reducedprobe.mjs`, la versión estática y las capturas de móvil deben dar lo mismo que hoy. `?debug&nobake` sigue listando colliders y piezas. `__ecobat.debug.checkLights()` devuelve cero violaciones en los 14 encuadres de 7.1.
 
 El cambio de tamaño después del calentamiento lo comprueba `.verify/perf/resizeprobe.mjs` con la maquinaria de captura repetible de 7.1: en p = 0,302 captura a 1440×810, pasa a 1280×720, vuelve a 1440×810, y compara la vuelta con la ida y la de 1280×720 con la captura de una carga directa a ese tamaño. En esta última se excluye la caja de la píldora de atajos (`.keys`), que tras cambiar de tamaño sale 1 px más alta por redondeo del DOM también en el build `antes`; la secuencia entera, sin excluir nada, es idéntica a la del build `antes` con el mismo cambio de tamaño (enmienda, §11).
+
+La primera visita la comprueba `.verify/perf/firstvisit.mjs`, porque las capturas de 7.1 neutralizan a propósito el historial de arranque (pasada previa y mapa de sombras regenerado): con movimiento reducido, una carga nueva por capítulo, salto directo con `goTo` y captura, sin pasadas previas. Con movimiento reducido el resultado no depende del reloj, así que los ocho capítulos deben salir idénticos a los del build `antes` (criterio de 7.1) a 1440×810, 1280×720 y 390×844, también con `?debug` (enmienda, §11).
 
 ## 8. Riesgos y mitigaciones
 
@@ -195,6 +197,7 @@ El cambio de tamaño después del calentamiento lo comprueba `.verify/perf/resiz
 - Coste de CPU de subir uniformes: los arrays por fragmento son más cortos que los globales de hoy; medir JS por fotograma en este PC y escalar ×2 para un 5500G; límite 4 ms.
 - Encadenado con `uplit`: el clon debe llamar al `onBeforeCompile` original antes de inyectar; la clave de programa debe incluir ambas partes. Verificado que `uplit` no toca `lights_fragment_begin` ni `lights_pars_begin`.
 - Picos del driver no cubiertos por el calentamiento (por ejemplo, el primer uso a tamaño real del destino MSAA): ocurren en el primer fotograma real, aún bajo el velo, porque `is-ready` se pone después de ese fotograma.
+- Estado de las estaciones durante la carga: el calentamiento no llama a `world.update` (§6.5). Cualquier paso nuevo de la carga que cambie el estado de una estación debe pasar la comprobación de primera visita de §7.3.
 - Ritmo de la GPU (§6.7): si el navegador tardara en dar por señalada una valla, se dibujarían menos fotogramas, nunca fotogramas distintos. En la 5090 se dibujan 9 010 de 9 031 rAF del recorrido de `perfprobe.mjs` (sin ventana, a unos 200 rAF por segundo) y las llamadas de dibujo por fotograma no cambian.
 
 ## 9. Lo que queda al constructor
@@ -243,16 +246,17 @@ Medidas en la integrada de referencia, en ms de GPU por fotograma (mediana, 1920
   - Relleno: `LIGHT_CLASSES` en `src/world/world.js`. Menos clases dan menos programas y más GPU.
   - Agua: dar todas las luces locales al fragmento `agua`.
 
-## 11. Enmienda del 2026-10-22 (tarea 8): ritmo de la GPU, carga en la 5090 y compilación del bloom
+## 11. Enmienda del 2026-10-22 (tarea 8): ritmo de la GPU, calentamiento sin estado y compilación del bloom
 
-Con el calentamiento de §6.5 tal cual, la puerta dura de §2 (ningún fotograma de más de 120 ms tras el velo en la integrada de referencia) seguía en rojo, y el remedio previsto (añadir encuadres de calentamiento) no la movía. La implementación añade el ritmo de la GPU (§6.7), sube el límite de carga en la 5090 por decisión de la usuaria transmitida en el encargo de la tarea y compila el bloom en paralelo. **Aprobada** por decisión del ejecutor autónomo, con la autorización general de la usuaria; todo conserva los píxeles idénticos (42 capturas de §7.1 en verde).
+Con el calentamiento de §6.5 tal como estaba escrito, dos objetivos del diseño no se cumplían. La puerta dura de §2 (ningún fotograma de más de 120 ms tras el velo en la integrada de referencia) seguía en rojo, y el remedio previsto (añadir encuadres de calentamiento) no la movía. Y la llamada a `world.update` en cada encuadre dejaba estado en las estaciones que se veía en la primera visita a los capítulos: con movimiento reducido, que nunca lo vuelve a escribir, 7 de 8 capítulos salían distintos de los del build `antes`. La implementación añade el ritmo de la GPU (§6.7), calienta sin tocar el estado de las estaciones (§6.5) y compila el bloom en paralelo (§6.4). La enmienda la hizo el ejecutor autónomo con la delegación general de la usuaria; todo conserva los píxeles idénticos (42 capturas de §7.1 y primera visita de §7.3). El límite de carga en la RTX 5090 sigue siendo +0,5 s (§2).
 
 | Punto | Texto anterior | Enmienda |
 |---|---|---|
 | Tirones (§6.5, §6.7) | El calentamiento adelanta los primeros usos; si quedan tirones, más encuadres | Además, como mucho dos fotogramas en vuelo en la GPU (§6.7) |
-| Carga en la 5090 (§2, §7.2) | ≤ +0,5 s | ≤ +1,0 s |
+| Calentamiento (§6.5) | `world.update` con el estado narrativo de cada encuadre, para que cada pantalla viva se dibuje una vez | Sin `world.update`: cámara, simulación y conexiones; después, apertura de la cámara restaurada y mapa de sombras regenerado en el primer fotograma real; también con movimiento reducido |
 | Compilación (§6.4) | Bloom, salida y sombras en el primer fotograma del calentamiento | Bloom con `compileAsync`, en paralelo con el mundo; texturas subidas durante la compilación |
 | Medida de tirones (§7.2) | Intervalos entre rAF | Entre rAF y entre fotogramas dibujados |
+| Primera visita (§7.3) | Sin comprobación propia (las capturas de §7.1 neutralizan a propósito el historial de arranque) | `firstvisit.mjs`: con movimiento reducido, carga nueva por capítulo y salto directo, contra `antes` |
 
 Medidas en la integrada de referencia (`perfprobe.mjs`, 1920×1080, fase posterior al velo):
 
@@ -262,22 +266,32 @@ Medidas en la integrada de referencia (`perfprobe.mjs`, 1920×1080, fase posteri
 | Tarea 7 | 8 | 156 ms | — | — | 3 182 |
 | Tarea 7 + calentamiento de 14 encuadres | 7 | 148 ms | 5 | 144 ms | 3 377-3 538 |
 | Ídem con 115 encuadres (uno cada 0,01 de p; experimento) | 6 | 164 ms | — | — | 4 324 |
-| Entregado: calentamiento + ritmo (cinco pasadas; tres con el contador de dibujados) | 0 | 66-75 ms | 0 | 102-105 ms | 3 242-3 306 |
+| Calentamiento con `world.update` + ritmo (cinco pasadas; tres con el contador de dibujados) | 0 | 66-75 ms | 0 | 102-105 ms | 3 242-3 306 |
+| Entregado: calentamiento sin estado + ritmo (dos pasadas) | 0 | 71-74 ms | 0 | 85-101 ms | 3 366-3 503 |
 
 - Causa de los tirones que quedaban, según trazas de Chrome con categorías de GPU: Chrome entrega a veces de dos a cinco rAF seguidos (a 3-12 ms) y cada uno encarga un fotograma de 30-50 ms de GPU; el hilo principal de la GPU se queda bloqueado en `DXGISwapChainImageBacking::Present` (85-137 ms) o en la ejecución de los comandos WebGL (96 ms) mientras vacía la cola. Se repiten en cada pasada por el mismo tramo (rueda rápida, lenta y teclas), así que no son primeros usos.
 - Fotogramas en vuelo (tramo de rueda lenta desde p = 0,22, consultas de tiempo de GPU): sin límite, 30,8 fotogramas dibujados por segundo con la GPU ocupada el 96 %, pero 135 dibujados a menos de 8 ms del anterior (no llegan a verse) y un máximo de 165 ms; con dos (entregado), 29,8 por segundo, 93 % y un máximo de 73 ms. Con uno y con tres (medidos en la variante que saltaba el rAF entero, abajo): con uno no hay ráfagas, pero la GPU espera entre fotogramas (25,9 por segundo y 81 %); con tres vuelven las ráfagas (50) y 17 intervalos de 67-100 ms.
 - Saltarse el rAF entero cuando la GPU va llena daba un resultado parecido en la integrada (30,6 por segundo, máx. 49 ms), pero hacía que el `dt` dependiera de la GPU: con tiempo virtual, la captura de móvil del laboratorio (390×844, dsf 3, p = 0,4134) dejó de ser repetible (máx. 50 y 78/255 en dos pasadas, en una pantalla viva). Por eso el estado avanza en cada rAF y solo se salta el render.
 - En la 5090 no cambia nada visible: se dibujan 9 010 de 9 031 rAF de `perfprobe.mjs` (sin ventana, unos 200 por segundo), y `harness.mjs info` da las mismas 594 llamadas de dibujo que la tarea 7.
 - Efecto secundario: con el ritmo, en una máquina limitada por la GPU el rAF sigue al ritmo de la pantalla, así que la degradación automática de `main.js` (que salta tras 2,5 s de rAF de más de 1/38 s) casi nunca se activa. Va en la dirección de la decisión 2, que la tarea 9 cumple quitándola.
+- Con la usuaria jugando en la 5090 de la misma máquina (procesador y memoria compartidos con la integrada), las dos versiones del calentamiento dan 2 rAF de más de 120 ms por pasada, en sitios distintos cada vez (máx. 216-233 ms), y la carga sube entre 250 y 650 ms; esas pasadas no cuentan como medida.
 
-Carga (mediana de tres cargas en frío, cada una con un Chrome nuevo; marcas `eb:*`):
+Calentamiento sin estado (§6.5). Medidas en la RTX 5090, 1440×810 salvo que se diga otra cosa:
 
-| | `antes` | Tarea 7 | Entregado |
+- Primera visita con movimiento reducido (`firstvisit.mjs`, una carga nueva por capítulo): con `world.update` en el calentamiento, solo el capítulo 2 sale igual que en `antes`. En la portada, máx. 144/255 y 219 píxeles de más de 8/255: las trazas, con la textura desplazada, y la baliza del reciclaje, que se queda en 0,61 de intensidad en vez de 1,1. En el capítulo 3, máx. 215 y 4 779 píxeles: las pantallas del laboratorio, dibujadas por el calentamiento («11,8 V»), frente a «0,0 V» en `antes`. Además, c4 máx. 182 (1 220 píxeles), c7 máx. 17 (150) y c1, c5 y c6 máx. 5-7 con píxeles agrupados. Sin `world.update`, los 8 capítulos salen idénticos (máx. 1/255), también a 1280×720, a 390×844 y con `?debug`, y con el tiempo virtual de `--vt`. Dos cargas de `antes` dan máx. 0.
+- Primera visita sin movimiento reducido y sin pasada previa (`harness.mjs shots --vt --snap --settle 4000`, sin `--warm` ni `--rebake`, 14 encuadres): dos cargas de `antes` ya difieren entre sí en 5 encuadres (a0, a4, a5, a7 y t4: la cinta del reciclaje y lo que se coloca con el reloj del primer fotograma). Con `world.update` en el calentamiento difieren además a1 (máx. 112) y a3 (máx. 59), por pantallas dibujadas durante el calentamiento. Sin `world.update` difieren los mismos 5 que entre dos cargas de `antes`.
+- Tirones y carga: sin cambio medible frente al calentamiento con `world.update` (tabla de arriba y carga, abajo). En cargas alternas en la 5090, mediana de 3 221 ms con `world.update` y de 3 194 ms sin él.
+- Descartado: saltarse el calentamiento con movimiento reducido (`if (!reduced) await warmUp()`). También da 8 de 8 en la primera visita con movimiento reducido, pero deja el estado en el modo normal (a1 y a3, arriba) y también en quien active el movimiento reducido con la página ya cargada, y deja a esos visitantes sin calentamiento.
+- Descartado: recortar los cuatro tramos de vuelo del calentamiento (el retroceso de §6.5 si la carga no cabe). Casi todo el calentamiento es su primer encuadre (un bloqueo de unos 360 ms en la 5090: el mapa de sombras, los materiales de sombra y de salida y la primera subida de la geometría, que antes pagaba el primer fotograma); con 10 encuadres en vez de 14, la fase baja de 393 a 383 ms (mediana de cinco cargas alternas).
+
+Carga (mediana de tres cargas en frío, cada una con un Chrome nuevo; marcas `eb:*`; máquina en reposo):
+
+| | `antes` | Tarea 7 | Calentamiento con `world.update` |
 |---|---|---|---|
 | RTX 5090 | 2 653 ms | 2 993 ms | 3 026 ms |
 | Integrada de referencia | 2 838 ms | 3 135 ms | 3 207 ms |
 
-- Puerta de §2 con las sondas del plan: en la 5090, `readyMs` de 3 001, 3 042 y 3 182 ms en tres pasadas de `perfprobe.mjs`, frente a 2 636 de `gpu-antes-5090.json`: de +365 a +546 ms. Con el límite anterior de +0,5 s, la tercera pasada lo habría superado; casi todo el coste es de la tarea 7 (104 programas frente a 50; §10). En la integrada, de 3 242 a 3 306 ms frente a 2 994: de +248 a +312 ms (límites +3 s orientativo y +4 s duro).
+- Puerta de §2 en la 5090 (+0,5 s). Con la sonda del plan (`perfprobe.mjs` frente a los 2 636 ms de `gpu-antes-5090.json`, medidos el 2026-10-21 con la máquina en reposo), el calentamiento con `world.update` dio 3 001, 3 042 y 3 182 ms (+365, +406 y +546), y en la revisión de la tarea, 3 037 ms (+401) y cinco pares de cargas alternas de +276 a +437 ms (mediana +372). El calentamiento sin estado no cambia la carga: en cargas alternas de la misma sesión, mediana de 3 221 ms con `world.update` y de 3 194 ms sin él. Con la máquina ocupada (la usuaria jugando o retransmitiendo con codificación de vídeo en la 5090) todo tarda más, también `antes` (de 2 745 a 3 009 ms), y `perfprobe.mjs` da de 3 272 a 3 539 ms; frente a `antes` en la misma sesión, la mediana de 11 pares de cargas alternas es +407 ms (de +320 a +620; 2 pares por encima de +500), y `perfprobe.mjs` alterno da +418 y +508. Casi todo el coste es de la tarea 7 (104 programas frente a 50; §10) y del primer encuadre del calentamiento, un bloqueo de unos 360 ms (mapa de sombras, materiales de sombra y de salida, primera subida de la geometría) que en `antes` pagaba el primer fotograma en unos 250 ms. En la integrada, de 3 366 a 3 503 ms frente a 2 994 (de +372 a +509; límites +3 s orientativo y +4 s duro).
 - La compilación del bloom en paralelo y la subida de texturas durante la compilación acortan el calentamiento de 423 a 364 ms en la 5090 y de 381 a 258 ms en la integrada (medianas); su bloqueo más largo del hilo principal baja de unos 300 a unos 180 ms en la integrada. La carga total gana de 10 a 40 ms.
 - Observación, sin cambio: en la integrada, mientras dura `compileAsync` la página no recibe fotogramas durante 600-700 ms (en la 5090 no pasa), así que la barra del velo se detiene ese rato. Ya pasaba antes de esta tarea (600 ms en el build de la tarea 7).
 
@@ -286,6 +300,7 @@ Cambio de tamaño (punto de revisión 1): `resizeprobe.mjs` da la vuelta a 1440�
 Cómo deshacer cada parte:
 
 - Ritmo de la GPU: en `src/main.js`, quitar `MAX_IN_FLIGHT`, `inFlight` y `gpuBusy()`, la condición `&& !gpuBusy()` del render de `frame()` y las dos líneas de la valla. Los píxeles no cambian; la puerta de tirones vuelve a fallar (7 rAF de más de 120 ms, máx. 148).
+- Calentamiento sin estado: en `renderAt` (`src/main.js`), volver a llamar a `world.update(0, 1 / 60, { index, vis, local, p, sim, route, conn, reduced: false })` con `chapterState(tl, p)`, y quitar de `warmUp()` la restauración de la apertura y la regeneración del mapa de sombras. Entonces hay que saltarse el calentamiento con movimiento reducido (`if (!reduced) await warmUp();`), y la primera visita sin movimiento reducido vuelve a diferir de `antes` en a1 y a3 (arriba).
 - Compilación del bloom y subida de texturas: en el `try` de la compilación de `src/main.js`, dejar solo `await renderer.compileAsync(scene, camera)`. Los píxeles no cambian; la carga sube de 10 a 40 ms.
-- Límite de carga en la 5090: volver a +0,5 s en §2 y §7.2. Para recuperar margen, recortar los cuatro tramos de vuelo del calentamiento (el retroceso del plan) o reducir programas (`LIGHT_CLASSES`, §10).
 - Medida de dibujados en `perfprobe.mjs`: son campos nuevos (`renders`, `rhist`, `nRenders`); los de siempre no cambian.
+- Primera visita: `firstvisit.mjs` es una sonda nueva; no cambia nada del build.
