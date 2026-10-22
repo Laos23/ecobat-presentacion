@@ -12,17 +12,25 @@ import * as THREE from 'three';
 // focos de `lights_fragment_begin` recorren los arrays globales `pointLights` y `spotLights`. El clon de un
 // fragmento declara arrays propios, `uChunkPoint` y `uChunkSpot`, con los mismos tipos de struct que three (para
 // llamar tal cual a `getPointLightInfo` y `getSpotLightInfo`), y sustituye `#include <lights_fragment_begin>` por
-// el texto del chunk con dos cambios en cada bucle y nada más: el límite pasa a un literal (el número de luces del
-// fragmento) y cada luz se lee del array propio. Con 0 luces de un tipo, su bloque se quita entero (GLSL no admite
+// el texto del chunk con tres cambios en cada bucle y nada más: el límite pasa a un literal (el número de luces del
+// fragmento), cada luz se lee del array propio y su aporte (`RE_Direct`) solo se suma donde llega
+// (`if ( directLight.visible )`, ver más abajo). Con 0 luces de un tipo, su bloque se quita entero (GLSL no admite
 // arrays de tamaño 0). Las guardas `#if ( NUM_… > 0 )`, los `#pragma unroll_loop` y los bloques de sombras y mapas
 // de foco se quedan como están: three resuelve los includes, sustituye NUM_* y desenrolla los bucles después de
 // `onBeforeCompile`, así que el literal y los pragmas funcionan igual que en el chunk original. Los arrays
 // globales quedan declarados pero sin uso: el compilador los elimina y three no los sube.
 // Es exacto solo si ninguna luz local proyecta sombra ni lleva mapa (three las ordenaría delante y las sombras y
 // mapas van por posición en el array): `createChunkLightState` lo exige.
+// La guarda es la regla de los fragmentos (chunks.js) llevada a cada píxel: `getPointLightInfo` y `getSpotLightInfo`
+// ponen `visible = ( color != vec3( 0.0 ) )` (o false, con color 0, fuera del cono), y con color 0 todo lo que suma
+// `RE_Direct_Physical` va multiplicado por `dotNL * color` (o `dotNLcc * color`), un cero exacto por términos
+// finitos: saltarse la llamada deja la misma suma, bit a bit. Solo cambia el trabajo: la GPU no evalúa el BRDF de
+// una luz en los píxeles a los que no llega (más allá de `distance` o fuera del cono).
 
 const PARS = '#include <lights_pars_begin>';
 const BEGIN = '#include <lights_fragment_begin>';
+const RE_CALL = 'RE_Direct( directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );';
+const GUARDED_CALL = `if ( directLight.visible ) { ${RE_CALL} }`;
 const LOOPS = [
   { type: 'PointLight', array: 'uChunkPoint', num: 'NUM_POINT_LIGHTS', block: '#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )', loop: 'for ( int i = 0; i < NUM_POINT_LIGHTS; i ++ )', pick: 'pointLight = pointLights[ i ];', own: 'pointLight = uChunkPoint[ i ];' },
   { type: 'SpotLight', array: 'uChunkSpot', num: 'NUM_SPOT_LIGHTS', block: '#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )', loop: 'for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ )', pick: 'spotLight = spotLights[ i ];', own: 'spotLight = uChunkSpot[ i ];' },
@@ -53,10 +61,9 @@ function replaceIncludeOnce(text, include, replacement) {
 const IF_LINE = /^#\s*if(n?def)?\b/; // #if, #ifdef, #ifndef
 const ENDIF_LINE = /^#\s*endif\b/;
 
-// Quita de `text` el bloque de preprocesador que abre la línea que empieza (sangría aparte) por `startLine`, que
-// debe ser única, hasta su `#endif` emparejado inclusive, contando los `#if`, `#ifdef` e `#ifndef` anidados.
-export function cutBlock(text, startLine) {
-  const lines = text.split('\n');
+// Líneas [start, end] del bloque de preprocesador que abre la línea que empieza (sangría aparte) por `startLine`, que
+// debe ser única, hasta su `#endif` emparejado, contando los `#if`, `#ifdef` e `#ifndef` anidados.
+function findBlock(lines, startLine) {
   const starts = [];
   lines.forEach((line, i) => line.trimStart().startsWith(startLine) && starts.push(i));
   if (starts.length !== 1) throw new Error(`chunkLights: se esperaba una línea «${startLine}» y hay ${starts.length}`);
@@ -66,12 +73,26 @@ export function cutBlock(text, startLine) {
   for (let i = start; i < lines.length; i++) {
     const line = lines[i].trimStart();
     if (IF_LINE.test(line)) depth++;
-    else if (ENDIF_LINE.test(line) && --depth === 0) {
-      lines.splice(start, i - start + 1);
-      return lines.join('\n');
-    }
+    else if (ENDIF_LINE.test(line) && --depth === 0) return { start, end: i };
   }
   throw new Error(`chunkLights: el bloque «${startLine}» no se cierra`);
+}
+
+// Quita de `text` el bloque de preprocesador que abre la línea que empieza (sangría aparte) por `startLine`, que
+// debe ser única, hasta su `#endif` emparejado inclusive, contando los `#if`, `#ifdef` e `#ifndef` anidados.
+export function cutBlock(text, startLine) {
+  const lines = text.split('\n');
+  const { start, end } = findBlock(lines, startLine);
+  lines.splice(start, end - start + 1);
+  return lines.join('\n');
+}
+
+// Sustituye `needle` por `replacement` dentro del bloque que abre `startLine` (debe aparecer en él una sola vez).
+function replaceInBlock(text, startLine, needle, replacement) {
+  const lines = text.split('\n');
+  const { start, end } = findBlock(lines, startLine);
+  const block = replaceOnce(lines.slice(start, end + 1).join('\n'), needle, replacement);
+  return [...lines.slice(0, start), block, ...lines.slice(end + 1)].join('\n');
 }
 
 // Texto de `lights_fragment_begin` con los bucles de Kp puntuales y Ks focos propios (uno por pareja, en caché).
@@ -84,7 +105,12 @@ function lightsFragmentBegin(Kp, Ks) {
     [Kp, Ks].forEach((K, t) => {
       const L = LOOPS[t];
       if (occurrences(chunk, L.block) !== 1) throw new Error(`chunkLights: se esperaba una vez «${L.block}» y aparece ${occurrences(chunk, L.block)}`);
-      chunk = K > 0 ? replaceOnce(replaceOnce(chunk, L.loop, `for ( int i = 0; i < ${K}; i ++ )`), L.pick, L.own) : cutBlock(chunk, L.block);
+      if (K === 0) {
+        chunk = cutBlock(chunk, L.block);
+        return;
+      }
+      chunk = replaceOnce(replaceOnce(chunk, L.loop, `for ( int i = 0; i < ${K}; i ++ )`), L.pick, L.own);
+      chunk = replaceInBlock(chunk, L.block, RE_CALL, GUARDED_CALL);
     });
     beginCache.set(key, chunk);
   }

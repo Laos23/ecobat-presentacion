@@ -5,7 +5,9 @@ import * as THREE from 'three';
 import { cutBlock, injectChunkLights, createChunkLightState, createMaterialFactory } from '../src/world/chunkLights.js';
 
 const once = (s, needle) => s.split(needle).length - 1;
-const base = () => ({ fragmentShader: '#include <common>\n#include <lights_pars_begin>\n#include <lights_fragment_begin>\n', uniforms: {} });
+const RE_CALL = 'RE_Direct( directLight, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight );';
+const GUARDED = `if ( directLight.visible ) { ${RE_CALL} }`;
+const base =() => ({ fragmentShader: '#include <common>\n#include <lights_pars_begin>\n#include <lights_fragment_begin>\n', uniforms: {} });
 
 test('cutBlock quita un bloque con #if anidados', () => {
   const t = 'a\n#if X\n#ifdef Y\nb\n#endif\nc\n#endif\nd\n';
@@ -97,10 +99,13 @@ test('con K igual al número de luces de la escena, el sombreador final es el de
     const sh = { fragmentShader: original, uniforms: {} };
     injectChunkLights(sh, 5, 11);
     const out = preprocess(sh.fragmentShader);
-    // las únicas diferencias: las dos declaraciones y el nombre del array del que se lee cada luz
+    // las únicas diferencias: las dos declaraciones, el nombre del array del que se lee cada luz y la guarda que solo
+    // suma cada luz del fragmento donde llega (tarea 7): una por luz propia, ninguna en las direccionales
     const decl = '\n#if 5 > 0\nuniform PointLight uChunkPoint[5];\n#endif\n#if 11 > 0\nuniform SpotLight uChunkSpot[11];\n#endif';
     assert.equal(once(out, decl), 1);
-    const back = out.replace(decl, '').replaceAll('uChunkPoint[', 'pointLights[').replaceAll('uChunkSpot[', 'spotLights[');
+    assert.equal(once(out, GUARDED), 5 + 11);
+    assert.equal(once(out, RE_CALL), 5 + 11 + 2);
+    const back = out.replace(decl, '').replaceAll(GUARDED, RE_CALL).replaceAll('uChunkPoint[', 'pointLights[').replaceAll('uChunkSpot[', 'spotLights[');
     assert.equal(back, preprocess(original));
     // bucles desenrollados: cada luz se lee una vez de su posición del array propio
     for (let i = 0; i < 5; i++) assert.equal(once(out, `pointLight = uChunkPoint[ ${i} ];`), 1);
@@ -293,4 +298,42 @@ test('materialFor con estado: sin compilador propio la clave solo depende de K y
   assert.equal(once(sh3.fragmentShader, 'uChunk'), 0);
   assert.deepEqual(sh3.uniforms.uChunkPoint.value, []);
   assert.deepEqual(c.userData.chunkLights, []);
+});
+
+// ---------- Pruebas añadidas en la tarea 7 ----------
+
+test('inyección: cada luz del fragmento solo se suma donde llega (directLight.visible); sol y direccionales, siempre', () => {
+  const sh = base();
+  injectChunkLights(sh, 1, 2);
+  const f = sh.fragmentShader;
+  // una guarda por bucle propio (antes de desenrollar), dentro de su bloque y detrás de leer la luz
+  assert.equal(once(f, GUARDED), 2);
+  const point = f.indexOf('pointLight = uChunkPoint[ i ];');
+  const spot = f.indexOf('spotLight = uChunkSpot[ i ];');
+  const sun = f.indexOf('#if ( NUM_SUN_LIGHTS > 0 )');
+  assert.ok(point < f.indexOf(GUARDED) && f.indexOf(GUARDED) < spot);
+  assert.ok(spot < f.lastIndexOf(GUARDED) && f.lastIndexOf(GUARDED) < sun);
+  // las demás llamadas (sol, direccionales) quedan como en three
+  assert.equal(once(f, RE_CALL), once(THREE.ShaderChunk.lights_fragment_begin, RE_CALL));
+  assert.equal(once(f.slice(sun), GUARDED), 0);
+  // sin luces de un tipo, su bloque y su guarda desaparecen
+  const sp = base();
+  injectChunkLights(sp, 0, 3);
+  assert.equal(once(sp.fragmentShader, GUARDED), 1);
+});
+test('la guarda es la marca con la que three señala una luz que no aporta nada', () => {
+  // getPointLightInfo y getSpotLightInfo ponen visible = ( color != vec3( 0.0 ) ), o false con color 0 fuera del cono
+  const pars = THREE.ShaderChunk.lights_pars_begin;
+  assert.equal(once(pars, 'light.visible = ( light.color != vec3( 0.0 ) );'), 2);
+  assert.equal(once(pars, 'light.color = vec3( 0.0 );\n\t\t\tlight.visible = false;'), 1);
+  // y todo lo que suma RE_Direct_Physical va multiplicado por la irradiancia (dotNL * color) o la del barniz
+  // (dotNLcc * color): con color 0 suma ceros exactos (términos finitos), así que saltarse la llamada da la misma suma
+  const physical = THREE.ShaderChunk.lights_physical_pars_fragment;
+  const body = physical.slice(physical.indexOf('void RE_Direct_Physical'), physical.indexOf('void RE_IndirectDiffuse_Physical'));
+  assert.equal(once(body, 'vec3 irradiance = dotNL * directLight.color;'), 1);
+  assert.equal(once(body, 'vec3 ccIrradiance = dotNLcc * directLight.color;'), 1);
+  const sums = body.split('\n').filter((l) => l.includes('+='));
+  assert.ok(sums.length >= 4);
+  for (const line of sums) assert.match(line, /\+= (cc)?[iI]rradiance \*/, line.trim());
+  assert.equal(once(body, 'irradiance *='), 1); // el reparto de energía del brillo (sheen) también escala la irradiancia
 });

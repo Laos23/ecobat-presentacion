@@ -9,7 +9,7 @@ import { buildLab } from './stations/lab.js';
 import { buildJunction } from './stations/junction.js';
 import { buildRecycling } from './stations/recycling.js';
 import { buildHub } from './stations/hub.js';
-import { CHUNK_KEYS, chunkKeyFor, findLightViolations } from './chunks.js';
+import { CHUNK_KEYS, chunkKeyFor, findLightViolations, lightSetForBoxes, padLightClasses, routeBox } from './chunks.js';
 import { createMaterialFactory, createChunkLightState, isLit, drawKeys } from './chunkLights.js';
 
 export { STATIONS };
@@ -145,8 +145,60 @@ function worldBox(o, target) {
   return target;
 }
 
+// Caja en mundo de cada instancia de una instanciada (con su matriz actual): fn(caja, índice). La caja es compartida
+// entre llamadas: clonarla para guardarla.
+function forEachInstanceBox(o, fn) {
+  const g = o.geometry;
+  const local = g.boundingBox || new THREE.Box3().setFromBufferAttribute(g.attributes.position);
+  for (let i = 0; i < o.count; i++) {
+    o.getMatrixAt(i, _iMat);
+    fn(_iBox.copy(local).applyMatrix4(_iMat.premultiply(o.matrixWorld)), i);
+  }
+}
+
+// Luces de `lights` (en su orden) cuya esfera corta la caja, ampliada `margin`, de algún triángulo de la malla en
+// mundo; las que no tienen alcance finito, siempre.
+const _tri = new THREE.Box3();
+const _vtx = new THREE.Vector3();
+function lightsOnTriangles(o, lights, margin) {
+  const pos = o.geometry.attributes.position;
+  const index = o.geometry.index;
+  const n = index ? index.count : pos.count;
+  const spheres = lights.map((l) => (typeof l.distance === 'number' && l.distance > 0 ? new THREE.Sphere(l.getWorldPosition(new THREE.Vector3()), l.distance) : null));
+  const found = spheres.map((sp) => sp === null);
+  let left = found.filter((f) => !f).length;
+  for (let t = 0; t + 2 < n && left > 0; t += 3) {
+    _tri.makeEmpty();
+    for (let k = 0; k < 3; k++) _tri.expandByPoint(_vtx.fromBufferAttribute(pos, index ? index.getX(t + k) : t + k).applyMatrix4(o.matrixWorld));
+    _tri.expandByScalar(margin);
+    for (let i = 0; i < lights.length; i++) {
+      if (!found[i] && _tri.intersectsSphere(spheres[i])) {
+        found[i] = true;
+        left--;
+      }
+    }
+  }
+  return lights.filter((_, i) => found[i]);
+}
+
 // Orden de la lista de fragmentos: islas, agua, dinámico y, al final, lo no previsto.
 const CHUNK_ORDER = [...CHUNK_KEYS, 'agua', 'agua-lejana', 'dinamico', 'resto'];
+
+// Cajas de los fragmentos para sus conjuntos de luces (ver buildWorld): margen de toda caja, margen de los objetos
+// que mueve una estación (en su pose inicial) y tamaño de una batería de la simulación sobre la curva de su ruta.
+const BOX_MARGIN = 0.5;
+const DYNAMIC_MARGIN = 2;
+const BATTERY_MARGIN = 1.5;
+// clases de tamaño de los conjuntos de luces de las islas (padLightClasses): 5 deja el total de programas de
+// sombreado por debajo de 120 (con una clase por isla serían unos 130) añadiendo una sola luz a dos islas
+const LIGHT_CLASSES = 5;
+
+// Nombre de una luz local para la depuración: estación, tipo e índice en la lista global de su tipo.
+function lightLabel(light, points, spots) {
+  let station = '';
+  for (let p = light; p && !station; p = p.parent) station = p.userData.station || '';
+  return light.isSpotLight ? `${station}:foco${spots.indexOf(light)}` : `${station}:puntual${points.indexOf(light)}`;
+}
 
 export function buildWorld(scene, { debug = false } = {}) {
   performance.mark('eb:start');
@@ -402,19 +454,46 @@ export function buildWorld(scene, { debug = false } = {}) {
   const baked = !(debug && typeof location !== 'undefined' && location.search.includes('nobake'));
   const box = new THREE.Box3();
   const center = new THREE.Vector3();
-  const chunkOfMesh = (o) => {
+  // fragmento de una malla con su caja en mundo `b` ya calculada: el agua entera aparte; lo demás, por su centro
+  const chunkOfBox = (o, b) => {
     if (o.userData.waterWhole) return 'agua';
-    worldBox(o, box).getCenter(center);
+    b.getCenter(center);
     return chunkKeyFor(center.x, center.z);
   };
+  const chunkOfMesh = (o) => chunkOfBox(o, worldBox(o, box));
   let chunks = [];
   let checkLights = () => [];
   if (baked) {
-    K.bakeStatic(root, chunkOfMesh);
+    // Cajas en mundo de las piezas iluminadas de cada fragmento (fragmento → Box3[], ya ampliadas BOX_MARGIN), de las
+    // que sale su conjunto de luces: cada pieza fija tal como llega a la fusión, cada instancia de una instanciada y
+    // cada malla que no se fusiona (las que mueve una estación, `ctx.dyn`, ampliadas además DYNAMIC_MARGIN). Los
+    // básicos no cuentan: su color no depende de ninguna luz.
+    const pieces = new Map();
+    const piecesOf = (key) => {
+      if (!pieces.has(key)) pieces.set(key, []);
+      return pieces.get(key);
+    };
+    const addPiece = (key, b) => piecesOf(key).push(b.expandByScalar(BOX_MARGIN));
+    const chunkOfPiece = (o) => {
+      const b = worldBox(o, new THREE.Box3());
+      const key = chunkOfBox(o, b);
+      if (isLit(o.material)) addPiece(key, b);
+      return key;
+    };
+    const merged = new Set(K.bakeStatic(root, chunkOfPiece).children);
     // lo que no se ha fusionado (instanciadas, dinámicas, transparentes) también lleva su fragmento: las diez
     // baterías de la simulación, que recorren varias islas, van a 'dinamico'; el resto, por su caja
     root.updateMatrixWorld(true);
-    tokens.forEach(({ b }) => b.traverse((o) => o.isMesh && (o.userData.chunk = 'dinamico')));
+    const batteries = new Set();
+    tokens.forEach(({ b }) => b.traverse((o) => {
+      if (!o.isMesh) return;
+      o.userData.chunk = 'dinamico';
+      batteries.add(o);
+    }));
+    const isDynamic = (o) => {
+      for (let p = o; p; p = p.parent) if (p.userData.dynamic) return true;
+      return false;
+    };
     const tally = new Map();
     root.traverse((o) => {
       if (!o.isMesh) return;
@@ -424,7 +503,19 @@ export function buildWorld(scene, { debug = false } = {}) {
       const t = tally.get(k);
       t.meshes++;
       if (o.isInstancedMesh) t.instanced++;
+      if (merged.has(o) || !isLit(o.material)) return;
+      piecesOf(k);
+      if (o.isInstancedMesh) forEachInstanceBox(o, (b) => addPiece(k, b.clone()));
+      else {
+        const b = worldBox(o, new THREE.Box3());
+        if (isDynamic(o) && !batteries.has(o)) b.expandByScalar(DYNAMIC_MARGIN);
+        addPiece(k, b);
+      }
     });
+    // 'dinamico': las baterías van de la cola a su plaza por las rutas de SIM (la entrada común y el tramo de su
+    // destino, las curvas de `routeCurves`); a su pose actual (en cola) se suma la caja que barren esas curvas,
+    // ampliada con el tamaño de una batería
+    if (pieces.has('dinamico')) addPiece('dinamico', routeBox(Object.values(routeCurves), 200, BATTERY_MARGIN));
     const rank = (k) => (CHUNK_ORDER.includes(k) ? CHUNK_ORDER.indexOf(k) : CHUNK_ORDER.length);
     chunks = [...tally.values()].sort((a, b) => rank(a.key) - rank(b.key) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     // Cada malla de material iluminado recibe el clon de su material para su fragmento y su tipo (chunkLights.js).
@@ -448,19 +539,45 @@ export function buildWorld(scene, { debug = false } = {}) {
       if (o.isSpotLight) spots.push(o);
       else if (o.isPointLight) points.push(o);
     });
-    // Un estado de luces por fragmento (sus objetos de uniforme), compartido por todos sus clones. De momento cada
-    // fragmento lleva todas las luces locales: el clon recorre las mismas luces que three, en el mismo orden, pero
-    // desde sus propios arrays (chunkLights.js); así se valida el mecanismo sin quitar ninguna luz.
-    const states = new Map();
-    const stateOf = (key) => {
-      if (!states.has(key)) states.set(key, createChunkLightState(points, spots));
-      return states.get(key);
-    };
+    // una luz sin alcance finito llega a todas partes: entra en todos los fragmentos (exacto, más caro)
+    if (debug) {
+      const unbounded = [...points, ...spots].filter((l) => !(typeof l.distance === 'number' && l.distance > 0));
+      if (unbounded.length) console.warn(`buildWorld: ${unbounded.length} luces locales sin alcance (distance <= 0) entran en todos los fragmentos`, unbounded.map((l) => lightLabel(l, points, spots)));
+    }
+    // Conjunto de luces de cada fragmento (regla exacta, chunks.js): las luces locales cuya esfera (centro en la luz,
+    // radio `distance`) corta la caja de alguna de sus piezas, en el orden global. Más allá de `distance` la
+    // atenuación de three vale exactamente 0 y la luz suma un cero exacto, así que quitarla no cambia ningún píxel.
+    // Las cajas de las piezas ajustan más que la que las une: un puente o un acantilado de la isla no le traen las
+    // luces que solo alcanzan el hueco entre sus piezas. El agua entera (fragmento 'agua') es una sola pieza con la
+    // caja del disco: recibe todas las luces que llegan a su plano.
+    const own = [...pieces].map(([key, list]) => {
+      if (key === 'resto') return { key, points, spots };
+      if (key === 'agua-lejana') return { key, points: [], spots: [] };
+      return { key, points: lightSetForBoxes(list, points), spots: lightSetForBoxes(list, spots) };
+    });
+    // Relleno por clases (padLightClasses): cada pareja (nº de puntuales, nº de focos) compila un programa por material,
+    // así que los conjuntos de las islas, que comparten casi todos sus materiales, se igualan a LIGHT_CLASSES clases
+    // añadiendo, detrás de las propias, luces que no las alcanzan (suman un cero exacto). Agua y dinámico usan muy
+    // pocos materiales y se quedan con su conjunto exacto: rellenarlos costaría mucha GPU para ahorrar 1 o 2 programas.
+    const padded = new Map(own.map((e) => [e.key, { points: [...e.points], spots: [...e.spots] }]));
+    padLightClasses(own.filter((e) => CHUNK_KEYS.includes(e.key)), points, spots, LIGHT_CLASSES).forEach((s, key) => padded.set(key, s));
+    // un estado de luces por fragmento (sus objetos de uniforme), compartido por todos sus clones (chunkLights.js)
+    const states = new Map([...padded].map(([key, s]) => [key, createChunkLightState(s.points, s.spots)]));
+    // para la depuración (chunks()): caja que une sus piezas, luces del conjunto (rellenado) y cuántas alcanzan de verdad
+    const reach = new Map(own.map((e) => [e.key, { points: e.points.length, spots: e.spots.length }]));
+    for (const c of chunks) {
+      const s = padded.get(c.key);
+      const b = pieces.has(c.key) ? pieces.get(c.key).reduce((u, x) => u.union(x), new THREE.Box3()) : null;
+      c.box = b && !b.isEmpty() ? { min: b.min.toArray(), max: b.max.toArray() } : null;
+      c.points = s ? s.points.map((l) => lightLabel(l, points, spots)) : [];
+      c.spots = s ? s.spots.map((l) => lightLabel(l, points, spots)) : [];
+      c.reach = reach.get(c.key) || { points: 0, spots: 0 };
+    }
     const cloned = [];
     for (const o of lit) {
       const chunk = o.userData.chunk;
       const kind = kindOf(o);
-      const state = stateOf(chunk);
+      const state = states.get(chunk);
       const clone = factory.materialFor(o.material, chunk, kind, state);
       clone.userData.sortId = sortIds.get(o);
       // los uniformes del fragmento se calculan una vez por fotograma, antes de dibujar la primera de sus mallas
@@ -487,19 +604,33 @@ export function buildWorld(scene, { debug = false } = {}) {
       });
       cloned.push(o);
     }
-    // Comprobación (con ?debug, __ecobat.debug.checkLights()): para cada malla con clon, las luces locales cuya esfera
-    // corta su caja en mundo actual (la de su geometría o, en las instanciadas, la unión de las de sus instancias) y
-    // que no están en el conjunto de su fragmento. Vacía si los conjuntos son correctos. (Una malla que una estación
-    // haya pasado a un material sin luces no cuenta: su color no depende de ninguna.)
+    // Comprobación (con ?debug, __ecobat.debug.checkLights()): para cada malla con clon, las luces locales que no están
+    // en el conjunto de su fragmento y alcanzan su geometría en su pose actual, con el mismo margen BOX_MARGIN de los
+    // conjuntos: primero contra su caja en mundo y, las que la alcanzan, contra cada triángulo (mallas fusionadas, que
+    // son fijas), cada instancia (instanciadas) o la malla entera (las demás, que una estación puede mover). Vacía si
+    // los conjuntos son correctos. (Una malla que una estación haya pasado a un material sin luces no cuenta: su color
+    // no depende de ninguna.)
     const locals = [...points, ...spots];
+    const byId = new Map(locals.map((l) => [l.uuid, l]));
     checkLights = () => {
       root.updateMatrixWorld(true);
-      const entries = cloned.filter((o) => isLit(o.material)).map((o) => ({
-        name: `${o.userData.chunk}/${o.material.name || o.material.type}#${o.id}`,
-        box: worldBox(o, new THREE.Box3()),
-        lightIds: new Set(o.material.userData.chunkLights),
-      }));
-      return findLightViolations(entries, locals);
+      const out = [];
+      for (const o of cloned) {
+        if (!isLit(o.material)) continue;
+        const name = `${o.userData.chunk}/${o.material.name || o.material.type}#${o.id}`;
+        const lightIds = new Set(o.material.userData.chunkLights);
+        const near = findLightViolations([{ name, box: worldBox(o, new THREE.Box3()).expandByScalar(BOX_MARGIN), lightIds }], locals);
+        if (!near.length) continue;
+        let hit = near.map((v) => byId.get(v.light));
+        if (merged.has(o)) hit = lightsOnTriangles(o, hit, BOX_MARGIN);
+        else if (o.isInstancedMesh) {
+          const list = [];
+          forEachInstanceBox(o, (b) => list.push(b.clone().expandByScalar(BOX_MARGIN)));
+          hit = lightSetForBoxes(list, hit);
+        }
+        for (const l of hit) out.push({ name, light: l.uuid });
+      }
+      return out;
     };
   }
   performance.mark('eb:bake');
@@ -512,7 +643,10 @@ export function buildWorld(scene, { debug = false } = {}) {
     setSimulation,
     setConnections,
     colliders,
-    // fragmentos: { key, meshes (mallas, instanciadas incluidas), instanced } (vacío con ?debug&nobake)
+    // fragmentos: { key, meshes (mallas, instanciadas incluidas), instanced, box ({ min, max }: la caja que une las de
+    // sus piezas iluminadas, márgenes incluidos; null sin ellas), points y spots (nombres de las luces de su conjunto
+    // rellenado, en el orden de sus uniformes), reach ({ points, spots }: cuántas alcanzan de verdad alguna de sus
+    // piezas; el resto es relleno) } (vacío con ?debug&nobake)
     chunks,
     // luces locales que alcanzan una malla y faltan en su fragmento: Array<{ name, light (uuid) }> (vacío con &nobake)
     checkLights,

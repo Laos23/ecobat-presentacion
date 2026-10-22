@@ -82,6 +82,19 @@ export function lightSetFor(box, lights) {
   return lights.filter((light) => reaches(box, light));
 }
 
+// Luces que alcanzan alguna de las cajas, en el orden de entrada: el conjunto de un fragmento a partir de las cajas
+// de sus piezas, más ajustado que el de la caja que las une (que abarca también el vacío entre ellas). Una luz sin
+// alcance finito entra siempre, como en lightSetFor. Cada esfera se calcula una vez para todas las cajas.
+export function lightSetForBoxes(boxes, lights) {
+  return lights.filter((light) => {
+    const d = light.distance;
+    if (typeof d !== 'number' || !(d > 0)) return true;
+    light.getWorldPosition(_center);
+    _sphere.set(_center, d);
+    return boxes.some((box) => box.intersectsSphere(_sphere));
+  });
+}
+
 // Iguala los conjuntos de luces a unas pocas clases de tamaño para limitar los programas de sombreado
 // (cada combinación de nº de puntuales y de focos compila uno). Ordena las entradas por su total de luces
 // (estable), las reparte en `maxClasses` grupos consecutivos y rellena cada entrada hasta el máximo de
@@ -97,6 +110,45 @@ export function padLightSets(entries, allPoints, allSpots, maxClasses = 3) {
     const nSpots = Math.max(...group.map((e) => e.spots.length));
     for (const e of group) padded.set(e.key, { points: padTo(e.points, allPoints, nPoints), spots: padTo(e.spots, allSpots, nSpots) });
   }
+  return new Map(entries.map((e) => [e.key, padded.get(e.key)]));
+}
+
+// Relleno por clases según los dos tamaños: cada clase es una pareja (nº de puntuales, nº de focos) y cada entrada se
+// rellena hasta la pareja de su clase. Se parte de una clase por pareja distinta (las entradas con los mismos tamaños
+// comparten clase sin coste) y, mientras haya más de `maxClasses`, se unen las dos clases cuya unión añade menos luces
+// en total (la clase unida es el máximo de puntuales y el de focos; a igual coste, la pareja de clases que aparece
+// antes en `entries`). Al contrario que padLightSets, que agrupa por el total de luces, no mezcla una entrada con
+// muchas puntuales y pocos focos con otra al revés. Las luces de relleno van detrás de las propias, en el orden
+// global de `allPoints`/`allSpots` y sin repetir ninguna. No modifica las entradas; el Map sale en su orden.
+export function padLightClasses(entries, allPoints, allSpots, maxClasses = 3) {
+  const limit = Math.max(1, Math.floor(maxClasses) || 1);
+  const classes = [];
+  for (const e of entries) {
+    const p = e.points.length;
+    const s = e.spots.length;
+    const same = classes.find((c) => c.p === p && c.s === s);
+    if (same) same.members.push(e);
+    else classes.push({ p, s, members: [e] });
+  }
+  const growth = (c, p, s) => c.members.length * (p - c.p + (s - c.s));
+  while (classes.length > limit) {
+    let best = null;
+    for (let i = 0; i < classes.length; i++) {
+      for (let j = i + 1; j < classes.length; j++) {
+        const p = Math.max(classes[i].p, classes[j].p);
+        const s = Math.max(classes[i].s, classes[j].s);
+        const cost = growth(classes[i], p, s) + growth(classes[j], p, s);
+        if (best === null || cost < best.cost) best = { i, j, p, s, cost };
+      }
+    }
+    const a = classes[best.i];
+    a.members.push(...classes[best.j].members);
+    a.p = best.p;
+    a.s = best.s;
+    classes.splice(best.j, 1);
+  }
+  const padded = new Map();
+  for (const c of classes) for (const e of c.members) padded.set(e.key, { points: padTo(e.points, allPoints, c.p), spots: padTo(e.spots, allSpots, c.s) });
   return new Map(entries.map((e) => [e.key, padded.get(e.key)]));
 }
 

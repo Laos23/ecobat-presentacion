@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { CHUNK_KEYS, chunkKeyFor, platformAt, partitionByChunk, lightSetFor, padLightSets, routeBox, findLightViolations } from '../src/world/chunks.js';
+import { CHUNK_KEYS, chunkKeyFor, platformAt, partitionByChunk, lightSetFor, lightSetForBoxes, padLightSets, padLightClasses, routeBox, findLightViolations } from '../src/world/chunks.js';
 import { STATIONS, PLATFORMS } from '../src/world/layout.js';
 
 test('platformAt dentro y fuera', () => {
@@ -180,4 +180,93 @@ test('findLightViolations: una luz sin alcance finito falta si no está; una que
     { name: 'b', box, lightIds: new Set([infinita.uuid]) },
   ], [infinita, lejana]);
   assert.deepEqual(out, [{ name: 'a', light: infinita.uuid }]);
+});
+
+// ---------- Pruebas añadidas en la tarea 7 ----------
+
+const pointAt = (x, y, z, distance) => {
+  const l = new THREE.PointLight(0xffffff, 1, distance);
+  l.position.set(x, y, z);
+  l.updateMatrixWorld();
+  return l;
+};
+const unitBox = (x, y, z) => new THREE.Box3(new THREE.Vector3(x, y, z), new THREE.Vector3(x + 1, y + 1, z + 1));
+
+test('lightSetForBoxes: la luz entra si alcanza alguna de las cajas, en el orden de entrada', () => {
+  const boxes = [unitBox(0, 0, 0), unitBox(100, 0, 0)];
+  const cerca2 = pointAt(105, 0.5, 0.5, 5); // solo alcanza la segunda caja (borde a 4 m)
+  const cerca1 = pointAt(-3, 0.5, 0.5, 4); // solo alcanza la primera (borde a 3 m)
+  const entre = pointAt(50, 0.5, 0.5, 20); // a 49 m de las dos: ninguna
+  const infinita = pointAt(900, 0, 0, 0);
+  assert.deepEqual(lightSetForBoxes(boxes, [cerca2, entre, infinita, cerca1]), [cerca2, infinita, cerca1]);
+  // la caja que une las dos sí la alcanzaría: la lista es más estricta que su unión
+  assert.deepEqual(lightSetFor(new THREE.Box3().union(boxes[0]).union(boxes[1]), [entre]), [entre]);
+});
+test('lightSetForBoxes coincide con lightSetFor caja a caja y no modifica la entrada', () => {
+  const boxes = [unitBox(0, 0, 0), unitBox(7, 3, -2), unitBox(-6, 0, 9)];
+  const lights = [pointAt(3, 0, 0, 2.5), pointAt(9, 9, 9, 6), pointAt(-9, 1, 9, 3.2), pointAt(0, 30, 0, 10), pointAt(2, 2, 2, NaN)];
+  const copy = [...lights];
+  const expected = lights.filter((l) => boxes.some((b) => lightSetFor(b, [l]).length === 1));
+  assert.deepEqual(lightSetForBoxes(boxes, lights), expected);
+  assert.deepEqual(lights, copy);
+  // sin cajas, como una caja vacía: solo las luces sin alcance finito
+  assert.deepEqual(lightSetForBoxes([], lights), [lights[4]]);
+});
+
+// Entradas de prueba: k puntuales y s focos propios, tomados de P y S en orden.
+const P7 = Array.from({ length: 6 }, () => new THREE.PointLight());
+const S7 = Array.from({ length: 10 }, () => new THREE.SpotLight());
+const entry = (key, ip, is) => ({ key, points: ip.map((i) => P7[i]), spots: is.map((i) => S7[i]) });
+
+test('padLightClasses: con clases de sobra no rellena nada', () => {
+  const entries = [entry('a', [], [0, 1]), entry('b', [0], [2]), entry('c', [1, 2], [])];
+  const out = padLightClasses(entries, P7, S7, 3);
+  assert.deepEqual([...out.keys()], ['a', 'b', 'c']);
+  for (const e of entries) {
+    assert.deepEqual(out.get(e.key).points, e.points);
+    assert.deepEqual(out.get(e.key).spots, e.spots);
+    assert.notEqual(out.get(e.key).points, e.points); // copias: no comparte los arrays de la entrada
+  }
+  // dos entradas con los mismos tamaños forman una sola clase
+  assert.equal(padLightClasses([entry('a', [0], [1]), entry('b', [1], [2])], P7, S7, 1).get('a').spots.length, 1);
+});
+test('padLightClasses: une primero las clases que menos luces añaden', () => {
+  // tamaños (puntuales, focos): a (0,4) b (0,5) c (2,3) d (0,3) e (0,1) f (2,2) g (3,1) → 7 clases
+  const entries = [
+    entry('a', [], [0, 1, 2, 3]), entry('b', [], [0, 1, 2, 3, 4]), entry('c', [0, 1], [5, 6, 7]), entry('d', [], [7, 8, 9]),
+    entry('e', [], [9]), entry('f', [2, 3], [1, 2]), entry('g', [3, 4, 5], [6]),
+  ];
+  const out = padLightClasses(entries, P7, S7, 5);
+  const size = (k) => [out.get(k).points.length, out.get(k).spots.length];
+  // hay tres uniones de coste 1 (a con b, a con d y c con f); a con b es la pareja más temprana y, tras ella, c con f
+  // (unir d con la clase de a y b ya cuesta 2): a sube a (0,5) y f a (2,3); el resto queda igual
+  assert.deepEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g'].map(size), [[0, 5], [0, 5], [2, 3], [0, 3], [0, 1], [2, 3], [3, 1]]);
+  const classes = new Set(['a', 'b', 'c', 'd', 'e', 'f', 'g'].map((k) => size(k).join()));
+  assert.equal(classes.size, 5);
+  // con una sola clase, todas al máximo de puntuales y de focos
+  const one = padLightClasses(entries, P7, S7, 1);
+  for (const e of entries) assert.deepEqual([one.get(e.key).points.length, one.get(e.key).spots.length], [3, 5]);
+});
+test('padLightClasses: luces propias primero, relleno en el orden global, sin duplicados y sin tocar la entrada', () => {
+  const entries = [entry('x', [4], [3, 8]), entry('y', [0, 5], [1, 2, 9])];
+  const before = entries.map((e) => [[...e.points], [...e.spots]]);
+  const out = padLightClasses(entries, P7, S7, 1);
+  assert.deepEqual(out.get('x').points, [P7[4], P7[0]]);
+  assert.deepEqual(out.get('x').spots, [S7[3], S7[8], S7[0]]);
+  assert.deepEqual(out.get('y').points, [P7[0], P7[5]]);
+  assert.deepEqual(out.get('y').spots, [S7[1], S7[2], S7[9]]);
+  for (const [k, s] of out) {
+    assert.equal(new Set(s.points).size, s.points.length, k);
+    assert.equal(new Set(s.spots).size, s.spots.length, k);
+  }
+  assert.deepEqual(entries.map((e) => [e.points, e.spots]), before);
+});
+test('padLightClasses: a igual coste une las clases que aparecen antes y el resultado no depende de nada más', () => {
+  // a (1,0) b (0,1) c (1,1): unir a con c o b con c cuesta 1; gana la pareja con la clase más temprana (a, c)
+  const entries = [entry('a', [0], []), entry('b', [], [0]), entry('c', [1], [1])];
+  const out = padLightClasses(entries, P7, S7, 2);
+  assert.deepEqual([out.get('a').points.length, out.get('a').spots.length], [1, 1]);
+  assert.deepEqual([out.get('b').points.length, out.get('b').spots.length], [0, 1]);
+  const again = padLightClasses(entries, P7, S7, 2);
+  for (const k of ['a', 'b', 'c']) assert.deepEqual(again.get(k), out.get(k));
 });
