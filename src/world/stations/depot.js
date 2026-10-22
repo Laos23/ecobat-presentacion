@@ -153,7 +153,8 @@ export function buildDepot(ctx) {
     {
       const c = CELLS.taller;
       plate(c, '#1b1e20', PAL.ivory);
-      text('TALLER', c[0] + 108, c[1] + 64, 46, PAL.ivory);
+      // «Taller» (129 px) termina antes de la cola de la flecha (x = 176); «TALLER» (186 px) la pisaba
+      text('Taller', c[0] + 108, c[1] + 64, 46, PAL.ivory);
       g.fillStyle = PAL.lime;
       g.beginPath();
       g.moveTo(c[0] + 196, c[1] + 44);

@@ -794,8 +794,9 @@ tbody th {
   color: var(--lime);
   font-variant-numeric: tabular-nums;
 }
-.weeks li span:last-child,
-.goals li span:last-child {
+/* Solo la descripción (hija directa): los tramos sin cortes del texto (.nw, .cites) conservan el color de su columna. */
+.weeks li > span:last-child,
+.goals li > span:last-child {
   color: var(--ivory-dim);
 }
 .example {

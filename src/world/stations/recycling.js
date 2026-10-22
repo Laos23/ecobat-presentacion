@@ -135,15 +135,15 @@ function labelAtlas() {
     g.lineTo(900, 720);
     g.closePath();
     g.fill();
-    // 6 · gestor autorizado
+    // 6 · gestor autorizado (las franjas de la celda 7 invaden la esquina derecha: los textos acaban antes, x < 372)
     g.fillStyle = '#e4dac6';
     g.fillRect(0, 768, 512, 256);
     g.fillStyle = ink;
     g.font = font(800, 46);
-    g.fillText('Gestor autorizado', 34, 860);
+    g.fillText('Reciclaje', 34, 860);
     g.font = font(500, 28);
     g.fillStyle = 'rgba(31,34,36,0.72)';
-    g.fillText('Entrega registrada en EcoBat', 36, 908);
+    g.fillText('Gestor autorizado', 36, 908);
     g.fillStyle = '#93b52a';
     g.fillRect(36, 934, 300, 8);
     // 7 · franjas de seguridad ámbar y grafito
