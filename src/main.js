@@ -178,7 +178,8 @@ async function start3D() {
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.2, 0.12, 2.2);
   composer.addPass(bloom);
-  composer.addPass(new OutputPass());
+  const output = new OutputPass();
+  composer.addPass(output);
 
   // ---------- Recorrido y scroll ----------
   const tl = buildTimeline();
@@ -543,7 +544,8 @@ async function start3D() {
   const WARMUP_POINTS = [0, ...tl.anchors.slice(1), tl.marks.sim, tl.marks.conn, 0.2525, 0.512, 0.668, 0.915];
   async function warmUp() {
     const fov = camera.fov;
-    renderer.setSize(64, 36, false);
+    // solo el compositor dibuja a 64×36; el lienzo no cambia de tamaño: encogerlo costaba unos 160 ms en la RTX 5090
+    // (13 ms en la integrada), y el pase de salida dibuja su cuadro a tamaño real por muy poco
     composer.setSize(64, 36);
     bloom.resolution.set(64, 36);
     for (const p of WARMUP_POINTS) {
@@ -561,19 +563,74 @@ async function start3D() {
     layout();
   }
 
+  // Materiales de profundidad del mapa de sombras. three los crea al dibujar la sombra (WebGLShadowMap.getDepthMaterial):
+  // un MeshDepthMaterial con las opciones por defecto, ajustado por combinación de cara, mapa, prueba alfa e
+  // instanciado, que compilaba en síncrono el primer encuadre del calentamiento. Se reproducen aquí con las mismas
+  // opciones y sobre las mismas geometrías para compilarlos a la vez que el mundo: la sombra encuentra sus programas
+  // hechos (misma clave de programa).
+  function shadowDepthScene() {
+    const flip = { [THREE.FrontSide]: THREE.BackSide, [THREE.BackSide]: THREE.FrontSide, [THREE.DoubleSide]: THREE.DoubleSide };
+    const out = new THREE.Scene();
+    const seen = new Set();
+    scene.traverseVisible((o) => {
+      if (!o.isMesh || !o.castShadow || o.isSkinnedMesh || o.customDepthMaterial !== undefined) return;
+      for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        if (!m || m.visible === false) continue;
+        const side = m.shadowSide !== null ? m.shadowSide : flip[m.side];
+        const alphaTest = m.alphaToCoverage === true ? 0.5 : m.alphaTest;
+        const g = o.geometry;
+        const instanced = o.isInstancedMesh === true;
+        const key = [side, m.map?.channel ?? -1, m.alphaMap?.channel ?? -1, alphaTest > 0, m.displacementMap?.channel ?? -1, instanced, instanced && o.instanceColor !== null, instanced && o.morphTexture !== null, !!g.morphAttributes.position, !!g.morphAttributes.normal, !!g.morphAttributes.color, !!g.attributes.normal].join();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const dm = new THREE.MeshDepthMaterial();
+        dm.side = side;
+        dm.alphaMap = m.alphaMap;
+        dm.alphaTest = alphaTest;
+        dm.map = m.map;
+        dm.displacementMap = m.displacementMap;
+        dm.displacementScale = m.displacementScale;
+        dm.displacementBias = m.displacementBias;
+        const mesh = instanced ? new THREE.InstancedMesh(g, dm, 1) : new THREE.Mesh(g, dm);
+        if (instanced) {
+          mesh.instanceColor = o.instanceColor;
+          mesh.morphTexture = o.morphTexture;
+        }
+        out.add(mesh);
+      }
+    });
+    return out;
+  }
+
   // Sombreadores compilados en paralelo antes del primer fotograma (KHR_parallel_shader_compile cuando
   // existe): la primera carga no bloquea el hilo principal y el velo de carga sigue animándose.
   // (con el destino del compositor activo: los programas salen con las mismas opciones de tono y color)
   try {
     renderer.setRenderTarget(composer.readBuffer);
-    // los materiales del bloom (que dibuja siempre en sus propios destinos) se compilan a la vez que los del mundo:
-    // si no, el primer fotograma del calentamiento los compila uno a uno con el hilo principal parado
+    // los materiales del bloom (que dibuja siempre en sus propios destinos) y el de salida se compilan a la vez que
+    // los del mundo: si no, el primer fotograma del calentamiento los compila uno a uno con el hilo principal parado
     const quad = new THREE.BufferGeometry();
     quad.setAttribute('position', new THREE.Float32BufferAttribute([-1, 3, 0, -1, -1, 0, 3, -1, 0], 3));
     quad.setAttribute('uv', new THREE.Float32BufferAttribute([0, 2, 0, 0, 2, 0], 2));
     const post = new THREE.Scene();
-    [bloom.materialHighPassFilter, ...bloom.separableBlurMaterials, bloom.compositeMaterial, bloom.blendMaterial].forEach((m) => post.add(new THREE.Mesh(quad, m)));
-    const compiling = Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(post, camera)]);
+    // el pase de salida fija sus defines (transferencia sRGB y curva de tono) la primera vez que dibuja; se fijan ya,
+    // en el mismo orden que hará él, para que su programa salga ahora con la misma clave
+    const defines = {};
+    if (THREE.ColorManagement.getTransfer(renderer.outputColorSpace) === THREE.SRGBTransfer) defines.SRGB_TRANSFER = '';
+    const tone = { [THREE.LinearToneMapping]: 'LINEAR_TONE_MAPPING', [THREE.ReinhardToneMapping]: 'REINHARD_TONE_MAPPING', [THREE.CineonToneMapping]: 'CINEON_TONE_MAPPING', [THREE.ACESFilmicToneMapping]: 'ACES_FILMIC_TONE_MAPPING', [THREE.AgXToneMapping]: 'AGX_TONE_MAPPING', [THREE.NeutralToneMapping]: 'NEUTRAL_TONE_MAPPING' }[renderer.toneMapping];
+    if (tone) defines[tone] = '';
+    output.material.defines = defines;
+    [bloom.materialHighPassFilter, ...bloom.separableBlurMaterials, bloom.compositeMaterial, bloom.blendMaterial, output.material].forEach((m) => post.add(new THREE.Mesh(quad, m)));
+    const compiling = [renderer.compileAsync(scene, camera), renderer.compileAsync(post, camera)];
+    // la sombra se dibuja con la escena vacía de three, sin niebla, y la clave de sus programas no la lleva: la
+    // niebla se quita solo mientras compile() calcula las claves (es síncrono) y se devuelve enseguida
+    const fog = scene.fog;
+    scene.fog = null;
+    try {
+      compiling.push(renderer.compileAsync(shadowDepthScene(), camera, scene));
+    } finally {
+      scene.fog = fog;
+    }
     // mientras la GPU compila, el hilo principal solo espera: se suben ya las texturas de los materiales, que el
     // primer fotograma subiría todas de golpe (mismo camino de subida que al dibujar)
     const textures = new Set();
@@ -587,7 +644,7 @@ async function start3D() {
     } catch {
       /* las que falten se suben al dibujar */
     }
-    await compiling;
+    await Promise.all(compiling);
   } catch {
     /* el primer fotograma compilará lo que falte */
   }
