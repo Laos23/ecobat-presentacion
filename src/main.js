@@ -385,6 +385,22 @@ async function start3D() {
   const ch6 = tl.chapters[6];
   const story = { index: 0, vis: 1, local: 0, p: 0, sim: 0, route: null, conn: 0, reduced: false };
 
+  // Ritmo de la GPU. Cuando la gráfica va justa, el navegador entrega a veces varios rAF seguidos (a 3-6 ms) y, sin
+  // freno, la cola de la GPU junta tres, cuatro o cinco fotogramas: la presentación se detiene 120-160 ms mientras los
+  // vacía (medido en la integrada de referencia). Con dos fotogramas en vuelo como máximo la GPU sigue igual de ocupada
+  // y no se amontonan: si los dos anteriores no han terminado, este rAF no dibuja. El estado (scroll, cámara, pantallas
+  // vivas) avanza igual en cada rAF, con el mismo dt que sin esta espera, y el siguiente fotograma que se dibuja muestra
+  // el estado de su instante: lo que se dibuja no cambia.
+  const gl = renderer.getContext();
+  const MAX_IN_FLIGHT = 2;
+  const inFlight = [];
+  function gpuBusy() {
+    // se liberan, en orden, los fotogramas que la GPU ya terminó; solo UNSIGNALED retiene (cualquier otra respuesta,
+    // también null con el contexto perdido, libera la espera)
+    while (inFlight.length && gl.getSyncParameter(inFlight[0], gl.SYNC_STATUS) !== gl.UNSIGNALED) gl.deleteSync(inFlight.shift());
+    return inFlight.length >= MAX_IN_FLIGHT;
+  }
+
   function frame() {
     timer.update();
     const dt = Math.min(timer.getDelta(), 0.1);
@@ -478,8 +494,10 @@ async function start3D() {
     }
     progressFill.style.transform = `scaleX(${raw.toFixed(4)})`;
 
-    if (!reduced || needsRender > 0) {
+    if ((!reduced || needsRender > 0) && !gpuBusy()) {
       composer.render(dt);
+      const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+      if (fence) inFlight.push(fence);
       needsRender = Math.max(0, needsRender - 1);
     }
 
