@@ -68,11 +68,14 @@ function labelAtlas() {
   const font = (w, s) => `${w} ${s}px "Archivo Variable", sans-serif`;
   const ink = '#1f2224';
   const draw = () => {
+    // fracciones con base en la investigación: lingotes de plomo, metales no férreos (salida autorizada de una
+    // planta española), polipropileno de la carcasa y hierro (≈2 % de una batería usada); sin cobre ni latón,
+    // que no tienen fuente, y con nombres que caben en su placa
     const mats = [
       ['Pb', 'Plomo', 'Lingote recuperado'],
-      ['Cu', 'Cobre y latón', 'Terminales (fracción menor)'],
+      ['NF', 'Metales', 'No férreos'],
       ['PP', 'Plástico', 'Carcasa triturada'],
-      ['Fe', 'Acero', 'Chatarra separada'],
+      ['Fe', 'Hierro', 'Chatarra separada'],
     ];
     mats.forEach(([sym, name, sub], i) => {
       const x = (i % 2) * 512;
@@ -606,14 +609,15 @@ export function buildRecycling(ctx) {
   ctx.add(belt);
   ctx.shadows.push({ x: s5.x - 1, y: Y, z: s5.z - 1.5, w: 19, d: 2.6, r: -0.12 });
 
-  // pantalla viva: recuperación por material. Las barras se llenan durante la llegada y el registro
+  // pantalla viva: reparto típico en masa por material (UE, estudios sectoriales: plomo ≈60 %, electrolito ≈30 %,
+  // plástico ≈7 %; el 3 % restante no se desglosa). Las barras se llenan durante la llegada y el registro
   // queda «documentado» justo en el encuadre de exposición (local ≈ 0,45), donde el visitante se detiene
   const regK = (story) => {
     if (!story || story.reduced || story.index > 5) return 1;
     if (story.index < 5) return 0;
     return clamp((story.local + 1.0) / 1.45, 0, 1);
   };
-  const recRows = [['Plomo', 1], ['Plástico', 1], ['Electrolito', 1], ['Otros', 1]];
+  const recRows = [['Plomo 60 %', 0.6], ['Electrolito 30 %', 0.3], ['Plástico 7 %', 0.07], ['Otros 3 %', 0.03]];
   const live = T.liveScreen(512, 288, (g, w, h, t, story) => {
     const k = regK(story);
     g.fillStyle = '#0f1112';
@@ -623,10 +627,10 @@ export function buildRecycling(ctx) {
     g.textAlign = 'left';
     g.fillStyle = '#F1EEE6';
     g.font = '700 30px "Archivo Variable", sans-serif';
-    g.fillText('Entrega ECB-0427', 26, 50);
+    g.fillText('Entrega ECB-0427 · ejemplo', 26, 50);
     g.font = '500 19px "Archivo Variable", sans-serif';
     g.fillStyle = 'rgba(241,238,230,0.6)';
-    g.fillText('Gestor autorizado · fracciones separadas', 26, 80);
+    g.fillText('Composición típica en masa (UE), aprox.', 26, 80);
     for (let i = 0; i < recRows.length; i++) {
       const y = 108 + i * 38;
       g.fillStyle = 'rgba(241,238,230,0.78)';

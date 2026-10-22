@@ -110,8 +110,10 @@ export function buildDepot(ctx) {
     g.fillRect(un[0] + 10, un[1] + 31, 108, 3);
     text('80', un[0] + 64, un[1] + 19, 22, '#161819');
     text('2794', un[0] + 64, un[1] + 47, 22, '#161819');
+    // rótulo de la estantería: código del residuo almacenado (lista europea de residuos), un dato verificado;
+    // sustituye a una carga máxima por nivel que no tenía fuente
     plate(CELLS.load, '#1b1e20', PAL.ivory);
-    text('CARGA MÁX. 1000 kg / NIVEL', ...mid(CELLS.load), 28, PAL.ivory, 700);
+    text('CÓDIGO LER 16 06 01*', ...mid(CELLS.load), 28, PAL.ivory, 700);
     // rombo de corrosivos (clase 8) en marfil y grafito
     {
       const [cx, cy] = mid(CELLS.diamond);
@@ -176,7 +178,7 @@ export function buildDepot(ctx) {
       g.fill();
       text('CARGA', c[0] + 160, c[1] + 64, 40, PAL.ivory);
     }
-    // placa de horario y normas junto a la ventanilla sur
+    // placa de normas junto a la ventanilla sur: solo normas con base en el anexo (seguridad y transporte ADR)
     {
       const c = CELLS.notice;
       plate(c, '#1b1e20', PAL.ivory);
@@ -189,8 +191,8 @@ export function buildDepot(ctx) {
         g.textBaseline = 'middle';
         g.fillText(s, c[0] + 40, c[1] + y);
       };
-      line('HORARIO', 34, 26, PAL.amber, 800);
-      line('L–V  7:00–15:00', 66, 24, PAL.ivory);
+      line('NORMAS', 34, 26, PAL.amber, 800);
+      line('No abrir ni vaciar', 66, 24, PAL.ivory);
       line('ADR · UN 2794', 98, 22, PAL.ivory);
     }
     // pintura de suelo (fondo transparente, se recorta con alphaTest)
@@ -662,7 +664,7 @@ export function buildDepot(ctx) {
     g.add(K.box(0.012, 0.3, 0.5, M.darkGlass, -w / 2 - 0.05, b + 1.45, -0.58));
     g.add(K.box(0.12, 0.1, 0.22, M.darkSteel, -w / 2 - 0.06, b + 2.3, -0.58));
     g.add(K.box(0.02, 0.06, 0.16, fixtureMat, -w / 2 - 0.125, b + 2.3, -0.58));
-    // fachada este (ventanilla): placa de horario y normas y aplique sobre ella
+    // fachada este (ventanilla): placa de normas y aplique sobre ella
     {
       const np = sign('notice', 0.5, 0.25);
       np.position.set(-w / 2 + 0.36, b + 1.5, d / 2 + 0.017);
@@ -750,7 +752,8 @@ export function buildDepot(ctx) {
   // Báscula de recepción con visor de patio: el lote se pesa mientras la cámara se acerca y la lectura
   // se estabiliza justo al entrar en la ventana de lectura (story.local = 0); al retroceder, descuenta.
   // ======================================================================
-  const WEIGHT = 486.5;
+  // lote de ejemplo: 18 baterías × 18 kg (batería europea de referencia de 70 Ah, pestaña Datos) = 324 kg netos
+  const WEIGHT = 324;
   const weigh = (story) => {
     if (!story) return 0;
     if (story.reduced || story.index > 1) return 1;
@@ -781,7 +784,7 @@ export function buildDepot(ctx) {
     g.fillText('kg', 304, 94);
     g.font = '600 21px "Archivo Variable", sans-serif';
     g.fillStyle = PAL.ivory;
-    g.fillText('LOTE 0147 · 18 uds', 18, 128);
+    g.fillText('LOTE 0147 · 18 uds · EJEMPLO', 18, 128);
     // barra lima fina que se llena con el peso
     g.fillStyle = 'rgba(194,242,48,0.16)';
     g.fillRect(18, 146, w - 36, 5);

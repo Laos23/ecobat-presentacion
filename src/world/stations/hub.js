@@ -184,7 +184,7 @@ function drawPassport(qr, fx) {
     g.fillText('Pasaporte EcoBat', w / 2, 712);
     g.globalAlpha = 0.6;
     g.font = F_SUB;
-    g.fillText('Prototipo académico', w / 2, 740);
+    g.fillText('Ejemplo · prototipo académico', w / 2, 740);
     g.globalAlpha = 1;
   };
 }
@@ -223,7 +223,7 @@ function drawHistory() {
     g.font = F_HEAD;
     g.textAlign = 'left';
     g.fillStyle = IVORY;
-    g.fillText('Historial de estado', 24, 38);
+    g.fillText('Historial de estado · ejemplo', 24, 38);
     g.textAlign = 'right';
     g.fillStyle = AMBER;
     g.fillText('ECB-0427', w - 24, 38);
@@ -443,7 +443,7 @@ function drawNetwork() {
     g.font = F_SMALL;
     g.textAlign = 'left';
     g.globalAlpha = 0.65;
-    g.fillText('Baterías trazadas', 160, 74);
+    g.fillText('Baterías trazadas · ejemplo', 160, 74);
     g.globalAlpha = 0.2;
     g.fillRect(160, 190, 186, 2);
     for (let i = 0; i < 6; i++) {

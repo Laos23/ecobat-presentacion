@@ -197,11 +197,14 @@ export function buildLab(ctx) {
     waveB[i] = Math.sin(u * 15.7 + 0.8) * Math.exp(-u * 0.35) * 0.45;
   }
   const barsA = [0.3, 0.46, 0.38, 0.58, 0.5, 0.68, 0.6, 0.76, 0.7, 0.84, 0.78, 0.9];
+  // registro de ejemplo coherente con los valores de referencia (pestaña Datos): tras 24 h de reposo, 12,6 V
+  // corresponde a una batería inundada cargada (≈75 % en una AGM, carga suficiente para la prueba de carga); la
+  // prueba de carga no se supera si la tensión cae por debajo de unos 9,6 V
   const recRows = [
     ['Química', 'Plomo-ácido'],
-    ['Tensión en reposo', '11,8 V'],
-    ['Resistencia interna', '9,6 mΩ', true],
-    ['Prueba de carga', 'No superada', true],
+    ['Reposo previo', '24 h'],
+    ['Tensión en reposo', '12,6 V'],
+    ['Prueba de carga (15 s)', '< 9,6 V', true],
     ['Estado de salud', 'Insuficiente', true],
   ];
 
@@ -283,7 +286,7 @@ export function buildLab(ctx) {
     g.stroke();
     const a0 = Math.PI * 0.75;
     const span = Math.PI * 1.5;
-    const v = st.dial * 11.8;
+    const v = st.dial * 12.6;
     const a = a0 + (span * v) / 15;
     g.lineWidth = 20;
     g.strokeStyle = 'rgba(194,242,48,0.15)';
@@ -397,7 +400,7 @@ export function buildLab(ctx) {
     g.fillRect(0, 0, w, 6);
     g.font = FONT_T;
     g.fillStyle = IVORY;
-    g.fillText('Registro · ECB-0427', 24, 46);
+    g.fillText('Registro de ejemplo · ECB-0427', 24, 46);
     // st.rows se acerca a 1 sin alcanzarlo y la pantalla deja de redibujarse a 0,004: margen para cerrar la última fila
     const p = st.rows * recRows.length + 0.03;
     for (let i = 0; i < recRows.length; i++) {

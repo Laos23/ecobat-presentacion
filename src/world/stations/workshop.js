@@ -925,14 +925,16 @@ export function buildWorkshop(ctx) {
     g.stroke();
     g.fillStyle = IVORY;
     g.font = F_TITLE;
-    g.fillText('ECB-0427 · tensión en reposo', 16, 30);
+    g.fillText('ECB-0427 · tensión en reposo · ejemplo', 16, 30);
     g.fillStyle = 'rgba(241,238,230,0.5)';
     g.font = F_SMALL;
     g.fillText('13 V', 6, 60);
     g.fillText('12 V', 6, 168);
     const n = Math.max(2, Math.floor(graph.prog * 116));
     const px = (i) => 40 + i * ((w - 60) / 116);
-    const py = (i) => 96 + Math.sin(i * 0.09) * 16 + i * 0.55 - Math.sin(i * 0.43) * 5;
+    // reposo de ejemplo: la carga superficial se disipa y la tensión se asienta cerca de 12,6 V (batería inundada
+    // cargada), la misma lectura que registra el laboratorio
+    const py = (i) => 74 + Math.sin(i * 0.09) * 4 + i * 0.22 - Math.sin(i * 0.43) * 1.5;
     g.beginPath();
     g.moveTo(px(0), h - 22);
     for (let i = 0; i <= n; i++) g.lineTo(px(i), py(i));
@@ -1263,7 +1265,7 @@ export function buildWorkshop(ctx) {
     g.stroke();
     g.fillStyle = 'rgba(241,238,230,0.62)';
     g.font = F_LABEL;
-    g.fillText('FICHA DIGITAL', 36, 64);
+    g.fillText('FICHA DIGITAL · EJEMPLO', 36, 64);
     g.fillStyle = LIME;
     g.font = F_ID;
     g.fillText('ECB-0427', 34, 124);

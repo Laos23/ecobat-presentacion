@@ -484,8 +484,9 @@ export const annex = [
       { h4: 'Qué es real y qué es ejemplo en las pantallas 3D' },
       {
         list: [
-          'Son ejemplos del prototipo, no mediciones: el código ECB-0427 y sus fechas, el lote 0147 y su peso, las lecturas de prueba (11,8 V, 9,6 mΩ, «No superada»), las gráficas de capacidad, los contadores y los recuentos 2/1/7 del capítulo 4',
-          'Tienen base real la tensión nominal de 12 V, el rango de tensiones en reposo y las fracciones de plomo, plástico y electrolito; sus valores y fuentes están en la pestaña Datos',
+          'Son ejemplos del prototipo, no mediciones, y las pantallas los rotulan como tales: el código ECB-0427 y sus fechas, los lotes 0147 y 04, las lecturas de prueba, las gráficas de capacidad y de historial, los contadores y los recuentos 2/1/7 del capítulo 4',
+          'Sus valores son coherentes con los de referencia de la pestaña Datos: el lote 0147 pesa 324 kg porque son 18 baterías de 18 kg, la batería europea de referencia [76]; 12,6 V tras 24 h de reposo corresponde a una batería inundada cargada [63–65], y la prueba de carga no se supera si la tensión cae por debajo de unos 9,6 V [64, 79]',
+          'Son datos reales la tensión nominal de 12 V [77, 78], la composición típica en masa de las barras del reciclaje (plomo 60 %, electrolito 30 % y plástico 7 %, aproximados; el 3 % restante no se desglosa) [51, 62] y, en el depósito, el código de residuo 16 06 01* [96, 97] y la clasificación de transporte UN 2794 [98]',
           '«Pasaporte EcoBat» es el nombre de la ficha del prototipo; no es el pasaporte para baterías del Reglamento (UE) 2023/1542, y las baterías de arranque no están entre las categorías que deben llevarlo [26]',
           'Los QR de las baterías del mundo son decorativos',
         ],
