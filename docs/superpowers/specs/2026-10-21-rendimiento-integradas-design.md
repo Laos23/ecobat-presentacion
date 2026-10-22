@@ -197,7 +197,7 @@ Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.
 
 ## 10. Enmienda del 2026-10-22: guarda por píxel, conjuntos por pieza y relleno por parejas
 
-Con el texto anterior (commit `723b652`), la tarea 7 no alcanzaba el objetivo de GPU de §2 en la integrada de referencia. La implementación se apartó de él en cuatro puntos, todos exactos por la regla de §6.2, y esta enmienda los recoge en §6.1-§6.4 y §8. **Aprobada** por decisión del ejecutor autónomo, con la autorización general de la usuaria: la guarda es un tercer cambio sobre el texto de three (§6.3 decía «dos cambios y nada más»), exacto por construcción (una luz con  aporta color cero) y comprobado con la puerta de píxeles; sin ella el objetivo de GPU no se cumple. El código implementa la enmienda.
+Con el texto anterior (commit `723b652`), la tarea 7 no alcanzaba el objetivo de GPU de §2 en la integrada de referencia. La implementación se apartó de él en cuatro puntos, todos exactos por la regla de §6.2, y esta enmienda los recoge en §6.1-§6.4 y §8. **Aprobada** por decisión del ejecutor autónomo, con la autorización general de la usuaria: la guarda es un tercer cambio sobre el texto de three (§6.3 decía «dos cambios y nada más»), exacto por construcción (una luz con `visible = false` aporta color cero) y comprobado con la puerta de píxeles; sin ella el objetivo de GPU no se cumple. El código implementa la enmienda.
 
 | Punto | Texto anterior | Enmienda |
 |---|---|---|
