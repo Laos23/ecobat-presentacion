@@ -322,6 +322,10 @@ export function buildLab(ctx) {
     g.font = FONT_BIG;
     g.textAlign = 'center';
     g.fillText(volts[Math.round(v * 10)], cx, cy + 92);
+    // lectura de la batería de ejemplo ECB-0427, no una medición: se rotula como la esfera del cruce
+    g.font = FONT_R;
+    g.fillStyle = 'rgba(241,238,230,0.62)';
+    g.fillText('tensión en reposo · ejemplo', cx, cy + 130);
     g.textAlign = 'left';
     for (let i = 0; i < 3; i++) {
       const y = 236 + i * 40;
