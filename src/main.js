@@ -133,7 +133,8 @@ async function start3D() {
   // la comprobación de sombreadores solo hace falta al desarrollar (?debug): en producción evita lecturas
   // síncronas del registro de programas y los avisos de precisión del compilador de ANGLE en Windows
   renderer.debug.checkShaderErrors = DEBUG;
-  let pixelRatio = Math.min(devicePixelRatio, 1.75);
+  // resolución fija: no hay escalón de calidad automático, la imagen es la misma en cualquier equipo
+  const pixelRatio = Math.min(devicePixelRatio, 1.75);
   renderer.setPixelRatio(pixelRatio);
   renderer.setSize(innerWidth, innerHeight, false);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -376,9 +377,6 @@ async function start3D() {
   let lastCutAt = -Infinity;
   const timer = new THREE.Timer();
   timer.connect(document);
-  let frames = 0;
-  let slowTime = 0;
-  let degraded = false;
   let frozenTime = null;
   const passportSteps = [...document.querySelectorAll('.passport li')];
   const counts = [...document.querySelectorAll('.route__count')];
@@ -500,19 +498,6 @@ async function start3D() {
       const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
       if (fence) inFlight.push(fence);
       needsRender = Math.max(0, needsRender - 1);
-    }
-
-    // Si el equipo va justo, bajar resolución y suavizar el bloom.
-    if (!degraded) {
-      frames++;
-      if (frames > 30 && dt > 1 / 38) slowTime += dt;
-      if (slowTime > 2.5) {
-        degraded = true;
-        pixelRatio = 1;
-        renderer.setPixelRatio(1);
-        bloom.strength = 0.16;
-        layout();
-      }
     }
     requestAnimationFrame(frame);
   }
