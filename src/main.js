@@ -10,6 +10,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import QRCode from 'qrcode';
 import { buildWorld } from './world/world.js';
+import { opaqueSort } from './world/chunkLights.js';
 import { buildTimeline, sample, chapterState } from './camera.js';
 import { buildOverlay, buildChrome, buildAnnex, buildStatic, icons } from './ui.js';
 import { chapters, SITE_URL } from './content.js';
@@ -167,6 +168,8 @@ async function start3D() {
   scene.add(rim);
 
   const world = buildWorld(scene, { debug: DEBUG });
+  // los clones de material por fragmento se dibujan en el puesto del material que sustituyen (chunkLights.js)
+  renderer.setOpaqueSort(opaqueSort);
   renderer.shadowMap.needsUpdate = true;
   performance.mark('eb:world');
 

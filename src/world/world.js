@@ -10,6 +10,7 @@ import { buildJunction } from './stations/junction.js';
 import { buildRecycling } from './stations/recycling.js';
 import { buildHub } from './stations/hub.js';
 import { CHUNK_KEYS, chunkKeyFor } from './chunks.js';
+import { createMaterialFactory, isLit, drawKeys } from './chunkLights.js';
 
 export { STATIONS };
 
@@ -425,29 +426,24 @@ export function buildWorld(scene, { debug = false } = {}) {
     });
     const rank = (k) => (CHUNK_ORDER.includes(k) ? CHUNK_ORDER.indexOf(k) : CHUNK_ORDER.length);
     chunks = [...tally.values()].sort((a, b) => rank(a.key) - rank(b.key) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
-  }
-  // Un material compartido entre mallas normales e instanciadas (o instanciadas con y sin color por instancia)
-  // obliga a recalcular la clave del programa en cada dibujo: cada variante instanciada recibe su clon. Los
-  // materiales M.* no se modifican en tiempo de ejecución (los animados son propios de cada estación).
-  const kindOf = (o) => (o.isInstancedMesh ? (o.instanceColor ? 2 : 1) : 0);
-  const kinds = new Map();
-  root.traverse((o) => {
-    if (!o.isMesh || Array.isArray(o.material)) return;
-    if (!kinds.has(o.material)) kinds.set(o.material, new Set());
-    kinds.get(o.material).add(kindOf(o));
-  });
-  const clones = new Map();
-  root.traverse((o) => {
-    if (!o.isInstancedMesh || Array.isArray(o.material) || kinds.get(o.material).size < 2) return;
-    const key = `${o.material.uuid}|${kindOf(o)}`;
-    if (!clones.has(key)) {
-      const c = o.material.clone();
-      c.onBeforeCompile = o.material.onBeforeCompile;
-      c.customProgramCacheKey = o.material.customProgramCacheKey;
-      clones.set(key, c);
+    // Cada malla de material iluminado recibe el clon de su material para su fragmento y su tipo (chunkLights.js).
+    // El tipo hace de paso lo que antes hacía un bloque aparte: un material compartido entre mallas normales e
+    // instanciadas (o instanciadas con y sin color por instancia) obligaba a recalcular la clave del programa en
+    // cada dibujo, y ahora cada variante tiene su clon. Los M.* no se modifican en tiempo de ejecución; los
+    // animados son propios de cada estación y su clon sigue al original (LIVE_PROPS). Cada clon se ordena al
+    // dibujar como el material que sustituye (`userData.sortId`, ver `opaqueSort`).
+    // (con ?debug&nobake no hay fragmentos y tampoco clones)
+    const kindOf = (o) => (o.isInstancedMesh ? (o.instanceColor ? 2 : 1) : 0);
+    const factory = createMaterialFactory();
+    const lit = [];
+    root.traverse((o) => o.isMesh && isLit(o.material) && lit.push(o));
+    const sortIds = drawKeys(lit, kindOf);
+    for (const o of lit) {
+      const clone = factory.materialFor(o.material, o.userData.chunk, kindOf(o));
+      clone.userData.sortId = sortIds.get(o);
+      o.material = clone;
     }
-    o.material = clones.get(key);
-  });
+  }
   performance.mark('eb:bake');
 
   return {
