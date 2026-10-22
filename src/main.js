@@ -518,10 +518,13 @@ async function start3D() {
 
   // ---------- Calentamiento bajo el velo ----------
   // Lo que el driver hace la primera vez que un programa, un estado o una textura entran en cuadro (variantes de
-  // sombreador por formato de vértices y de destino, materiales de sombra y de salida, mapa de sombras, primeros
-  // redibujos de las pantallas vivas) se adelanta a la carga: se dibujan a tamaño mínimo los encuadres del recorrido,
-  // con el estado narrativo de cada uno para que las pantallas vivas se dibujen también. Sin tocar el DOM; después se
-  // restaura el tamaño real.
+  // sombreador por formato de vértices y de destino, materiales de sombra y de salida, mapa de sombras) se adelanta a la
+  // carga: se dibujan a tamaño mínimo los encuadres del recorrido, con la simulación y las conexiones de cada uno. Sin
+  // tocar el DOM ni el estado de las estaciones; después se restaura el tamaño real.
+  // No se llama a world.update: las estaciones guardan estado entre fotogramas (pantallas que solo se redibujan al
+  // cambiar su lectura, contadores, la baliza y la cinta del reciclaje, el desplazamiento de las trazas, el guion del
+  // taller) y lo que dejara el calentamiento se vería en la primera visita. Con movimiento reducido ese estado no se
+  // vuelve a escribir nunca: llamándolo, 7 de los 8 capítulos salían distintos en la primera visita.
   function renderAt(p) {
     const shot = sample(tl, p, camera.aspect, camPos, camTgt);
     camera.position.copy(camPos);
@@ -530,18 +533,16 @@ async function start3D() {
       camera.fov = shot.fov;
       camera.updateProjectionMatrix();
     }
-    // mismas fórmulas que frame() sin movimiento reducido
-    const cs = chapterState(tl, p);
-    const sim = THREE.MathUtils.clamp((p - tl.marks.sim) / (ch4.anchor - tl.marks.sim), 0, 1);
-    const arrived = world.setSimulation(sim);
-    const conn = THREE.MathUtils.clamp((p - tl.marks.conn) / (ch6.anchor - tl.marks.conn), 0, 1);
-    world.setConnections(conn);
-    world.update(0, 1 / 60, { index: cs.index, vis: cs.vis, local: cs.local, p, sim, route: arrived.near, conn, reduced: false });
+    // mismas fórmulas que frame() sin movimiento reducido; las dos son funciones puras de su valor y warmUp() las
+    // devuelve a 0
+    world.setSimulation(THREE.MathUtils.clamp((p - tl.marks.sim) / (ch4.anchor - tl.marks.sim), 0, 1));
+    world.setConnections(THREE.MathUtils.clamp((p - tl.marks.conn) / (ch6.anchor - tl.marks.conn), 0, 1));
     composer.render(1 / 60);
   }
   // portada, anclajes, arranque de la simulación y de las conexiones, y los tramos de vuelo largos
   const WARMUP_POINTS = [0, ...tl.anchors.slice(1), tl.marks.sim, tl.marks.conn, 0.2525, 0.512, 0.668, 0.915];
   async function warmUp() {
+    const fov = camera.fov;
     renderer.setSize(64, 36, false);
     composer.setSize(64, 36);
     bloom.resolution.set(64, 36);
@@ -552,6 +553,11 @@ async function start3D() {
     }
     world.setSimulation(0);
     world.setConnections(0);
+    // la cámara vuelve a su apertura inicial: frame() solo la cambia si difiere más de 1e-3
+    camera.fov = fov;
+    // el primer encuadre generó el mapa de sombras (y compiló sus materiales) con el mundo tal como sale de buildWorld;
+    // el primer fotograma real lo vuelve a generar después de su world.update, como sin calentamiento
+    renderer.shadowMap.needsUpdate = true;
     layout();
   }
 
