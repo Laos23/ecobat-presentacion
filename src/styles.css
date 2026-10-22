@@ -642,6 +642,11 @@ svg:not(.qr__code svg) {
 .annex.is-open {
   transform: none;
 }
+/* Cerrado ([hidden], tras la transición de salida): display: flex anula el display: none del atributo, así que
+   se oculta con visibility para que sus enlaces no reciban el foco fuera de la pantalla ni los lea un lector. */
+.annex[hidden] {
+  visibility: hidden;
+}
 .annex__head {
   display: flex;
   align-items: center;

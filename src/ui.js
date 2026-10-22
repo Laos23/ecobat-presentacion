@@ -253,12 +253,12 @@ export function buildAnnex(root) {
 // Vista estática: para movimiento reducido elegido o sin WebGL.
 export function buildStatic(root, reason, posterUrl) {
   root.innerHTML = `
-    <header class="static__head">
+    <div class="static__head">
       <h1 class="wordmark">Eco<span>Bat</span></h1>
       <p class="tagline">${rich(intro.tagline)}</p>
       <p class="lede">${rich(intro.lede)}</p>
       <p class="static__reason">${esc(reason)}</p>
-    </header>
+    </div>
     <figure class="static__poster">
       <img src="${posterUrl}" alt="Ilustración del mundo EcoBat: depósito, taller, laboratorio, cruce de tres rutas, planta de reciclaje y centro de trazabilidad conectados por una línea lima." width="1983" height="793" loading="eager">
       <figcaption>Ilustración conceptual de referencia; no muestra instalaciones reales.</figcaption>
