@@ -657,6 +657,10 @@ async function start3D() {
       info() {
         return { ...renderer.info.render, textures: renderer.info.memory.textures, geometries: renderer.info.memory.geometries };
       },
+      // fragmentos del mundo (world.js): clave, mallas e instanciadas de cada uno (vacío con &nobake)
+      chunks() {
+        return world.chunks.map((c) => ({ ...c }));
+      },
     };
   }
 }

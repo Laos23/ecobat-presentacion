@@ -135,3 +135,119 @@ export function findLightViolations(entries, lights) {
   }
   return out;
 }
+
+// ---------- Orden de dibujo al partir mallas por fragmento ----------
+// three dibuja los opacos ordenados por material, distancia (centro de la esfera envolvente) e id, y dentro de
+// una malla los triángulos en el orden del búfer. Donde dos superficies del mismo material quedan a menos de un
+// cuanto de profundidad en una muestra (cruces, apoyos, caras casi coplanarias) gana la que se dibuja después,
+// así que partir una malla fusionada o instanciada en una malla por fragmento cambiaría píxeles sueltos (y el
+// orden de mezcla de las transparentes). Para no cambiar ninguno:
+//   1. las piezas se reparten en tramos que no invierten dos piezas que puedan empatar (`orderedRuns`, para la
+//      fusión estática) o que conservan el orden exacto (`consecutiveRuns`, para las instancias);
+//   2. todas las mallas que salen de un mismo original llevan la esfera envolvente del original
+//      (`mergedBoundingSphere`, `instancedBoundingSphere`): three les da la misma distancia y las dibuja por id
+//      (en el orden de los tramos, que es el de creación) en el puesto del original. kit.js recorta cada tramo
+//      con su propia esfera (un tramo fuera del encuadre no tiene ningún fragmento).
+
+// Dos superficies solo pueden empatar si están a menos de un cuanto de profundidad: con 24 bits y la cámara de
+// main.js (planos a 0,5 y 700 m), d² / 0,5 · 2^-24 vale como mucho 5,9 cm. Cada caja se amplía este margen.
+export const TIE_MARGIN = 0.06;
+
+// Reparte `items` (en el orden de dibujo original) en tramos de un solo fragmento: Array<{ chunk, items:
+// [[item, índice original], ...] }>, en el orden en que deben dibujarse. Cada pieza se añade al último tramo de su
+// fragmento salvo que un tramo posterior tenga una pieza de otro fragmento cuya caja corte la suya (esa pieza va
+// antes en el orden original y, si se tocan, debe seguir yendo antes): entonces abre un tramo nuevo al final. Así
+// cada par de piezas cuyas cajas se cortan conserva su orden relativo. `boxOf` debe dar una caja nueva por pieza
+// (ya ampliada con el margen que haga falta); las cajas cerradas cuentan el contacto en una cara. Con cajas
+// infinitas equivale a `consecutiveRuns`.
+export function orderedRuns(items, keyOf, boxOf) {
+  const runs = [];
+  const last = new Map();
+  let i = 0;
+  for (const item of items) {
+    const key = keyOf(item);
+    const b = boxOf(item);
+    const at = last.get(key);
+    let ok = at !== undefined;
+    for (let r = ok ? at + 1 : runs.length; ok && r < runs.length; r++) {
+      const run = runs[r];
+      if (!run.box.intersectsBox(b)) continue;
+      for (const q of run.boxes) {
+        if (q.intersectsBox(b)) {
+          ok = false;
+          break;
+        }
+      }
+    }
+    if (ok) {
+      const run = runs[at];
+      run.items.push([item, i]);
+      run.boxes.push(b);
+      run.box.union(b);
+    } else {
+      last.set(key, runs.length);
+      runs.push({ chunk: key, items: [[item, i]], boxes: [b], box: b.clone() });
+    }
+    i++;
+  }
+  return runs.map(({ chunk, items: list }) => ({ chunk, items: list }));
+}
+
+// Tramos que conservan exactamente el orden original: cada uno agrupa piezas consecutivas del mismo fragmento.
+// Mismo formato que `orderedRuns`. Para las instancias: en las transparentes importa el orden de mezcla de todo
+// lo que se solapa en pantalla, aunque esté lejos en el espacio.
+export function consecutiveRuns(items, keyOf) {
+  const runs = [];
+  let i = 0;
+  for (const item of items) {
+    const key = keyOf(item);
+    const last = runs[runs.length - 1];
+    if (last && last.chunk === key) last.items.push([item, i]);
+    else runs.push({ chunk: key, items: [[item, i]] });
+    i++;
+  }
+  return runs;
+}
+
+const _runBox = new THREE.Box3();
+const _pieceBox = new THREE.Box3();
+const _point = new THREE.Vector3();
+
+// Esfera envolvente de la geometría que saldría de fusionar `geometries` (mergeGeometries), calculada como
+// BufferGeometry.computeBoundingSphere: centro de la caja de todas las posiciones y radio hasta la más lejana.
+// Mismos valores y mismas operaciones, así que el resultado es idéntico bit a bit. No toca las geometrías.
+export function mergedBoundingSphere(geometries, target = new THREE.Sphere()) {
+  _runBox.makeEmpty();
+  for (const g of geometries) {
+    if (g.morphAttributes.position) throw new Error('mergedBoundingSphere: geometría con morph targets');
+    _runBox.union(_pieceBox.setFromBufferAttribute(g.attributes.position));
+  }
+  const center = target.center;
+  _runBox.getCenter(center);
+  let maxRadiusSq = 0;
+  for (const g of geometries) {
+    const pos = g.attributes.position;
+    for (let i = 0, il = pos.count; i < il; i++) {
+      _point.fromBufferAttribute(pos, i);
+      maxRadiusSq = Math.max(maxRadiusSq, center.distanceToSquared(_point));
+    }
+  }
+  target.radius = Math.sqrt(maxRadiusSq);
+  return target;
+}
+
+const _instanceMatrix = new THREE.Matrix4();
+const _instanceSphere = new THREE.Sphere();
+
+// Esfera envolvente de una InstancedMesh con esta geometría y las `count` matrices de `matrices` (Float32Array,
+// 16 valores por instancia, en el orden de las instancias), calculada como InstancedMesh.computeBoundingSphere.
+export function instancedBoundingSphere(geometry, matrices, count, target = new THREE.Sphere()) {
+  if (geometry.boundingSphere === null) geometry.computeBoundingSphere();
+  target.makeEmpty();
+  for (let i = 0; i < count; i++) {
+    _instanceMatrix.fromArray(matrices, i * 16);
+    _instanceSphere.copy(geometry.boundingSphere).applyMatrix4(_instanceMatrix);
+    target.union(_instanceSphere);
+  }
+  return target;
+}

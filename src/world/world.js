@@ -9,6 +9,7 @@ import { buildLab } from './stations/lab.js';
 import { buildJunction } from './stations/junction.js';
 import { buildRecycling } from './stations/recycling.js';
 import { buildHub } from './stations/hub.js';
+import { CHUNK_KEYS, chunkKeyFor } from './chunks.js';
 
 export { STATIONS };
 
@@ -124,6 +125,27 @@ function collectColliders(root) {
   });
   return list;
 }
+
+// Caja en mundo de una malla: la de su geometría (calculada aparte si falta, sin guardarla en la geometría,
+// que puede ser compartida) llevada por su matriz de mundo; en una instanciada, la unión de las de sus
+// instancias (la caja de la geometría sola queda en el origen de las instancias).
+const _gBox = new THREE.Box3();
+const _iBox = new THREE.Box3();
+const _iMat = new THREE.Matrix4();
+function worldBox(o, target) {
+  const g = o.geometry;
+  const local = g.boundingBox || _gBox.setFromBufferAttribute(g.attributes.position);
+  if (!o.isInstancedMesh) return target.copy(local).applyMatrix4(o.matrixWorld);
+  target.makeEmpty();
+  for (let i = 0; i < o.count; i++) {
+    o.getMatrixAt(i, _iMat);
+    target.union(_iBox.copy(local).applyMatrix4(_iMat.premultiply(o.matrixWorld)));
+  }
+  return target;
+}
+
+// Orden de la lista de fragmentos: islas, agua, dinámico y, al final, lo no previsto.
+const CHUNK_ORDER = [...CHUNK_KEYS, 'agua', 'agua-lejana', 'dinamico', 'resto'];
 
 export function buildWorld(scene, { debug = false } = {}) {
   performance.mark('eb:start');
@@ -371,9 +393,39 @@ export function buildWorld(scene, { debug = false } = {}) {
 
   performance.mark('eb:trazas');
   const colliders = debug ? collectColliders(root) : null;
-  // Todo lo fijo se fusiona por material: el detalle no multiplica las llamadas de dibujo.
-  // (con ?debug&nobake se conserva cada pieza por separado para poder identificarla en las pruebas)
-  if (!(debug && typeof location !== 'undefined' && location.search.includes('nobake'))) K.bakeStatic(root);
+  // Todo lo fijo se fusiona por fragmento y material: el detalle no multiplica las llamadas de dibujo y cada
+  // isla queda en sus propias mallas (ver chunks.js). Cada pieza va al fragmento del centro de su caja en
+  // mundo; el agua entera (edges.js, `waterWhole`) va aparte, al fragmento 'agua'.
+  // (con ?debug&nobake se conserva cada pieza por separado para poder identificarla en las pruebas, sin
+  // fusión ni reparto en fragmentos)
+  const baked = !(debug && typeof location !== 'undefined' && location.search.includes('nobake'));
+  const box = new THREE.Box3();
+  const center = new THREE.Vector3();
+  const chunkOfMesh = (o) => {
+    if (o.userData.waterWhole) return 'agua';
+    worldBox(o, box).getCenter(center);
+    return chunkKeyFor(center.x, center.z);
+  };
+  let chunks = [];
+  if (baked) {
+    K.bakeStatic(root, chunkOfMesh);
+    // lo que no se ha fusionado (instanciadas, dinámicas, transparentes) también lleva su fragmento: las diez
+    // baterías de la simulación, que recorren varias islas, van a 'dinamico'; el resto, por su caja
+    root.updateMatrixWorld(true);
+    tokens.forEach(({ b }) => b.traverse((o) => o.isMesh && (o.userData.chunk = 'dinamico')));
+    const tally = new Map();
+    root.traverse((o) => {
+      if (!o.isMesh) return;
+      if (o.userData.chunk === undefined) o.userData.chunk = chunkOfMesh(o);
+      const k = o.userData.chunk;
+      if (!tally.has(k)) tally.set(k, { key: k, meshes: 0, instanced: 0 });
+      const t = tally.get(k);
+      t.meshes++;
+      if (o.isInstancedMesh) t.instanced++;
+    });
+    const rank = (k) => (CHUNK_ORDER.includes(k) ? CHUNK_ORDER.indexOf(k) : CHUNK_ORDER.length);
+    chunks = [...tally.values()].sort((a, b) => rank(a.key) - rank(b.key) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+  }
   // Un material compartido entre mallas normales e instanciadas (o instanciadas con y sin color por instancia)
   // obliga a recalcular la clave del programa en cada dibujo: cada variante instanciada recibe su clon. Los
   // materiales M.* no se modifican en tiempo de ejecución (los animados son propios de cada estación).
@@ -406,5 +458,7 @@ export function buildWorld(scene, { debug = false } = {}) {
     setSimulation,
     setConnections,
     colliders,
+    // fragmentos: { key, meshes (mallas, instanciadas incluidas), instanced } (vacío con ?debug&nobake)
+    chunks,
   };
 }

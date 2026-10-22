@@ -3,6 +3,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as T from './textures.js';
 import * as P from './pbr.js';
+import { chunkKeyFor, orderedRuns, consecutiveRuns, mergedBoundingSphere, instancedBoundingSphere, TIE_MARGIN } from './chunks.js';
 
 // Gramática de materiales compartida por todo el diorama.
 // `userData.tile` = tamaño en unidades de mundo de una tesela (las UV se proyectan en mundo al fusionar).
@@ -636,6 +637,50 @@ function trunkGeometry() {
   ]);
 }
 
+// ---------- Mallas partidas por fragmento ----------
+// Cada malla que sale de partir una fusión o una InstancedMesh por fragmento ordena con la esfera del original
+// (three la coloca en el puesto del original y, entre las del mismo original, por orden de creación; ver
+// chunks.js) pero se recorta con la suya: three llama a `intersectsFrustum` (pase principal y sombra) y un
+// tramo fuera del encuadre no tiene ningún fragmento, así que recortarlo no cambia ningún píxel.
+const _cullSphere = new THREE.Sphere();
+function ownCulling(obj, own) {
+  obj.intersectsFrustum = function intersectsFrustum(frustum) {
+    return frustum.intersectsSphere(_cullSphere.copy(own).applyMatrix4(this.matrixWorld));
+  };
+}
+
+// ---------- Instanciado por fragmento ----------
+// En lugar de una InstancedMesh para todo el mundo, una por tramo de fragmento: las instancias van en su orden
+// original exacto (cada tramo agrupa instancias consecutivas del mismo fragmento: chunks.js · consecutiveRuns) y
+// cada malla ordena con la esfera de la que sería la InstancedMesh única. Agrupar instancias no consecutivas que
+// no se tocan sería exacto en teoría para las opacas, pero con las rocas cambiaba en la GPU el último bit de la
+// mezcla aditiva de algún charco de luz cercano (1/255 en un píxel); en las transparentes el orden de mezcla
+// importa además en todo lo que se solapa en pantalla. Las matrices se guardan en Float32Array, como las de
+// InstancedMesh, para que esferas e instancias usen exactamente los mismos valores.
+
+// Tramos de instancias: índices de `items` en tramos de instancias consecutivas del mismo fragmento.
+function instanceRuns(items, keyOf) {
+  return consecutiveRuns(items.map((_, k) => k), (k) => keyOf(items[k]));
+}
+
+// Una InstancedMesh por tramo con las matrices de sus instancias, que ordena con la esfera `sphere` de la malla
+// única y se recorta con la suya; `decorate(im, j, k)` completa la instancia j (la k del original), p. ej. con su
+// color.
+function runMeshes(geom, mat, runs, matrices, sphere, decorate) {
+  return runs.map(({ chunk, items }) => {
+    const im = new THREE.InstancedMesh(geom, mat, items.length);
+    items.forEach(([k], j) => {
+      im.instanceMatrix.array.set(matrices.subarray(k * 16, k * 16 + 16), j * 16);
+      if (decorate) decorate(im, j, k);
+    });
+    im.computeBoundingSphere();
+    ownCulling(im, im.boundingSphere.clone());
+    im.boundingSphere = sphere.clone();
+    im.userData.chunk = chunk;
+    return im;
+  });
+}
+
 // Árboles pequeños, arbustos y matas. Cada punto: { x, y (base), z, s, kind: 'tree' | 'shrub' | 'low',
 // r? (giro), lean? (inclinación hacia +z local), sx?, sz? (estirado en x/z local: setos a lo largo de un
 // canto) }; `shrub: true` equivale a kind 'shrub'. Todas las copas comparten el material de hojas.
@@ -647,27 +692,33 @@ export function scatterTrees(M, points) {
   const o = new THREE.Object3D();
   o.rotation.order = 'YXZ';
   const tint = new THREE.Color();
+  // mallas instanciadas por fragmento (la isla de cada planta); el giro por defecto y el tono dependen del
+  // índice `i` de la planta en su lista, que el reparto conserva
   const batch = (geom, mat, items, { shadow = true, colour = true, stretch = true } = {}) => {
     if (!items.length) return;
-    const im = new THREE.InstancedMesh(geom, mat, items.length);
-    items.forEach(([p, i], j) => {
+    const matrices = new Float32Array(items.length * 16);
+    items.forEach(([p, i], k) => {
       const sc = p.s || 1;
       o.position.set(p.x, p.y, p.z);
       o.rotation.set(p.lean || 0, p.r ?? i * 2.39, 0);
       o.scale.set(sc * (stretch ? p.sx || 1 : 1), sc, sc * (stretch ? p.sz || 1 : 1));
       o.updateMatrix();
-      im.setMatrixAt(j, o.matrix);
-      if (colour) {
-        const h = ((i * 2654435761) >>> 0) / 4294967296;
-        const w = ((i * 40503) % 97) / 97;
-        const b = 0.75 + h * 0.3;
-        tint.setRGB(b * (0.97 + 0.08 * w), b, b * (0.9 - 0.08 * w));
-        im.setColorAt(j, tint);
-      }
+      o.matrix.toArray(matrices, k * 16);
     });
-    im.castShadow = shadow;
-    im.receiveShadow = true;
-    g.add(im);
+    const runs = instanceRuns(items, ([p]) => chunkKeyFor(p.x, p.z));
+    const paint = (im, j, k) => {
+      const i = items[k][1];
+      const h = ((i * 2654435761) >>> 0) / 4294967296;
+      const w = ((i * 40503) % 97) / 97;
+      const b = 0.75 + h * 0.3;
+      tint.setRGB(b * (0.97 + 0.08 * w), b, b * (0.9 - 0.08 * w));
+      im.setColorAt(j, tint);
+    };
+    runMeshes(geom, mat, runs, matrices, instancedBoundingSphere(geom, matrices, items.length), colour ? paint : null).forEach((im) => {
+      im.castShadow = shadow;
+      im.receiveShadow = true;
+      g.add(im);
+    });
   };
   const trees = list('tree');
   const shrubs = list('shrub');
@@ -728,22 +779,29 @@ export function scatterRocks(M, points, { mat } = {}) {
   points.forEach((p, i) => lists[p.v ?? i % 3].push([p, i]));
   const o = new THREE.Object3D();
   const c = new THREE.Color();
+  // mallas instanciadas por variante y fragmento; giro, escala y tono siguen el índice original `i`
   lists.forEach((list, k) => {
     if (!list.length) return;
-    const m = new THREE.InstancedMesh(geoms[k], rockMat, list.length);
-    list.forEach(([p, i], j) => {
+    const matrices = new Float32Array(list.length * 16);
+    list.forEach(([p, i], q) => {
       o.position.set(p.x, p.y, p.z);
       o.rotation.set((i % 5) * 0.06 - 0.12, p.r ?? i * 2.3, (i % 3) * 0.05 - 0.05);
       o.scale.set(p.s * (0.95 + (i % 3) * 0.18), p.s * (p.sy ?? (0.9 + (i % 4) * 0.1)), p.s * (0.9 + (i % 2) * 0.2));
       o.updateMatrix();
-      m.setMatrixAt(j, o.matrix);
+      o.matrix.toArray(matrices, q * 16);
+    });
+    const runs = instanceRuns(list, ([p]) => chunkKeyFor(p.x, p.z));
+    const paint = (m, j, q) => {
+      const i = list[q][1];
       const t = 0.78 + (i % 6) * 0.05;
       c.setRGB(t * 1.02, t, t * 0.97);
       m.setColorAt(j, c);
+    };
+    runMeshes(geoms[k], rockMat, runs, matrices, instancedBoundingSphere(geoms[k], matrices, list.length), paint).forEach((m) => {
+      m.receiveShadow = true;
+      m.castShadow = true;
+      g.add(m);
     });
-    m.receiveShadow = true;
-    m.castShadow = true;
-    g.add(m);
   });
   return g;
 }
@@ -754,7 +812,6 @@ export function scatterRocks(M, points, { mat } = {}) {
 // pool? (diámetro), nrm? (normal del suelo bajo el charco, para tableros en pendiente) }.
 export function scatterLamps(M, points) {
   const g = new THREE.Group();
-  const n = points.length;
   const body = geo('bollardV2', () => {
     const parts = [
       new THREE.BoxGeometry(0.19, 0.03, 0.19).translate(0, 0.015, 0),
@@ -764,8 +821,7 @@ export function scatterLamps(M, points) {
     [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(([x, z]) => parts.push(new THREE.BoxGeometry(0.022, 0.18, 0.022).translate(x * 0.054, 0.48, z * 0.054)));
     return mergeGeometries(parts);
   });
-  const posts = new THREE.InstancedMesh(body, M.graphite, n);
-  const glow = new THREE.InstancedMesh(geo('bollardLensV2', () => new THREE.BoxGeometry(0.112, 0.18, 0.112).translate(0, 0.48, 0)), M.warmGlow, n);
+  const lens = geo('bollardLensV2', () => new THREE.BoxGeometry(0.112, 0.18, 0.112).translate(0, 0.48, 0));
   // el charco queda bajo el canto de la placa de anclaje (la placa lo tapa) y se adelanta en profundidad
   // para no parpadear con el suelo
   const poolMat = new THREE.MeshBasicMaterial({
@@ -777,46 +833,65 @@ export function scatterLamps(M, points) {
     polygonOffsetFactor: -1,
     polygonOffsetUnits: -1,
   });
-  const pools = new THREE.InstancedMesh(geo('poolV2', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), poolMat, n);
+  const poolGeo = geo('poolV2', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2));
   const o = new THREE.Object3D();
   const up = new THREE.Vector3(0, 1, 0);
   const nv = new THREE.Vector3();
+  const n = points.length;
+  const postAt = new Float32Array(n * 16);
+  const poolAt = new Float32Array(n * 16);
   points.forEach((p, i) => {
     o.position.set(p.x, p.y, p.z);
     o.quaternion.setFromAxisAngle(up, p.r || 0);
     o.scale.setScalar(1);
     o.updateMatrix();
-    posts.setMatrixAt(i, o.matrix);
-    glow.setMatrixAt(i, o.matrix);
+    o.matrix.toArray(postAt, i * 16);
     o.position.set(p.x + (p.ox || 0), (p.fy ?? p.y) + 0.006, p.z + (p.oz || 0));
     if (p.nrm) o.quaternion.setFromUnitVectors(up, nv.set(p.nrm.x, p.nrm.y, p.nrm.z).normalize());
     else o.quaternion.identity();
     o.scale.set(p.pool || 2.3, 1, p.pool || 2.3);
     o.updateMatrix();
-    pools.setMatrixAt(i, o.matrix);
+    o.matrix.toArray(poolAt, i * 16);
   });
-  posts.castShadow = true;
-  pools.renderOrder = 2;
-  g.add(posts, glow, pools);
+  // fuste, difusor y charco: mallas instanciadas por fragmento (la isla de cada baliza), con los mismos tramos
+  // para las tres piezas; como el charco es transparente (mezcla aditiva), los tramos conservan el orden exacto
+  // de las balizas. En el grupo van por pieza, como antes: todos los fustes, después los difusores y al final
+  // los charcos
+  const runs = instanceRuns(points, (p) => chunkKeyFor(p.x, p.z));
+  const posts = runMeshes(body, M.graphite, runs, postAt, instancedBoundingSphere(body, postAt, n));
+  const glows = runMeshes(lens, M.warmGlow, runs, postAt, instancedBoundingSphere(lens, postAt, n));
+  const pools = runMeshes(poolGeo, poolMat, runs, poolAt, instancedBoundingSphere(poolGeo, poolAt, n));
+  posts.forEach((m) => (m.castShadow = true));
+  pools.forEach((m) => (m.renderOrder = 2));
+  if (n) g.add(...posts, ...glows, ...pools);
   return g;
 }
 
-// Sombras de contacto: manchas suaves bajo los objetos apoyados.
+// Sombras de contacto: manchas suaves bajo los objetos apoyados. Devuelve un grupo con una malla instanciada
+// por tramo de fragmento (la isla de cada mancha).
 export function contactShadows(items) {
   // casi a ras del suelo (4 mm) y con desfase de profundidad: oscurece el suelo sin cortar tablas, chapas ni
   // alfombrillas que asoman a 1–2 cm (a 2 cm se cruzaba con ellas y parpadeaba)
   const mat = new THREE.MeshBasicMaterial({ map: P.radial('rgba(8,8,8,0.62)', 'rgba(8,8,8,0)'), transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -4 });
-  const m = new THREE.InstancedMesh(geo('contact', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), mat, items.length);
+  const geom = geo('contact', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2));
+  const g = new THREE.Group();
   const o = new THREE.Object3D();
+  const n = items.length;
+  const matrices = new Float32Array(n * 16);
   items.forEach((it, i) => {
     o.position.set(it.x, it.y + 0.004, it.z);
     o.rotation.set(0, it.r || 0, 0);
     o.scale.set(it.w, 1, it.d);
     o.updateMatrix();
-    m.setMatrixAt(i, o.matrix);
+    o.matrix.toArray(matrices, i * 16);
   });
-  m.renderOrder = 1;
-  return m;
+  // tramos con el orden exacto de las manchas (transparentes: importa el orden de mezcla)
+  const runs = instanceRuns(items, (it) => chunkKeyFor(it.x, it.z));
+  runMeshes(geom, mat, runs, matrices, instancedBoundingSphere(geom, matrices, n)).forEach((m) => {
+    m.renderOrder = 1;
+    g.add(m);
+  });
+  return g;
 }
 
 // ---------- Plataformas ----------
@@ -1160,9 +1235,14 @@ export function circleShape(r) {
 }
 
 // ---------- Fusión estática ----------
-// Une las mallas fijas en una malla por material (menos draw calls) y proyecta UV en
-// coordenadas de mundo para que hormigón, roca y metal conserven escala y orientación.
-export function bakeStatic(root) {
+// Une las mallas fijas por fragmento y material (menos draw calls) y proyecta UV en coordenadas de mundo para
+// que hormigón, roca y metal conserven escala y orientación. `chunkOf(malla)` da el fragmento de cada pieza (ver
+// chunks.js); cada malla fusionada lo lleva en `userData.chunk`. Las piezas de un material se reparten en tramos
+// de un solo fragmento que conservan el orden de dibujo de la fusión única por material (chunks.js ·
+// orderedRuns; casi siempre un tramo por fragmento) y todas llevan la esfera envolvente de esa fusión única:
+// three las ordena como a ella y ningún píxel cambia; cada tramo se recorta con su propia esfera (ownCulling).
+// Por defecto todo va a 'resto': una malla por material, como sin fragmentos.
+export function bakeStatic(root, chunkOf = () => 'resto') {
   root.updateMatrixWorld(true);
   const groups = new Map();
   const remove = [];
@@ -1193,18 +1273,28 @@ export function bakeStatic(root) {
       }
     }
     const key = o.material.uuid;
-    if (!groups.has(key)) groups.set(key, { mat: o.material, list: [] });
-    groups.get(key).list.push(g);
+    if (!groups.has(key)) groups.set(key, { mat: o.material, list: [], chunks: [] });
+    const group = groups.get(key);
+    group.list.push(g);
+    group.chunks.push(chunkOf(o));
     remove.push(o);
   });
   remove.forEach((o) => o.parent.remove(o));
   const out = new THREE.Group();
-  groups.forEach(({ mat, list }) => {
-    const m = new THREE.Mesh(mergeGeometries(list), mat);
-    // las piezas luminosas no proyectan sombra
-    m.castShadow = !(mat.isMeshBasicMaterial || mat.emissiveIntensity > 0.3);
-    m.receiveShadow = true;
-    out.add(m);
+  groups.forEach(({ mat, list, chunks }) => {
+    const sphere = mergedBoundingSphere(list);
+    const runs = orderedRuns(list.map((_, k) => k), (k) => chunks[k], (k) => new THREE.Box3().setFromBufferAttribute(list[k].attributes.position).expandByScalar(TIE_MARGIN));
+    runs.forEach(({ chunk, items }) => {
+      const geometry = mergeGeometries(items.map(([k]) => list[k]));
+      const m = new THREE.Mesh(geometry, mat);
+      ownCulling(m, mergedBoundingSphere([geometry]));
+      geometry.boundingSphere = sphere.clone();
+      // las piezas luminosas no proyectan sombra
+      m.castShadow = !(mat.isMeshBasicMaterial || mat.emissiveIntensity > 0.3);
+      m.receiveShadow = true;
+      m.userData.chunk = chunk;
+      out.add(m);
+    });
   });
   root.add(out);
   return out;
