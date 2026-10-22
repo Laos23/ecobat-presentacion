@@ -1,8 +1,10 @@
 # Rendimiento en gráficas integradas sin cambiar el diseño
 
-Fecha: 2026-10-21. Estado: aprobado (revisado por un constructor independiente; enmienda de la tarea 7 aprobada el 2026-10-22).
+Fecha: 2026-10-21. Estado: aprobado (revisado por un constructor independiente; enmiendas de las tareas 7 y 8 aprobadas el 2026-10-22).
 
 Enmienda del 2026-10-22, hecha durante la implementación (tarea 7 del plan): §6.1, §6.2, §6.3, §6.4 y §8 recogen la guarda por píxel del sombreador inyectado, los conjuntos de luces por pieza y el relleno por parejas de tamaño. **La enmienda queda aprobada el 2026-10-22 por decisión del ejecutor autónomo, con la autorización general de la usuaria («evalúa lo que creas mejor y sigue»): conserva los píxeles idénticos y cumple el objetivo de GPU; si la usuaria la rechaza, §10 explica cómo deshacer cada parte.** §10 resume qué cambia respecto al texto del commit `723b652`, por qué, con qué medidas y cómo deshacer cada parte.
+
+Enmienda del 2026-10-22, hecha durante la implementación (tarea 8 del plan): §2, §6.4, §6.5, §6.6, §7.2 y §7.3 recogen el ritmo de la GPU (§6.7, nuevo), el límite de carga de 1,0 s en la RTX 5090 y la compilación del bloom a la vez que la del mundo. **Queda aprobada el 2026-10-22 por decisión del ejecutor autónomo, con la misma autorización general de la usuaria: conserva los píxeles idénticos y cumple la puerta de tirones, que el calentamiento por sí solo no cumplía.** §11 resume qué cambia, por qué, con qué medidas y cómo deshacer cada parte.
 
 ## 1. Intención
 
@@ -17,7 +19,7 @@ Objetivos:
 - En la integrada de referencia de este PC (§4), el tiempo de GPU por fotograma en cada anclaje baja al menos un 45 % (p. ej. de 55-77 ms a 30-40 ms). Extrapolado a una Vega 7, unas tres veces más rápida, eso son 60 fps estables.
 - Desaparecen los tirones al entrar por primera vez en cada zona: tras levantar el velo, ningún fotograma supera los 120 ms en un recorrido completo con rueda rápida y saltos por teclas, medido en la integrada de referencia. Esta es la puerta dura.
 - El coste de JS del hilo principal por fotograma no supera los 4 ms en este PC (hoy 1,1-2,2 ms).
-- La carga (velo) crece como mucho 3 s en la integrada de referencia (orientativo) y 0,5 s en la RTX 5090. Si en la referencia no caben la carga y los tirones a la vez, manda la navegación: se acepta hasta +4 s de carga en la referencia (≈ +1,5 s en una Vega 7) siempre que la barra del velo siga avanzando.
+- La carga (velo) crece como mucho 3 s en la integrada de referencia (orientativo) y 1,0 s en la RTX 5090 (enmienda, §11; antes 0,5 s). Si en la referencia no caben la carga y los tirones a la vez, manda la navegación: se acepta hasta +4 s de carga en la referencia (≈ +1,5 s en una Vega 7) siempre que la barra del velo siga avanzando.
 - `?debug`, `?debug&nobake`, el movimiento reducido, la versión estática y la publicación en GitHub Pages siguen funcionando igual.
 
 No objetivos (quedan fuera, decidido con la usuaria):
@@ -135,7 +137,7 @@ Con `?debug&nobake` se mantiene el camino actual (sin fragmentos ni clones), par
 
 three compila un programa por combinación de parámetros del material y tamaño del conjunto `(K_point, K_spot)`; la guarda de §6.3 es la misma en todos los clones y no añade ninguno. El relleno de §6.2 mantiene el total acotado; objetivo orientativo: no más de 120 programas (hoy 50). Con las cinco clases de las islas salen 104; sin relleno serían 129 (enmienda, §10).
 
-Antes del primer fotograma, y bajo el velo, se compila en paralelo (`KHR_parallel_shader_compile`) como hoy: `renderer.setRenderTarget(composer.readBuffer)` y `await renderer.compileAsync(scene, camera)`. Como todos los clones están en la escena, una sola llamada los cubre. Los materiales de bloom, salida y profundidad de sombras se compilan en el primer fotograma del calentamiento (§6.5), también bajo el velo. La generación del PMREM sigue siendo síncrona (sin acceso a sus programas internos); se acepta.
+Antes del primer fotograma, y bajo el velo, se compila en paralelo (`KHR_parallel_shader_compile`) como hoy: `renderer.setRenderTarget(composer.readBuffer)` y `await renderer.compileAsync(scene, camera)`. Como todos los clones están en la escena, una sola llamada los cubre. Los materiales del bloom se compilan a la vez, con una segunda llamada a `compileAsync` sobre una escena auxiliar con sus materiales y la geometría del cuadro de pantalla completa de three (mismas claves de programa: el bloom dibuja siempre en sus propios destinos); los de salida y profundidad de sombras, en el primer fotograma del calentamiento (§6.5), también bajo el velo. Mientras la GPU compila, el hilo principal sube las texturas de los materiales con `renderer.initTexture` (el mismo camino de subida que al dibujar), que antes subía de golpe el primer fotograma (enmienda, §11). La generación del PMREM sigue siendo síncrona (sin acceso a sus programas internos); se acepta. No se puede pasar detrás de `buildWorld` para solaparla con él: el taller lee `scene.environment` al construirse (`src/world/stations/workshop.js`).
 
 ### 6.5 Calentamiento bajo el velo
 
@@ -143,9 +145,19 @@ Tras compilar, y antes de poner `is-ready`, se renderizan a través del composit
 
 Esto obliga al driver a hacer en la carga todo lo que hoy hace la primera vez que un programa, un estado o una textura entran en cuadro (los picos de 570-605 ms de §4). No toca el DOM de los capítulos. La barra del velo debe seguir avanzando durante compilación y calentamiento (hoy se anima sola; basta con que el hilo principal no se bloquee más de unos 100 ms seguidos, que es lo que dan `compileAsync` y los fotogramas pequeños). Si el calentamiento se come el presupuesto de carga, se recortan primero los tramos de vuelo y nunca los anclajes, y se mide de nuevo el objetivo de tirones (§2): la navegación manda.
 
+El calentamiento quita los costes de primer uso, pero no los fotogramas largos que quedaban en la integrada tras la tarea 7: eran atascos de la cola de la GPU, que se repiten en cada pasada por el mismo tramo, no primeros usos (con 115 encuadres de calentamiento, uno cada 0,01 de p, seguía habiendo 6 fotogramas de más de 120 ms). Los resuelve el ritmo de §6.7 (enmienda, §11).
+
 ### 6.6 Lo que no cambia
 
-Pantallas vivas, texturas procedurales, cámara y coreografía, movimiento reducido (`needsRender` sigue decidiendo cuándo se llama a `composer.render`), versión estática, anexos, navegación por teclas, rutas relativas del build, orden de dibujo de opacos y transparentes (un solo pase).
+Pantallas vivas, texturas procedurales, cámara y coreografía, movimiento reducido (`needsRender` sigue decidiendo cuándo se llama a `composer.render`; con el ritmo de §6.7, un render pendiente se hace en el siguiente rAF en que la GPU tenga sitio), versión estática, anexos, navegación por teclas, rutas relativas del build, orden de dibujo de opacos y transparentes (un solo pase).
+
+### 6.7 Ritmo de la GPU
+
+Como mucho dos fotogramas en vuelo (enmienda, §11). Tras cada `composer.render` de `frame()` se inserta una valla (`gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0)`). En el rAF siguiente, antes de dibujar, se liberan en orden las vallas ya señaladas (`gl.getSyncParameter(valla, gl.SYNC_STATUS)`, que no espera) y, si siguen dos pendientes, ese rAF no dibuja. Todo lo demás del fotograma (scroll, cámara, simulación, conexiones, `world.update`, DOM) se hace igual en cada rAF y con el mismo `dt`, así que el estado no depende de cuándo termina la GPU, y el siguiente fotograma que se dibuja muestra el estado de su instante. Una respuesta distinta de `UNSIGNALED` (también `null` con el contexto perdido) libera la espera.
+
+Por qué: cuando la GPU va justa, Chrome entrega a veces de dos a cinco rAF seguidos, a 3-12 ms, y cada uno encarga un fotograma completo de 30-50 ms de GPU; la cola junta 100-200 ms de trabajo y la presentación se detiene mientras la vacía (`Present` de DXGI bloqueado 85-137 ms en las trazas). Con dos fotogramas en vuelo la GPU sigue igual de ocupada (93-94 % frente a 96 %) y la cola no pasa de dos.
+
+Exactitud: no cambia qué se dibuja ni cómo; solo deja de dibujar fotogramas que la cola habría tapado. En una GPU rápida las vallas están señaladas en el rAF siguiente y no se salta ningún render (mismas llamadas de dibujo que antes en `harness.mjs info`). Las capturas de §7.1 lo comprueban; por eso el estado avanza en cada rAF: si el rAF entero se saltara, el `dt` dependería de la GPU y las pantallas vivas de las capturas con tiempo virtual dejarían de ser repetibles (medido: la de móvil del laboratorio).
 
 ## 7. Verificación
 
@@ -164,11 +176,13 @@ El mundo es determinista entre cargas (los generadores usan semillas; `groundTex
 
 ### 7.2 Rendimiento
 
-Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.mjs`, `sweep.mjs`, `gpuinfo.mjs`, `perfprobe.mjs`, hoy en `C:\Users\yamil\.claude\jobs\7b9bc624\tmp\`) se copian a `.verify/perf/` y se documenta su uso en `.verify/brief.md`. Se ejecutan contra `vite preview` del build `antes` y `después`, en la RTX 5090 y en la integrada (`CHROME_EXTRA="--use-adapter-luid=0,113510"`). Criterios: los de §2 (−45 % de GPU por anclaje en la integrada, ningún fotograma > 120 ms tras el velo, JS ≤ 4 ms, carga ≤ +3 s orientativo y ≤ +4 s duro en la referencia, ≤ +0,5 s en la 5090). Los números finales se recogen en el README (sección de rendimiento) con la fecha.
+Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.mjs`, `sweep.mjs`, `gpuinfo.mjs`, `perfprobe.mjs`, hoy en `C:\Users\yamil\.claude\jobs\7b9bc624\tmp\`) se copian a `.verify/perf/` y se documenta su uso en `.verify/brief.md`. Se ejecutan contra `vite preview` del build `antes` y `después`, en la RTX 5090 y en la integrada (`CHROME_EXTRA="--use-adapter-luid=0,113510"`). Criterios: los de §2 (−45 % de GPU por anclaje en la integrada, ningún fotograma > 120 ms tras el velo, JS ≤ 4 ms, carga ≤ +3 s orientativo y ≤ +4 s duro en la referencia, ≤ +1,0 s en la 5090). Con el ritmo de §6.7 un rAF puede no dibujar, así que `perfprobe.mjs` mide los dos intervalos: entre rAF (`frames`) y entre fotogramas dibujados (`renders`, cuando cambia `renderer.info.render.frame`); la puerta de tirones exige que ninguno de los dos pase de 120 ms (enmienda, §11). Los números finales se recogen en el README (sección de rendimiento) con la fecha.
 
 ### 7.3 Regresiones funcionales
 
 `node harness.mjs info|clearance|motion`, `node navprobe.mjs`, `node consoleprobe.mjs` (cero errores y avisos en consola), `reducedprobe.mjs`, la versión estática y las capturas de móvil deben dar lo mismo que hoy. `?debug&nobake` sigue listando colliders y piezas. `__ecobat.debug.checkLights()` devuelve cero violaciones en los 14 encuadres de 7.1.
+
+El cambio de tamaño después del calentamiento lo comprueba `.verify/perf/resizeprobe.mjs` con la maquinaria de captura repetible de 7.1: en p = 0,302 captura a 1440×810, pasa a 1280×720, vuelve a 1440×810, y compara la vuelta con la ida y la de 1280×720 con la captura de una carga directa a ese tamaño. En esta última se excluye la caja de la píldora de atajos (`.keys`), que tras cambiar de tamaño sale 1 px más alta por redondeo del DOM también en el build `antes`; la secuencia entera, sin excluir nada, es idéntica a la del build `antes` con el mismo cambio de tamaño (enmienda, §11).
 
 ## 8. Riesgos y mitigaciones
 
@@ -181,6 +195,7 @@ Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.
 - Coste de CPU de subir uniformes: los arrays por fragmento son más cortos que los globales de hoy; medir JS por fotograma en este PC y escalar ×2 para un 5500G; límite 4 ms.
 - Encadenado con `uplit`: el clon debe llamar al `onBeforeCompile` original antes de inyectar; la clave de programa debe incluir ambas partes. Verificado que `uplit` no toca `lights_fragment_begin` ni `lights_pars_begin`.
 - Picos del driver no cubiertos por el calentamiento (por ejemplo, el primer uso a tamaño real del destino MSAA): ocurren en el primer fotograma real, aún bajo el velo, porque `is-ready` se pone después de ese fotograma.
+- Ritmo de la GPU (§6.7): si el navegador tardara en dar por señalada una valla, se dibujarían menos fotogramas, nunca fotogramas distintos. En la 5090 se dibujan 9 010 de 9 031 rAF del recorrido de `perfprobe.mjs` (sin ventana, a unos 200 rAF por segundo) y las llamadas de dibujo por fotograma no cambian.
 
 ## 9. Lo que queda al constructor
 
@@ -227,3 +242,50 @@ Medidas en la integrada de referencia, en ms de GPU por fotograma (mediana, 1920
   - Piezas: en `buildWorld` (`src/world/world.js`), calcular cada conjunto con `lightSetFor` sobre la caja que une las piezas. En las medidas sin relleno, c2 pasaba de 38,1 a 39,7 ms.
   - Relleno: `LIGHT_CLASSES` en `src/world/world.js`. Menos clases dan menos programas y más GPU.
   - Agua: dar todas las luces locales al fragmento `agua`.
+
+## 11. Enmienda del 2026-10-22 (tarea 8): ritmo de la GPU, carga en la 5090 y compilación del bloom
+
+Con el calentamiento de §6.5 tal cual, la puerta dura de §2 (ningún fotograma de más de 120 ms tras el velo en la integrada de referencia) seguía en rojo, y el remedio previsto (añadir encuadres de calentamiento) no la movía. La implementación añade el ritmo de la GPU (§6.7), sube el límite de carga en la 5090 por decisión de la usuaria transmitida en el encargo de la tarea y compila el bloom en paralelo. **Aprobada** por decisión del ejecutor autónomo, con la autorización general de la usuaria; todo conserva los píxeles idénticos (42 capturas de §7.1 en verde).
+
+| Punto | Texto anterior | Enmienda |
+|---|---|---|
+| Tirones (§6.5, §6.7) | El calentamiento adelanta los primeros usos; si quedan tirones, más encuadres | Además, como mucho dos fotogramas en vuelo en la GPU (§6.7) |
+| Carga en la 5090 (§2, §7.2) | ≤ +0,5 s | ≤ +1,0 s |
+| Compilación (§6.4) | Bloom, salida y sombras en el primer fotograma del calentamiento | Bloom con `compileAsync`, en paralelo con el mundo; texturas subidas durante la compilación |
+| Medida de tirones (§7.2) | Intervalos entre rAF | Entre rAF y entre fotogramas dibujados |
+
+Medidas en la integrada de referencia (`perfprobe.mjs`, 1920×1080, fase posterior al velo):
+
+| Variante | rAF > 120 ms | Máximo rAF | Dibujados > 120 ms | Máximo dibujado | `readyMs` |
+|---|---|---|---|---|---|
+| Línea base (`antes`) | 136 | 248 ms | — | — | 2 994 |
+| Tarea 7 | 8 | 156 ms | — | — | 3 182 |
+| Tarea 7 + calentamiento de 14 encuadres | 7 | 148 ms | 5 | 144 ms | 3 377-3 538 |
+| Ídem con 115 encuadres (uno cada 0,01 de p; experimento) | 6 | 164 ms | — | — | 4 324 |
+| Entregado: calentamiento + ritmo (cinco pasadas; tres con el contador de dibujados) | 0 | 66-75 ms | 0 | 102-105 ms | 3 242-3 306 |
+
+- Causa de los tirones que quedaban, según trazas de Chrome con categorías de GPU: Chrome entrega a veces de dos a cinco rAF seguidos (a 3-12 ms) y cada uno encarga un fotograma de 30-50 ms de GPU; el hilo principal de la GPU se queda bloqueado en `DXGISwapChainImageBacking::Present` (85-137 ms) o en la ejecución de los comandos WebGL (96 ms) mientras vacía la cola. Se repiten en cada pasada por el mismo tramo (rueda rápida, lenta y teclas), así que no son primeros usos.
+- Fotogramas en vuelo (tramo de rueda lenta desde p = 0,22, consultas de tiempo de GPU): sin límite, 30,8 fotogramas dibujados por segundo con la GPU ocupada el 96 %, pero 135 dibujados a menos de 8 ms del anterior (no llegan a verse) y un máximo de 165 ms; con dos (entregado), 29,8 por segundo, 93 % y un máximo de 73 ms. Con uno y con tres (medidos en la variante que saltaba el rAF entero, abajo): con uno no hay ráfagas, pero la GPU espera entre fotogramas (25,9 por segundo y 81 %); con tres vuelven las ráfagas (50) y 17 intervalos de 67-100 ms.
+- Saltarse el rAF entero cuando la GPU va llena daba un resultado parecido en la integrada (30,6 por segundo, máx. 49 ms), pero hacía que el `dt` dependiera de la GPU: con tiempo virtual, la captura de móvil del laboratorio (390×844, dsf 3, p = 0,4134) dejó de ser repetible (máx. 50 y 78/255 en dos pasadas, en una pantalla viva). Por eso el estado avanza en cada rAF y solo se salta el render.
+- En la 5090 no cambia nada visible: se dibujan 9 010 de 9 031 rAF de `perfprobe.mjs` (sin ventana, unos 200 por segundo), y `harness.mjs info` da las mismas 594 llamadas de dibujo que la tarea 7.
+- Efecto secundario: con el ritmo, en una máquina limitada por la GPU el rAF sigue al ritmo de la pantalla, así que la degradación automática de `main.js` (que salta tras 2,5 s de rAF de más de 1/38 s) casi nunca se activa. Va en la dirección de la decisión 2, que la tarea 9 cumple quitándola.
+
+Carga (mediana de tres cargas en frío, cada una con un Chrome nuevo; marcas `eb:*`):
+
+| | `antes` | Tarea 7 | Entregado |
+|---|---|---|---|
+| RTX 5090 | 2 653 ms | 2 993 ms | 3 026 ms |
+| Integrada de referencia | 2 838 ms | 3 135 ms | 3 207 ms |
+
+- Puerta de §2 con las sondas del plan: en la 5090, `readyMs` de 3 001, 3 042 y 3 182 ms en tres pasadas de `perfprobe.mjs`, frente a 2 636 de `gpu-antes-5090.json`: de +365 a +546 ms. Con el límite anterior de +0,5 s, la tercera pasada lo habría superado; casi todo el coste es de la tarea 7 (104 programas frente a 50; §10). En la integrada, de 3 242 a 3 306 ms frente a 2 994: de +248 a +312 ms (límites +3 s orientativo y +4 s duro).
+- La compilación del bloom en paralelo y la subida de texturas durante la compilación acortan el calentamiento de 423 a 364 ms en la 5090 y de 381 a 258 ms en la integrada (medianas); su bloqueo más largo del hilo principal baja de unos 300 a unos 180 ms en la integrada. La carga total gana de 10 a 40 ms.
+- Observación, sin cambio: en la integrada, mientras dura `compileAsync` la página no recibe fotogramas durante 600-700 ms (en la 5090 no pasa), así que la barra del velo se detiene ese rato. Ya pasaba antes de esta tarea (600 ms en el build de la tarea 7).
+
+Cambio de tamaño (punto de revisión 1): `resizeprobe.mjs` da la vuelta a 1440×810 idéntica a la ida (máx. 0) y la captura a 1280×720 idéntica a la de una carga directa (máx. 0) fuera de la píldora `.keys`, que sale 1 px más alta tras el cambio de tamaño; con el build `antes` pasa exactamente lo mismo (444 píxeles, máx. 107/255), y la secuencia entera, sin excluir nada, coincide con la del build `antes` (máx. 1/255).
+
+Cómo deshacer cada parte:
+
+- Ritmo de la GPU: en `src/main.js`, quitar `MAX_IN_FLIGHT`, `inFlight` y `gpuBusy()`, la condición `&& !gpuBusy()` del render de `frame()` y las dos líneas de la valla. Los píxeles no cambian; la puerta de tirones vuelve a fallar (7 rAF de más de 120 ms, máx. 148).
+- Compilación del bloom y subida de texturas: en el `try` de la compilación de `src/main.js`, dejar solo `await renderer.compileAsync(scene, camera)`. Los píxeles no cambian; la carga sube de 10 a 40 ms.
+- Límite de carga en la 5090: volver a +0,5 s en §2 y §7.2. Para recuperar margen, recortar los cuatro tramos de vuelo del calentamiento (el retroceso del plan) o reducir programas (`LIGHT_CLASSES`, §10).
+- Medida de dibujados en `perfprobe.mjs`: son campos nuevos (`renders`, `rhist`, `nRenders`); los de siempre no cambian.
