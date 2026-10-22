@@ -1117,14 +1117,21 @@ export function buildLab(ctx) {
     st.dial += (td - st.dial) * k;
     st.bars += (tb2 - st.bars) * k;
     st.rows += (tr - st.rows) * k;
-    for (let i = 0; i < queue.length; i++) queue[i].acc += dt;
-    for (let i = 0; i < queue.length; i++) {
-      const q = queue[(turn + i) % queue.length];
-      if (q.acc >= FRAME && q.dirty()) {
-        q.acc = 0;
-        q.s.update(t, story, true);
-        turn = (turn + i + 1) % queue.length;
-        break;
+    if (story.reduced) {
+      // movimiento reducido: la escena solo se renderiza unos fotogramas tras cada corte, y con la cadencia de
+      // 12 fps y una pantalla por fotograma la esfera quedaba sin redibujar («0,0 V»). Se redibuja todo lo
+      // pendiente en este mismo fotograma.
+      for (let i = 0; i < queue.length; i++) if (queue[i].dirty()) queue[i].s.update(t, story, true);
+    } else {
+      for (let i = 0; i < queue.length; i++) queue[i].acc += dt;
+      for (let i = 0; i < queue.length; i++) {
+        const q = queue[(turn + i) % queue.length];
+        if (q.acc >= FRAME && q.dirty()) {
+          q.acc = 0;
+          q.s.update(t, story, true);
+          turn = (turn + i + 1) % queue.length;
+          break;
+        }
       }
     }
     led.material = st.dial > 0.985 ? M.lime : M.amberGlow;
