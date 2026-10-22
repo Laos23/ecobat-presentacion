@@ -5,6 +5,8 @@ export default defineConfig({
   base: './',
   build: {
     target: 'es2020',
-    chunkSizeWarningLimit: 1200,
+    // El anexo con datos reales y más de cien fuentes añade unos 65 kB de texto al único chunk (main.js importa
+    // content.js de forma estática); el margen sigue avisando si crece el código del mundo 3D.
+    chunkSizeWarningLimit: 1300,
   },
 });

@@ -1,0 +1,3204 @@
+# Informe de investigación consolidado para EcoBat
+
+Gestión y reciclaje de baterías de coche. Consolidación de 15 temas de investigación con la verificación independiente de cada hecho. Fecha de consulta de las fuentes: 2026-10-21.
+
+Los números entre corchetes ([n]) remiten a la lista numerada de la sección 7 y a `sources.json`. Los identificadores de hecho (por ejemplo `composicion-f1`) coinciden con `verified-facts.json`.
+
+Campos de `verified-facts.json` además de los pedidos (id, topic, claim, value, scope, sources, usableIn, confidence, evidence): `verdict` (confirmado o confirmado-con-correccion), `caveat` (matiz del verificador, con referencias ya traducidas a [n]), `originalClaim` y `originalValue` (solo en hechos corregidos), `consolidation` (cambio aplicado al resolver una contradicción) y `conflicts` (contradicciones C1 a C23 que afectan al hecho). Campos extra de `sources.json`: `alternateUrls` (variantes del mismo documento fusionadas), `topics` y `factIds` (hechos que sostiene).
+
+## 1. Resumen
+
+- Hechos verificados: **298** de 15 temas (266 confirmados tal cual y 32 confirmados con corrección; en estos se usa el texto corregido y el original queda en `originalClaim`).
+- Hechos descartados: **0**. El verificador no emitió ningún veredicto «no confirmado» ni «fuente inaccesible».
+- Fuentes numeradas: **469** (de 562 entradas de partida: 451 de los investigadores y 111 aportadas por los verificadores). Se excluyeron 5 marcadas como «no citar» o «solo contexto», se eliminaron duplicados por URL final (502 URL distintas) y se fusionaron 33 variantes del mismo documento (idioma, formato o espejo; las URL fusionadas constan en `alternateUrls`). Las 471 entradas con estado de verificación cargaron correctamente (ninguna con ok falso); las demás son extras del verificador sin estado propio.
+- Contradicciones entre temas: **23** (16 resueltas con criterio de fuente primaria y más reciente, 7 marcadas con indicación de cómo citarlas).
+
+### Mensajes clave para la web
+
+- El reparto hipotético de 10 baterías (2/1/7) y el ejemplo del 90 % de trazabilidad no tienen datos reales detrás. Ni Eurostat ni ninguna otra fuente publican cuántas baterías de coche sustituidas siguen en servicio, pasan a segunda vida o se reciclan; deben seguir rotulados como hipótesis o ejemplo ilustrativo (elemento D). La cifra verificada más cercana al 90 % es el índice estatal de recogida de 90,85 % (2024), que no mide trazabilidad.
+- Composición: aproximadamente 60 % plomo, 7 % plástico y 30 % electrolito (Eurobat/IHS, UE), coherente con la ficha de Bosch; otras fuentes dan plomo entre 58 y 67 % (C8). Peso de una batería de turismo: de 9,3 a 21,8 kg en fichas de fabricantes (36 a 95 Ah) y 18 kg de referencia europea para 70 Ah.
+- QR y pasaporte: el QR es obligatorio en todas las baterías desde el 18-2-2027, pero el pasaporte solo en las de vehículos eléctricos, transporte ligero e industriales de más de 2 kWh; las baterías de arranque de plomo llevan QR sin pasaporte. «Sin datos personales» es un principio de diseño apoyado en la minimización del RGPD, no una garantía legal.
+- Recogida en España: el índice oficial es 90,85 % (2024, PEMAR) y el 98,7 % del Acuerdo Voluntario es una cifra autodeclarada con otra definición; no mezclarlas. El 98,63 % que el PEMAR presenta como dato de 2024 es, según la serie anual del propio Acuerdo, de 2023 (C2, C3).
+- El 71,9 % de eficiencia de reciclado de España (2023) no demuestra incumplimiento del 75 %: ese objetivo obliga a los recicladores y se mide con otro método desde 2025 (C12).
+- Fecha corregida: los nuevos códigos de la lista de residuos del capítulo 16 06 se aplican desde el 9-12-2026 y no desde el 9-11-2026 (corrección de errores DO L 2025/90657) (C1).
+- Estado a 21-10-2026: el etiquetado armonizado (art. 13.10) y el acceso a datos restringidos del pasaporte (art. 77.9) siguen sin adoptar (el segundo tiene borrador desde el 19-10-2026); los actos delegados de huella de carbono, contenido reciclado y rendimiento solo están en borrador; el real decreto español de pilas y baterías es un proyecto (C22).
+- Las cifras de averías por batería (ADAC 45,4 %, RACE 20,7 %, Autoclub Mutua 43 %, etc.) no son comparables entre sí: cambian entidad, estación y base (C15).
+- Para las pantallas 3D hay datos reales de pesos, tensiones y series de gráficos; no existen datos publicados de lotes ni de resultados de pruebas de taller con muestra, así que esos valores deben rotularse como ilustrativos (elemento I).
+
+### Hechos con corrección del verificador
+
+- composicion: `composicion-f6`, `composicion-f9`, `composicion-f19`
+- tasas: `tasas-f10`, `tasas-f18`
+- reglamento: `reglamento-f7`, `reglamento-f10`, `reglamento-f13`
+- normativa_es: `normativa_es-f7`, `normativa_es-f10`, `normativa_es-f15`
+- seguridad: `seguridad-f5`, `seguridad-f13`
+- diagnostico: `diagnostico-f10`, `diagnostico-f13`
+- segunda_vida: `segunda_vida-f20`
+- pasaporte_qr: `pasaporte_qr-f18`
+- ods: `ods-f5`, `ods-f18`
+- clima_energia: `clima_energia-f5`, `clima_energia-f12`, `clima_energia-f15`, `clima_energia-f18`, `clima_energia-f19`
+- tecnologias: `tecnologias-f12`, `tecnologias-f14`
+- presupuesto: `presupuesto-f1`, `presupuesto-f17`
+- proceso_reciclaje: `proceso_reciclaje-f16`
+- taller_resultados: `taller_resultados-f8`
+- vehiculo_electrico: `vehiculo_electrico-f2`, `vehiculo_electrico-f14`
+
+## 2. Cobertura frente a los elementos de la web (A a I)
+
+### A. Afirmación «una batería usada contiene plomo, ácido y materiales valiosos»
+
+- Estado: **Bien cubierto**.
+- Respaldo verificado: Composición en masa de la UE (Eurobat/IHS: plomo ≈60 %, plástico ≈7 %, electrolito ≈30 %), coherente con la ficha de Bosch (≈64/29/7) y con Basilea y Sphera; valor de lo recuperado (plomo refinado y aleaciones, polipropileno, ácido, yeso y sulfato de sodio; reciclar plomo ahorra 55-65 % de la energía según el PNUMA, y con las cifras de los estudios de la ILA el plomo secundario necesita ≈57 % menos energía y emite ≈46 % menos CO2 por kg que el primario; el 67,4 % del plomo refinado mundial de 2025 fue secundario) y peligros (plomo reprotóxico 1A, ácido corrosivo desde el 15 %).
+- Límites: La composición varía por fuente (plomo 58-67 %, electrolito 16-30 %) y no hay tabla oficial de la Comisión o el JRC; atribuir a Eurobat/IHS. El estudio energético y de CO2 es de la industria (ILA/thinkstep) y no hay un ACV independiente con DOI que separe las dos rutas.
+- Cómo redactarlo: Usar «aproximadamente 60 % plomo, 7 % plástico y 30 % ácido diluido (Eurobat/IHS)» y nombrar los materiales recuperados con su fuente.
+- Hechos de apoyo (27): `composicion-f1`, `composicion-f2`, `composicion-f3`, `composicion-f9`, `composicion-f10`, `composicion-f11`, `composicion-f12`, `composicion-f13`, `composicion-f14`, `composicion-f15`, `composicion-f16`, `proceso_reciclaje-f1`, `proceso_reciclaje-f3`, `proceso_reciclaje-f6`, `proceso_reciclaje-f7`, `proceso_reciclaje-f8`, `proceso_reciclaje-f15`, `clima_energia-f1`, `clima_energia-f2`, `clima_energia-f3`, `clima_energia-f4`, `tasas-f9`, `composicion-f6`, `composicion-f7`, `composicion-f8`, `seguridad-f5`, `seguridad-f8`
+
+### B. QR y ficha digital sin datos personales
+
+- Estado: **Bien cubierto en lo legal; parcial en lo específico de las baterías de plomo**.
+- Respaldo verificado: QR obligatorio en todas las baterías desde el 18-2-2027; pasaporte solo para vehículos eléctricos, transporte ligero e industriales de más de 2 kWh (las SLI llevan QR con la cantidad de cobalto, plomo, litio o níquel valorizados, no pasaporte); identificador único ISO/IEC 15459 sin datos incrustados (Battery Pass recomienda una URL estable con redirección); datos del anexo XIII referidos al modelo y a la batería, no al titular; RGPD art. 5.1.c (minimización), STJUE C-319/22 (el VIN pasa a ser dato personal para quien pueda vincularlo a una persona) y ESPR art. 10.1.e; el registro de la Comisión guarda identificadores y metadatos, no el pasaporte, y sus datos personales son los de los usuarios del registro.
+- Límites: «Sin datos personales» es un principio de diseño del proyecto, no una garantía legal: un identificador puede ser dato personal si se vincula a un titular. Una ficha digital para una batería de plomo de coche es voluntaria. No hay criterios de la AEPD sobre datos de baterías; el acto sobre el acceso a datos restringidos (art. 77.9) solo es borrador (19-10-2026); EN 18219, EN 18220 e ISO/IEC 18004 son de pago.
+- Cómo redactarlo: Decir que la ficha contiene solo datos del modelo y de la batería y que el QR enlaza a una URL estable; no afirmar que la ley garantice la ausencia de datos personales.
+- Hechos de apoyo (25): `pasaporte_qr-f1`, `pasaporte_qr-f2`, `pasaporte_qr-f3`, `pasaporte_qr-f4`, `pasaporte_qr-f5`, `pasaporte_qr-f6`, `pasaporte_qr-f7`, `pasaporte_qr-f8`, `pasaporte_qr-f9`, `pasaporte_qr-f10`, `pasaporte_qr-f11`, `pasaporte_qr-f12`, `pasaporte_qr-f13`, `pasaporte_qr-f14`, `pasaporte_qr-f15`, `pasaporte_qr-f16`, `pasaporte_qr-f17`, `pasaporte_qr-f18`, `pasaporte_qr-f19`, `pasaporte_qr-f20`, `reglamento-f2`, `reglamento-f5`, `reglamento-f6`, `reglamento-f7`, `reglamento-f8`
+
+### C. Pruebas de diagnóstico y tensiones
+
+- Estado: **Bien cubierto en método y valores; sin resultados reales de taller**.
+- Respaldo verificado: Seis celdas × 2 V = 12 V; tensión en reposo 12,6-12,65 V (inundada) y ≈12,8 V (AGM); tabla BCI 12,65 / 12,45 / 12,24 / 12,06 / 11,89 V (100-0 %); reposo mínimo de 4 h (24 h recomendadas); CCA según SAE J537 (−18 °C, 30 s, ≥7,2 V) y EN 50342-1 (7,5 V a los 10 s), no intercambiables entre normas; prueba de carga a ½ CCA durante 15 s con más de 9,6 V; conductancia; límites de los comprobadores (≈1/3 de ~300.000 ensayos de VARTA con datos mal introducidos); umbrales prácticos de retirada (40 % de capacidad o 50 % de CCA); cuatro decisiones de Midtronics; seguridad en la prueba (hidrógeno, desconectar primero el negativo).
+- Límites: No hay resultados agregados reales de talleres con tamaño de muestra (la única distribución, National UK 45/40/15 %, no tiene muestra ni fecha y es de confianza baja); EN 50342-1 e IEC 60095-1 son de pago y se describen por TCS, Banner y Yuasa; no hay datos independientes de exactitud de comprobadores; para España solo el RACE (vida 3-5 años; 20,7 % de asistencias en verano).
+- Cómo redactarlo: Los valores de las tablas pueden citarse como referencia de fabricante o del BCI; cualquier resultado de prueba mostrado como dato real debe presentarse como ejemplo o simulación.
+- Hechos de apoyo (27): `diagnostico-f1`, `diagnostico-f2`, `diagnostico-f3`, `diagnostico-f4`, `diagnostico-f5`, `diagnostico-f6`, `diagnostico-f7`, `diagnostico-f8`, `diagnostico-f9`, `diagnostico-f10`, `diagnostico-f11`, `diagnostico-f12`, `diagnostico-f13`, `diagnostico-f14`, `diagnostico-f15`, `diagnostico-f16`, `diagnostico-f17`, `diagnostico-f18`, `diagnostico-f19`, `composicion-f4`, `composicion-f5`, `composicion-f16`, `taller_resultados-f6`, `taller_resultados-f12`, `taller_resultados-f20`, `seguridad-f7`, `seguridad-f11`
+
+### D. Tres rutas, simulación hipotética de 10 baterías (2/1/7) y ejemplo del 90 % de trazabilidad
+
+- Estado: **Marco normativo cubierto; el reparto 2/1/7 y el 90 % NO tienen datos reales (deben seguir como hipótesis)**.
+- Respaldo verificado: Definiciones oficiales (reutilización, preparación para la reutilización, adaptación y remanufacturación, que exige al menos el 90 % de la capacidad asignada y ≤3 % de diferencia entre celdas) y condiciones para que un residuo deje de serlo (art. 73); la batería de arranque no está diseñada para descargas profundas (12-15 ciclos de descarga total frente a 150-200 en una de ciclo profundo) y no figura en los artículos 14 y 77, lo que limita la segunda vida de la de plomo; ni Eurostat ni ninguna otra fuente publican el reparto de las baterías de coche sustituidas entre seguir en servicio, segunda vida y reciclaje; los artículos 75 y 76 lo harán medible (primer año de comunicación probable: 2026).
+- Límites: Ningún dato real respalda el reparto 2/1/7 ni un 90 % de trazabilidad: la investigación indica expresamente que cualquier porcentaje de reparto debe presentarse como hipótesis del proyecto. La cifra verificada más cercana al 90 % es el índice estatal de recogida de 90,85 % (2024), que mide recogida entre ventas, no trazabilidad. Otras cifras reales de contexto, no equivalentes: 97,3 % de recogida y reciclado en la UE (estudio sectorial), 98,71 % (Acuerdo Voluntario 2025, autodeclarado) y 85 % de plomo reciclado documentado desde 2031 (art. 8). La segunda vida documentada es de baterías de ion-litio de vehículos eléctricos.
+- Cómo redactarlo: Mantener el rótulo de simulación hipotética o ejemplo ilustrativo en las tres rutas y en el 90 %; apoyar las rutas en las definiciones del Reglamento y no en cifras de reparto.
+- Hechos de apoyo (24): `segunda_vida-f1`, `segunda_vida-f2`, `segunda_vida-f3`, `segunda_vida-f5`, `segunda_vida-f6`, `segunda_vida-f12`, `segunda_vida-f13`, `segunda_vida-f14`, `segunda_vida-f15`, `segunda_vida-f17`, `segunda_vida-f18`, `segunda_vida-f20`, `reglamento-f14`, `reglamento-f15`, `reglamento-f17`, `taller_resultados-f8`, `taller_resultados-f13`, `taller_resultados-f17`, `taller_resultados-f19`, `tasas-f2`, `tasas-f7`, `tasas-f20`, `normativa_es-f12`, `clima_energia-f10`
+
+### E. Gestor autorizado, fracciones plomo/plástico/electrolito y pesos
+
+- Estado: **Bien cubierto; sin lista oficial de gestores ni rendimientos por fracción de una planta real**.
+- Respaldo verificado: Cadena española: talleres, concesionarios y centros de tratamiento de vehículos, pequeños y medianos gestores autorizados, centros de almacenamiento temporal y siete plantas de seis empresas (Acuerdo Voluntario 2025); obligaciones del taller (almacén de seis meses como máximo, etiquetado con NIMA, archivo de cinco años, memoria anual antes del 1 de marzo, contrato y documento de identificación, notificación previa de diez días al enviar a otra comunidad); proceso industrial (drenaje, trituración, separación en pasta, metálicos, polipropileno y ebonita con separadores, desulfuración, fundición, plomo bruto de ≈98 %, refino y colada); pesos de fichas de 9,3 a 21,8 kg (36-95 Ah), referencia Eurobat/ILA de 18 kg (70 Ah) con 10,5 kg de plomo en la entrada de fabricación, y 13,3 kg (44 Ah) en Basilea con 8,4 kg de plomo, 3,8 kg de electrolito y 1,1 kg de plásticos; salidas autorizadas de la planta de Pina de Ebro.
+- Límites: No hay lista oficial de gestores ni de SCRAP; no hay rendimientos por fracción de una planta moderna ni destino del electrolito por planta en España; el número de plantas no concilia (5, 6 más Pina de Ebro, o 7); la fracción real de una batería depende de su tecnología y tamaño.
+- Cómo redactarlo: Mostrar las fracciones como típicas (60/7/30) y los pesos como rango de fichas; hablar de gestor autorizado en el sentido de la Ley 7/2022 sin nombrar empresas no verificadas.
+- Hechos de apoyo (39): `normativa_es-f4`, `normativa_es-f5`, `normativa_es-f6`, `normativa_es-f8`, `normativa_es-f10`, `normativa_es-f13`, `normativa_es-f15`, `normativa_es-f17`, `normativa_es-f18`, `reglamento-f13`, `reglamento-f16`, `tasas-f15`, `tasas-f20`, `composicion-f1`, `composicion-f9`, `composicion-f10`, `composicion-f12`, `proceso_reciclaje-f1`, `proceso_reciclaje-f2`, `proceso_reciclaje-f3`, `proceso_reciclaje-f4`, `proceso_reciclaje-f5`, `proceso_reciclaje-f6`, `proceso_reciclaje-f7`, `proceso_reciclaje-f8`, `proceso_reciclaje-f10`, `proceso_reciclaje-f11`, `proceso_reciclaje-f12`, `proceso_reciclaje-f13`, `proceso_reciclaje-f14`, `proceso_reciclaje-f15`, `proceso_reciclaje-f17`, `proceso_reciclaje-f18`, `proceso_reciclaje-f19`, `proceso_reciclaje-f20`, `seguridad-f2`, `seguridad-f3`, `seguridad-f14`, `seguridad-f15`
+
+### F. Pasaporte digital y trazabilidad
+
+- Estado: **Bien cubierto en normativa; actos de desarrollo pendientes**.
+- Respaldo verificado: Pasaporte obligatorio desde el 18-2-2027 (vehículos eléctricos, transporte ligero e industriales de más de 2 kWh); tres niveles de acceso; responsable el operador que introduce la batería; nuevo pasaporte vinculado al reutilizar, adaptar o remanufacturar; desaparece al reciclar; sistema descentralizado con registro de la Comisión operativo desde el 20-7-2026. Trazabilidad documental: documento de identificación y contrato de tratamiento (RD 553/2020, eSIR), comunicación anual de residuos (arts. 75 y 76; Reglamento de Ejecución 2025/2289), equivalencia de tratamiento en exportaciones (art. 72) y 85 % de plomo valorizado documentado desde 2031 (art. 8).
+- Límites: Las baterías SLI no requieren pasaporte (exclusión por enumeración); el etiquetado armonizado (art. 13.10) y el acceso a datos restringidos (art. 77.9) están sin adoptar; los actos delegados de huella de carbono, contenido reciclado y rendimiento solo están en borrador; el real decreto español es un proyecto; los 71 puntos de datos de la Comisión y los 93 atributos de Battery Pass no se han reconciliado.
+- Cómo redactarlo: Presentar el pasaporte como obligación para baterías de vehículos eléctricos e industriales y la ficha de la batería de plomo como aplicación voluntaria inspirada en él.
+- Hechos de apoyo (26): `reglamento-f1`, `reglamento-f2`, `reglamento-f5`, `reglamento-f6`, `reglamento-f7`, `reglamento-f8`, `reglamento-f10`, `reglamento-f19`, `pasaporte_qr-f1`, `pasaporte_qr-f2`, `pasaporte_qr-f3`, `pasaporte_qr-f4`, `pasaporte_qr-f5`, `pasaporte_qr-f9`, `pasaporte_qr-f14`, `pasaporte_qr-f17`, `pasaporte_qr-f18`, `pasaporte_qr-f19`, `pasaporte_qr-f20`, `segunda_vida-f12`, `vehiculo_electrico-f10`, `vehiculo_electrico-f12`, `normativa_es-f5`, `taller_resultados-f13`, `clima_energia-f20`, `tasas-f6`
+
+### G. Cierre
+
+- Estado: **Sin hecho específico que verificar; respaldable con cifras ya verificadas**.
+- Respaldo verificado: Si el cierre resume el ciclo, pueden citarse con fuente: reciclaje de plomo de EE. UU. 97,7 % (BCI 2020-2024), 97,3 % de recogida y reciclado en la UE (estudio sectorial), índice estatal de recogida en España 90,85 % (2024), ahorro de 55-65 % de energía al reciclar plomo y el balance mundial de los ODS 2026 (36 % de las metas en camino o con progreso moderado).
+- Límites: No se conoce el texto exacto del cierre; cualquier frase absoluta («100 % reciclable») carece de respaldo, porque las cifras son estimaciones sectoriales.
+- Cómo redactarlo: Evitar absolutos; usar «más del 90 %» solo con su fuente y alcance.
+- Hechos de apoyo (8): `tasas-f1`, `tasas-f7`, `tasas-f2`, `clima_energia-f1`, `clima_energia-f2`, `clima_energia-f3`, `ods-f17`, `proceso_reciclaje-f9`
+
+### H. Anexos: arquitectura, calendario, presupuesto, indicadores, ODS, normativa, seguridad, fuentes
+
+- Estado: **Cubiertos, salvo el calendario propio del proyecto**.
+- Respaldo verificado: Arquitectura: Flask 3.1.3 (BSD-3), SQLite 3.54.1 (dominio público), Chart.js 4.5.1 (MIT), generadores QR (Segno 1.6.6, python-qrcode 8.2), HTML, ECMAScript, Java, PHP, MySQL y Python con versión y licencia, y alojamiento (PythonAnywhere 0 o 10 $ al mes, Render, Railway, Fly.io; 1 EUR = 1,1234 USD el 21-10-2026). Presupuesto: etiquetas QR ≈28,31 € en hojas Avery (192 etiquetas más envío), póster A2 y dossier ≈12,10 €, impresora de etiquetas dedicada 93-153 €; las partidas de 10-30 €, 10-30 € y 20-120 € de la web coinciden. Indicadores: tasas, ODS (títulos, metas 9.4, 12.4, 12.5 y 13.2, indicadores 9.4.1, 12.4.2, 12.5.1 y 13.2.2, datos del INE y Eurostat, EDS 2030 revisada). Normativa y seguridad: Reglamento 2023/1542 y sus actos, Ley 7/2022, RD 106/2008, RD 553/2020, RD 265/2021, ADR, CLP, REACH y Directiva 2024/869. Fuentes: ver sources.json.
+- Límites: Calendario: solo hay hitos normativos, no el calendario del propio proyecto. ODS: el vínculo del proyecto con las metas es interpretación del equipo; no hay serie oficial de baterías y el Reglamento 2023/1542 no cita los ODS 9, 12 ni 13. Presupuesto: sin evidencia de que las etiquetas resistan electrolito, calor de motor o vibración; precios minoristas volátiles; IVA de los alojamientos sin verificar para un cliente español.
+- Cómo redactarlo: El anexo de calendario puede usar fechas normativas verificadas (18-8-2025 símbolo y responsabilidad ampliada del productor, 18-2-2027 pasaporte y QR, 18-8-2031 y 18-8-2036 contenido reciclado) junto al calendario propio del proyecto.
+- Hechos de apoyo (41): `tecnologias-f1`, `tecnologias-f2`, `tecnologias-f3`, `tecnologias-f4`, `tecnologias-f5`, `tecnologias-f6`, `tecnologias-f10`, `tecnologias-f11`, `tecnologias-f14`, `tecnologias-f15`, `tecnologias-f16`, `tecnologias-f17`, `tecnologias-f18`, `tecnologias-f19`, `tecnologias-f20`, `presupuesto-f1`, `presupuesto-f2`, `presupuesto-f3`, `presupuesto-f19`, `tecnologias-f7`, `tecnologias-f9`, `tecnologias-f12`, `tecnologias-f13`, `ods-f1`, `ods-f2`, `ods-f3`, `ods-f4`, `ods-f5`, `ods-f6`, `ods-f7`, `ods-f13`, `ods-f15`, `reglamento-f1`, `reglamento-f4`, `reglamento-f9`, `reglamento-f12`, `normativa_es-f1`, `normativa_es-f9`, `seguridad-f1`, `seguridad-f12`, `seguridad-f13`
+
+### I. Datos mostrados en las pantallas 3D (pesos, lotes, tensiones, gráficos)
+
+- Estado: **Pesos, tensiones y series de gráficos con datos reales; lotes y resultados de prueba sin datos reales**.
+- Respaldo verificado: Pesos: fichas de 9,3 a 21,8 kg (VARTA y Yuasa, 36-95 Ah), referencia europea de 18, 19 y 20 kg con 70 Ah, paquete de vehículo eléctrico de 320 a 500 kg. Tensiones: 12 V nominales, 12,6-12,65 V cargada, tablas de estado de carga, alta tensión por encima de 60 V CC y sistemas de 400 y 800 V. Gráficos con series reales: índice de recogida de España 2018-2024 (PEMAR), eficiencia de reciclado por país en 2023 (Eurostat), averías por batería del ADAC 2015-2025, composición, energía y CO2 por kg de plomo y uso circular de materiales. Lotes con datos reales: 9.928.207 baterías puestas en el mercado en 2025 (Acuerdo), 127.396 t recogidas en 2024 y salidas autorizadas de la planta de Pina de Ebro.
+- Límites: No existen datos publicados de lotes de baterías de un taller ni de resultados de pruebas con muestra; los valores de ejemplo de las pantallas (pesos por lote, tensiones por batería) deben rotularse como ilustrativos o simulados y mantenerse dentro de los rangos verificados. No se conoce qué valores concretos muestran hoy las pantallas.
+- Cómo redactarlo: Cada gráfico con datos reales debe llevar su fuente, año y alcance; los datos simulados, una etiqueta visible.
+- Hechos de apoyo (22): `composicion-f1`, `composicion-f2`, `composicion-f4`, `composicion-f5`, `composicion-f9`, `composicion-f12`, `vehiculo_electrico-f1`, `vehiculo_electrico-f2`, `vehiculo_electrico-f9`, `diagnostico-f1`, `diagnostico-f2`, `diagnostico-f9`, `diagnostico-f14`, `normativa_es-f12`, `tasas-f2`, `tasas-f8`, `tasas-f13`, `tasas-f15`, `proceso_reciclaje-f14`, `taller_resultados-f1`, `clima_energia-f1`, `ods-f18`
+- Hechos que los investigadores marcaron como utilizables en pantallas 3D (112):
+  - composicion: `composicion-f1`, `composicion-f2`, `composicion-f3`, `composicion-f4`, `composicion-f5`, `composicion-f9`, `composicion-f11`, `composicion-f16`, `composicion-f20`
+  - tasas: `tasas-f1`, `tasas-f2`, `tasas-f3`, `tasas-f4`, `tasas-f6`, `tasas-f15`
+  - reglamento: `reglamento-f1`, `reglamento-f4`, `reglamento-f5`, `reglamento-f11`
+  - normativa_es: `normativa_es-f1`, `normativa_es-f2`, `normativa_es-f3`, `normativa_es-f4`, `normativa_es-f5`, `normativa_es-f6`, `normativa_es-f8`, `normativa_es-f10`, `normativa_es-f11`, `normativa_es-f12`, `normativa_es-f13`, `normativa_es-f19`
+  - seguridad: `seguridad-f1`, `seguridad-f2`, `seguridad-f5`, `seguridad-f6`, `seguridad-f7`, `seguridad-f11`, `seguridad-f14`, `seguridad-f16`, `seguridad-f18`, `seguridad-f19`
+  - diagnostico: `diagnostico-f1`, `diagnostico-f2`, `diagnostico-f4`, `diagnostico-f5`, `diagnostico-f9`, `diagnostico-f13`, `diagnostico-f14`
+  - segunda_vida: `segunda_vida-f1`, `segunda_vida-f2`, `segunda_vida-f3`, `segunda_vida-f4`, `segunda_vida-f8`, `segunda_vida-f9`, `segunda_vida-f10`, `segunda_vida-f12`, `segunda_vida-f14`, `segunda_vida-f15`
+  - pasaporte_qr: `pasaporte_qr-f1`, `pasaporte_qr-f2`, `pasaporte_qr-f4`, `pasaporte_qr-f11`, `pasaporte_qr-f12`, `pasaporte_qr-f13`, `pasaporte_qr-f14`, `pasaporte_qr-f17`
+  - ods: `ods-f1`, `ods-f2`, `ods-f4`, `ods-f6`, `ods-f11`, `ods-f17`, `ods-f18`, `ods-f20`
+  - clima_energia: `clima_energia-f1`, `clima_energia-f2`, `clima_energia-f3`, `clima_energia-f5`, `clima_energia-f8`
+  - tecnologias: `tecnologias-f1`, `tecnologias-f2`, `tecnologias-f3`, `tecnologias-f4`, `tecnologias-f5`
+  - presupuesto: `presupuesto-f2`, `presupuesto-f7`
+  - proceso_reciclaje: `proceso_reciclaje-f1`, `proceso_reciclaje-f2`, `proceso_reciclaje-f3`, `proceso_reciclaje-f4`, `proceso_reciclaje-f5`, `proceso_reciclaje-f6`, `proceso_reciclaje-f7`, `proceso_reciclaje-f8`, `proceso_reciclaje-f12`, `proceso_reciclaje-f13`, `proceso_reciclaje-f14`, `proceso_reciclaje-f19`
+  - taller_resultados: `taller_resultados-f1`, `taller_resultados-f4`, `taller_resultados-f6`
+  - vehiculo_electrico: `vehiculo_electrico-f1`, `vehiculo_electrico-f2`, `vehiculo_electrico-f3`, `vehiculo_electrico-f4`, `vehiculo_electrico-f5`, `vehiculo_electrico-f7`, `vehiculo_electrico-f8`, `vehiculo_electrico-f9`, `vehiculo_electrico-f10`, `vehiculo_electrico-f13`, `vehiculo_electrico-f14`
+
+## 3. Contradicciones y discrepancias entre temas
+
+Criterio aplicado: fuente primaria y más reciente. «Resuelta» significa que se fija qué cifra o fecha usar; «marcada» significa que las fuentes no concilian y se indica cómo citar. Los hechos afectados llevan la etiqueta de conflicto en `verified-facts.json` (campo `conflicts`).
+
+### C1 (resuelta). Fecha de aplicación de la Decisión Delegada (UE) 2025/934 (nuevos códigos de la lista de residuos del capítulo 16 06)
+
+- Hechos: `composicion-f19`, `normativa_es-f2`, `normativa_es-f11`, `normativa_es-f19`, `seguridad-f13`, `reglamento-f13`
+- Conflicto: normativa_es-f11, normativa_es-f2 y seguridad-f13 (y las notas de normativa_es-f19 y reglamento-f13) dan el 9-11-2026, tomado del artículo 2 del texto original (DOUE 20-5-2025). composicion-f19 da el 9-12-2026, tomado de la corrección de errores DO L 2025/90657 (19-8-2025) y del texto consolidado de la Decisión 2000/532/CE a 09.12.2026.
+- Resolución: Prevalece el 9-12-2026 (fuente primaria y posterior). La descarga bruta de la corrección dice: «donde dice: Será aplicable a partir del 9 de noviembre de 2026, debe decir: Será aplicable a partir del 9 de diciembre de 2026». Hasta el 8-12-2026 sigue vigente la lista de la Decisión 2014/955/UE; el código 16 06 01\* no cambia, solo su denominación. La ficha de Cellar que listaba 2026-12-09 como fecha de aplicación, que el verificador de normativa_es juzgó incoherente con el texto original, es coherente con la corrección. Texto corregido en normativa_es-f11, normativa_es-f2 y seguridad-f13; se añade composicion-x3 como fuente.
+
+### C2 (resuelta). Recogida de baterías de automoción en España: 90,85 % (oficial) frente a 98,6-98,7 % (Acuerdo Voluntario)
+
+- Hechos: `tasas-f2`, `tasas-f11`, `tasas-f13`, `normativa_es-f12`, `normativa_es-f14`
+- Conflicto: El MITECO (PEMAR 2025-2035, Tabla 12-4) da 90,85 % para 2024: toneladas recogidas entre la media trienal de lo puesto en el mercado (art. 3.aa del RD 106/2008). El Acuerdo Voluntario, con datos autodeclarados, da 98,67 % (2024) y 98,71 % (2025): recogido entre el residuo recogible (reposición más bajas de vehículos). Son métricas distintas, no una discrepancia de cálculo.
+- Resolución: El índice oficial es 90,85 % (por debajo del objetivo legal del 98 %). El 98,7 % es una estimación sectorial sin verificación independiente (el informe dice que una entidad externa certifica las ventas). Citar siempre la entidad y la definición y no mezclar ambas cifras.
+
+### C3 (resuelta). Año al que corresponde el 98,63 % del Acuerdo Voluntario
+
+- Hechos: `tasas-f11`, `normativa_es-f12`
+- Conflicto: El PEMAR (cap. 12, p. 136) presenta el 98,63 % como estimación de 2024. La serie anual del propio Acuerdo (informes 2015-2024, comprobados por el verificador de normativa_es) da 98,63 % para 2023, 98,67 % para 2024 y 98,71 % para 2025. El verificador de tasas no pudo reproducir el 98,63 % con las cifras de 2024 (124.864,61 / 122.745,17 = 101,7 %); solo sale con la recogida de 2023 (121.063 / 122.745,17).
+- Resolución: Prevalece la serie del Acuerdo (fuente primaria de su propia cifra): 98,63 % = 2023 y 2024 = 98,67 %. Se corrige el texto de tasas-f11 y se mantiene como estimación sectorial, nunca como tasa oficial.
+
+### C4 (resuelta). Fecha desde la que rige el objetivo de recogida del 98 %
+
+- Hechos: `tasas-f2`, `normativa_es-f7`, `normativa_es-f12`
+- Conflicto: 31-12-2018 (RD 106/2008, art. 15.3.c, según BOE y MITECO) frente a 31-12-2019 (informes del Acuerdo Voluntario 2019-2025, que citan el RD 710/2015).
+- Resolución: Prevalece el BOE: 31-12-2018.
+
+### C5 (resuelta). Serie oficial del índice de recogida: dos fórmulas y valores distintos para los mismos años
+
+- Hechos: `normativa_es-f14`, `tasas-f13`, `tasas-f2`
+- Conflicto: La tabla antigua del MITECO (2012-2019) calcula recogido del año entre ventas del año anterior (2019: 83,64 %; 2018: 80,87-81,07 % en el informe de 2020). El PEMAR usa la media trienal de ventas, que es la definición legal (2019: 83,35 %; 2018: 82,21 %). Las dos páginas del MITECO difieren además en las ventas de 2018 (128.467,22 t frente a 128.745,724 t) y las ventas se han revisado entre publicaciones (2021: 135.113,64 t frente a 134.560 t).
+- Resolución: Usar solo la serie 2018-2024 del PEMAR (más reciente y con la fórmula legal) y no combinarla con la tabla antigua.
+
+### C6 (marcada). Magnitudes españolas de 2023-2025 que no son equivalentes
+
+- Hechos: `tasas-f2`, `tasas-f13`, `tasas-f15`, `normativa_es-f12`
+- Conflicto: 127.396 t recogidas de baterías SLI (2024, PEMAR), 121.063 t (2023), 277.016 t que entraron a plantas de reciclado de plomo (2023, Eurostat, todo tipo de baterías de plomo y cualquier origen) y 130.244.997,93 kg recogidos según el Acuerdo (2025, solo baterías de automoción recogibles).
+- Resolución: No se pueden restar ni comparar. Para un gráfico de lo recogido usar la serie del PEMAR; para lo que procesan las plantas, Eurostat con su alcance.
+
+### C7 (marcada). Número de plantas españolas de reciclado de baterías de plomo
+
+- Hechos: `proceso_reciclaje-f12`, `proceso_reciclaje-f17`, `normativa_es-f13`, `tasas-f15`
+- Conflicto: 5 plantas de producción secundaria de plomo (inventario del MITECO con datos de 2017 y UNIPLOM) frente a 7 plantas de 6 empresas (Acuerdo Voluntario 2025) y 7 instalaciones (PEMAR 2024), frente a 6 complejos más Pina de Ebro (3 entradas) en el PRTR-España. Azor Ambiental figura en Molina de Segura (PRTR) y en Espinardo (Acuerdo).
+- Resolución: Las fuentes no lo concilian. Para 2024-2025 usar siete plantas (PEMAR y Acuerdo coinciden) y aclarar que la de Pina de Ebro es de reciclado parcial (trituración, sin plomo refinado en sus salidas autorizadas). No usar «cinco» sin el año 2017 ni la tasa de recuperación del 80-95 % de la ficha del MITECO (sin fuente).
+
+### C8 (resuelta). Composición porcentual de una batería (plomo, electrolito, plástico)
+
+- Hechos: `composicion-f2`, `composicion-f3`, `composicion-f10`, `composicion-f11`, `composicion-f12`, `composicion-f14`, `composicion-f15`, `proceso_reciclaje-f3`
+- Conflicto: Eurobat/IHS (UE): plomo ≈60 %, plástico ≈7 %, electrolito ≈30 %. Ficha de seguridad de Bosch: plomo ≈64 %, ácido sulfúrico ≈29 %, plástico ≈7 %. Sphera para una batería de 18 kg (entradas de fabricación): plomo 58 %, ácido 24 %, plásticos 7 %. Basilea 2003: plomo 67 % (50 + 17), ácido 24 %, plásticos 5 %, ebonita y separadores 4 %. Argonne 2010: plomo y óxidos 60 % más 1 % de antimonio, ácido 10 % y agua 16 %. Borrador de Basilea de junio de 2026 (no adoptado): plomo y óxidos 65 %, separadores 7 %, electrolito 16 %, carcasa 12 %.
+- Resolución: Usar Eurobat/IHS como referencia atribuida (plomo ≈60 %, plástico ≈7 %, electrolito ≈30 %; suman 97 %), coherente con la ficha de Bosch; si hace falta un rango, plomo 58-67 %. No usar el borrador de Basilea 2026.
+
+### C9 (marcada). Concentración del electrolito (ácido sulfúrico)
+
+- Hechos: `composicion-f16`, `seguridad-f8`, `composicion-f11`, `composicion-f14`
+- Conflicto: Basilea 2002-2003: 36 % en peso (con densidades inconsistentes). DOE: ≈25 % de ácido y 75 % de agua. Borrador de Basilea 2026: 15-20 %. Argonne: 10 % de ácido y 16 % de agua sobre la masa de la batería. Ninguna fuente primaria coherente.
+- Resolución: No dar un porcentaje único. Decir «ácido sulfúrico diluido» y la densidad a plena carga (1,260-1,265; 1,28 o más en algunos fabricantes). Todas las cifras están en el tramo de 15 % o más, que la clasificación CLP trata como corrosivo cutáneo 1A (H314).
+
+### C10 (marcada). Contenido reciclado y cuota de plomo secundario: cifras parecidas con significados distintos
+
+- Hechos: `tasas-f9`, `clima_energia-f3`, `clima_energia-f4`, `clima_energia-f15`, `clima_energia-f16`, `clima_energia-f11`, `proceso_reciclaje-f1`
+- Conflicto: 67 % (Comisión: contenido reciclado de plomo supuesto en las baterías, referencia de 2020), más del 80 % (Eurobat 2019, sin fuente; Eurobat también habla de 75 %), 80 % (parte secundaria del plomo refinado de la UE, media 2012-2016, Comisión), 83 % (ILZSG, «Europa», 2022; incluye países no UE), 83 % (EoL-RIR de la Comisión 2023: tasa de aportación, otra métrica) y 67,4 % (ILZSG, mundo, 2025).
+- Resolución: No existe una cifra oficial única. Presentar siempre con fuente, ámbito y año, no intercambiar las métricas y evitar expresiones como «100 % reciclada».
+
+### C11 (resuelta). Tasa de recogida y reciclado de baterías de plomo de automoción en la UE
+
+- Hechos: `tasas-f7`, `clima_energia-f10`, `proceso_reciclaje-f9`, `taller_resultados-f17`
+- Conflicto: 99 % (2010-2012, siete países), 97,3 % (2015-2017, 14 países, ≈92 % del parque) y 99,7 % (2015-2017 con el panel antiguo). taller_resultados-f17 cita a EUROBAT para «96-98 % según la evaluación de la Comisión (SWD(2019) 1300)»; los verificadores de proceso_reciclaje y de tasas indican que la Comisión solo dice que se recogen «a niveles muy altos» y reconoce que no hay cifras oficiales, y que el informe de IHS de 2014 no contiene el «más del 80 %».
+- Resolución: Usar 97,3 % como estimación de un estudio sectorial (modelo, no recuento) y no atribuir el 96-98 % a la Comisión.
+
+### C12 (resuelta). Eficiencia de reciclado de España (71,9 %) frente al objetivo del 75 %
+
+- Hechos: `tasas-f3`, `tasas-f4`, `proceso_reciclaje-f10`, `clima_energia-f12`
+- Conflicto: La nota de proceso_reciclaje-f10 compara el 71,9 % de 2023 con el 75 % «exigible desde el 31-12-2025». clima_energia-f12 (corregido) y tasas-f3 precisan que el 75 % obliga a los recicladores, se mide desde 2025 con el Reglamento Delegado (UE) 2025/606 y los primeros datos llegarán en 2027-2028; el 71,9 % sigue el método anterior (Reglamento 493/2012). Además el MITECO daba 73,42 % para 2022 y Eurostat 70,7 %.
+- Resolución: Presentar el 71,9 % como referencia (supera el 65 % de la directiva anterior; aún sin dato oficial del objetivo del 75 %). No afirmar incumplimiento.
+
+### C13 (resuelta). Valor límite de exposición profesional al plomo: 0,15 mg/m³ o 0,03 mg/m³
+
+- Hechos: `composicion-f8`, `composicion-f17`, `seguridad-f10`, `seguridad-f12`
+- Conflicto: 0,15 mg/m³ y 70 µg/100 ml (ficha ICSC de 2019, RD 665/1997 consolidado) frente a 0,03 mg/m³ y 30 µg/100 ml, que pasan a 15 µg/100 ml desde 2029 (Directiva (UE) 2024/869, con transposición hasta el 9-4-2026). El Consejo de Ministros aprobó el 20-10-2026 un real decreto que los incorpora; no consta publicado en el BOE.
+- Resolución: Citar 0,03 mg/m³ como valor vinculante de la Directiva y decir que su transposición española está aprobada pero pendiente de publicación.
+
+### C14 (marcada). «Alta tensión» y rangos de tensión de los vehículos eléctricos
+
+- Hechos: `vehiculo_electrico-f1`, `vehiculo_electrico-f2`, `vehiculo_electrico-f3`, `vehiculo_electrico-f20`
+- Conflicto: Más de 60 V CC (UN R100, HSE, DGUV) frente a más de 75 V CC (anexo I del Reglamento 2023/1542, nota 2 añadida por el Reglamento 2026/1738) frente a baja tensión hasta 1.500 V CC (REBT, que excluye los automóviles). Tensión del sistema: ≈400 V habitual y 800 V (Porsche); «hasta 650 V CC» (HSE); 200-1.000 V (guía práctica del IRSST) y 400-1.000 V (supuesto práctico).
+- Resolución: Citar siempre la norma al hablar de «alta tensión» (para vehículos, UN R100: más de 60 V CC) y no presentar un reparto 400/800 V como dato de mercado: no existe estadística oficial.
+
+### C15 (marcada). Cuota de averías atribuida a la batería de 12 V: cifras no comparables
+
+- Hechos: `diagnostico-f14`, `taller_resultados-f1`, `taller_resultados-f2`, `taller_resultados-f3`, `taller_resultados-f5`, `taller_resultados-f9`, `taller_resultados-f10`, `taller_resultados-f11`, `taller_resultados-f18`
+- Conflicto: ADAC 45,4 % (Alemania, 2025, todas las intervenciones), RACE 20,7 % (España, julio-agosto de 2026, tercera causa), Autoclub Mutua 43 % (invierno de 2025; nota original no localizada), ÖAMTC ≈1/3 (Austria, 2025), ACL 24,6 % (Luxemburgo, 2024, cálculo propio), RAC 24 % (un solo día) y AAA ≈26 % (cálculo propio). Cambian la entidad, la estación, la definición y la base. VARTA atribuye por error el 44,9 % a 2025 (es de 2024).
+- Resolución: No compararlas entre sí. Citar cada cifra con entidad, país y periodo; para España, el 20,7 % del RACE es de verano y el 43 % de Autoclub Mutua es de invierno.
+
+### C16 (resuelta). Vida media de una batería de arranque
+
+- Hechos: `diagnostico-f13`, `taller_resultados-f4`, `composicion-f9`
+- Conflicto: 5-6 años (ADAC 2026; vida de referencia del estudio Sphera: 5, 5,5 y 6 años según tecnología), 4,5-5 años (Banner), 55 meses ≈ 4,6 años (BCI 2010), 3-5 años (RACE 2022, divulgativo y sin metodología). El verificador corrigió la síntesis «4,5-6 años» a «3-6 años según la fuente».
+- Resolución: Presentar el rango 3-6 años con su fuente; el único dato español hallado es el del RACE.
+
+### C17 (resuelta). Tensión en reposo de una batería de 12 V plenamente cargada
+
+- Hechos: `composicion-f5`, `diagnostico-f1`, `diagnostico-f2`, `diagnostico-f3`
+- Conflicto: 12,6-12,7 V (12,65 V en la tabla del BCI; Crown: 12,6 V o más) frente a 12,6-12,8 V (Universidad de Tartu, blog de 2011), ≈12,8 V (VARTA, batería convencional) y 12,80 V (AGM, Crown y Discover). El 12,63 V que sale de la ecuación del DOE es una extrapolación.
+- Resolución: Inundada: ≈12,6-12,65 V. AGM: ≈12,8 V. Valores a 26 °C tras 24 h de reposo (BCI); prevalece el manual de cada batería.
+
+### C18 (resuelta). Hidrógeno de las baterías: límites de explosividad
+
+- Hechos: `seguridad-f7`, `composicion-f20`, `seguridad-f11`
+- Conflicto: Límite inferior ≈4 % en volumen: 4-75 % (ICSC 0001), 4,1-72 % (CCOHS), 4,1 % y 74,2 % (ficha de Exide). La recomendación de ventilar hasta el 25 % del límite inferior (≈1 %) procede solo del CCOHS (NFPA 855).
+- Resolución: Usar «≈4 % en volumen» como límite inferior; el 25 % es una guía canadiense, no una norma de la UE ni de España.
+
+### C19 (resuelta). Datos de la Agenda 2030 con versiones distintas
+
+- Hechos: `ods-f6`, `ods-f7`, `ods-f19`
+- Conflicto: Estrategia de Desarrollo Sostenible 2030: 8-6-2021 (referencia del Consejo de Ministros) frente a 5-6-2021 (nota de La Moncloa de 2024). Indicadores mundiales: 234 (UNSD 2026) frente a 232 (nota de 2024). SDG Index de Europa: «puesto 20 de 34» (EDS revisada) frente a 22 de 35 (SDSN 2026).
+- Resolución: 8-6-2021 (el 5 fue sábado), 234 indicadores, y el puesto solo como «según la EDS revisada».
+
+### C20 (resuelta). Edición de ISO/IEC 18004 (código QR)
+
+- Hechos: `pasaporte_qr-f11`, `tecnologias-f5`, `pasaporte_qr-f2`
+- Conflicto: El Reglamento 2023/1542 (considerando 44) y la documentación de Segno citan la edición de 2015, retirada el 15-8-2024 y sustituida por la de 2024.
+- Resolución: Citar «ISO/IEC 18004» sin año o «edición 2024», aclarando que el Reglamento menciona la de 2015.
+
+### C21 (marcada). Cuántos datos tiene el pasaporte de baterías: 19, 71 o 93
+
+- Hechos: `reglamento-f6`, `pasaporte_qr-f4`, `pasaporte_qr-f19`, `pasaporte_qr-f20`
+- Conflicto: 19 apartados públicos del anexo XIII, punto 1 (más 4, 1 y 4 de los puntos 2 a 4), 71 puntos de datos (guía de la Comisión v2.0, no vinculante) y 93 atributos (Battery Pass v1.2) proceden de criterios de recuento distintos y no se han reconciliado.
+- Resolución: Citar cada cifra con su fuente y no sumarlas ni compararlas.
+
+### C22 (resuelta). Estado de los actos de desarrollo del Reglamento 2023/1542: hechos redactados antes dicen «no comprobado» y verificaciones posteriores lo actualizan
+
+- Hechos: `reglamento-f5`, `reglamento-f7`, `reglamento-f10`, `reglamento-f17`, `reglamento-f19`, `pasaporte_qr-f5`, `pasaporte_qr-f18`, `segunda_vida-f12`, `segunda_vida-f18`, `taller_resultados-f13`, `tasas-f6`, `diagnostico-f17`, `vehiculo_electrico-f12`, `seguridad-f12`, `composicion-f17`
+- Conflicto: Varios hechos dicen «no se ha comprobado» si existen ciertos actos; otros verificadores sí lo comprobaron.
+- Resolución: Estado a 21-10-2026. Etiquetado armonizado (art. 13.10): no adoptado, solo borrador de 15-12-2025. Acceso a datos del pasaporte (art. 77.9): no adoptado; borrador publicado el 19-10-2026, comentarios hasta el 16-11-2026. Formato de comunicación de residuos (art. 76.5): adoptado, Reglamento de Ejecución (UE) 2025/2289 (13-11-2025). Contenido reciclado (art. 8.1), huella de carbono (art. 7) y rendimiento y durabilidad (art. 10): solo borradores de actos delegados (12-08-2026, 29-04-2024 y 29-09-2026). Fin de condición de residuo (art. 73.4): ninguno adoptado. Directrices de diligencia debida (art. 48.5, plazo 26-07-2026): publicación no confirmada. Método de eficiencia de reciclado: Reglamento Delegado (UE) 2025/606, ya adoptado. Registro de pasaportes: operativo desde el 20-7-2026 según la Comisión; Reglamento de Ejecución (UE) 2026/1778, en vigor desde el 6-8-2026. Límite de plomo (Directiva 2024/869): real decreto aprobado el 20-10-2026, sin publicar en el BOE. Real decreto de pilas y baterías: solo proyecto (información pública del 30-6 al 3-9-2026).
+
+### C23 (resuelta). Precios de alojamiento: resúmenes de buscadores desactualizados frente a páginas oficiales
+
+- Hechos: `tecnologias-f7`, `tecnologias-f13`
+- Conflicto: PythonAnywhere: 5 y 12 $ en directorios de terceros frente a 10 $/mes en la página oficial (planes fusionados en enero de 2026). Fly.io: 1,94 y 2,02 $ en buscadores frente a 2,19 $ en las páginas oficiales.
+- Resolución: Prevalecen las páginas oficiales leídas el 2026-10-21; citar la fecha de consulta, porque los precios cambian sin aviso.
+
+## 4. Hechos verificados por tema
+
+### 4.1 composicion: Composición y masa de una batería de plomo-ácido de coche (SLI)
+
+20 hechos (17 confirmados, 3 con corrección); 38 fuentes distintas.
+
+- **`composicion-f1`** · confianza alta · [1] [2] [3] [4] [5] [6]
+  - Hecho: Las fichas técnicas de fabricantes de baterías de arranque de 12 V para turismo indican pesos de 9,3 kg (36 Ah), 11,29 kg (44 Ah), 14,4 kg (60 Ah), 16,82 kg (74 Ah), 21,8 kg (90 Ah) y 21,32 kg (95 Ah), es decir, entre 9,3 y 21,8 kg en las fichas consultadas.
+  - Valor: 9,3–21,8 kg para 36–95 Ah (12 V)
+  - Alcance: Mercado europeo; fichas actuales de VARTA Dynamic SLI y Yuasa YBX3000 (12 V); masa indicada por el fabricante (VARTA: «Weight filled», con electrolito); capacidad nominal en Ah (Yuasa, a 20 h); fichas generadas el 2026-10-21.
+  - Evidencia: VARTA E11: «Weight filled: 16,82 kg»; Yuasa YBX3017: «Weight 21.8 kg»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Yuasa pone «Technology: Ca/Ca» y «Separator Type: PE»; que sean rejillas de calcio y polietileno es la lectura estándar, no texto literal. Yuasa no dice si el peso es con electrolito; VARTA sí («Weight filled»).
+- **`composicion-f2`** · confianza alta · [7] [8]
+  - Hecho: En los análisis de IHS (IHS Markit) para Eurobat, ILA, ACEA, JAMA y KAMA, los componentes de plomo representan aproximadamente el 60 % de la masa de una batería de plomo de automoción, la carcasa de plástico un 7 % y el electrolito de ácido sulfúrico diluido un 30 %.
+  - Valor: plomo ≈60 %; plástico de la carcasa ≈7 %; electrolito ≈30 %; separadores 2–7 % (estudio de 2014)
+  - Alcance: UE; baterías de plomo de automoción recogidas para reciclado; estudios sobre 2010-2012 (publicado en 2014) y 2015-2017 (marzo de 2020); porcentajes aproximados de la masa de la batería.
+  - Evidencia: «representing approximately 60% of the weight»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Matiz: El texto original dice «spent electrolyte» (electrolito usado). Los tres porcentajes suman 97 %.
+  - Conflictos: C8
+- **`composicion-f3`** · confianza alta · [9]
+  - Hecho: La ficha de datos de seguridad de Bosch para una batería de plomo-ácido llena de ácido sulfúrico diluido indica, en peso, aproximadamente un 32 % de plomo en polvo, un 32 % de plomo, un 29 % de ácido sulfúrico y un 7 % de envase de plástico.
+  - Valor: Pb en polvo ~32 %; Pb ~32 %; H2SO4 ~29 %; envase de plástico ~7 %
+  - Alcance: UE; ficha conforme al Reglamento REACH, revisión del 30/06/2021, n.º 00377-0089, de Robert Bosch GmbH Automotive Aftermarket; producto concreto, porcentajes aproximados en masa; la concentración del ácido absorbido varía con el estado de carga.
+  - Evidencia: Sulfuric acid CAS-No.: 7664-93-9 ~ 29
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de seguridad
+  - Matiz: La columna dice solo «%» (no escribe «en peso»; es la convención de la sección 3). La copia la aloja un minorista (Tayna), no Bosch; PDF creado el 2021-10-28.
+  - Conflictos: C8
+- **`composicion-f4`** · confianza alta · [10] [11] [12] [13]
+  - Hecho: Una batería de arranque de plomo-ácido de 12 V nominales (IEC 60095-1) está formada, según el DOE y el Convenio de Basilea, por seis celdas de unos 2 V conectadas en serie.
+  - Valor: 6 celdas × 2 V = 12 V nominales
+  - Alcance: Internacional/UE; batería de arranque de plomo-ácido de turismo; tensión nominal (no la tensión en reposo a plena carga); fuentes de 1995 (DOE), 2003 (Basilea) y 2018 (IEC 60095-1, edición 8.0).
+  - Evidencia: DOE-HDBK-1084-95: «6 cells connected in series»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+- **`composicion-f5`** · confianza media · [14] [15] [29] [13] [10]
+  - Hecho: Una batería de arranque de 12 V inundada, totalmente cargada y en reposo marca en torno a 12,6–12,7 V (la tabla del BCI asigna 12,65 V, es decir 2,10 V por celda, al 100 % de carga con electrolito de densidad 1,265), y una página de la Universidad de Tartu da 12,6–12,8 V.
+  - Valor: ≈12,6–12,7 V en reposo (12,65 V con densidad 1,265); hasta 12,8 V según otra fuente
+  - Alcance: EE. UU./general; tabla BCI (reproducida en una página actualizada en 2021) para baterías de arranque con antimonio, medida a 26 °C tras 24 h de reposo (tensión en circuito abierto); otras tecnologías (calcio, AGM) o densidades de 1,28 o más dan valores algo superiores.
+  - Evidencia: Table 3 (BCI): «100% 1.265 2.10 6.32 8.43 12.65»
+  - Uso previsto: pantalla 3D, anexo de datos
+  - Matiz: Tartu es una entrada de blog de 2011 (fuente débil; la cifra no depende de ella). El 2,10 V por celda es el redondeo de la tabla (12,65/6 = 2,108). El 12,63 V calculado con la ecuación del DOE es una extrapolación: el DOE la da para la recta de descarga. BU-903 marca «Updated: 4-Nov-2021» aunque su JSON-LD dice dateModified 2026-01-15.
+  - Conflictos: C17
+- **`composicion-f6`** · confianza alta · corregido por el verificador · [16]
+  - Hecho: La OMS señala que no se conoce ninguna concentración de plomo en sangre segura, que no se conoce ningún nivel de exposición al plomo exento de efectos nocivos y que la mayor parte del plomo que se consume en el mundo se destina a fabricar baterías de plomo-ácido para vehículos de motor.
+  - Valor: Sin nivel de exposición al plomo conocido como inocuo
+  - Alcance: Mundial; ficha descriptiva «Lead poisoning» de la OMS, actualizada el 10 de junio de 2026.
+  - Evidencia: There is no known safe blood lead concentration
+  - Uso previsto: capítulo, anexo de seguridad, anexo de ODS
+  - Texto original (antes de la corrección): La OMS señala que no se conoce ninguna concentración de plomo en sangre segura, que ningún nivel de exposición al plomo está libre de efectos nocivos y que la mayor parte del plomo que se consume en el mundo se destina a fabricar baterías de plomo-ácido para vehículos de motor.
+  - Matiz: Matiz menor: el enunciado dice «ningún nivel de exposición ... está libre de efectos nocivos» y la OMS dice «no level ... that is known to be without harmful effects»; se pierde «conocido». El campo valor ya es correcto.
+- **`composicion-f7`** · confianza alta · [9] [17]
+  - Hecho: Según la ficha de seguridad de una batería Bosch, el ácido sulfúrico del electrolito se clasifica como corrosivo cutáneo 1A (H314) a partir del 15 % de concentración e irritante entre el 5 % y el 15 %, y la ficha internacional del ácido sulfúrico concentrado (OIT/OMS) lo describe como muy corrosivo para ojos, piel y vías respiratorias.
+  - Valor: Skin Corr. 1A (H314) para ≥15 %; Skin Irrit. 2 y Eye Irrit. 2 entre 5 % y <15 %
+  - Alcance: UE; clasificación CLP con límites de concentración específicos de la ficha Bosch (revisión del 30/06/2021); la ICSC 0362 (noviembre de 2016) se refiere al ácido concentrado (más del 51 %), no al electrolito diluido de la batería.
+  - Evidencia: H314 Causes severe skin burns and eye damage
+  - Uso previsto: capítulo, anexo de seguridad
+  - Matiz: pdftotext corrompe el símbolo ≤ y escribe «5 C < 15»; el valor es 5 ≤ C < 15. La ICSC 0362 trata el ácido concentrado (>51 %), no el electrolito. La URL de ilo.org redirige a chemicalsafety.ilo.org.
+- **`composicion-f8`** · confianza alta · [18] [9]
+  - Hecho: La ficha internacional de seguridad química del plomo (OIT/OMS, versión española del INSST) advierte de que puede perjudicar la fertilidad o dañar al feto y de que la exposición prolongada puede afectar a la sangre, la médula ósea, el sistema nervioso y los riñones.
+  - Valor: Tóxico para la reproducción (categoría 1A); órganos afectados: sangre, médula ósea, sistema nervioso, riñones
+  - Alcance: Internacional/España; ICSC 0052 del plomo metálico (noviembre de 2019); la ficha de seguridad Bosch (UE, 2021) aplica a la batería la clasificación CLP del plomo en polvo: Repr. 1A (H360FD), Lact. (H362), STOT RE 1 (H372).
+  - Evidencia: Puede perjudicar la fertilidad o dañar al feto
+  - Uso previsto: capítulo, anexo de seguridad
+  - Conflictos: C13
+- **`composicion-f9`** · confianza alta · corregido por el verificador · [19] [20] [7]
+  - Hecho: En el estudio de ciclo de vida de Eurobat e ILA, las baterías de arranque europeas de referencia son de 12 V y 70 Ah y pesan 18 kg (estándar), 19 kg (mejorada para arranque-parada) y 20 kg (avanzada para microhíbridos), mientras que el análisis de IHS para esas asociaciones supone pesos medios de 15, 22,5 y 45 kg para vehículos ligeros compactos, vehículos ligeros grandes (ambos de menos de 3,5 t) y vehículos pesados (más de 3,5 t).
+  - Valor: 18 / 19 / 20 kg con 70 Ah y 12 V; IHS: 15 / 22,5 kg (vehículos ligeros de menos de 3,5 t, compactos y grandes) y 45 kg (vehículos pesados)
+  - Alcance: Europa; masa de referencia = media no ponderada de las masas de las baterías producidas por los fabricantes participantes (Exide-ES, Midac-IT, FIAMM-IT, EnerSys-FR, Moll-DE, Clarios-DE); datos representativos de 2017 y vigentes en 2022 según el informe Sphera (V6.0, 2022); artículo de 2016 sobre un estudio previo con más del 90 % de la producción europea de esas tecnologías; informe IHS de 2014 (periodo 2010-2012).
+  - Evidencia: Table 3: «Standard technology 18 70 Conventional SLI»
+  - Uso previsto: anexo de datos, pantalla 3D
+  - Texto original (antes de la corrección): En el estudio de ciclo de vida de Eurobat e ILA, las baterías de arranque europeas de referencia son de 12 V y 70 Ah y pesan 18 kg (estándar), 19 kg (mejorada para arranque-parada) y 20 kg (avanzada para microhíbridos), mientras que el análisis de IHS para esas asociaciones supone pesos medios de 15, 22,5 y 45 kg para turismos compactos, turismos grandes y vehículos pesados.
+  - Matiz: Corrección: IHS define «Light Vehicles» como vehículos de menos de 3,5 t y «Heavy Vehicles» como de más de 3,5 t; las categorías no son «turismos». Los 45 kg son por batería (165.608 t / 3.680.168 unidades = 45,0 kg). La evidencia «Table 3» del enunciado es la del artículo Davidson; en Sphera la tabla es la 2-1.
+  - Conflictos: C16
+- **`composicion-f10`** · confianza alta · [19]
+  - Hecho: El inventario medio de producción de una batería europea estándar de 18 kg (Sphera para Eurobat e ILA, 2022) incluye 10,5 kg de plomo (aleaciones, minio y óxido), 4,35 kg de ácido sulfúrico al 100 %, 0,76 kg de polipropileno más 0,18 kg de polipropileno secundario y 0,38 kg de polietileno.
+  - Valor: Pb 10,5 kg; H2SO4 4,35 kg; PP 0,76 + 0,18 kg; PE 0,38 kg; fibra de vidrio 0,0063 kg
+  - Alcance: Europa; datos de producción de los fabricantes participantes ponderados por volumen y escalados a la masa de referencia de 18 kg (batería estándar de arranque convencional, 70 Ah); datos representativos de 2017; son entradas de materiales a la fábrica, no una composición medida del producto final.
+  - Evidencia: Lead (incl. alloys, red lead and oxide) 10.5
+  - Uso previsto: anexo de datos
+  - Matiz: Matiz en las notas: «el agua del electrolito no se lista» es dudoso. La tabla sí lista «Water (desalinated; deionised) 4.74 kg» (Standard) sin precisar su uso; el informe no describe la composición del electrolito.
+  - Conflictos: C8
+- **`composicion-f11`** · confianza alta · [11] [35] [36]
+  - Hecho: El Convenio de Basilea (PNUMA, 2003) da como composición media en peso de las baterías de arranque un 50 % de sales y óxidos de plomo, un 24 % de ácido, un 17 % de plomo metálico, un 5 % de plásticos y un 4 % de ebonita y separadores.
+  - Valor: Pb (sales y óxidos) 50 %; ácido 24 %; Pb metálico 17 %; plásticos 5 %; ebonita y separadores 4 %
+  - Alcance: Mundial; baterías SLI de plomo-ácido hacia 2003; composición media en % de la masa; directrices técnicas SBC n.º 2003/9, más antiguas que las fuentes europeas recientes.
+  - Evidencia: Table 16: Average percentage composition of SLI lead-acid batteries
+  - Uso previsto: anexo de datos, pantalla 3D
+  - Matiz: pdftotext -layout mezcla las filas (sale «Acid 17»); raw y coordenadas dan Acid 24 y Metallic Lead 17. El PDF no menciona COP-6; la web de Basilea sí (decisión BC-6/22). Las directrices se están actualizando (decisión BC-15/11): el borrador de 24-jun-2026 (UNEP/CHW/OEWG.15/INF/8/Rev.1, no adoptado ni editado) da plomo y óxidos 65 %, separadores 7 %, electrolito con ácido sulfúrico 16 % y carcasa 12 %.
+  - Conflictos: C8, C9
+- **`composicion-f12`** · confianza alta · [11]
+  - Hecho: Para una batería de 12 V, 44 Ah y 220 A, el Convenio de Basilea (2003) indica un total de 13,3 kg, con 8,4 kg de plomo, 3,8 kg de electrolito y 1,1 kg de plásticos.
+  - Valor: 13,3 kg: plomo 8,4 kg; electrolito 3,8 kg; plásticos 1,1 kg
+  - Alcance: Mundial; ejemplo de batería de vehículo de las directrices técnicas de Basilea (SBC n.º 2003/9), con los materiales reciclables en kg.
+  - Evidencia: Table 15: Composition of vehicular and motive batteries
+  - Uso previsto: anexo de datos
+  - Matiz: Para comparar: una 44 Ah actual de VARTA (B18) pesa 11,29 kg frente a los 13,3 kg de Basilea, que describen un diseño anterior (hacia 2003).
+  - Conflictos: C8
+- **`composicion-f13`** · confianza alta · [21] [22]
+  - Hecho: El BCI calcula para su estudio de reciclaje de EE. UU. de 2017-2021 un peso medio de plomo de 24,6 libras por batería de turismo o vehículo comercial ligero (unos 11,2 kg), mientras que la EPA (AP-42) cita unos 8,2 kg de plomo por batería de automóvil, con un 40 % de aleaciones de plomo y un 60 % de óxido de plomo.
+  - Valor: BCI 24,6 lb ≈ 11,2 kg (conversión propia); EPA 8,2 kg (18 lb)
+  - Alcance: EE. UU.; BCI: media para turismo y vehículo comercial ligero usada para estimar el plomo disponible para reciclar en 2017-2021 (edición de julio de 2023); EPA AP-42 §12.11: texto de 1986, reformateado en 1995, con correcciones de 2010.
+  - Evidencia: calculated at 24.6 pounds for the 2017 – 2021 recycling rate
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: La frase «las baterías de EE. UU. suelen ser mayores que las europeas» no figura ni en BCI ni en EPA (inferencia del investigador). Comparación orientativa: 11,2 kg de plomo (BCI) frente a 10,5 kg de plomo en la batería europea de 18 kg (Sphera).
+- **`composicion-f14`** · confianza media · [23]
+  - Hecho: El informe de Argonne (2010) da como composición de una batería de plomo-ácido representativa un 25 % de plomo, 35 % de óxidos de plomo, 10 % de polipropileno, 10 % de ácido sulfúrico, 16 % de agua, 2 % de vidrio y 1 % de antimonio, estimada a partir de fichas de seguridad y otras fuentes.
+  - Valor: Pb 25 %; óxidos de Pb 35 %; PP 10 %; H2SO4 10 %; agua 16 %; vidrio 2 %; Sb 1 %
+  - Alcance: EE. UU.; informe ANL/ESD/10-7 de octubre de 2010 sobre análisis de ciclo de vida de baterías; composición «representativa» estimada, con porcentajes redondeados (suman 99 %).
+  - Evidencia: Composition for a Representative Lead-Acid Battery
+  - Uso previsto: anexo de datos
+  - Conflictos: C8, C9
+- **`composicion-f15`** · confianza media · [24]
+  - Hecho: Un artículo científico de 2023 describe una batería de plomo-ácido usada como una mezcla de pasta (30–50 %), fracción metálica de rejillas y componentes (20–30 %), electrolito gastado (10–22 %), polipropileno de la carcasa (5–8 %), separadores (4–7 %) y unos 2 % de hierro, y una pasta de 50–60 % de PbSO4, 15–35 % de PbO2, 5–10 % de PbO/Pb(OH)2 y 2–5 % de plomo metálico.
+  - Valor: pasta 30–50 %; metal 20–30 %; electrolito 10–22 %; PP 5–8 %; separadores 4–7 %; hierro ≈2 %
+  - Alcance: Mundial; baterías de plomo-ácido usadas (con electrolito ya diluido); rangos tomados de la bibliografía citada por los autores (estudios de reciclaje de 2021-2022); artículo de Materials (MDPI) de 2023.
+  - Evidencia: battery paste (30–50%), a metallic fraction from grids and components (20–30%)
+  - Uso previsto: anexo de datos, otro
+  - Conflictos: C8
+- **`composicion-f16`** · confianza media · [10] [14] [9]
+  - Hecho: El electrolito de una batería de arranque inundada es ácido sulfúrico diluido cuya densidad relativa a plena carga se sitúa en torno a 1,26 (1,260 según el DOE y 1,265 según la tabla del BCI), aunque algunos fabricantes usan 1,28 o más.
+  - Valor: densidad ≈1,260–1,265 (≥1,280 en algunos fabricantes)
+  - Alcance: EE. UU./general; baterías de arranque inundadas de plomo-ácido; densidad (gravedad específica) a plena carga según fuentes de 1995 (DOE) y 2021 (Battery University, tabla BCI); la concentración de ácido baja al descargarse la batería.
+  - Evidencia: Table 1: «1.260 Automotive (SLI)»
+  - Uso previsto: anexo de datos, pantalla 3D
+  - Conflictos: C9
+- **`composicion-f17`** · confianza alta · [25] [37] [152]
+  - Hecho: La Directiva (UE) 2024/869 reconoce que el plomo y sus compuestos inorgánicos cumplen los criterios de toxicidad para la reproducción de categoría 1A, los trata como agente reprotóxico sin umbral y fija un valor límite de exposición profesional de 0,03 mg/m³ y un valor límite biológico de 30 µg Pb/100 ml de sangre hasta 2028 y de 15 µg Pb/100 ml desde el 1 de enero de 2029.
+  - Valor: VLE 0,03 mg/m³; VLB 30 µg/100 ml hasta 31-12-2028 y 15 µg/100 ml desde 1-1-2029
+  - Alcance: UE; Directiva de 13 de marzo de 2024 (DOUE de 19.3.2024) que modifica las Directivas 2004/37/CE y 98/24/CE; exposición de trabajadores; valor límite de exposición como media de 8 horas, fracción inhalable.
+  - Evidencia: valor límite biológico revisado de 15 μg Pb/100 ml de sangre
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Matiz: La corrección de errores DO L 2024/90309 (24-5-2024) solo existe en alemán y cambia μg/m³ por mg/m³ en la tabla del anexo II; el texto español ya dice mg/m³. La directiva no tiene actos modificativos. La transposición en España no se pudo comprobar (sin WebSearch). Actualización (seguridad-f12): el Consejo de Ministros aprobó el 20-10-2026 un real decreto que modifica el RD 665/1997 y el RD 374/2001 para incorporar 0,03 mg/m³ y 15 µg Pb/100 ml; no consta su publicación en el BOE (el consolidado sigue con 0,15 mg/m³ y 70 µg/100 ml).
+  - Conflictos: C13, C22
+- **`composicion-f18`** · confianza alta · [26] [30]
+  - Hecho: El Reglamento (UE) 2023/1542 define la batería para arranque, encendido o alumbrado (SLI) como la diseñada específicamente para suministrar energía a esos fines, obliga a marcar con el símbolo Pb las baterías con más de un 0,004 % de plomo y exige documentar, desde 2031, que al menos el 85 % del plomo de una batería SLI procede de residuos valorizados.
+  - Valor: SLI definida en art. 3(12); marcado Pb si >0,004 % de plomo; 85 % de plomo valorizado desde 18-8-2031 y 18-8-2036
+  - Alcance: UE; texto original del Reglamento de 12 de julio de 2023 (DOUE L 191, 28.7.2023): artículo 3, punto 12; artículo 13, apartado 5; artículo 8, apartados 2 y 3.
+  - Evidencia: «batería para arranque, encendido o alumbrado»
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: El art. 13.5 no lleva fecha propia: acompaña al símbolo de recogida separada, exigible desde el 18-8-2025 (art. 13.4).
+- **`composicion-f19`** · confianza alta · corregido por el verificador · [27] [9] [31] [32] [33] [34]
+  - Hecho: La lista europea de residuos asigna a las baterías de plomo el código 16 06 01\*, marcado como residuo peligroso (denominado «Baterías de plomo» hasta el 8-12-2026 y «residuos de pilas y baterías de plomo y ácido» desde el 9-12-2026), y la ficha de seguridad de Bosch las clasifica para el transporte como UN 2794, baterías húmedas llenas de ácido, de clase 8 (código ADR C11).
+  - Valor: Residuo 16 06 01\* (peligroso); denominación «Baterías de plomo» (Decisión 2014/955/UE, vigente hoy) y «residuos de pilas y baterías de plomo y ácido» desde el 9-12-2026 (Decisión Delegada (UE) 2025/934); transporte UN 2794, clase 8, ADR C11
+  - Alcance: UE; Decisión 2014/955/UE de la Comisión (DOUE L 370, 30.12.2014) para la lista de residuos; ficha de seguridad Bosch (revisión de 2021) para el transporte ADR/IMDG/IATA.
+  - Evidencia: 16 06 01\* Baterías de plomo
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Texto original (antes de la corrección): La lista europea de residuos incluye las baterías de plomo con el código 16 06 01\*, marcado como residuo peligroso, y la ficha de seguridad de Bosch las clasifica para el transporte como UN 2794, baterías húmedas llenas de ácido, de clase 8 (código ADR C11).
+  - Matiz: El enunciado es correcto a fecha de hoy; la corrección solo actualiza la denominación oficial (el código y la peligrosidad no cambian).
+  - Consolidación: C1: coherente con la corrección de errores DO L 2025/90657, que fija el 9-12-2026.
+  - Conflictos: C1
+- **`composicion-f20`** · confianza alta · [28] [9]
+  - Hecho: La ficha de seguridad de Exide Industries advierte de que durante la carga y el funcionamiento de las baterías se genera hidrógeno muy inflamable y da un límite inferior de inflamabilidad del 4,1 % para el hidrógeno.
+  - Valor: H2 generado al cargar; límite inferior de inflamabilidad 4,1 % (H2)
+  - Alcance: Ficha de Exide Industries Ltd. (India) del 1 de enero de 2024 para baterías de plomo-ácido húmedas llenas de ácido, de arranque o industriales (UN 2794); la ficha Bosch (UE, 2021) alerta de mezclas inflamables o explosivas en uso o si se daña la celda.
+  - Evidencia: Highly flammable hydrogen gas is generated during charging and operation of batteries
+  - Uso previsto: anexo de seguridad, pantalla 3D
+  - Matiz: PDF de Exide creado el 2024-03-20 (metadatos); documento fechado 1-ene-2024.
+  - Conflictos: C18
+
+### 4.2 tasas: Tasas de recogida y reciclaje de baterías de plomo-ácido (UE, España y EE. UU.)
+
+20 hechos (18 confirmados, 2 con corrección); 29 fuentes distintas.
+
+- **`tasas-f1`** · confianza alta · [38] [39]
+  - Hecho: El último estudio de BCI (años 2020-2024, publicado en julio de 2026) estima que el 97,7 % del plomo de las baterías de plomo que llegaron al final de su vida útil en EE. UU. se recogió y se recicló.
+  - Valor: 97,7 % (BCI lo presenta como «98 %»)
+  - Alcance: EE. UU.; periodo agregado de cinco años 2020-2024 (no es una cifra anual); mide libras de plomo reciclado dividido entre libras de plomo disponible para reciclar en todas las baterías de plomo (automoción, industriales, estacionarias, etc.), no solo automoción; estudio encargado por Battery Council International (BCI, asociación del sector) y elaborado por Vault Consulting.
+  - Evidencia: «For 2020 through 2024, the answer is 97.7%.» (BCI, U.S. Recycling Rate Study, p. 3)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Matiz: Matiz: la web de BCI (tasas-s26) dice «as of data through 2025», pero el informe y la nota de prensa dicen 2020-2024; conviene citar el informe. Cifra de la propia asociación sectorial, sin auditoría independiente. La sustitución del modelo de envejecimiento de flota (p. 19-20) y la ausencia de tasa solo para automoción (p. 19) también constan en el informe.
+- **`tasas-f2`** · confianza alta · [49] [52]
+  - Hecho: En 2024 se pusieron en el mercado español 152.735,94 t de baterías de plomo-ácido de arranque (antes llamadas de automoción) y se gestionaron 127.396,01 t, un índice de recogida estatal del 90,85 %, por debajo del objetivo legal del 98 %.
+  - Valor: 152.735,94 t puestas en el mercado; 127.396,01 t recogidas; índice del 90,85 %
+  - Alcance: España; año 2024; baterías para arranque, encendido y alumbrado (SLI) de plomo-ácido; el índice divide lo recogido en 2024 entre la media de lo puesto en el mercado en 2022, 2023 y 2024 (fórmula del Real Decreto 106/2008); el objetivo del 98 % rige desde el 31-12-2018 (art. 15.3.c del Real Decreto 106/2008).
+  - Evidencia: «lo que supone el 90,85% como índice de recogida estatal» (MITECO, PEMAR 2025-2035, cap. 12, p. 137; Tabla 12-4)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores, anexo de normativa
+  - Matiz: Comprobado que 124.864,61 + 2.532,40 = 127.397,01 t (1 t más que la cifra impresa 127.396,01), como avisa el investigador. El 89 % que el PEMAR da solo para los productores del Acuerdo Voluntario también se reproduce (89,05 %). Más del 94 % del mercado en el Acuerdo Voluntario: 144.137,53 t de 152.735,94 t. El objetivo del 98 % rige desde el 31-12-2018 (BOE); los informes del Acuerdo Voluntario lo sitúan en 2019 (C4). La serie del PEMAR usa la media trienal de ventas (C5).
+  - Conflictos: C2, C4, C5, C6
+- **`tasas-f3`** · confianza alta · [48] [47] [49] [50]
+  - Hecho: Eurostat registra para España una eficiencia de reciclaje de las baterías de plomo-ácido del 71,9 % en 2023, cifra que coincide con el 71,92 % que publica el MITECO en el PEMAR para las baterías recogidas en España y enviadas a plantas de tratamiento.
+  - Valor: 71,9 % (Eurostat) / 71,92 % (MITECO)
+  - Alcance: España; 2023 (último año disponible en Eurostat); eficiencia del proceso de reciclaje, es decir masa de fracciones de salida contabilizadas como reciclado dividida entre masa de baterías de entrada (Reglamento (UE) nº 493/2012); no mide la recogida ni la recuperación del plomo.
+  - Evidencia: «Plomo-ácido 71,92%» (PEMAR, Tabla 12-7, p. 139); Eurostat env_wasbat: W160601 (Lead batteries), RCY, PC, ES, 2023 = 71.9
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Matiz: La frase «los datos se han revisado» (73,42 % MITECO 2022 frente a 70,7 % Eurostat 2022) es una inferencia del investigador: las dos cifras difieren, pero ninguna fuente leída dice que haya habido una revisión. El resto coincide.
+  - Conflictos: C12
+- **`tasas-f4`** · confianza alta · [26] [44] [45]
+  - Hecho: El Reglamento (UE) 2023/1542 exige que el reciclado alcance como mínimo el 75 % en peso medio de las baterías de plomo-ácido a más tardar el 31 de diciembre de 2025 y el 80 % a más tardar el 31 de diciembre de 2030.
+  - Valor: 75 % (31-12-2025); 80 % (31-12-2030)
+  - Alcance: UE; anexo XII, parte B, puntos 1(a) y 2(a); objetivo de eficiencia de reciclaje por peso medio de las baterías de plomo-ácido que entran en el proceso; obligación de los recicladores (art. 71.2).
+  - Evidencia: «recycling of 75 % by average weight of lead-acid batteries» (anexo XII, parte B, punto 1.a; el 80 % de 2030 figura en el punto 2.a)
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de indicadores
+  - Matiz: El texto español dice «pilas o baterías de plomo» y el inglés «lead-acid batteries»; el Reglamento Delegado 2025/606 calcula la eficiencia por separado para lead-acid (anexo, apdo. 2.2).
+  - Conflictos: C12
+- **`tasas-f5`** · confianza alta · [26] [44] [45]
+  - Hecho: El mismo anexo XII fija para el plomo un objetivo de recuperación de materiales del 90 % a más tardar el 31 de diciembre de 2027 y del 95 % a más tardar el 31 de diciembre de 2031.
+  - Valor: 90 % (31-12-2027); 95 % (31-12-2031)
+  - Alcance: UE; anexo XII, parte C, puntos 1(c) y 2(c); proporción del plomo contenido en las baterías recicladas que debe recuperarse como material capaz de sustituir materia prima primaria; es una métrica distinta de la eficiencia de reciclaje por peso.
+  - Evidencia: «(c) 90 % for lead» (anexo XII, parte C, punto 1.c); «(c) 95 % for lead» (punto 2.c)
+  - Uso previsto: capítulo, anexo de normativa, anexo de indicadores
+- **`tasas-f6`** · confianza alta · [26]
+  - Hecho: Según el artículo 8 del Reglamento, desde el 18 de agosto de 2031 las baterías SLI, las de vehículos eléctricos y las industriales de más de 2 kWh que contengan plomo deberán demostrar al menos un 85 % de plomo recuperado de residuos, porcentaje que se mantiene desde 2036.
+  - Valor: mínimo del 85 % de plomo recuperado de residuos (desde 18-8-2031)
+  - Alcance: UE; art. 8, apartados 1 a 3 (se excluyen las baterías industriales con almacenamiento exclusivamente externo); porcentaje del plomo presente en la batería que procede de residuos, por modelo, año y planta de fabricación; la documentación informativa es obligatoria desde el 18-8-2028 (o 24 meses después del acto delegado de método, si es posterior) y el mínimo del 85 % desde el 18-8-2031; las baterías de transporte ligero se incorporan en 2033 (documentación) y 2036 (mínimo del 85 %).
+  - Evidencia: «From 18 August 2031» y «(b) 85 % lead;» (art. 8.2)
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de indicadores
+  - Matiz: No se pudo comprobar si se adoptó el acto delegado del art. 8.1 (presupuesto de WebSearch agotado); la página de la Comisión (tasas-s28) solo lista el Reglamento Delegado 2025/606 como acto sobre reciclaje, lo que no es concluyente.
+  - Conflictos: C22
+- **`tasas-f7`** · confianza media · [8] [7] [61]
+  - Hecho: Un estudio de IHS Markit encargado por Eurobat, ILA y las asociaciones de fabricantes de automóviles ACEA, JAMA y KAMA estima que en 2015-2017 se recogió y recicló el 97,3 % de las baterías de plomo de automoción disponibles para recogida en 14 países de la UE.
+  - Valor: 97,3 % (2015-2017); 99 % (2010-2012, siete países)
+  - Alcance: UE, 14 países que suman cerca del 92 % del parque de vehículos (AT, BE, CZ, FR, DE, EL, HU, IT, NL, PL, PT, ES, SE y Reino Unido, entonces miembro); 2015-2017, promedio de tres años; toneladas recogidas (3.121.409) entre toneladas disponibles para recogida (3.207.909), estimadas a partir del parque de vehículos y la vida útil de las baterías.
+  - Evidencia: «calculated using this methodology was 97.3%» (Eurobat/IHS Markit, marzo de 2020, p. 3)
+  - Uso previsto: capítulo, anexo de datos
+  - Matiz: La afirmación de que es la única cifra de recogida de la UE no se puede demostrar, pero la evaluación de impacto de la Comisión (parte 3/3, p. 183) solo dice que las baterías de automoción se recogen «at very high levels», sin cifra.
+  - Conflictos: C11
+- **`tasas-f8`** · confianza alta · [47] [48] [46]
+  - Hecho: Eurostat indica que en 2023 todos los países de la UE cumplieron el objetivo del 65 % de eficiencia de reciclaje de baterías de plomo-ácido de la antigua Directiva 2006/66/CE, con valores entre el 65,0 % (Estonia) y el 94,9 % (Hungría).
+  - Valor: AT 86,4; BE 83,0; BG 89,3; CY 88,0; CZ 83,2; DE 78,9; DK 82,3; EE 65,0; EL 85,7; ES 71,9; FI 73,3; FR 86,0; HR 81,9; HU 94,9; IE 89,1; IT 93,9; LT 82,6; LU 71,6; LV 80,0; MT 80,0; NL 81,0; PL 76,8; PT 73,1 (estimado); SI 74,9; SK 91,2 (RO y SE sin dato de 2023)
+  - Alcance: UE-27; 2023; eficiencia del proceso de reciclaje por peso de baterías de plomo-ácido (conjunto env_wasbat, residuo 16 06 01); porcentaje por país, sin cifra agregada oficial para la UE.
+  - Evidencia: «all EU countries achieved the target of 65% recycling efficiency» (Eurostat, Statistics Explained)
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: El artículo cuenta 27 países (3 + 15 + 8 + 1) porque usa el último año de RO (2022: 89,3) y SE (2021: 76,0); el conjunto de datos solo tiene 25 valores de 2023. DK 82,3 es provisional (p), PT 73,1 es estimado (e) y MT 80,0 no trae toneladas.
+- **`tasas-f9`** · confianza media · [56] [54] [55] [57] [58] [59] [20] [7]
+  - Hecho: Las fuentes europeas no coinciden en cuánto del plomo de las baterías nuevas es reciclado: la Comisión usó un 67 % como situación de partida de 2020, mientras que otro pasaje del mismo informe y Eurobat hablan de más del 80 %.
+  - Valor: 67 % (Comisión, referencia de 2020) frente a más del 80 % (Comisión, parte 1; Eurobat 2019)
+  - Alcance: UE; situación hacia 2020 (evaluación de impacto de la Comisión, diciembre de 2020) y 2019 (Eurobat); el 67 % es el contenido reciclado de plomo supuesto en el modelo de la evaluación; el valor de más del 80 % es el insumo reciclado en la producción de baterías de plomo-ácido (Comisión, parte 1) o el material reciclado de la batería media fabricada en la UE (Eurobat).
+  - Evidencia: «Lead 67%» (SWD(2020) 335, parte 3/3, Tabla 19, p. 243); «above 80%» (parte 1/3, apdo. 2.1.2.2)
+  - Uso previsto: capítulo, anexo de datos, anexo de normativa
+  - Matiz: Confirmado también que el informe IHS de 2014 (tasas-s20) no contiene la cifra del 80 % (solo dice que el mercado puede cubrirse «predominately» con material reciclado), de modo que la cadena de citas de Eurobat no se sostiene.
+  - Conflictos: C10
+- **`tasas-f10`** · confianza alta · corregido por el verificador · [38]
+  - Hecho: La tasa de BCI divide el plomo reciclado en las fundiciones secundarias de EE. UU. (11.050.891.844 libras) entre el plomo disponible para reciclar (11.305.770.957 libras), que resulta de 18.203,9 millones de libras de plomo en baterías al final de su vida útil, más 244 millones de libras de plomo importado como chatarra de baterías, menos 7.142 millones de libras de plomo contenido en baterías usadas exportadas para fundirse en el extranjero.
+  - Valor: 11.050.891.844 lb ÷ 11.305.770.957 lb = 97,7 %
+  - Alcance: EE. UU.; 2020-2024; libras de plomo (no unidades de batería); incluye todas las baterías de plomo; las baterías exportadas para reciclarse en Canadá, México u otros países salen del denominador, de modo que no cuentan como no recicladas.
+  - Evidencia: «Lead recycled from batteries, divided by lead available for recycling» (BCI, p. 19)
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Texto original (antes de la corrección): La tasa de BCI divide el plomo reciclado en las fundiciones secundarias de EE. UU. (11.050.891.844 libras) entre el plomo disponible para reciclar (11.305.770.957 libras), que resulta de 18.203,9 millones de libras de plomo en baterías fuera de uso, más 244 millones importadas como chatarra, menos 7.142 millones de baterías usadas exportadas para fundirse en el extranjero.
+  - Matiz: Corrección de redacción: los 7.142 millones son libras de plomo («7,142 million lbs»), no baterías; la frase original podía leerse como 7.142 millones de baterías. Las cifras son correctas.
+- **`tasas-f11`** · confianza media · [49] [53] [51]
+  - Hecho: El informe del Acuerdo Voluntario de baterías de plomo-ácido, citado en el PEMAR, estima una recogida del 98,63 % si se compara con los residuos que se prevé generar y no con las ventas, frente al 90,85 % del índice oficial de 2024; el PEMAR presenta esa cifra como dato de 2024, pero la serie anual del propio Acuerdo sitúa el 98,63 % en 2023 y da 98,67 % para 2024.
+  - Valor: 98,63 % (estimación del Acuerdo Voluntario citada en el PEMAR; año discutido: 2024 según el PEMAR, 2023 según la serie del Acuerdo, que da 98,67 % para 2024); 98,21 % (FER, 2018)
+  - Alcance: España; 2024 (y 2018 para la cifra de la FER); estimación basada en residuos esperables (reposición más bajas de vehículos: 122.745,17 t) frente al índice oficial basado en ventas.
+  - Evidencia: «el índice de recogida sería del 98,63%» (PEMAR, cap. 12, p. 136)
+  - Uso previsto: anexo de datos
+  - Matiz: Reproducida la observación del investigador: 124.864,61 / 122.745,17 = 101,7 %, mientras que 121.063 t (recogida de 2023, Tabla 12-4) / 122.745,17 = 98,63 %; el texto del PEMAR no explica esa discrepancia. Usar solo como estimación del sector.
+  - Consolidación: C3: se añade la discrepancia de año del 98,63 % (PEMAR 2024 frente a serie del Acuerdo 2023).
+  - Conflictos: C2, C3
+- **`tasas-f12`** · confianza alta · [45] [62]
+  - Hecho: El 11 de septiembre de 2026 la Comisión Europea concluyó que no procede modificar los objetivos de reciclaje y recuperación de materiales del anexo XII (incluidos los de plomo-ácido y plomo) y que el 95 % de recuperación para el plomo en 2031 se acerca al límite técnico.
+  - Valor: sin cambios en los objetivos (75 % y 80 % de reciclaje; 90 % y 95 % de plomo)
+  - Alcance: UE; informe COM(2026) 470 final conforme al art. 71.5 del Reglamento (UE) 2023/1542; la próxima evaluación debe hacerse a más tardar el 18-8-2031.
+  - Evidencia: «not considered appropriate to revise the targets for recycling efficiency» (COM(2026) 470, conclusiones)
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: Se añade la copia del Consejo como fuente extra tasas-x1.
+- **`tasas-f13`** · confianza alta · [49] [51] [50]
+  - Hecho: La serie del MITECO muestra que el índice de recogida estatal de baterías de arranque (SLI) pasó del 82,21 % en 2018 al 90,85 % en 2024, mientras las ventas subían de 128.467 t a 152.735 t.
+  - Valor: Año: puestas en el mercado (t) / recogidas (t) / índice. 2018: 128.467 / 106.447 / 82,21 %; 2019: 126.880 / 107.455 / 83,35 %; 2020: 124.888 / 111.451 / 87,93 %; 2021: 134.560 / 113.849 / 88,41 %; 2022: 126.978 / 114.124 / 88,60 %; 2023: 140.943 / 121.063 / 90,24 %; 2024: 152.735 / 127.396 / 90,85 %
+  - Alcance: España; 2018-2024; toneladas puestas en el mercado y recogidas de baterías para arranque, encendido y alumbrado; índice calculado con la media de ventas del año y los dos anteriores.
+  - Evidencia: Fila «2018 128.467 106.447 82,21%» (PEMAR, Tabla 12-4, p. 137)
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: Diferencia de una centésima en 2024 (90,86 recalculado frente a 90,85 impreso) por redondeo o truncado del MITECO; no afecta al hecho.
+  - Conflictos: C2, C5, C6
+- **`tasas-f14`** · confianza alta · [48]
+  - Hecho: Eurostat registra para España un indicador de reciclaje del contenido de plomo de las baterías del 92,5 % en 2023, frente al 98,5 % de 2022.
+  - Valor: 92,5 % (2023); 98,5 % (2022)
+  - Alcance: España; 2022 y 2023; indicador «Lead content of batteries» (código W160601PB) de env_wasbat, en porcentaje; se interpreta como la proporción del plomo contenido en las baterías de plomo que sale del reciclaje como plomo reciclado (Eurostat no lo define en el artículo).
+  - Evidencia: Etiqueta «Lead content of batteries» (env_wasbat, RCY, PC, ES): 2022 = 98.5; 2023 = 92.5
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: Indicio adicional de calidad irregular: la entrada de plomo pasa de 122.638 t (2022) a 197.472 t (2023) mientras que la entrada total de baterías de plomo solo pasa de 269.603 a 277.016 t.
+- **`tasas-f15`** · confianza alta · [48] [47] [49]
+  - Hecho: En 2023 entraron a reciclaje 277.016 t de baterías de plomo en plantas españolas, la mayor cantidad de la UE y casi una cuarta parte del total de los 24 países con datos.
+  - Valor: 277.016 t (23,7 % de 1.169.390 t en 24 países; cálculo propio); Alemania 185.285 t, Francia 166.959 t, Polonia 122.044 t, Italia 97.279 t
+  - Alcance: España; 2023; fracciones de entrada («input fractions») al proceso de reciclaje de baterías de plomo, de cualquier origen y uso (automoción, industriales, importadas); no equivale a lo recogido en España.
+  - Evidencia: Etiqueta «Recycling - input fractions» (env_wasbat, W160601, T, ES, 2023) = 277016
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Conflictos: C6, C7
+- **`tasas-f16`** · confianza alta · [40]
+  - Hecho: El estudio anterior de BCI (años 2017-2021, publicado el 12 de julio de 2023) comunicó una tasa de reciclaje de baterías de plomo del 99 %, obtenida promediando los estudios de la década 2011-2021.
+  - Valor: 99 % (BCI, 2023)
+  - Alcance: EE. UU.; estudio 2017-2021 y media 2011-2021; plomo reciclado dividido entre plomo disponible para reciclar; superado por el estudio de julio de 2026 (97,7 %).
+  - Evidencia: «continues its outstanding recycling rate of 99%» (BCI, nota de prensa de 12-7-2023)
+  - Uso previsto: anexo de datos
+  - Matiz: No se leyó el informe completo de 2023 (no es necesario para el hecho).
+- **`tasas-f17`** · confianza alta · [41] [42]
+  - Hecho: La EPA estimó que el 99 % de las baterías de plomo-ácido se recicló en EE. UU. en 2018, sobre 2,9 millones de toneladas generadas.
+  - Valor: 99 % (2.870 de 2.900 miles de toneladas recicladas; 30 miles de toneladas a vertedero)
+  - Alcance: EE. UU.; 2018; baterías de plomo-ácido de automóviles, camiones y motocicletas en los residuos sólidos urbanos; porcentaje de plomo y carcasas de polipropileno recuperados sobre lo generado (toneladas cortas de EE. UU.).
+  - Evidencia: «lead-acid batteries (99 percent)» (EPA, 2018 Fact Sheet, p. 10)
+  - Uso previsto: anexo de datos
+  - Matiz: La EPA aplica el 99 % al plomo y a las carcasas de polipropileno de baterías de automóviles, camiones y motocicletas en los residuos sólidos urbanos.
+- **`tasas-f18`** · confianza alta · corregido por el verificador · [43] [39]
+  - Hecho: En 2025 EE. UU. produjo cerca de un millón de toneladas de plomo secundario, equivalente al 70 % de su consumo aparente de plomo, y exportó 23 millones de baterías SLI usadas entre enero y agosto de ese año.
+  - Valor: 1 millón de t de plomo secundario = 70 % del consumo aparente (2025, estimación); 23 millones de baterías SLI usadas exportadas en enero-agosto de 2025, un 23 % más que los 19 millones del mismo periodo (enero-agosto) de 2024
+  - Alcance: EE. UU.; 2025 (estimación) y enero-agosto de 2025 (exportaciones); USGS, Mineral Commodity Summaries 2026; el consumo aparente se define como producción secundaria de plomo refinado de chatarra vieja más importaciones menos exportaciones de plomo refinado.
+  - Evidencia: «equivalent to 70% of apparent domestic consumption» (USGS, MCS 2026, Lead, apartado Recycling)
+  - Uso previsto: anexo de datos, otro
+  - Texto original (antes de la corrección): En 2025 EE. UU. produjo cerca de un millón de toneladas de plomo secundario, equivalente al 70 % de su consumo aparente de plomo, y exportó 23 millones de baterías SLI usadas entre enero y agosto de ese año.
+  - Matiz: Corrección de periodo: los 19 millones son de enero-agosto de 2024, no de todo 2024. Las cifras del USGS están en miles de toneladas métricas.
+- **`tasas-f19`** · confianza alta · [26] [46] [60] [52]
+  - Hecho: El Reglamento (UE) 2023/1542 está en vigor desde el 17 de agosto de 2023 y se aplica desde el 18 de febrero de 2024; su capítulo VIII, que incluye los objetivos de reciclaje, se aplica desde el 18 de agosto de 2025, misma fecha desde la que queda derogada la Directiva 2006/66/CE.
+  - Valor: En vigor 17-8-2023; aplicación 18-2-2024; capítulo VIII y derogación de la Directiva el 18-8-2025
+  - Alcance: UE; Reglamento publicado en el DOUE L 191 de 28-7-2023 (CELEX 32023R1542); la antigua Directiva fijaba un 65 % de reciclaje por peso medio para las baterías de plomo-ácido, incluido el plomo en el mayor grado técnicamente posible.
+  - Evidencia: «Directive 2006/66/EC is repealed with effect from 18 August 2025.» (art. 95)
+  - Uso previsto: anexo de normativa
+  - Matiz: No se pudo comprobar si España ya aprobó un nuevo real decreto (WebSearch agotado); la página consolidada del BOE descargada hoy sigue mostrando el RD 106/2008 sin derogación, lo que es coherente pero no concluyente.
+- **`tasas-f20`** · confianza alta · [26] [56]
+  - Hecho: El Reglamento no fija un porcentaje de recogida para las baterías de arranque (SLI), pero obliga a los productores a retirar gratis todas las baterías SLI usadas de la categoría que hayan puesto en el mercado de cada Estado miembro, sea cual sea su marca, estado u origen.
+  - Valor: sin objetivo porcentual para SLI; obligación de retirada de todas las baterías SLI usadas
+  - Alcance: UE; art. 61.1; los objetivos numéricos de recogida del Reglamento se refieren a baterías portátiles (art. 59: 45 % a 31-12-2023, 63 % a 31-12-2027 y 73 % a 31-12-2030) y a las de transporte ligero (art. 60).
+  - Evidencia: «take back, free of charge and without an obligation on the end-user» (art. 61.1)
+  - Uso previsto: anexo de normativa, capítulo
+
+### 4.3 reglamento: Reglamento (UE) 2023/1542 sobre pilas y baterías: obligaciones y fechas, verificadas en EUR-Lex a 2026-10-21 (versión consolidada vigente: 13-08-2026)
+
+20 hechos (17 confirmados, 3 con corrección); 42 fuentes distintas.
+
+- **`reglamento-f1`** · confianza alta · [30] [26] [67] [69]
+  - Hecho: Desde el 18 de febrero de 2027 las baterías para medios de transporte ligeros, las baterías industriales de más de 2 kWh y todas las baterías de vehículos eléctricos que se introduzcan en el mercado o se pongan en servicio deben tener un registro electrónico llamado pasaporte para baterías.
+  - Valor: 18-02-2027
+  - Alcance: UE (reglamento directamente aplicable, también en España); baterías introducidas en el mercado o puestas en servicio desde el 18-02-2027; categorías: baterías de vehículos eléctricos (categoría L de más de 25 kg, M, N y O), de medios de transporte ligeros (LMT) e industriales de más de 2 kWh; artículo 77.1 en la versión consolidada de 13-08-2026.
+  - Evidencia: Art. 77.1: «dispondrán de un registro electrónico (en lo sucesivo, «pasaporte para baterías»)».
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de arquitectura
+- **`reglamento-f2`** · confianza alta · [30] [69] [60]
+  - Hecho: Las baterías de arranque, encendido y alumbrado (SLI) no figuran entre las categorías del artículo 77.1 y por tanto no necesitan pasaporte, aunque desde el 18 de febrero de 2027 deben llevar un código QR que da acceso a la cantidad de cobalto, plomo, litio o níquel valorizados presente en sus materiales activos.
+  - Valor: SLI sin pasaporte; QR desde 18-02-2027
+  - Alcance: UE; baterías SLI (por ejemplo, las de arranque de vehículos) introducidas en el mercado desde el 18-02-2027; obligación del código QR del artículo 13.6.c.
+  - Evidencia: Art. 13.6.c: «en el caso de las baterías para arranque, encendido o alumbrado»; el art. 77.1 no las enumera.
+  - Uso previsto: capítulo, anexo de normativa
+  - Matiz: La ausencia de pasaporte para SLI es una inferencia por enumeración (ninguna norma dice expresamente que no lo necesiten), coherente con la guía de la Comisión. Matiz práctico: el dato de contenido reciclado al que apuntaría el QR de las SLI depende del art. 8 (no antes de 18-08-2028); a 21-10-2026 EUR-Lex solo muestra un borrador del acto delegado de metodología (12-08-2026).
+- **`reglamento-f3`** · confianza alta · [30] [63] [64] [65] [82] [88]
+  - Hecho: A 21 de octubre de 2026 la versión consolidada vigente del Reglamento (UE) 2023/1542 en EUR-Lex es la de 13 de agosto de 2026 (versión 003.001), que incorpora los reglamentos modificadores 2024/1781, 2025/1561 y 2026/1738.
+  - Valor: 13-08-2026
+  - Alcance: UE; texto consolidado en español, sin valor jurídico oficial (el auténtico es el del Diario Oficial); versiones consolidadas existentes: 28-07-2023, 18-07-2024, 31-07-2025 y 13-08-2026; consulta realizada el 21-10-2026.
+  - Evidencia: Cabecera del texto consolidado: «02023R1542 — ES — 13.08.2026 — 003.001»; la ficha de EUR-Lex indica versión consolidada actual 13/08/2026.
+  - Uso previsto: anexo de normativa, otro
+  - Matiz: El apartado 77.10 aparece con marca ▼C2 y no ▼M1 en el consolidado porque la rectificación C2 de 2024/1781 corrige el texto (el DOUE original de la ESPR citaba por error 2024/1726); no afecta a la afirmación. Búsqueda en EUR-Lex de actos de 2026 con «2023/1542» en el título: solo 2026/1738, la Decisión de Ejecución 2026/2048 (norma armonizada) y la rectificación del 10.4.2026; no hay una versión consolidada posterior a 13-08-2026.
+- **`reglamento-f4`** · confianza alta · [30] [63] [26] [60]
+  - Hecho: El Reglamento (UE) 2023/1542, publicado en el Diario Oficial el 28 de julio de 2023, entró en vigor el 17 de agosto de 2023 y se aplica con carácter general desde el 18 de febrero de 2024.
+  - Valor: 17-08-2023 (entrada en vigor); 18-02-2024 (aplicación general)
+  - Alcance: UE-27 (reglamento de 12-07-2023, DO L 191, que deroga la Directiva 2006/66/CE); fechas de entrada en vigor y de aplicación general.
+  - Evidencia: Art. 96.2: «este será aplicable a partir del 18 de febrero de 2024»; entrada en vigor: art. 96.1 y ficha EUR-Lex (17/08/2023).
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa
+- **`reglamento-f5`** · confianza alta · [30] [26] [85]
+  - Hecho: Todas las baterías deben llevar el símbolo de recogida separada desde el 18 de agosto de 2025 y un código QR desde el 18 de febrero de 2027, y la etiqueta con la información general del anexo VI (parte A) se exige desde el 18 de agosto de 2026 o 18 meses después de la entrada en vigor del acto de ejecución del artículo 13.10, si esta fecha es posterior.
+  - Valor: Símbolo 18-08-2025; QR 18-02-2027; etiqueta general: 18-08-2026 o 18 meses tras el acto de ejecución
+  - Alcance: UE; todas las categorías de baterías (artículo 13); el QR da acceso al pasaporte en LMT, industriales de más de 2 kWh y vehículos eléctricos.
+  - Evidencia: Art. 13.1: «A partir del 18 de agosto de 2026 o 18 meses después»; símbolo: art. 13.4; QR: art. 13.6.
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de arquitectura
+  - Matiz: A 21-10-2026 EUR-Lex solo contiene el borrador (15-12-2025) del acto del art. 13.10, por lo que la fecha efectiva de la etiqueta general queda abierta; el enunciado ya lo recoge con la fórmula «o 18 meses después ... si esta fecha es posterior».
+  - Conflictos: C22
+- **`reglamento-f6`** · confianza alta · [30] [68] [69]
+  - Hecho: El punto 1 del anexo XIII fija 19 elementos de información pública sobre el modelo de batería, entre ellos la composición química, las materias primas fundamentales, la huella de carbono, el contenido reciclado, la capacidad asignada, la vida útil prevista en ciclos y la declaración UE de conformidad.
+  - Valor: 19 elementos (letras a a s)
+  - Alcance: UE; pasaporte para baterías de vehículos eléctricos, LMT e industriales de más de 2 kWh; información a nivel de modelo de batería, accesible al público desde el 18-02-2027 salvo los datos cuya obligación todavía no se aplica.
+  - Evidencia: Anexo XIII, punto 1.b: «composición material de la batería, incluida su composición química».
+  - Uso previsto: capítulo, anexo de datos, anexo de arquitectura, anexo de normativa
+  - Matiz: «19 elementos» cuenta las letras a) a s); la letra a) remite a los 10 puntos del anexo VI A y la guía de la Comisión desglosa 71 puntos de datos para VE, LMT e industriales de más de 2 kWh.
+  - Conflictos: C21
+- **`reglamento-f7`** · confianza alta · corregido por el verificador · [30] [68] [83]
+  - Hecho: El pasaporte tiene tres niveles de acceso: el punto 1 del anexo XIII es público; los puntos 2 y 4 (composición detallada, desmontaje, medidas de seguridad, estado de salud, estado de la batería y datos de uso) son accesibles a personas con interés legítimo, y el punto 2 también a la Comisión y, según el artículo 77.2.b, a los organismos notificados y las autoridades de vigilancia del mercado; el punto 3 (informes de ensayo) solo a organismos notificados, autoridades de vigilancia del mercado y la Comisión.
+  - Valor: 3 niveles de acceso (punto 1 público; puntos 2 y 4 con interés legítimo, el 2 también autoridades y Comisión; punto 3 solo autoridades y Comisión)
+  - Alcance: UE; pasaporte para baterías (artículo 77.2 y anexo XIII); el acceso real a los puntos 2 y 4 depende del acto de ejecución del artículo 77.9, aún pendiente a 21-10-2026.
+  - Evidencia: Art. 77.2.c: «accesible únicamente a cualquier persona física o jurídica con un interés legítimo».
+  - Uso previsto: capítulo, anexo de datos, anexo de arquitectura, anexo de seguridad, anexo de normativa
+  - Texto original (antes de la corrección): El pasaporte tiene tres niveles de acceso: el punto 1 del anexo XIII es público, los puntos 2 y 4 (composición detallada, desmontaje, medidas de seguridad, estado de salud, estado de la batería y datos de uso) solo son accesibles a personas con interés legítimo, y el punto 3 (informes de ensayo) solo a organismos notificados, autoridades de vigilancia del mercado y la Comisión.
+  - Matiz: Matiz: el art. 77.2.b asigna los puntos 2 y 3 a organismos notificados, autoridades de vigilancia del mercado y Comisión, y el art. 77.2.c asigna los puntos 2 y 4 a personas con interés legítimo; el encabezado del punto 2 del anexo XIII dice «ACCESIBLE SOLO A PERSONAS CON UN INTERÉS LEGÍTIMO Y A LA COMISIÓN». Por eso «solo a personas con interés legítimo» es incompleto para el punto 2. La FAQ 6.3 simplifica igual que el enunciado y dice que el acceso a los puntos 2 y 4 depende del acto de ejecución del art. 77.9, que a 21-10-2026 solo existe como borrador (19-10-2026).
+  - Conflictos: C22
+- **`reglamento-f8`** · confianza alta · [30] [68]
+  - Hecho: El operador económico que introduce la batería en el mercado responde de que su pasaporte sea exacto, completo y actualizado, las baterías adaptadas o remanufacturadas reciben un pasaporte nuevo enlazado con el original, la responsabilidad pasa al productor, a su organización o al operador de gestión de residuos cuando la batería se convierte en residuo, y el pasaporte desaparece al reciclarla.
+  - Alcance: UE; pasaporte para baterías (artículo 77.4, 77.7 y 77.8) desde el 18-02-2027.
+  - Evidencia: Art. 77.8: «El pasaporte para baterías dejará de existir una vez reciclada la batería».
+  - Uso previsto: capítulo, anexo de arquitectura, anexo de seguridad, anexo de normativa
+  - Matiz: El art. 77.7 cubre también la preparación para la reutilización y la preparación para la adaptación; el enunciado cita solo adaptación y remanufacturación, lo que es correcto aunque no exhaustivo.
+- **`reglamento-f9`** · confianza alta · [30] [64] [76] [89] [90] [94] [96]
+  - Hecho: El Reglamento (UE) 2025/1561 aplazó dos años las obligaciones de diligencia debida en la cadena de suministro de baterías, por lo que el artículo 48.1 se aplica desde el 18 de agosto de 2027 en lugar del 18 de agosto de 2025, y retrasó al 26 de julio de 2026 el plazo de las directrices de la Comisión.
+  - Valor: 18-08-2027
+  - Alcance: UE; operadores económicos que introducen baterías en el mercado o las ponen en servicio y facturan 40 millones EUR o más; materias primas del anexo X: cobalto, grafito natural, litio y níquel; Reglamento 2025/1561 de 18-07-2025, en vigor desde 31-07-2025.
+  - Evidencia: Reglamento (UE) 2025/1561, art. 1: «se sustituye por «18 de agosto de 2027»».
+  - Uso previsto: capítulo, anexo de normativa, anexo de ODS
+  - Matiz: Estado de COM(2025) 501 según el Observatorio Legislativo del PE (2025/0130(COD)): hay acuerdo interinstitucional (carta de Coreper 26-06-2026; aprobación en comisión del PE 02-07-2026) y pleno indicativo el 23-11-2026; a 21-10-2026 no está adoptada y su texto final podría diferir de la propuesta. No pude confirmar la publicación de las directrices del art. 48.5 (plazo 26-07-2026): la búsqueda por título en EUR-Lex no devuelve ningún resultado.
+- **`reglamento-f10`** · confianza media · corregido por el verificador · [30] [67] [68] [70] [71] [72] [73] [83] [84] [85] [86] [87]
+  - Hecho: A 21 de octubre de 2026 no consta adoptado en EUR-Lex el acto de ejecución del artículo 13.10 sobre etiquetado armonizado (plazo: 18 de agosto de 2025; solo existe su borrador del 15-12-2025) ni el del artículo 77.9 sobre el acceso a los datos restringidos del pasaporte (plazo: 18 de agosto de 2026; la Comisión ha publicado un borrador fechado el 19-10-2026), aunque según la Comisión el registro europeo de pasaportes digitales se puso en marcha el 20 de julio de 2026.
+  - Valor: Pendientes (solo borradores): etiquetado (art. 13.10; borrador 15-12-2025) y acceso a datos (art. 77.9; borrador 19-10-2026)
+  - Alcance: UE; situación a 21-10-2026 de los actos de desarrollo del Reglamento (UE) 2023/1542; EUR-Lex lista un único acto de ejecución adoptado (Reglamento de Ejecución 2025/2289, sobre informes de residuos) y el resto de actos solo aparecen como borradores: etiquetado (15-12-2025), acceso a datos del pasaporte (19-10-2026), huella de carbono (29-04-2024), contenido reciclado (12-08-2026) y rendimiento y durabilidad (29-09-2026)
+  - Evidencia: FAQ de la Comisión (30-09-2026): «still being developed following stakeholder consultation»; EUR-Lex: un solo acto de ejecución adoptado.
+  - Uso previsto: anexo de normativa, anexo de arquitectura
+  - Texto original (antes de la corrección): A 21 de octubre de 2026 no consta adoptado en EUR-Lex el acto de ejecución del artículo 13.10 sobre etiquetado armonizado (plazo: 18 de agosto de 2025) ni el del artículo 77.9 sobre el acceso a los datos restringidos del pasaporte (plazo: 18 de agosto de 2026), aunque según la Comisión el registro europeo de pasaportes digitales opera desde el 20 de julio de 2026.
+  - Matiz: La afirmación central es correcta (ninguno de los dos actos está adoptado), pero hay tres precisiones. (a) El alcance dice «solo borradores de huella de carbono»: de los 2 borradores que lista EUR-Lex, uno es de huella de carbono (29-04-2024) y el otro es el borrador previo del propio 2025/2289 (14-07-2025). (b) El hueco del 77.9 queda resuelto: EUR-Lex ya muestra un borrador de IR fechado 19-10-2026 («access to and use of certain information in the battery passport»); el de etiquetado figura como borrador del 15-12-2025. (c) Registro: la FAQ 1.2 habla de «the launch of the Registry on 20 July 2026» con helpdesk y entorno de pruebas; la página de DG GROW lo incluye en un calendario marcado como indicativo («20 July 2026: DPP Registry becomes operational»); el IR 2026/1778 entra en vigor a los veinte días de su publicación del 17-07-2026, es decir el 06-08-2026. Tampoco hay actos delegad…
+  - Consolidación: Alcance corregido según la precisión del verificador: el original decía «solo borradores de huella de carbono», pero EUR-Lex muestra además los borradores de etiquetado, acceso a datos, contenido reciclado y rendimiento y durabilidad.
+  - Conflictos: C22
+- **`reglamento-f11`** · confianza alta · [30]
+  - Hecho: Desde el 18 de agosto de 2024 el sistema de gestión de baterías de las baterías de vehículos eléctricos, de medios de transporte ligeros y de los sistemas estacionarios debe guardar datos actualizados de estado de salud y vida útil prevista, y quien adquirió legalmente la batería, incluidos operadores independientes y operadores de gestión de residuos, tiene acceso de solo lectura y no discriminatorio a esos datos.
+  - Valor: 18-08-2024
+  - Alcance: UE; baterías de vehículos eléctricos, de medios de transporte ligeros y sistemas estacionarios de almacenamiento de energía con baterías; artículo 14 y anexo VII.
+  - Evidencia: Art. 14.2: «tendrá en todo momento acceso de solo lectura, no discriminatorio».
+  - Uso previsto: anexo de datos, anexo de indicadores, anexo de normativa, pantalla 3D
+- **`reglamento-f12`** · confianza alta · [30] [75] [79] [52] [93] [98]
+  - Hecho: Desde el 18 de agosto de 2025 los productores tienen responsabilidad ampliada sobre las baterías que comercializan por primera vez en un Estado miembro, incluido quien comercializa baterías resultantes de preparación para la reutilización, adaptación o remanufacturación, y pueden cumplirla de forma individual o mediante una organización competente autorizada.
+  - Valor: 18-08-2025
+  - Alcance: UE y cada Estado miembro (en España el capítulo VIII se aplica directamente); productores según el artículo 3.1.47; aplicación desde 18-08-2025 (artículo 96.2.c).
+  - Evidencia: Art. 96.2.c: «capítulo VIII será aplicable a partir del 18 de agosto de 2025».
+  - Uso previsto: capítulo, anexo de presupuesto, anexo de normativa
+  - Matiz: Actualización: el Observatorio Legislativo (2025/0395(COD)) muestra voto en la comisión ENVI el 05-10-2026, informe A10-0266/2026 (09-10-2026), debate en pleno el 19-10-2026 y votación el 20-10-2026, sin acto final adoptado (el Consejo había interrumpido la negociación). La comisión propone enmiendas, p. ej. suspender «until 1 January 2035 or until the date of application of a Union legal act establishing a horizontal framework for extended producer responsibility». El enunciado y la nota describen la propuesta de la Comisión y siguen siendo correctos.
+- **`reglamento-f13`** · confianza alta · corregido por el verificador · [30] [31]
+  - Hecho: Los productores de baterías de arranque, industriales y de vehículos eléctricos, o su organización competente, deben aceptar la devolución sin coste y sin exigir la compra de una batería nueva y garantizar la recogida separada de todos los residuos de la categoría que hayan comercializado por primera vez en el Estado miembro, sea cual sea su composición química, estado, marca u origen; y los distribuidores deben aceptar esos residuos en el punto de venta o en sus inmediaciones, limitados a las categorías que ofrezcan o hayan ofrecido.
+  - Alcance: UE y Estados miembros; baterías SLI, industriales y de vehículos eléctricos (artículos 61, 62 y 65); obligaciones aplicables desde 18-08-2025 (capítulo VIII); sin objetivo numérico de recogida para estas categorías.
+  - Evidencia: Art. 61.1: «aceptarán la devolución, de manera gratuita».
+  - Uso previsto: capítulo, anexo de normativa, anexo de seguridad
+  - Texto original (antes de la corrección): Los productores de baterías de arranque, industriales y de vehículos eléctricos, o su organización competente, deben aceptar la devolución sin coste y sin exigir la compra de una batería nueva y garantizar la recogida separada de todos los residuos de esas categorías, y los distribuidores deben aceptar esos residuos en el punto de venta o en sus inmediaciones.
+  - Matiz: La obligación de los distribuidores del art. 62.1.b está limitada por el art. 62.2.b a las categorías de pilas o baterías que el distribuidor ofrezca o haya ofrecido (y a pilas portátiles en la cantidad normalmente desechada por usuarios no profesionales); el enunciado dice «esos residuos» sin ese límite. La obligación de los productores (art. 61.1) también se limita a «la categoría respectiva que hayan comercializado por primera vez» en el Estado miembro, como ya indican las notas. Además, junto a las cifras 63 % y 73 % de pilas portátiles existe un objetivo del 45 % a 31-12-2023 (art. 59.3.a), ya vencido.
+  - Conflictos: C1
+- **`reglamento-f14`** · confianza alta · [30] [66] [78]
+  - Hecho: El reglamento remite a la Directiva 2008/98/CE para definir la reutilización (volver a usar con la misma finalidad productos o componentes que no son residuos), la preparación para la reutilización (comprobar, limpiar o reparar residuos para poder reutilizarlos sin otra transformación previa) y el residuo de pilas o baterías (la pila o batería que es residuo).
+  - Alcance: UE; artículo 3.1 (puntos 29 y 50) y 3.2.a del Reglamento (UE) 2023/1542, y artículo 3 (puntos 1, 13 y 16) de la Directiva 2008/98/CE en su versión consolidada de 16-10-2025.
+  - Evidencia: Directiva 2008/98/CE, art. 3.16: «consistente en la comprobación, limpieza o reparación».
+  - Uso previsto: capítulo, anexo de normativa
+  - Matiz: La Ley 7/2022 define residuo con «deseche» en lugar de «se desprenda» (mismo sentido) y añade, en preparación para la reutilización, que los productos dejan de ser residuos si cumplen las normas de producto aplicables, como indican las notas.
+- **`reglamento-f15`** · confianza alta · [30]
+  - Hecho: El artículo 3 distingue la preparación para la adaptación y la adaptación (destinar un residuo de batería, o una batería que no es residuo, a un fin o aplicación distintos del original) de la remanufacturación, que exige recuperar al menos el 90 % de la capacidad asignada original, con celdas cuyo estado de salud no difiera más de un 3 %, y mantener el uso original.
+  - Alcance: UE; definiciones del artículo 3.1, puntos 30, 31 y 32, del texto consolidado de 13-08-2026.
+  - Evidencia: Art. 3.1.32: «restablecer la capacidad de la batería en un 90 % como mínimo».
+  - Uso previsto: capítulo, anexo de normativa
+- **`reglamento-f16`** · confianza alta · [30] [74] [78] [92]
+  - Hecho: El reglamento define productor como el fabricante, importador, distribuidor u otra persona que fabrica, revende o suministra por primera vez baterías en un Estado miembro o las vende a distancia desde otro país, y define operador de gestión de residuos como quien se dedica profesionalmente a la recogida separada o al tratamiento de residuos de pilas o baterías.
+  - Alcance: UE; artículo 3.1, puntos 47 y 56; en el Derecho español la Ley 7/2022 (artículo 2) define además productor del producto y gestor de residuos.
+  - Evidencia: Art. 3.1.56: «se dedica profesionalmente a la recogida separada o el tratamiento».
+  - Uso previsto: anexo de normativa
+- **`reglamento-f17`** · confianza alta · [30] [71]
+  - Hecho: Para acreditar que un residuo de batería de transporte ligero, industrial o de vehículo eléctrico ya no es residuo tras su preparación para la reutilización o para la adaptación, su propietario debe demostrar, si la autoridad lo pide, una evaluación del estado de salud, el uso posterior documentado y una protección adecuada durante el transporte.
+  - Alcance: UE; baterías LMT, industriales y de vehículos eléctricos que son residuo y se preparan para reutilización o adaptación; artículo 73.
+  - Evidencia: Art. 73.1: «ya no se considera residuo, el propietario de la batería deberá demostrar».
+  - Uso previsto: capítulo, anexo de normativa
+  - Conflictos: C22
+- **`reglamento-f18`** · confianza alta · [30] [45]
+  - Hecho: El anexo XII exige eficiencias de reciclado de baterías de litio del 65 % a 31 de diciembre de 2025 y del 70 % a 31 de diciembre de 2030 (plomo: 75 % y 80 %) y valorización de cobalto, cobre, plomo y níquel del 90 % en 2027 y del 95 % en 2031 (litio: 50 % y 80 %), objetivos que la Comisión concluyó el 11 de septiembre de 2026 que no deben revisarse.
+  - Valor: Litio: 65 % (2025) y 70 % (2030); Co, Cu, Pb y Ni: 90 % (2027) y 95 % (2031)
+  - Alcance: UE; porcentajes en peso medio por proceso de reciclado; plazos 31-12-2025, 2027, 2030 y 2031; anexo XII partes B y C; informe COM(2026) 470 de 11-09-2026.
+  - Evidencia: Anexo XII, parte B: «65 % en peso medio de las pilas o baterías de litio».
+  - Uso previsto: capítulo, anexo de indicadores, anexo de normativa, anexo de ODS, anexo de seguridad
+- **`reglamento-f19`** · confianza alta · [30] [72] [86]
+  - Hecho: Las baterías industriales de más de 2 kWh, de vehículos eléctricos y de arranque deberán acreditar un contenido reciclado mínimo de 16 % de cobalto, 85 % de plomo, 6 % de litio y 6 % de níquel desde el 18 de agosto de 2031, y de 26 %, 85 %, 12 % y 15 % desde el 18 de agosto de 2036.
+  - Valor: 2031: 16 / 85 / 6 / 6 %; 2036: 26 / 85 / 12 / 15 % (Co / Pb / Li / Ni)
+  - Alcance: UE; materiales activos que contienen cobalto, plomo, litio o níquel valorizados de residuos de fabricación o posconsumo, por modelo, año y planta de fabricación; excluye las industriales con almacenamiento exclusivamente externo; artículo 8.2 y 8.3.
+  - Evidencia: Art. 8.2.a: «16 % para el cobalto».
+  - Uso previsto: anexo de indicadores, anexo de normativa, anexo de ODS
+  - Conflictos: C22
+- **`reglamento-f20`** · confianza alta · [63] [74] [75] [76] [77] [80] [81] [90] [91] [92] [93] [94] [95] [96] [97] [98]
+  - Hecho: A 21 de octubre de 2026 EUR-Lex lista cinco propuestas legislativas aún no adoptadas que modificarían el Reglamento (UE) 2023/1542 (COM(2025) 501, 504, 981 y 982 y COM(2026) 590), y ninguna aplaza el pasaporte ni el código QR.
+  - Valor: 5 propuestas pendientes; fechas del pasaporte y del QR sin cambios
+  - Alcance: UE; situación a 21-10-2026; propuestas de la Comisión de 21-05-2025 (501 y 504), 10-12-2025 (981 y 982) y 09-09-2026 (COM(2026) 590).
+  - Evidencia: Ficha EUR-Lex, «Subsequent related instruments»: «Amendment proposed by 52025PC0981».
+  - Uso previsto: anexo de normativa, otro
+  - Matiz: Estado a 21-10-2026 según el Observatorio Legislativo: 501 y 504 tienen texto acordado en trílogo (comisión del PE 02-07-2026 y 14-07-2026) y pleno indicativo el 23-11-2026; 981 espera decisión de la comisión (pleno indicativo 14-12-2026); 982: el Observatorio registra votación en el pleno del PE el 20-10-2026 (resultado no consultado) y ningún acto final; 590 está en fase preparatoria. Los informes de la comisión del PE A10-0041/2026 (501) y A10-0024/2026 (504) no contienen cambios de las fechas del pasaporte ni del QR, aunque los textos finales acordados podrían diferir de las propuestas.
+
+### 4.4 normativa_es: Normativa española sobre baterías y residuos peligrosos: marco legal aplicable a talleres, recogida, traslado y gestores (consulta 2026-10-21)
+
+20 hechos (17 confirmados, 3 con corrección); 33 fuentes distintas.
+
+- **`normativa_es-f1`** · confianza alta · [52] [102] [103] [79] [104] [119] [120]
+  - Hecho: El Real Decreto 106/2008 sigue formalmente vigente en el BOE a 21-10-2026 (no consta derogado), pero el Reglamento (UE) 2023/1542 se aplica primero, y el Ministerio ha sometido a información pública (30-06 a 03-09-2026) un proyecto de real decreto que lo derogará expresamente y que se prevé incluir en el Plan Anual Normativo de 2027.
+  - Valor: Vigente; sustitución en trámite
+  - Alcance: España; estado a 2026-10-21 del real decreto estatal de pilas, acumuladores y baterías (transposición de la Directiva 2006/66/CE) y de su proyecto de sustitución
+  - Evidencia: deroga expresamente el Real Decreto 106/2008
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D
+  - Matiz: BOE: «Última actualización publicada el 20/01/2021»; API: estatus_derogacion N, vigencia_agotada N (fecha_actualizacion 2025-12-19). Proyecto: el RD 106/2008 «ha pasado a un segundo plano» y su disposición derogatoria única «deroga expresamente el Real Decreto 106/2008». MAIN (ficha 29/06/2026): no está en el Plan Anual Normativo de 2026, se ha comunicado su previsión en el de 2027 y entraría en vigor al día siguiente de su publicación. MITECO: plazo del 30-06 al 03-09-2026, consulta cerrada. En los sumarios del BOE hasta el 21-10-2026 no aparece ningún real decreto de pilas y baterías; sí el RD 764/2026 (Registro de producción y gestión de residuos, en vigor desde el 2-10-2026), que no modifica el RD 106/2008 ([119], [120]). Dos búsquedas web no hallaron noticias de aprobación; una aprobación en Consejo de Ministros aún sin publicar no se puede descartar del todo porque el cupo de búsq…
+- **`normativa_es-f2`** · confianza alta · [27] [78] [105] [111] [32] [34]
+  - Hecho: Las baterías de plomo usadas se codifican en la Lista Europea de Residuos con el código 16 06 01\* («Baterías de plomo»), y el asterisco las define como residuo peligroso, codificación que según el artículo 6 de la Ley 7/2022 es vinculante en España.
+  - Valor: 16 06 01\*
+  - Alcance: UE y España; Decisión 2014/955/UE aplicable desde 2015-06-01 (sustituida en el capítulo 16 06 desde 2026-12-09, ver normativa_es-f11); residuos de baterías de plomo
+  - Evidencia: 16 06 01\* Baterías de plomo
+  - Uso previsto: pantalla 3D, capítulo, anexo de normativa, anexo de seguridad
+  - Matiz: Desde el 9-12-2026 el código sigue siendo 16 06 01\* pero su descripción pasa a «residuos de pilas y baterías de plomo y ácido» (ver normativa_es-f11). La referencia «código LER 160110» de las preguntas frecuentes del Acuerdo Voluntario es una errata: 16 01 10\* es «componentes explosivos». La codificación como peligroso es vinculante según el art. 6.1 de la Ley 7/2022.
+  - Consolidación: C1: la fecha de sustitución del capítulo 16 06 se corrige de 2026-11-09 a 2026-12-09.
+  - Conflictos: C1
+- **`normativa_es-f3`** · confianza alta · [26] [52] [117] [30]
+  - Hecho: Desde el 18 de agosto de 2025 el Reglamento (UE) 2023/1542 obliga a los distribuidores a aceptar gratis, en su punto de venta o cerca, la devolución de baterías de arranque, encendido o alumbrado usadas sin exigir comprar una nueva, y a los productores a aceptar y recoger por separado esas baterías sin coste para el usuario.
+  - Valor: Aceptación gratuita en punto de venta
+  - Alcance: UE, directamente aplicable en España; capítulo VIII aplicable desde 2025-08-18; baterías de arranque, encendido o alumbrado (SLI), industriales, de vehículos eléctricos y de transporte ligero
+  - Evidencia: Los distribuidores aceptarán la devolución de los residuos de pilas o baterías
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D
+  - Matiz: Art. 62.1: los distribuidores aceptan la devolución «de manera gratuita y sin imponerles la obligación de comprar o haber comprado una pila o batería nueva»; letra b: baterías para medios de transporte ligeros, SLI, industriales y de vehículos eléctricos, en el punto de venta o sus inmediaciones. Art. 62.2: no se aplica a residuos de productos que contienen baterías y se limita a las categorías que el distribuidor ofrezca u ofreciera. Art. 61.1: productores u organizaciones de RAP aceptan la devolución gratis, sin obligación de compra ni de haberles comprado la batería, y garantizan la recogida separada; los Estados pueden exigir contrato con el productor. Art. 96.2.c: capítulo VIII aplicable desde el 18-08-2025; art. 95: Directiva 2006/66/CE derogada desde esa fecha; art. 3(65): definición de distribuidor. RD 106/2008 art. 10.2 solo cubre pilas y acumuladores portátiles (el MITECO lo c…
+- **`normativa_es-f4`** · confianza alta · [105] [109] [110] [113] [52] [114] [122]
+  - Hecho: La recogida de baterías de plomo-ácido de automoción en España no se apoya en un SCRAP o SIG específico, sino en sistemas individuales de la mayoría de los productores unidos al «Acuerdo Voluntario para la gestión de baterías plomo-ácido», firmado el 26-01-2010 por SERNAUTO, ANFAC, ANESDOR, ANCERA, AEDRA, CETRAA, CONEPA, FACONAUTO, FATA, GANVAM, ANGEREA, FER y UNIPLOM.
+  - Valor: Acuerdo Voluntario (sin SCRAP/SIG específico)
+  - Alcance: España; baterías de plomo-ácido de automoción e industriales; acuerdo vigente según su informe de gestión de 2025 (fechado 2026-03-20); AICA y FREDICA se adhirieron en 2021
+  - Evidencia: han establecido acuerdos voluntarios exclusivamente para este tipo de residuos
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D, anexo de arquitectura
+  - Matiz: Informe 2025: «El 26 de Enero de 2010 ... suscribieron el Acuerdo Voluntario» las 13 asociaciones citadas (FATA cesó su actividad en 2016); Comisión de Seguimiento constituida el 12-03-2010; AICA y FREDICA adheridas en 2021. MITECO: «Una mayoría de los productores de baterías de automoción han establecido acuerdos voluntarios exclusivamente para este tipo de residuos» y el sistema de depósito, devolución y retorno «en España no se ha implantado». Extremadura y reciclatubateria.com: sistemas de gestión individual unidos al Acuerdo. RD 106/2008 art. 20.3: los firmantes deben tener sistema individual propio y el acuerdo no puede eludir la responsabilidad ampliada. El RII-PYA es el registro del Ministerio de Industria ([114]). Matiz: es una afirmación de ausencia («no específico») y el MITECO dice «una mayoría»; la web de Ecopilas, un SCRAP generalista, dice gestionar también baterías de au…
+- **`normativa_es-f5`** · confianza alta · [99] [78] [107]
+  - Hecho: El Real Decreto 553/2020 exige, para todo traslado de residuos entre comunidades autónomas, tener antes del inicio un contrato de tratamiento con el gestor de destino y que los residuos vayan acompañados de un documento de identificación desde el origen hasta la instalación de destino.
+  - Valor: Contrato de tratamiento + documento de identificación
+  - Alcance: España; traslados entre comunidades autónomas para valorización o eliminación (art. 1.2); en vigor desde 2020-07-01, sin modificaciones en el texto consolidado
+  - Evidencia: Que los residuos vayan acompañados de un documento de identificación
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D, anexo de arquitectura
+  - Matiz: Art. 3.1.a: contrato de tratamiento «con carácter previo al inicio de un traslado»; art. 3.1.b: «Que los residuos vayan acompañados de un documento de identificación desde el origen hasta su recepción en la instalación de destino». Excepciones del propio art. 3.1.a: entre dos instalaciones de la misma entidad jurídica el contrato puede sustituirse por una declaración, y las entidades locales que trasladan a sus propias instalaciones quedan excluidas del contrato. Art. 5 (contenido del contrato), art. 6 (anexo III sin notificación; anexo I con notificación; 30 días; 3 años), disposición derogatoria única (deroga el RD 180/2015), disposición final tercera (en vigor el 1-07-2020); texto consolidado sin modificaciones (19/06/2020). Ley 7/2022: arts. 31.2, 31.11 y 66 coinciden con la nota.
+- **`normativa_es-f6`** · confianza alta · [99] [107] [78]
+  - Hecho: Como las baterías de plomo usadas (LER 16 06 01\*) son residuo peligroso, su traslado a una planta de reciclado de otra comunidad autónoma exige además notificación previa presentada al menos diez días antes del traslado en la comunidad de origen, y las comunidades de origen y destino disponen de diez días desde el acuse de recibo para oponerse.
+  - Valor: Notificación previa: 10 días
+  - Alcance: España; traslados entre comunidades autónomas de residuos peligrosos destinados a valorización o eliminación; RD 553/2020 arts. 3.2 y 8
+  - Evidencia: Los traslados de residuos peligrosos
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D, anexo de arquitectura
+  - Matiz: Art. 3.2.b: notificación previa para «Los traslados de residuos peligrosos ... destinados a valorización»; art. 8.1: presentación en la comunidad de origen «al menos, diez días antes de que se lleve a cabo el traslado»; origen y destino «dispondrán de diez días» desde el acuse de recibo para oponerse (arts. 8.1 y 9.1); notificación general hasta 3 años y conservación 3 años tras su fin (art. 8). Matiz de unidad: el RD dice solo «diez días»; el art. 31.4-5 de la Ley 7/2022 fija «diez días naturales» para la oposición; el informe del Acuerdo Voluntario habla de «10 días hábiles». Conviene citar «diez días» sin más o precisar «naturales» para la oposición. Que 16 06 01\* (con asterisco) sea residuo peligroso y por tanto notificable es una deducción correcta; la nota del MITECO de 26-07-2022 lista «Traslados de residuos peligrosos».
+- **`normativa_es-f7`** · confianza alta · corregido por el verificador · [52] [26] [105]
+  - Hecho: En el Real Decreto 106/2008 la batería de automoción es la usada para el arranque, encendido o alumbrado de vehículos; el productor debe articular puntos de recogida accesibles, gratuitos para el usuario de vehículos privados no comerciales y sin obligar a comprar una batería nueva, y alcanzar objetivos de recogida anual del 90 % (desde el 31-12-2009) y del 95 % (desde el 31-12-2011) del peso vendido el año precedente y un índice mínimo de recogida anual del 98 % desde el 31-12-2018.
+  - Valor: Objetivo 98 %
+  - Alcance: España; baterías de arranque, encendido o alumbrado; objetivos del art. 15.3: 90 % (desde 2009-12-31), 95 % (desde 2011-12-31) y 98 % (desde 2018-12-31) del peso vendido el año precedente
+  - Evidencia: utilizado para el arranque, encendido o alumbrado de vehículos
+  - Uso previsto: capítulo, anexo de normativa, anexo de indicadores
+  - Texto original (antes de la corrección): En el Real Decreto 106/2008 la batería de automoción es la usada para el arranque, encendido o alumbrado de vehículos; el productor debe articular puntos de recogida accesibles, gratuitos para el usuario de vehículos privados no comerciales y sin obligar a comprar una batería nueva, y alcanzar una recogida anual del 98 % en peso de lo vendido el año anterior desde 2018.
+  - Matiz: Confirmado: art. 3.f; art. 11.2 (y 11.3 para industriales); art. 15.3.a-c (90 % desde 31-12-2009; 95 % desde 31-12-2011; 98 % desde 31-12-2018); art. 15.4 (98 % plomo industrial desde 2017; 70 % sin Cd ni Pb desde 2020); art. 5.4 (plomo-ácido exento de fianza); anexo III (65 %); Reglamento anexo XII parte B (75 % a 31-12-2025 y 80 % a 31-12-2030 para pilas o baterías de plomo), sin cambios en el consolidado de 13-08-2026. Corrección menor: la fórmula «en peso ... vendidos a los usuarios en el año precedente al de la recogida» figura solo en 15.3.a y 15.3.b; el 15.3.c dice «índice mínimo de recogida anual del 98 por ciento» y el índice se define en el art. 3.aa con el promedio de ventas del año y los dos anteriores (la tabla del MITECO calcula con ventas del año precedente). Los informes del Acuerdo Voluntario de 2019 a 2025 sitúan el 98 % «a partir del 31 de diciembre de 2019», frente a…
+  - Conflictos: C4
+- **`normativa_es-f8`** · confianza alta · [100]
+  - Hecho: El Real Decreto 265/2021 obliga a los centros autorizados de tratamiento (CAT) a retirar las baterías de cada vehículo al final de su vida útil como parte de la descontaminación previa, y exige una cualificación acreditada a quien extraiga baterías de vehículos eléctricos o híbridos de alta tensión.
+  - Valor: Retirada de batería en el CAT
+  - Alcance: España; vehículos al final de su vida útil; en vigor desde 2021-04-15 (texto consolidado actualizado el 2024-09-18)
+  - Evidencia: Retirada de baterías
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D, anexo de seguridad
+  - Matiz: Art. 7.1-7.2 y anexo IV.1.a: cada CAT debe hacer «todas y cada una» de las operaciones de descontaminación, entre ellas «Retirada de baterías», antes de cualquier otro tratamiento. Art. 7.7 y anexo VI: los profesionales de los CAT que manipulan vehículos eléctricos e híbridos, en especial para extraer baterías, deben tener la cualificación y poder acreditarla (título de FP o equivalente, o certificación UNE-EN ISO 17024 de entidad acreditada por ENAC cuyo esquema evalúa tareas con alta tensión). La obligación recae sobre profesionales de CAT, no sobre cualquier taller. Art. 6.2 (30 días naturales), anexo II 2.d (contenedores con posible neutralización del electrolito), art. 9.3 y art. 3.f confirmados; deroga el RD 20/2017 y la Orden INT/624/2008; en vigor desde el 15-04-2021; consolidado actualizado el 18-09-2024.
+- **`normativa_es-f9`** · confianza alta · [78]
+  - Hecho: La Ley 7/2022 no fija un régimen propio para pilas y baterías: su artículo 37.2 remite a un real decreto por flujo y establece requisitos mínimos de responsabilidad ampliada, con sistemas individuales (comunicación previa) o colectivos (entidad sin ánimo de lucro con autorización autonómica válida en toda España) que financian recogida, transporte y tratamiento.
+  - Valor: Arts. 37-54
+  - Alcance: España; Ley 7/2022 (en vigor desde 2022-04-10), título IV, artículos 37 a 54, más disposiciones adicionales, transitorias y derogatorias
+  - Evidencia: se establecerán mediante real decreto aprobado por el Consejo de Ministros
+  - Uso previsto: capítulo, anexo de normativa
+  - Matiz: Art. 37.2: «Estas obligaciones se establecerán mediante real decreto aprobado por el Consejo de Ministros» y, si hay régimen de RAP, debe cumplir el capítulo II (requisitos mínimos). La expresión «por flujo» no es literal en el art. 37.2 pero sí está en la DT 2ª («normas reguladoras de cada flujo de residuos») y en el art. 43. Art. 43.1.a.1.º: costes de la recogida separada, el transporte y el tratamiento; art. 42.2; art. 49 (comunicación previa del sistema individual); art. 50 (asociación o entidad sin ánimo de lucro; autorización de la comunidad autónoma válida en todo el territorio y vigente 8 años). Las únicas menciones específicas a pilas y baterías son el art. 43 y la DA 12ª (plazo de 3 años; el proyecto de RD fija el 1-01-2028 en su DT 1ª). DD 1ª deroga la Ley 22/2011, el RD 833/1988, la Orden MAM/304/2002 y la Orden de 13-10-1989. En vigor desde el 10-04-2022; el título IV compr…
+- **`normativa_es-f10`** · confianza alta · corregido por el verificador · [78]
+  - Hecho: Un taller que genera baterías usadas, residuo peligroso, debe almacenarlas en una zona habilitada e identificada, protegida de la intemperie y con sistemas de retención de vertidos y derrames, durante un máximo de seis meses (que la comunidad autónoma puede ampliar como máximo otros seis meses solo en supuestos excepcionales y por causas debidamente justificadas), sin mezclarlas con otros residuos, y etiquetar los envases con el código y la descripción del residuo, el NIMA y los datos del productor, la fecha de inicio del depósito y los pictogramas de peligro en una etiqueta de al menos 10 × 10 cm.
+  - Valor: 6 meses
+  - Alcance: España; productor inicial o poseedor de residuos peligrosos en el lugar de producción, artículos 20 y 21 de la Ley 7/2022
+  - Evidencia: la duración máxima será de seis meses
+  - Uso previsto: capítulo, anexo de normativa, anexo de seguridad, pantalla 3D
+  - Texto original (antes de la corrección): Un taller que genera baterías usadas, residuo peligroso, debe almacenarlas en una zona identificada, protegida de la intemperie y con retención de derrames, durante un máximo de seis meses (ampliable otros seis por la comunidad autónoma), sin mezclarlas con otros residuos, y etiquetar los envases con código del residuo, NIMA, datos del productor, fecha de inicio y pictogramas en una etiqueta de al menos 10 × 10 cm.
+  - Matiz: Art. 21.a: zona habilitada e identificada; residuos peligrosos protegidos de la intemperie y con retención de vertidos y derrames; «En el caso de los residuos peligrosos, en ambos supuestos, la duración máxima será de seis meses»; solo «en supuestos excepcionales» y «por causas debidamente justificadas» la autoridad autonómica puede ampliarlo «como máximo otros seis meses»; el plazo cuenta desde el inicio del depósito y la fecha consta en el archivo cronológico. Art. 21.c: no mezclar ni diluir. Art. 21.e: etiqueta con código y descripción, NIMA, datos del productor, fecha de inicio y pictogramas, mínimo 10 × 10 cm (no hace falta si el envase ya lleva las inscripciones). Corrección menor: la ampliación no es general sino excepcional y motivada. Que el taller sea productor inicial es lectura razonable (art. 20.1 y 20.4).
+- **`normativa_es-f11`** · confianza alta · [31] [79] [101] [32]
+  - Hecho: La Decisión Delegada (UE) 2025/934 sustituye el capítulo 16 06 de la Lista Europea de Residuos a partir del 9 de diciembre de 2026: 16 06 01\* pasa a «residuos de pilas y baterías de plomo y ácido», aparece 16 06 07\* para baterías de litio y se suprimen 20 01 33\* y 20 01 34.
+  - Valor: Desde 2026-12-09
+  - Alcance: UE y España; aplicable desde 2026-12-09 (el texto original decía 2026-11-09; lo sustituye la corrección de errores DO L 2025/90657); códigos de residuos de pilas y baterías (fabricación, recogida y fracciones de reciclado)
+  - Evidencia: «Será aplicable a partir del 9 de diciembre de 2026» (art. 2, tras la corrección de errores DO L 2025/90657, 19-8-2025)
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D
+  - Matiz: El proyecto de real decreto español (DT 2.ª) mantiene los códigos nacionales hasta el 8-11-2026 y aplica los de la Decisión Delegada desde el 9-11-2026: esas fechas se basan en el texto original y quedan desfasadas por la corrección. Los mismos números cambian de contenido (16 06 09\* pasa de «otras sustancias peligrosas» a «baterías de cinc, incluidas las de óxido de plata»); nuevos códigos: 16 06 10\* y 16 06 11\* (sodio), 16 06 13\* (mezclas), 16 06 14\*, residuos de fabricación 16 06 22 a 16 06 35 y fracciones 19 14 01\* (plomo y ácido) a 19 14 08; se suprimen 20 01 33\* y 20 01 34.
+  - Consolidación: C1: la fecha original del 9-11-2026 se sustituye por el 9-12-2026 (corrección de errores DO L 2025/90657, 19-8-2025).
+  - Conflictos: C1
+- **`normativa_es-f12`** · confianza media · [110] [121]
+  - Hecho: El informe de gestión 2025 del Acuerdo Voluntario declara que se recogió el 98,71 % de las baterías de automoción de plomo-ácido recogibles (130.244.997,93 kg de 131.947.115,73 kg), por encima del objetivo del 98 %, y que se pusieron en el mercado 9.928.207 baterías nuevas.
+  - Valor: 98,71 %
+  - Alcance: España, año 2025; baterías de automoción de plomo-ácido de los productores adheridos con datos en el Registro de pilas y acumuladores; datos autodeclarados por el sector (informe fechado 2026-03-20)
+  - Evidencia: se ha alcanzado el 98,71 %
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Matiz: Punto 8 del informe: «se alcanzó un nivel de recogida ... del 98,71% ya que ... se han recogido 130.244.997,93 kilos de los 131.947.115,73 kilos posibles»; punto 3: 1.994.654 + 7.933.553 = 9.928.207 baterías nuevas; punto 4: 151.700.840,39 kg; matriculaciones 1.620.921 y bajas 745.114; industriales 98,64 %. La serie de las notas (98,10 % 2015; 98,15 % 2016; 98,18 % 2017; 98,21 % 2018; 98,4 % 2019; 98,45 % 2020; 98,47 % 2021; 98,51 % 2022; 98,63 % 2023; 98,67 % 2024) no está en el informe 2025 sino en los informes anuales de la misma web ([121]) y coincide. Son datos autodeclarados; el informe afirma que una entidad externa certifica las cantidades puestas en el mercado y que las plantas tienen ISO 9001 e ISO 14001. Los informes de 2019 a 2025 sitúan el objetivo del 98 % «a partir del 31 de diciembre de 2019» (citando el RD 710/2015), frente al 31-12-2018 del BOE.
+  - Conflictos: C2, C3, C4, C6
+- **`normativa_es-f13`** · confianza alta · [110] [112]
+  - Hecho: Según el informe de gestión 2025 del Acuerdo Voluntario, las baterías de plomo-ácido usadas pasan de talleres, concesionarios, distribuidores y centros de tratamiento de vehículos a pequeños y medianos gestores autorizados, luego a centros de almacenamiento temporal y por último a siete plantas de seis empresas: Derichebourg España, Azor Ambiental, Metalúrgica de Medina, PLOINMASA y dos sociedades Exide.
+  - Valor: 7 plantas
+  - Alcance: España, 2025; baterías de automoción e industriales de plomo-ácido; plantas finales de reciclado que declaran sus cantidades
+  - Evidencia: Plantas que se hacen cargo de las baterías de plomo ácido
+  - Uso previsto: pantalla 3D, capítulo, anexo de datos, anexo de arquitectura
+  - Matiz: Punto 6: Derichebourg España (2 plantas: Albalate del Arzobispo y Pina de Ebro), Azor Ambiental Holdco (Espinardo), Metalúrgica de Medina (Medina del Campo), PLOINMASA (Fuenlabrada), Exide Technologies S.A. (San Esteban de Gormaz) y Exide Technologies Recycling S.L. (Sant Julià de Llor i Bonmatí): 7 plantas y 6 sociedades. Sección 1: depósito en los puntos de generación (talleres, concesionarios, CAT), recogida por pequeños y medianos gestores, centros de almacenamiento temporal autorizados por cada comunidad autónoma, trituración, separación y fundición del plomo en lingotes para nuevas baterías. Página «Generadores» (© 2019): 3.177 + 3.590 + 23.800 + 569 = 31.136 establecimientos asociados. El número de plantas (7) no concilia con las cinco plantas del inventario del MITECO de 2017 ni con el PRTR (C7). Azor Ambiental: Espinardo (Acuerdo) frente a Molina de Segura (PRTR).
+  - Conflictos: C7
+- **`normativa_es-f14`** · confianza alta · [105] [106]
+  - Hecho: La tabla oficial del MITECO sobre baterías de automoción da para 2019 un índice de recogida del 83,64 % (107.455,50 t recogidas y 126.879,89 t comercializadas) frente a un objetivo del 98 %, y entre 2012 y 2019 solo 2013 (125,62 %) superó el objetivo.
+  - Valor: 83,64 % (2019)
+  - Alcance: España, 2012-2019; baterías de automoción, toneladas comercializadas y recogidas; el índice equivale a lo recogido en el año dividido por lo comercializado el año anterior (comprobado con las cifras de 2013 y 2019)
+  - Evidencia: Tabla «Baterías de automoción», fila 2019: 126.879,89 | 107.455,50 | 98 % | 83,64 %
+  - Uso previsto: anexo de datos, anexo de indicadores, capítulo
+  - Matiz: Fila 2019: 126.879,89 t comercializadas; 107.455,50 t recogidas; objetivo 98 %; índice 83,64 %. Fila 2013: 125,62 %, el único año por encima del objetivo (los demás van de 80,99 % a 92,34 %). Recálculo: el índice es lo recogido en el año dividido por lo comercializado el año anterior (2019: 107.455,50 / 128.467,22 = 83,64 %; dividir por las 126.879,89 t del propio año daría 84,69 %). Matiz: la cita del art. 15.3 «vendidos ... en el año precedente» solo vale para las letras a y b; para el 98 % el índice legal (art. 3.aa) promedia tres años. La página de comercialización ([106]) da 128.745,724 t en 2018 frente a 128.467,22 t en [105], 126.879,983 t en 2019 frente a 126.879,89 t, y la fila 2021 usa otros separadores (135.113.645). El Acuerdo declara 106.696,3 t recogidas en 2019: cifra cercana pero no igual (759 t, 0,7 % menos), por lo que el «coinciden» de las notas es excesivo. La tabla…
+  - Conflictos: C2, C5
+- **`normativa_es-f15`** · confianza alta · corregido por el verificador · [78]
+  - Hecho: Entregar residuos peligrosos a una persona no habilitada, o trasladarlos dentro de España incumpliendo las obligaciones legales (incluida la notificación previa) o sin el documento de identificación que debe acompañarlos, es infracción muy grave de la Ley 7/2022, con multa de 600.001 a 3.500.000 euros cuando el residuo es peligroso.
+  - Valor: 600.001-3.500.000 €
+  - Alcance: España; Ley 7/2022, artículos 108.2.l, 108.2.u y 109.1.a (texto consolidado con última actualización 2025-04-02)
+  - Evidencia: la multa será desde 600.001 euros hasta 3.500.000 euros
+  - Uso previsto: anexo de normativa, anexo de seguridad, capítulo
+  - Texto original (antes de la corrección): Entregar residuos peligrosos a una persona no habilitada o trasladarlos sin notificación previa y sin documento de identificación es infracción muy grave de la Ley 7/2022, con multa de 600.001 a 3.500.000 euros cuando el residuo es peligroso.
+  - Matiz: Importes y calificación confirmados: art. 108.2.l, 108.2.u y 109.1.a.1.º («la multa será desde 600.001 euros hasta 3.500.000 euros» si son residuos peligrosos; 100.001 a 3.500.000 en el resto); inhabilitación de 1 a 10 años (109.1.a.2.º); graves con residuo peligroso de 20.001 a 600.000 euros (108.3.m etiquetado, 108.3.n mezcla); leves hasta 20.000 euros (109.1.c); 108.2.c y 108.2.r (incumplir el art. 20 siendo productor de residuos peligrosos) también son muy graves. Corrección: el art. 108.2.u tipifica el traslado de residuos peligrosos sin cumplir las obligaciones (incluida la notificación previa), O sin la documentación del art. 31.2, O de forma que no corresponda con los documentos; no hace falta que falten ambos requisitos, como sugiere la «y» del enunciado.
+- **`normativa_es-f16`** · confianza alta · [79] [103] [104]
+  - Hecho: El proyecto de real decreto de pilas y baterías (información pública de 2026) dispone que distribuidores, puntos de recogida voluntaria y centros de tratamiento de vehículos solo podrán recoger baterías usadas si firman acuerdos con un sistema de responsabilidad ampliada, y que los centros de tratamiento de vehículos deberán tener contrato con esos sistemas antes de entregar las baterías.
+  - Valor: Proyecto
+  - Alcance: España; proyecto no aprobado a 2026-10-21 (no es norma vigente); artículos 17 y 19 del proyecto
+  - Evidencia: únicamente podrán recoger residuos de pilas o baterías si suscriben los acuerdos
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: Art. 17.2: los sistemas de RAP suscriben acuerdos con los puntos de recogida; 17.3: son puntos de recogida las instalaciones municipales, los distribuidores, los puntos de recogida voluntaria de los productores y las instalaciones de tratamiento de VFU y de RAEE; 17.4: «únicamente podrán recoger residuos de pilas o baterías si suscriben los acuerdos previstos en el apartado 2»; 17.5: compensaciones; 19.3: las instalaciones de tratamiento de RAEE y de VFU «celebrarán contratos con los sistemas de responsabilidad ampliada del productor» antes de la entrega; arts. 21.2, 28.2.g, 35.2 y 16 (autorización con la operación R0405) confirmados. Es un proyecto (información pública cerrada el 3-09-2026) y puede cambiar; sin publicación en el BOE hasta el 21-10-2026.
+- **`normativa_es-f17`** · confianza alta · [78] [119]
+  - Hecho: Los talleres que generan residuos peligrosos deben presentar comunicación previa a su comunidad autónoma, llevar un archivo cronológico durante al menos cinco años y enviar antes del 1 de marzo la memoria resumen anual, además de suscribir un seguro o garantía financiera si generan 10 toneladas al año o más.
+  - Valor: 5 años
+  - Alcance: España; productores de residuos peligrosos; artículos 20.6, 35, 64 y 65 de la Ley 7/2022
+  - Evidencia: durante, al menos, cinco años
+  - Uso previsto: anexo de normativa, anexo de seguridad, capítulo
+  - Matiz: Art. 35.1.a: comunicación previa para las actividades que generan residuos peligrosos (contenido mínimo del anexo XI; válida en todo el territorio, art. 35.3); art. 64.3: el archivo cronológico se guarda «durante, al menos, cinco años»; art. 65.1: memoria resumen de los productores de residuos peligrosos «Antes del 1 de marzo del año posterior»; art. 20.6: seguro o garantía financiera con exención para quien genere menos de 10 toneladas al año (obligatoria, por tanto, desde 10 t). Aplicarlo a los talleres es una lectura razonable; no se revisaron normas autonómicas. Dato nuevo ajeno al enunciado: el RD 764/2026 (BOE 1-10-2026, [119]) regula el Registro de producción y gestión de residuos.
+- **`normativa_es-f18`** · confianza alta · [99] [107]
+  - Hecho: En el Real Decreto 553/2020 no es «traslado» el transporte que hacen las empresas de instalación o mantenimiento desde donde se producen los residuos hasta sus propias instalaciones, y cuando un gestor de almacén agrupa pequeñas cantidades de varios productores es él quien actúa como operador del traslado y firma el contrato de tratamiento con cada productor.
+  - Valor: Gestor de almacén = operador
+  - Alcance: España; RD 553/2020, artículos 1.3, 2.a.3.º y 3.1.a; aplicable a traslados entre comunidades autónomas
+  - Evidencia: hasta sus propias instalaciones, siempre que sean residuos generados
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: Art. 1.3.a: no es traslado «el transporte de residuos que realizan las empresas de instalación o mantenimiento, desde el lugar en que se han producido estos residuos hasta sus propias instalaciones, siempre que sean residuos generados como consecuencia de su actividad»; 1.3.b-c: logística inversa y transporte por particulares. Art. 2.a.3.º: el gestor de un almacén de recogida es operador del traslado cuando agrupa «en un mismo vehículo, pequeñas cantidades del mismo tipo de residuos» y también de los traslados del almacén a la planta; art. 3.1.a: el contrato se establece entre el productor y el gestor del almacén, que debe disponer de los contratos de tratamiento finales. La DA 6ª permite documentos específicos para la recogida a múltiples productores. Qué régimen aplica a un taller concreto sigue siendo interpretación.
+- **`normativa_es-f19`** · confianza alta · [101] [108] [105]
+  - Hecho: En España las baterías de litio y de níquel tienen códigos LER nacionales peligrosos propios (16 06 07\* y 16 06 08\*, añadidos por el Real Decreto 27/2021) y sus traslados transfronterizos se identifican con el código de Basilea A1170, lo que exige notificación y autorización previas del Reglamento (CE) 1013/2006.
+  - Valor: A1170
+  - Alcance: España; RD 27/2021 (BOE 2021-01-20) y resolución de la DG de Calidad y Evaluación Ambiental de 2020-02-10, aplicable desde 2020-07-01
+  - Evidencia: se identificarán bajo el código A1170
+  - Uso previsto: capítulo, anexo de normativa, pantalla 3D
+  - Matiz: Anexo V del RD 106/2008 (art. 1.7 del RD 27/2021, BOE 20-01-2021, en vigor el 21-01-2021): 16 06 07\* litio, 16 06 08\* níquel (excepto Ni-Cd), 16 06 09\* otras sustancias peligrosas y 20 01 42\*, 43\* y 44\*. Resolución de la DG de Calidad y Evaluación Ambiental (10-02-2020; criterio desde el 1-07-2020): los traslados de residuos con litio o níquel «se identificarán bajo el código A1170» y «estarán sujetos al procedimiento de notificación y autorización previa, según lo establecido en los artículos 3 y 4 del Reglamento 1013/2006/CE». Los códigos nacionales quedan superados por la Decisión Delegada (UE) 2025/934 desde el 9-11-2026 (ver normativa_es-f11).
+  - Conflictos: C1
+- **`normativa_es-f20`** · confianza media · [115] [116] [118] [122]
+  - Hecho: Entre los SCRAP de pilas y baterías con nombre propio en España están la Fundación Ecopilas, que declara 51.110 puntos de recogida y 11.114.014 kg gestionados en 2024 y un canal «Industrial & vehículo eléctrico», y ERP España, que recogió 2.000.120 kg de pilas y acumuladores portátiles en 2018.
+  - Valor: Ecopilas y ERP
+  - Alcance: España; Ecopilas con datos propios de 2024; ERP España con nota de prensa de febrero de 2019 sobre 2018
+  - Evidencia: La Fundación Ecopilas es un Sistema Colectivo de Responsabilidad Ampliada del Productor
+  - Uso previsto: capítulo, anexo de normativa
+  - Matiz: Datos autodeclarados. Ecopilas: «La Fundación Ecopilas es un Sistema Colectivo de Responsabilidad Ampliada del Productor (SCRAP)»; 2024: 51.110 puntos de recogida y 11.114.014 kg gestionados; sección «CANAL INDUSTRIAL & VEHÍCULO ELÉCTRICO». ERP España (15-02-2019): «recogió en 2018 un total de 2.000.120 kg de residuos de pilas y acumuladores portátiles», con índice del 45,36 %. Recyclia, entidad administradora de Ecopilas, Ecofimática y Ecoasimelec, publica 11.114 toneladas de pilas y baterías gestionadas en 2024. Corrección a la nota original: Ecopilas afirma gestionar «baterías de automoción o vehículo eléctrico» y su página de tipos ([122]) indica dónde entregar las de plomo (talleres), así que no es cierto que ninguno de los dos SCRAP aparezca para automoción; lo que no consta es que sea el canal habitual de las baterías de plomo de automoción, que va por el Acuerdo Voluntario.
+
+### 4.5 seguridad: Seguridad, peligros y transporte de baterías de plomo-ácido
+
+20 hechos (18 confirmados, 2 con corrección); 42 fuentes distintas.
+
+- **`seguridad-f1`** · confianza alta · [123] [153] [154] [155] [156]
+  - Hecho: En el transporte por carretera, las baterías de plomo-ácido con electrolito líquido se clasifican en el ADR como UN 2794 («BATTERIES, WET, FILLED WITH ACID, electric storage»), de clase 8 (materias corrosivas), con código de clasificación C11 y sin grupo de embalaje asignado.
+  - Valor: UN 2794 · clase 8 · C11 · etiqueta 8 · categoría de transporte 3 · túneles (E) · nº de peligro 80
+  - Alcance: Transporte internacional por carretera en los Estados parte del ADR (UE, incluida España); Cuadro A del capítulo 3.2 del ADR 2025, aplicable desde el 1-1-2025; acumuladores con electrolito ácido líquido, nuevos o usados.
+  - Evidencia: 2794 BATTERIES, WET, FILLED WITH ACID, electric storage; 8; C11
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de seguridad
+  - Matiz: Matiz menor en las notas: 8.6.4 aplica el código de túnel a las unidades con placas naranja (5.3.2) y, para túneles de categoría E, también a las unidades marcadas por 3.4.13 (cantidades limitadas). La copia es de un tercero (lerem.org) pero lleva la portada oficial ECE/TRANS/352 (Vol.I), © Naciones Unidas 2024. Corr.1 (17-10-2024) y Corr.2 (17-10-2025) del ADR 2025, según el texto UNECE reproducido por certifico.com, no tocan UN 2794, DE 598, P801 ni 1.1.3.6 (cierra ese hueco). El nombre en español de la entrada sigue sin verificar.
+- **`seguridad-f2`** · confianza alta · [123] [124] [155] [156]
+  - Hecho: Según la disposición especial 598 del ADR 2025, las baterías de acumuladores usadas que se transportan para reciclaje al final de su vida útil no están sujetas al ADR si la carcasa está intacta, van sujetas de modo que no puedan fugar, deslizarse, caer ni dañarse (por ejemplo, apiladas en palés), no tienen restos peligrosos de ácido o álcali en el exterior y están protegidas contra cortocircuitos.
+  - Valor: Exención condicionada: 4 condiciones simultáneas
+  - Alcance: ADR 2025 (Europa, UE y España), transporte por carretera de acumuladores usados con destino a reciclaje; las baterías nuevas tienen condiciones análogas en la misma disposición (598(a)).
+  - Evidencia: Used storage batteries when: Their cases are undamaged
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de seguridad
+  - Matiz: La DE 598 está en el vol. I ([123]); el vol. II ([124]) solo respalda el 5.4.1.1.3.1 de las notas. Las cuatro condiciones de (b) son acumulativas. La deducción de las notas (si falla una condición se aplica UN 2794/P801) es razonable pero no está escrita en el ADR.
+- **`seguridad-f3`** · confianza alta · [124]
+  - Hecho: La instrucción de embalaje P801 del ADR, aplicable a UN 2794 y a las baterías usadas de UN 2800, exige que las baterías no fuguen en condiciones normales de transporte (o que se tomen medidas como el embalaje individual), que estén protegidas contra cortocircuitos, que los bornes no soporten el peso de otros elementos y que las capas de apilado se separen con material no conductor.
+  - Valor: P801 · condiciones (a)-(e)
+  - Alcance: ADR 2025 (Europa, UE y España), capítulo 4.1.4.1, instrucción P801: envases exteriores rígidos, jaulas de listones o palés; para baterías usadas también contenedores de acero inoxidable o plástico.
+  - Evidencia: Batteries shall not leak under normal conditions of carriage
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Matiz: P801 también se aplica a UN 2795 y 3028; el enunciado no lo excluye.
+- **`seguridad-f4`** · confianza alta · [123] [125] [151]
+  - Hecho: La edición del ADR aplicable desde el 1 de enero de 2025 es el ADR 2025 (ECE/TRANS/352), y en España el Real Decreto 97/2014 aplica el ADR, en su versión enmendada, a los transportes por carretera de mercancías peligrosas realizados íntegramente en territorio español.
+  - Valor: ADR 2025 · desde 1-1-2025
+  - Alcance: ADR 2025: aplicable desde 2025-01-01, con posibilidad de seguir aplicando los requisitos de la edición anterior hasta 2025-06-30. España: RD 97/2014, art. 2.1 (BOE 27-2-2014; texto consolidado actualizado a 4-12-2024).
+  - Evidencia: applicable as from 1 January 2025
+  - Uso previsto: capítulo, anexo de normativa
+  - Matiz: Vigencia: la notificación del depositario C.N.395.2026 (2026-10-09, treaties.un.org) confirma que las enmiendas del ADR 2027 entran en vigor el 2027-01-01 (el texto del PDF dice ADN por error tipográfico; el encabezado es ADR). Hasta el 2026-12-31 el ADR 2025 es la edición aplicable; si la presentación se usa después, citar «ADR 2025 (ADR 2027 desde 1-1-2027)». freightutils.com (no oficial) indica que el ADR 2027 no cambia la fila de UN 2794; no lo verifiqué en el texto del ADR 2027.
+- **`seguridad-f5`** · confianza alta · corregido por el verificador · [126] [127] [128] [150]
+  - Hecho: El plomo (polvo y masivo) tiene clasificación armonizada CLP como tóxico para la reproducción de categoría 1A (H360FD: puede perjudicar la fertilidad y dañar al feto) con la indicación H362 (puede perjudicar a los niños alimentados con leche materna) desde el 1 de marzo de 2018 (Reglamento (UE) 2016/1179); además, el polvo tiene clasificación ambiental (H400/H410) desde el 1-3-2022 (Reglamento Delegado (UE) 2020/1182) y la forma masiva la tiene (H410) desde el 1-9-2025 (Reglamento Delegado (UE) 2024/197), por lo que ambas llevan también el pictograma GHS09.
+  - Valor: Repr. 1A · H360FD · Lact. H362 · pictogramas GHS08 + GHS09 (Dgr) · polvo: límite específico H360D C ≥ 0,03 %, Aquatic Acute 1 (H400, M = 10) y Aquatic Chronic 1 (H410, M = 100) · masivo: Aquatic Chronic 1 (H410, M = 10) · entradas 082-013-00-1 y 082-014-00-7 según Reg. Del. (UE) 2024/197 (aplicable desde 2025-09-01)
+  - Alcance: UE: Reglamento (CE) 1272/2008, anexo VI, tabla 3, entradas 082-013-00-1 (polvo, partículas menores de 1 mm) y 082-014-00-7 (masivo, 1 mm o más), CAS 7439-92-1, CE 231-100-4; incorporado por el Reglamento (UE) 2016/1179 (9.ª ATP), aplicable desde 2018-03-01.
+  - Evidencia: Repr. 1A Lact. | H360FD H362 | GHS08 Dgr
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de seguridad
+  - Texto original (antes de la corrección): El plomo (en polvo y masivo) tiene clasificación armonizada CLP como tóxico para la reproducción de categoría 1A (H360FD: puede perjudicar la fertilidad y dañar al feto) con la indicación H362 (puede perjudicar a los niños alimentados con leche materna), aplicable desde el 1 de marzo de 2018.
+  - Matiz: Lo correcto: Repr. 1A, H360FD, H362, límite específico 0,03 % del polvo y fecha 1-3-2018. Lo desfasado: (1) el valor solo cita GHS08; (2) la afirmación de que 2020/1182 es la última modificación y de que la forma masiva queda sin clasificación ambiental: el Reglamento Delegado (UE) 2024/197 de 19-10-2023 (19.ª ATP; DO 5-1-2024; aplicable desde 2025-09-01; basado en el dictamen RAC de 16-9-2021 sobre reevaluación del plomo, medio ambiente) sustituye ambas entradas: polvo H400/H410 con M = 10 / M = 100 (antes 1 / 10) y masivo Aquatic Chronic 1, H410, M = 10; (3) «solo estas dos tocan las entradas del plomo» es falso (son tres actos). Ninguna modificación del CLP posterior a 2025/1222 aparece en la Oficina de Publicaciones a 2026-10-22 (según fuentes secundarias, un borrador de 24.ª ATP se notificó a la OMC el 27-11-2025; no he visto su publicación); el C&L Inventory de ECHA sigue sin pode…
+- **`seguridad-f6`** · confianza alta · [130] [131] [132] [133]
+  - Hecho: El plomo se incluyó en la Lista de Candidatas REACH de sustancias extremadamente preocupantes (SVHC) el 27 de junio de 2018 por ser tóxico para la reproducción (artículo 57, letra c, de REACH).
+  - Valor: 27-06-2018 · art. 57(c) · ECHA/PR/18/11
+  - Alcance: UE/EEE: lista de candidatas de ECHA a 2018-06-27, que tras esa actualización contenía 191 sustancias; plomo CAS 7439-92-1, CE 231-100-4.
+  - Evidencia: Lead | 231-100-4 | 7439-92-1 | Toxic for reproduction (Article 57c)
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de seguridad
+  - Matiz: Hueco del anexo XIV parcialmente cubierto: los únicos reglamentos que modifican el anexo XIV de REACH desde 2022 (2022/586 y 2023/2482) no mencionan el plomo (CAS 7439-92-1) y la Oficina de Publicaciones no lista otro; sin inclusión hallada a 2026-10-22 (no comprobado en los registros de ECHA/Comisión).
+- **`seguridad-f7`** · confianza alta · [134] [135] [136]
+  - Hecho: Las baterías de plomo-ácido producen hidrógeno durante su funcionamiento y carga, un gas fácilmente inflamable que forma mezclas explosivas con el aire a partir de aproximadamente un 4 % en volumen (4-75 % según la ficha OIT/OMS del hidrógeno; 4,1-72 % según el CCOHS).
+  - Valor: Límite inferior de explosividad ≈ 4 % vol. · rango 4-75 %
+  - Alcance: Internacional (OIT/OMS/CE, ficha ICSC 0001 de abril de 2014, versión española INSST 2018) y Canadá (CCOHS, fichas revisadas el 2025-10-22 y el 2023-01-26); hidrógeno en aire.
+  - Evidencia: hydrogen gas is produced during normal battery operation
+  - Uso previsto: capítulo, pantalla 3D, anexo de seguridad, anexo de datos
+  - Conflictos: C18
+- **`seguridad-f8`** · confianza alta · [128] [129]
+  - Hecho: El ácido sulfúrico tiene clasificación armonizada CLP como corrosivo cutáneo de categoría 1A (H314: provoca quemaduras graves en la piel y lesiones oculares graves) con concentración igual o superior al 15 %, y como irritante cutáneo y ocular de categoría 2 entre el 5 % y el 15 %.
+  - Valor: Skin Corr. 1A · H314 (C ≥ 15 %) · Skin Irrit. 2 / Eye Irrit. 2 (5-15 %)
+  - Alcance: UE: Reglamento (CE) 1272/2008, anexo VI, tabla 3, índice 016-020-00-8 (CAS 7664-93-9, CE 231-639-5); la misma redacción figura en el texto original de 2008 y en el Reglamento (UE) 2018/669.
+  - Evidencia: Skin Corr. 1A; H314: C ≥ 15 %
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Matiz: Barrido de los 36 actos modificadores del CLP: el índice solo aparece en el CLP original y en 2018/669 (que lo reedita sin cambiar la clasificación), por lo que «ninguna ATP lo modifica» es correcto en lo sustancial. Hueco de concentración parcialmente cubierto: las directrices de Basilea dan el electrolito como 36 % en peso (UNEP/CHW.6/22, 2002, batería cargada, densidad 1,27) y 15-20 % (borrador 2026); ambas cifras están en el tramo ≥ 15 % (Skin Corr. 1A/H314); las dos fuentes no coinciden entre sí.
+  - Conflictos: C9
+- **`seguridad-f9`** · confianza alta · [137] [138] [135]
+  - Hecho: Según la ficha ICSC de la OIT/OMS, el ácido sulfúrico concentrado es muy corrosivo para ojos, piel y vías respiratorias, sus nieblas están clasificadas por la IARC como carcinógenas del grupo 1 y el valor límite indicativo de exposición profesional de la UE para la niebla es de 0,05 mg/m³ (promedio de 8 horas, fracción torácica).
+  - Valor: 0,05 mg/m³ (niebla, 8 h) · IARC grupo 1 (nieblas)
+  - Alcance: Internacional, UE y España: ICSC 0362 (noviembre de 2016, versión española INSST 2018) para ácido sulfúrico concentrado (más del 51 %); Directiva 2009/161/UE (valor límite indicativo); la ficha recoge también el VLA-ED del INSST 2022 (0,05 mg/m³, niebla).
+  - Evidencia: clasificadas por la IARC como carcinógenas (grupo 1)
+  - Uso previsto: capítulo, anexo de seguridad, anexo de datos
+  - Matiz: La Directiva (UE) 2017/164 modifica la 2009/161/UE pero solo suprime el bisfenol A; la fila del ácido sulfúrico sigue vigente.
+- **`seguridad-f10`** · confianza alta · [139] [152]
+  - Hecho: Según la ficha ICSC de la OIT/OMS, el plomo metálico se absorbe por inhalación y por ingestión, puede afectar a la sangre, la médula ósea, el sistema nervioso y los riñones tras exposiciones repetidas, y altera el desarrollo o la reproducción humana.
+  - Valor: Vías: inhalación e ingestión · órganos diana: sangre, médula ósea, sistema nervioso, riñón
+  - Alcance: Internacional y España: ICSC 0052 (noviembre de 2019, versión española INSST 2018); plomo metálico en polvo, CAS 7439-92-1.
+  - Evidencia: Produce alteraciones en el desarrollo o la reproducción humana
+  - Uso previsto: capítulo, anexo de seguridad
+  - Matiz: Los límites de la ficha han quedado superados por la Directiva (UE) 2024/869 (ver seguridad-f12).
+  - Conflictos: C13
+- **`seguridad-f11`** · confianza alta · [136] [140] [141] [142]
+  - Hecho: En los locales donde se cargan baterías de plomo-ácido, las guías de seguridad laboral recomiendan ventilar para que el hidrógeno no supere el 25 % de su límite inferior de explosividad (aproximadamente un 1 % en volumen), y las normas OSHA de EE. UU. y el REBT español exigen ventilación para evitar mezclas explosivas o para renovar con rapidez el aire.
+  - Valor: Hidrógeno ≤ 25 % del LEL (≈ 1 % vol.)
+  - Alcance: Canadá (CCOHS, revisión de 2023, basada en NFPA 855), EE. UU. (29 CFR 1926.441 y 1910.178, texto vigente a 2026-10-01) y España (RD 842/2002, ITC-BT-30, apartado 7; consolidado a 3-9-2025); locales de carga o instalación de baterías que desprenden gases.
+  - Evidencia: to prevent the accumulation of an explosive mixture
+  - Uso previsto: pantalla 3D, anexo de seguridad, anexo de normativa
+  - Matiz: La cifra del 25 % del LEL procede solo de CCOHS (que cita NFPA 855); OSHA y el REBT exigen ventilación sin fijar ese porcentaje, y el enunciado lo redacta así. eCFR: última modificación sustantiva de 1926.441 = 2016-09-01 y de 1910.178 = 2017-01-18; el texto de 1910.178 es idéntico a 2025-10-01 y a 2026-10-01 (el alcance cita 2026-10-01 pero la URL [141] usa 2025-10-01).
+  - Conflictos: C18
+- **`seguridad-f12`** · confianza alta · [25] [139] [143] [144] [152]
+  - Hecho: La Directiva (UE) 2024/869 fija para el plomo y sus compuestos inorgánicos un valor límite de exposición profesional vinculante de 0,03 mg/m³ (promedio de 8 horas, fracción inhalable) y un valor límite biológico de 30 µg Pb/100 ml de sangre hasta el 31-12-2028 que pasa a 15 µg Pb/100 ml desde el 1-1-2029, con plazo de transposición hasta el 9 de abril de 2026.
+  - Valor: 0,03 mg/m³ (8 h) · 30 µg/100 ml hasta 2028 · 15 µg/100 ml desde 2029
+  - Alcance: UE: Directiva (UE) 2024/869 de 13-3-2024 (DO 19-3-2024), que modifica las Directivas 2004/37/CE y 98/24/CE; trabajadores expuestos a plomo y compuestos inorgánicos.
+  - Evidencia: 0,03 mg/m3 as an 8-hour time-weighted average (TWA)
+  - Uso previsto: capítulo, anexo de normativa, anexo de seguridad, anexo de datos, anexo de ODS, anexo de indicadores
+  - Matiz: Actualización del hueco de transposición: la referencia del Consejo de Ministros del 2026-10-20 (La Moncloa) recoge la aprobación de un Real Decreto que modifica el RD 665/1997 y el RD 374/2001 para incorporar los valores de la Directiva (0,03 mg/m3 y valor biológico vinculante de 15 µg Pb/100 ml). No consta aún su publicación en el BOE; el texto consolidado del RD 665/1997 (actualizado a 03/07/2024) sigue con 0,15 mg/m3 y 70 µg/100 ml, de modo que la cifra 0,03 es exigible por la Directiva pero formalmente no estaba traspuesta en el BOE consultado.
+  - Conflictos: C13, C22
+- **`seguridad-f13`** · confianza alta · corregido por el verificador · [27] [78] [32] [31]
+  - Hecho: En la Lista Europea de Residuos las baterías de plomo-ácido se identifican con el código 16 06 01\*, que por llevar asterisco se considera residuo peligroso, y el electrolito recogido por separado con el código 16 06 06\*; la Decisión Delegada (UE) 2025/934, aplicable desde el 9-12-2026, mantiene ambos códigos pero reescribe el capítulo 16 06 y sustituye el código 20 01 33\* por el 20 01 42\*.
+  - Valor: LER 16 06 01\* (baterías de plomo-ácido) · 16 06 06\* (electrolito); desde 2026-12-09 (Decisión Delegada (UE) 2025/934): capítulo 16 06 reescrito y 20 01 33\* sustituido por 20 01 42\*
+  - Alcance: UE: Decisión 2014/955/UE de la Comisión (18-12-2014, DO 30-12-2014), que sustituye el anexo de la Decisión 2000/532/CE; capítulo 16 06 «pilas y acumuladores». España clasifica los residuos conforme a la Lista Europea de Residuos (Ley 7/2022, preámbulo).
+  - Evidencia: 16 06 01\* lead batteries
+  - Uso previsto: capítulo, anexo de normativa, anexo de seguridad
+  - Texto original (antes de la corrección): En la Lista Europea de Residuos las baterías de plomo se identifican con el código 16 06 01\*, que por llevar asterisco se considera residuo peligroso, y el electrolito recogido por separado de pilas y acumuladores con el código 16 06 06\*.
+  - Matiz: La Decisión Delegada (UE) 2025/934 (5-3-2025; DOUE 20-5-2025) reemplaza el capítulo 16 06 (16 06 01\* pasa a residuos de pilas y baterías de plomo y ácido; 16 06 06\* a electrolito recogido por separado), suprime 20 01 33\* y 20 01 34, inserta 20 01 42\* (pilas y acumuladores residuales de recogida municipal), 20 01 43\* y 20 01 44, y añade 16 06 22\* (residuos de fabricación de baterías de plomo-ácido con sustancias peligrosas) y 19 14 01\* (fracción intermedia del tratamiento). Los códigos 16 06 01\* y 16 06 06\* se mantienen.
+  - Consolidación: C1: la fecha de aplicación se corrige de 2026-11-09 a 2026-12-09 (corrección de errores DO L 2025/90657).
+  - Conflictos: C1
+- **`seguridad-f14`** · confianza alta · [78] [27]
+  - Hecho: En España, el productor de residuos peligrosos debe almacenarlos en una zona habilitada e identificada, protegidos de la intemperie y con sistemas de retención de vertidos y derrames, durante un máximo de seis meses (ampliable otros seis, excepcionalmente, por la comunidad autónoma) y sin mezclarlos con otros residuos.
+  - Valor: 6 meses (+6 en casos excepcionales)
+  - Alcance: España: Ley 7/2022, art. 21 (BOE 9-4-2022; consolidada a 2-4-2025), almacenamiento en el lugar de producción; las baterías de plomo usadas son residuo peligroso (LER 16 06 01\*, seguridad-f13), conclusión que se deduce de ambas normas.
+  - Evidencia: la duración máxima será de seis meses
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de seguridad
+- **`seguridad-f15`** · confianza alta · [145] [36] [149]
+  - Hecho: Las directrices técnicas del Convenio de Basilea (adoptadas en 2002) recomiendan guardar en recipientes resistentes al ácido las baterías de plomo-ácido usadas que pierdan electrolito, almacenar en un lugar protegido de la lluvia, con suelo resistente al ácido que recoja las fugas, ventilación y acceso restringido señalizado como zona de materiales peligrosos, no vaciar el ácido en los puntos de recogida y no acumular grandes cantidades ni por mucho tiempo.
+  - Valor: Baterías con fugas: recipiente resistente al ácido · no drenar el electrolito
+  - Alcance: Internacional (Partes del Convenio de Basilea): documento UNEP/CHW.6/22, párrafos 30 (puntos de recogida) y 31 (transporte), adoptado por la decisión VI/22 de la COP-6 (diciembre de 2002); un borrador revisado (UNEP/CHW/OEWG.15/INF/8/Rev.1, versión del 24-6-2026) aún no está adoptado.
+  - Evidencia: must be stored inside acid-resistant containers
+  - Uso previsto: capítulo, anexo de seguridad
+  - Matiz: basel.int falló en los primeros intentos de curl (timeout de conexión) y cargó al reintentar; ambas URL devolvieron 200. El borrador 2026 (párrafo 160) menciona bolsas de polietileno de alta resistencia, no drenar y UN 2794, como dicen las notas.
+- **`seguridad-f16`** · confianza alta · [146]
+  - Hecho: La guía técnica de la Comisión para la Cooperación Ambiental (2016) recomienda inspeccionar las baterías al recibirlas, manipular con equipo de protección las dañadas o con fugas, meter las dañadas sin fuga visible en bolsas de polietileno de alta resistencia (mínimo 6 mil), mantenerlas siempre en vertical con los bornes protegidos y, si se almacenan más de 60-90 días, usar una solera impermeable resistente al ácido con bordillo de contención.
+  - Valor: Bolsa de polietileno de 6 mil o más · más de 60-90 días: solera impermeable
+  - Alcance: Norteamérica (Canadá, México y EE. UU.), Comisión para la Cooperación Ambiental, enero de 2016; puntos de recogida y transporte de baterías de plomo-ácido usadas (SLAB).
+  - Evidencia: put in heavyweight polyethylene plastic bags (minimum 6 mil)
+  - Uso previsto: anexo de seguridad, pantalla 3D
+- **`seguridad-f17`** · confianza alta · [147]
+  - Hecho: La guía del regulador ambiental del Reino Unido (mayo de 2026) exige que las baterías de plomo-ácido residuales se almacenen en vertical con los bornes tapados o aislados, en contenedores rígidos con tapa y resistentes a los productos químicos, en zonas ventiladas, secas y frescas, y separadas de las baterías de litio.
+  - Valor: Vertical · bornes aislados · contenedor rígido con tapa
+  - Alcance: Reino Unido (Inglaterra), Environment Agency, publicada el 2026-05-21; instalaciones con permiso para tratar o transferir baterías residuales; no es normativa de la UE ni de España.
+  - Evidencia: Lead acid batteries must be stored upright with terminals capped or insulated
+  - Uso previsto: anexo de seguridad, otro
+- **`seguridad-f18`** · confianza alta · [16]
+  - Hecho: Según la OMS, no se conoce ninguna concentración segura de plomo en sangre y la mayor parte del plomo que se consume en el mundo se destina a fabricar baterías de plomo-ácido para vehículos.
+  - Valor: Más de 3,5 millones de muertes atribuidas a la exposición al plomo en 2023 (estimación del IHME recogida por la OMS)
+  - Alcance: Mundial; hoja informativa de la OMS sobre intoxicación por plomo, actualizada el 2026-06-10, que cita estimaciones del IHME para 2023.
+  - Evidencia: There is no known safe blood lead concentration
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de ODS, anexo de indicadores
+- **`seguridad-f19`** · confianza alta · [26]
+  - Hecho: El Reglamento (UE) 2023/1542 obliga a marcar con el símbolo químico Pb, bajo el símbolo de recogida selectiva, las baterías que contengan más de un 0,004 % de plomo, y exige que los contenedores de recogida y almacenamiento temporal de baterías de arranque (SLI) residuales sean adecuados al volumen y a su carácter peligroso.
+  - Valor: Pb si hay más de 0,004 % de plomo
+  - Alcance: UE: Reglamento (UE) 2023/1542 de 12-7-2023 (DO 28-7-2023), art. 13(5) (marcado Pb), art. 61(3)(a) (contenedores de recogida de baterías SLI, industriales y de vehículos eléctricos residuales) y art. 74 (información de seguridad).
+  - Evidencia: more than 0,004 % lead, shall be marked with the chemical symbol
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa
+- **`seguridad-f20`** · confianza alta · [148]
+  - Hecho: El Reglamento (UE) 2024/1157 incluye las baterías de plomo-ácido residuales, enteras o trituradas, en la lista A del anexo V (código A1160, residuos peligrosos) y prohíbe exportar desde la UE residuos peligrosos de esa lista para su valorización a países a los que no se aplica la Decisión de la OCDE.
+  - Valor: A1160 · exportación a países no OCDE prohibida
+  - Alcance: UE: Reglamento (UE) 2024/1157 de 11-4-2024 (DO 30-4-2024), anexo V parte 1 lista A y art. 39(1)(a); aplicable desde el 2026-05-21, fecha en la que, salvo excepciones, deja de aplicarse el Reglamento (CE) 1013/2006.
+  - Evidencia: Waste lead-acid batteries, whole or crushed
+  - Uso previsto: capítulo, anexo de normativa
+
+### 4.6 diagnostico: Diagnóstico de baterías de arranque de plomo-ácido: pruebas reales y valores de referencia de taller
+
+19 hechos (17 confirmados, 2 con corrección); 37 fuentes distintas.
+
+- **`diagnostico-f1`** · confianza media · [14]
+  - Hecho: Para una batería de arranque de plomo-ácido inundada de 12 V con placas de antimonio, la tabla de BCI da 12,65 V con carga del 100 %, 12,45 V al 75 %, 12,24 V al 50 %, 12,06 V al 25 % y 11,89 V al 0 %, medidos a 26 °C tras 24 h de reposo.
+  - Valor: 12,65 / 12,45 / 12,24 / 12,06 / 11,89 V (100 / 75 / 50 / 25 / 0 %)
+  - Alcance: Plomo-ácido inundada con placas de antimonio, 12 V; valores de la tabla de BCI (EE. UU.) reproducida por Battery University (página actualizada el 04-11-2021); tensión en circuito abierto a 26 °C (78 °F) tras 24 h de reposo; densidad asociada 1,265 / 1,225 / 1,190 / 1,155 / 1,120.
+  - Evidencia: Table 3: «Readings are taken at 26°C (78°F) after a 24h rest»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Título de la tabla: «BCI standard for SoC estimation of a starter battery with antimony». BU no escribe «inundada» en el pie, pero la sección es la del hidrómetro de baterías inundadas. Sigue siendo fuente secundaria (el manual de BCI es de pago y no se abrió). BU avisa de que los fabricantes con SG de 1.280 o más desplazan la tabla hacia arriba.
+  - Conflictos: C17
+- **`diagnostico-f2`** · confianza alta · [157] [158]
+  - Hecho: Los fabricantes Crown (2026) y Discover Battery publican para una AGM de 12 V unos 12,80 V al 100 %, 12,60 V al 75 %, 12,30 V al 50 %, 12,00 V al 25 % y 11,80 V al 0 %, es decir, hasta unos 0,2 V más que una batería inundada (12,60, 12,40, 12,20, 12,00 y 11,70 V en Crown).
+  - Valor: AGM: 12,80 / 12,60 / 12,30 / 12,00 / 11,80 V; inundada (Crown): 12,60 / 12,40 / 12,20 / 12,00 / 11,70 V
+  - Alcance: Baterías de arranque de 12 V, AGM e inundadas; documentación de fabricantes de EE. UU.: Crown Battery (documento de 2026, código S.F. STARTER-PSD-D0126) y Discover Battery (página sin fecha, © 2026); Discover exige 24 h sin carga ni descarga para medir la tensión verdadera.
+  - Evidencia: Crown, apartado 3 (tabla de tensión en circuito abierto); Discover, Table 5 - State of Charge vs. OCV
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: La diferencia AGM-inundada en Crown es +0,20/+0,20/+0,10/0/+0,10 V, así que «hasta unos 0,2 V» es correcto. La tabla de Discover es genérica (VRLA AGM y gel, e inundada; no solo arranque) y usa umbrales con «>» y «<» (0 % = menos de 11,80 V); la de Crown sí es de baterías de arranque.
+  - Conflictos: C17
+- **`diagnostico-f3`** · confianza media · [14] [158] [160]
+  - Hecho: La tensión solo refleja el estado de carga si la batería ha reposado sin carga ni descarga al menos 4 h (24 h es lo que recomiendan los fabricantes de plomo-ácido), porque la carga superficial tras cargar eleva la lectura, el calor la sube, el frío la baja y los consumos permanentes de un coche moderno impiden un circuito abierto real.
+  - Valor: reposo ≥ 4 h (24 h recomendadas en plomo-ácido); referencia a 26 °C
+  - Alcance: Baterías de arranque de plomo-ácido (inundadas y AGM); recomendaciones de Battery University (04-11-2021) y de los fabricantes Discover Battery y VARTA (sin fecha).
+  - Evidencia: «rest in the open circuit state for at least four hours»
+  - Uso previsto: anexo de datos, capítulo
+  - Matiz: El «5-8 % del calcio» de BU-903 existe en la página, pero no se contrastó con otra fuente y no conviene usarlo.
+  - Conflictos: C17
+- **`diagnostico-f4`** · confianza media · [159] [160] [161] [162]
+  - Hecho: Un comprobador de tensión simple solo mide la tensión en bornes, útil como indicador aproximado del estado de carga tras un reposo, pero no mide la capacidad, la resistencia interna ni la corriente de arranque en frío (CCA), por lo que no basta para decidir si una batería está en buen estado de salud.
+  - Valor: tensión sí; capacidad, resistencia interna y CCA no
+  - Alcance: Baterías de arranque de plomo-ácido de 12 V en talleres; afirmaciones del fabricante VARTA/Clarios (Europa, sin fecha) y de Battery University (04-11-2021).
+  - Evidencia: VARTA (ES): «Una simple comprobación de la tensión no es suficiente»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Matiz: VARTA en-GB dice que para una batería convencional de celda húmeda sirve un aparato que mida solo el estado de carga y reserva el análisis completo de SOH para las start-stop. El «no basta» general se apoya mejor en VARTA ES y en BU-901 que en esa página en inglés.
+- **`diagnostico-f5`** · confianza alta · [163] [164]
+  - Hecho: Según SAE J537, la corriente de arranque en frío (CCA) nominal de una batería de 12 V es la corriente que, a −18 °C y con la batería plenamente cargada, puede suministrar durante 30 s con una tensión en bornes de al menos 7,2 V.
+  - Valor: −18 °C · 30 s · ≥ 7,2 V
+  - Alcance: Norma SAE J537 «Storage Batteries» (EE. UU.), revisión del 28-09-2023, para baterías de plomo-ácido de 12 V de automoción; condiciones de ensayo de laboratorio.
+  - Evidencia: «terminal voltage at 30 seconds shall be 7.2 V or greater» (J537, apdo. 3.9.1.2)
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de datos
+  - Matiz: J537 de 2023 admite como temperatura de clasificación −18 °C o −29 °C; la CCA es la de −18 °C. El mínimo de 7,2 V a los 30 s es un criterio de aceptación de laboratorio. Citar la ficha oficial de SAE ([163]), no la copia de Discover.
+- **`diagnostico-f6`** · confianza media · [165] [166] [167] [168]
+  - Hecho: En el ensayo de arranque en frío de la EN 50342-1 la batería, acondicionada a −18 °C, se descarga 10 s con la corriente declarada (Icc) sin bajar de 7,5 V y, tras 10 s de pausa, al 60 % de esa corriente hasta 6 V durante un tiempo mínimo (90 s según el laboratorio TCS).
+  - Valor: −18 °C · 10 s a Icc con ≥ 7,5 V · pausa de 10 s · 60 % de Icc hasta 6 V (≥ 90 s)
+  - Alcance: Norma europea EN 50342-1:2015 (+A1:2018, +A2:2021), ensayo de laboratorio para baterías de arranque de 12 V de turismos y vehículos comerciales; descripción del laboratorio del Touring Club Suiza (12-05-2017) y del fabricante Banner (sin fecha); texto normativo íntegro no consultado.
+  - Evidencia: TCS: «die mindestens 90 Sekunden dauern sollte»; enmienda A2:2021: «has been limited to 180 s»
+  - Uso previsto: anexo de normativa, anexo de datos, capítulo
+  - Matiz: Texto normativo íntegro no consultado (de pago): los 90 s son la cifra que da el TCS (y el nivel C1 de Banner; 150 s para C2), no una cifra leída en la norma. Descripción coherente entre TCS, Banner y VARTA.
+- **`diagnostico-f7`** · confianza media · [168] [169] [164] [167] [170] [172]
+  - Hecho: Los valores de CCA de normas distintas no son intercambiables, porque cambian la duración y la tensión final (SAE: 7,2 V a los 30 s; EN: 7,5 V a los 10 s más una segunda etapa; DIN antigua: 9 V a los 30 s y 6 V a los 150 s), y VARTA estima que un valor DIN equivale a ~60 % del valor EN.
+  - Valor: SAE 7,2 V a 30 s · EN 7,5 V a 10 s + 2.ª etapa · DIN ≥ 9 V a 30 s y 6 V en 150 s · IEC antigua ≥ 8,4 V a 60 s
+  - Alcance: Normas SAE (EE. UU.), EN/DIN/IEC (Europa e internacional) y JIS (Japón); descripciones de los fabricantes Yuasa (Reino Unido, 11-02-2025), VARTA y Banner y de Battery University (04-11-2021); las cifras de IEC y DIN corresponden a ediciones anteriores a 2015.
+  - Evidencia: Yuasa: «SAE = (DIN x 1.5) + 40»; VARTA: «only about 60% of the numerical value»
+  - Uso previsto: capítulo, anexo de normativa, anexo de datos
+  - Matiz: Yuasa escribe «EN2 = 0.85% to 0.92% EN1» (con signo %, evidente errata de factor 0,85-0,92). Las fuentes describen de forma distinta el IEC antiguo (BU y Banner: 8,4 V a 60 s; Yuasa, ed. 2006: 7,5 V a 10 s y 7,2 V a 30 s): son ediciones distintas, conviene citar la edición. La página de Yuasa se publicó el 11-02-2025 y consta modificada el 27-07-2026.
+- **`diagnostico-f8`** · confianza alta · [163] [166] [171]
+  - Hecho: Las normas de referencia para las baterías de arranque de 12 V son SAE J537 (revisada el 28-09-2023), EN 50342-1:2015 con las enmiendas A1:2018 y A2:2021 (CENELEC) e IEC 60095-1:2018 (edición 8, del 16-11-2018, versión corregida de febrero de 2026).
+  - Valor: SAE J537 (2023-09) · EN 50342-1:2015+A1:2018+A2:2021 · IEC 60095-1:2018 (ed. 8)
+  - Alcance: Baterías de arranque de plomo-ácido de 12 V para turismos y vehículos comerciales; normas de EE. UU. (SAE), Europa (CENELEC/EN) e internacional (IEC); datos de ficha y portada consultados el 2026-10-21.
+  - Evidencia: SAE: «Revised 9/28/2023»; IEC: «Publication date 2018-11-16»; CENELEC: «approved by CENELEC on 2021-08-17»
+  - Uso previsto: anexo de normativa
+  - Matiz: Una búsqueda web (oct. 2026) no encontró ninguna edición de EN 50342-1 posterior a 2015+A2:2021 ni anuncio de CENELEC de 2024-2025; no es concluyente.
+- **`diagnostico-f9`** · confianza media · [164] [157] [186]
+  - Hecho: En la prueba de carga con carbón se aplica a la batería (con al menos 70-75 % de carga) la mitad de su CCA nominal durante 15 s y se considera buena si la tensión se mantiene por encima de unos 9,6 V (9,5 V a 21 °C o más en la tabla de Crown), con mínimos más bajos a menor temperatura.
+  - Valor: ½ CCA · 15 s · ≥ 9,6 V (BU) o ≥ 9,5 V a 21 °C o más (Crown)
+  - Alcance: Prueba de carga de campo en baterías de arranque de 12 V según Battery University (04-11-2021; temperatura ≥ 10 °C) y la tabla del fabricante Crown (2026; ≥ 21 °C).
+  - Evidencia: BU-902a: «the battery passes if the voltage stays above 9.6V»; Crown: «equivalent to 50% of the battery CCA Rating»
+  - Uso previsto: capítulo, anexo de datos, pantalla 3D
+  - Matiz: A partir de 10 °C BU da 9,6 V y Crown 9,4 V (9,5 V a partir de 21 °C): diferencia de 0,1-0,2 V entre fuentes, ya recogida en el enunciado. El «70-75 %» junta el 70 % de BU y el 75 % de Crown.
+- **`diagnostico-f10`** · confianza alta · corregido por el verificador · [174] [175] [176] [164]
+  - Hecho: El método de los comprobadores de conductancia lo describió Keith Champlin en patentes de EE. UU. (US 3 909 708, de 1975, y US 4 816 768, de 1989): se aplica una señal alterna de pequeña amplitud, se calcula la conductancia dinámica de la batería y, con la especificación y la temperatura introducidas, se convierte en una lectura equivalente de CCA o en un apto/no apto sin descargar apreciablemente la batería.
+  - Valor: señal alterna de pequeña amplitud (80-90 Hz según BU); lectura equivalente de CCA o apto/no apto
+  - Alcance: Principio descrito en las patentes de EE. UU. de Keith S. Champlin (US 3 909 708 de 30-09-1975 y US 4 816 768 de 28-03-1989) y resumido por Battery University (04-11-2021); equipos usados en talleres.
+  - Evidencia: US 4,816,768: «accurately performs small-signal measurements of the battery's dynamic conductance»
+  - Uso previsto: capítulo, anexo de datos
+  - Texto original (antes de la corrección): Los comprobadores de conductancia se basan en las patentes de Champlin (1975): aplican una señal alterna de pequeña amplitud, calculan la conductancia dinámica de la batería y, con la especificación y la temperatura introducidas, la convierten en una lectura equivalente de CCA o en un apto/no apto sin descargar apreciablemente la batería.
+  - Matiz: Corrección menor de redacción: ninguna fuente dice que los comprobadores actuales «se basen en» esas patentes (están caducadas, 1992 y 2008); BU solo atribuye a Champlin (1975) la primera demostración de la correlación entre prueba de carga y conductancia, y las patentes describen el principio. El resto del enunciado está respaldado.
+- **`diagnostico-f11`** · confianza media · [169] [177] [170]
+  - Hecho: Los comprobadores de taller estiman el estado de la batería a partir de su respuesta a un breve pulso y no miden una corriente de arranque real, por lo que el resultado depende de introducir bien la tecnología, la norma y la CCA (VARTA detectó entradas incorrectas en cerca de un tercio de unos 300 000 ensayos) y no sustituye al ensayo de laboratorio EN.
+  - Valor: ≈ 1/3 de unos 300 000 ensayos con parámetros mal introducidos
+  - Alcance: Comprobadores portátiles de taller en Europa; análisis interno de VARTA/Clarios (sin fecha), guía de ensayo de VARTA y recomendaciones del fabricante Banner (sin fecha).
+  - Evidencia: VARTA: «no real cold cranking current is measured»
+  - Uso previsto: capítulo, anexo de datos
+  - Matiz: La página de VARTA tiene un metadato de fecha anómalo (datePublished 2028-05-30; creada 2024-05-30; modificada 2026-09-18), por eso consta sin fecha fiable. El «breve pulso» es la descripción de VARTA para el comprobador portátil; los de conductancia usan una señal alterna.
+- **`diagnostico-f12`** · confianza media · [179] [161] [162] [178] [180] [181] [182] [188]
+  - Hecho: El umbral del 80 % de la capacidad nominal es el criterio habitual de retirada en baterías estacionarias (guías IEEE 450 y 1188) y el que suelen fijar los analizadores de baterías, pero para baterías de arranque las fuentes técnicas citan umbrales mucho menores, como sustituir al 40 % de capacidad o al 50 % de CCA, porque siguen arrancando hasta cerca del 25-30 %.
+  - Valor: 80 % (estacionarias) · 40 % de capacidad o 50 % de CCA (arranque)
+  - Alcance: Estacionarias: guías IEEE 450-2020 (ventiladas) e IEEE 1188 (VRLA) e IEC 60896; arranque: criterios prácticos de Battery University (2018-2021) y de VARTA; no se halló un umbral normativo único para baterías SLI.
+  - Evidencia: BATTCON 2014: «able to deliver at least 80% of its rated capacity»; BU-905a: «Replace the battery when the capacity drops to 40%»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: La tienda SFS ([180]) rotula IEEE 450-2020 como «Withdrawn», pero la ficha oficial de IEEE SA la da como «Active Standard» (Board Approval 2020-12-03, publicada 2021-03-05) y hay un proyecto P450 de revisión: no usar la ficha de SFS como prueba de vigencia. El 80 % de IEEE 450 y 1188 solo se verifica en un documento sectorial (BATTCON 2014) y en BU; los textos de las normas son de pago. BU es de Cadex (fabricante de analizadores): posible sesgo comercial.
+- **`diagnostico-f13`** · confianza media · corregido por el verificador · [183] [184] [185] [189]
+  - Hecho: La vida media de una batería de arranque se sitúa en torno a 3-6 años según la fuente: 3-5 años según el RACE (España, 2022), 4,5-5 años según el fabricante Banner, 55 meses (unos 4,6 años) según un estudio de BCI de 2010 citado por Battery University y 5-6 años según el ADAC (Alemania, 2026).
+  - Valor: 3-6 años según la fuente (RACE 3-5; Banner 4,5-5; BCI 2010: 55 meses ≈ 4,6; ADAC 5-6)
+  - Alcance: ADAC (Alemania, página del 23-04-2026), Banner (fabricante austriaco, sin fecha) y estudio de modos de fallo de BCI de 2010 (EE. UU.) citado por Battery University (02-11-2021); vida media hasta el fallo en uso normal.
+  - Evidencia: ADAC: «Im Schnitt halten Starterbatterien fünf bis sechs Jahre»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Texto original (antes de la corrección): La vida media de una batería de arranque ronda los 4,5-6 años: 5-6 años según el ADAC (Alemania, 2026), 4,5-5 años según el fabricante Banner y 55 meses (unos 4,6 años) según un estudio de BCI de 2010 citado por Battery University.
+  - Matiz: Las tres cifras que cita el enunciado son exactas; lo que se corrige es la síntesis «4,5-6 años», que queda en la parte alta frente al único dato español hallado (RACE, 3-5 años, divulgativo y sin metodología) y frente a BU (4 años en coches nuevos). Con RACE se cubre parcialmente el hueco «sin dato específico de España».
+  - Conflictos: C16
+- **`diagnostico-f14`** · confianza alta · [183] [187]
+  - Hecho: El ADAC atribuyó a la batería de 12 V el 45,4 % de las averías atendidas por su asistencia en carretera en 2025 (44,9 % en 2024), la primera causa de avería entre todos los grupos de componentes.
+  - Valor: 45,4 % (2025) · 44,9 % (2024) · 35,7 % (2015)
+  - Alcance: Alemania; asistencias en carretera del ADAC (Straßenwacht) evaluadas en la Pannenstatistik 2026 (año 2025; 158 series de vehículos de 27 marcas), publicada el 23-04-2026; porcentaje sobre las averías evaluadas.
+  - Evidencia: «45,4 Prozent der Pannen auf das Konto einer leeren Batterie»
+  - Uso previsto: capítulo, pantalla 3D, anexo de indicadores, anexo de datos
+  - Matiz: Precisión de ámbito: el 45,4 % es sobre todas las asistencias de la Straßenwacht en 2025 (3 691 813 según auto motor und sport); las 158 series de 27 marcas y las edades de 2 a 9 años de la página son la base del ranking de modelos, no necesariamente de este porcentaje. VARTA atribuye por error el 44,9 % a 2025 (el ADAC lo da para 2024).
+  - Conflictos: C15
+- **`diagnostico-f15`** · confianza media · [185] [162]
+  - Hecho: En un estudio de más de 800 baterías AGM de arranque retiradas en Europa (Johnson Controls, 2017), el 47,8 % falló por desgaste normal, el 23 % tenía solo baja carga, el 14,6 % no mostraba fallo y el 12,5 % presentaba alta resistencia interna.
+  - Valor: 47,8 % desgaste · 23 % baja carga · 14,6 % sin fallo · 12,5 % resistencia alta
+  - Alcance: Más de 800 baterías AGM de arranque al final de su vida en Europa; estudio de Johnson Controls Power Solutions EMEA presentado en AABC Europe 2017 (Maguncia), citado por Battery University (02-11-2021).
+  - Evidencia: BU-806a, tabla 1: «47.8% Mass wear-out, normal use»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: La presentación original de Johnson Controls en AABC Europe 2017 no se localizó (una búsqueda web tampoco): las cifras solo llegan a través de BU. «Retiradas» equivale a «at end-of-life» en la tabla.
+- **`diagnostico-f16`** · confianza media · [185]
+  - Hecho: El calor acorta la vida de la batería: la regla general es que cada 8 °C más reduce a la mitad la de una plomo-ácido sellada, y el estudio de BCI de 2010 registra 47 meses de vida media en el sur de EE. UU. frente a 59 en el norte.
+  - Valor: 47 meses (sur) frente a 59 meses (norte)
+  - Alcance: Plomo-ácido de arranque y selladas; regla general y datos de BCI 2010 (EE. UU., norte frente a sur) citados por Battery University (02-11-2021).
+  - Evidencia: «each 8°C (15°F) rise in temperature cuts the life»
+  - Uso previsto: capítulo, anexo de datos
+  - Matiz: La regla de la mitad por cada 8 °C se enuncia para baterías selladas (VRLA); aplicarla a baterías de arranque inundadas es una extrapolación, como ya indica el enunciado.
+- **`diagnostico-f17`** · confianza alta · [173] [26] [172] [30] [60]
+  - Hecho: El Reglamento (UE) nº 1103/2010 exige etiquetar las baterías de automoción con la capacidad (Ah) y la corriente de arranque en frío (A), medidas según IEC 60095-1/EN 50342-1 y con una exactitud de ±10 % del valor nominal, y el Reglamento (UE) 2023/1542 exige a las SLI una etiqueta de capacidad desde el 18-08-2026 o 18 meses después de la entrada en vigor del acto de ejecución del art. 13(10), lo que ocurra más tarde.
+  - Valor: ±10 % · IEC 60095-1/EN 50342-1 · SLI: etiqueta de capacidad desde 18-08-2026 o después
+  - Alcance: Unión Europea; Reglamento (UE) nº 1103/2010 (DOUE L 313, 30-11-2010) y Reglamento (UE) 2023/1542 (DOUE L 191, 28-07-2023); posición de EUROBAT de septiembre de 2020.
+  - Evidencia: Reg. 1103/2010, anexo III parte B: «± 10 % accuracy of the nominal value»
+  - Uso previsto: anexo de normativa, anexo de datos
+  - Matiz: Estado del acto de ejecución del art. 13(10): la página de baterías de la Comisión no lista ninguno; comentarios sectoriales (Normachem 12-01-2026; Pryor Technology, publicado 18-08-2026 y actualizado 21-09-2026) hablan de un borrador de dic-2025 y no confirman su publicación, así que la fecha efectiva de la etiqueta de capacidad SLI es probablemente posterior al 18-08-2026 (no confirmado). Los metadatos del Cellar para 32010R1103 dan resource_legal_in-force = true y fin de validez 9999-12-31 (consulta 2026-10-21). Sin cabecera Accept el URL celex devuelve metadatos RDF; con la de un navegador devuelve el texto.
+  - Conflictos: C22
+- **`diagnostico-f18`** · confianza alta · [26] [30]
+  - Hecho: El Reglamento (UE) 2023/1542 define la batería SLI como la diseñada para suministrar energía de arranque, iluminación o encendido en vehículos y no la incluye entre las que deben guardar datos de estado de salud en su BMS (art. 14.1) ni entre las que llevan pasaporte digital (art. 77.1).
+  - Alcance: Unión Europea; Reglamento (UE) 2023/1542 (DOUE L 191, 28-07-2023), arts. 3(12), 13(6), 14(1) y 77(1).
+  - Evidencia: Art. 14(1): «stationary battery energy storage systems, LMT batteries and electric vehicle batteries»
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: La definición completa añade «other means of transport or machinery»; el enunciado la resume. Sin cambios en la versión consolidada de 13.08.2026.
+- **`diagnostico-f19`** · confianza alta · [157]
+  - Hecho: Las baterías de plomo-ácido contienen ácido sulfúrico y pueden generar mezclas explosivas de hidrógeno y oxígeno, por lo que los procedimientos de ensayo exigen ventilación, protección de ojos, cara y manos, ausencia de chispas y llamas, no inclinarse sobre la batería al probarla y desconectar siempre primero el cable negativo.
+  - Alcance: Procedimientos de ensayo de baterías de arranque de 12 V: norma SAE J537 (rev. 2023, apdo. 3.1) y hoja de seguridad del fabricante Crown (2026), EE. UU.
+  - Evidencia: Crown: «Always disconnect negative cable FIRST and connect it LAST»
+  - Uso previsto: anexo de seguridad, capítulo
+  - Matiz: El «desconectar primero el negativo» procede de Crown (y de VARTA ES); J537 no menciona el cable negativo en su apdo. 3.1 ni en el resto del texto.
+
+### 4.7 segunda_vida: Segunda vida y reutilización de baterías (investigación consultada el 2026-10-21)
+
+20 hechos (19 confirmados, 1 con corrección); 28 fuentes distintas.
+
+- **`segunda_vida-f1`** · confianza alta · [190] [191]
+  - Hecho: Se asume habitualmente que una batería de vehículo eléctrico llega al final de su vida útil en el coche cuando conserva en torno al 70–80 % de su capacidad original (estado de salud, SoH), y alguna revisión amplía el rango hasta el 60 %.
+  - Valor: 70–80 % de la capacidad original
+  - Alcance: UE y mundo; baterías de ion-litio de vehículos eléctricos; umbral convencional de retirada del coche citado en un informe de 2019 encargado por el JRC (Ricardo Energy & Environment) y, con rango 60–80 %, en un artículo de Nature Communications de 2024; no es una medición de baterías concretas.
+  - Evidencia: "a 70-80% of the original capacity" (JRC117790, resumen ejecutivo, p. 7 del PDF; Nature Commun. 15:4179, introducción: rango 60–80 %)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Matiz: Matices: el JRC lo presenta como convención («typically assumed ... e.g.»), no como medición; el modelo del propio artículo de Nature Communications supone 80 % de capacidad restante al retirar la batería del coche, y el 60–80 % es una frase de contexto, no un resultado.
+- **`segunda_vida-f2`** · confianza media · [192]
+  - Hecho: Una batería de plomo-ácido de arranque usa muchas placas finas y esponjosas para entregar mucha corriente durante un instante y se recarga mientras se conduce, por lo que no está diseñada para descargas profundas repetidas: Battery University cifra 12–15 ciclos de descarga total frente a 150–200 en una de ciclo profundo.
+  - Valor: 12–15 ciclos (descarga total) frente a 150–200
+  - Alcance: Baterías de plomo-ácido de arranque (SLI) frente a baterías de ciclo profundo; valores típicos publicados por Battery University (Cadex), artículo BU-201 actualizado el 21-10-2021; no corresponden a un modelo comercial concreto.
+  - Evidencia: "The starter battery does not allow deep cycling." (BU-201, apartado «Starter Batteries» y tabla 3: Cycle performance of starter and deep-cycle batteries)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: La URL sin www redirige a www.batteryuniversity.com. Fuente técnica de referencia no normativa: la confianza media es adecuada.
+- **`segunda_vida-f3`** · confianza alta · [193] [194]
+  - Hecho: Trojan Battery, fabricante de baterías de ciclo profundo, advierte de que una batería de arranque no soporta más que unas pocas descargas profundas antes de fallar y de que en aplicaciones de energías renovables solo deben usarse baterías de ciclo profundo, y Victron Energy la califica de no apta para descargas profundas frecuentes.
+  - Alcance: Plomo-ácido inundado y de arranque frente a ciclo profundo; FAQ de Trojan Battery (sin fecha visible, consultada el 2026-10-21) y manual de Victron Energy (rev. 9, junio de 2011) que califica la batería plana de automoción como no apta para descargas profundas frecuentes; aplica a instalaciones solares y aisladas.
+  - Evidencia: "Only deep cycle batteries should be used in renewable energy applications" (FAQ Trojan, pregunta «What are the differences between a deep cycle battery, a starting battery, and a dual-purpose battery?»; Victron, apartado 2.3.3)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Ambos son fabricantes con interés comercial en el ciclo profundo; el contenido es coherente con Battery University (segunda_vida-f2). Victron 2.3.5 confirma el uso cíclico: descargas diarias «down to 60-80%» con recarga nocturna.
+- **`segunda_vida-f4`** · confianza alta · [195] [190] [212] [213]
+  - Hecho: El 29 de junio de 2018 Nissan, Eaton, BAM, The Mobility House y el estadio Johan Cruijff ArenA (Ámsterdam) pusieron en marcha un sistema de almacenamiento de 3 MW que combina convertidores de Eaton con baterías de segunda vida y nuevas equivalentes a 148 baterías de Nissan LEAF.
+  - Valor: 3 MW; equivalente a 148 baterías LEAF
+  - Alcance: Países Bajos (Ámsterdam), puesta en marcha el 29-06-2018; potencia de 3 MW; apoyo del Fondo de Clima y Energía de Ámsterdam (AKEF) e Interreg; solo parte de las baterías es de segunda vida.
+  - Evidencia: "the equivalent of 148 Nissan LEAF batteries" (Nota de prensa de Nissan de 29-06-2018, párrafos 1 y 3)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de ODS
+  - Matiz: El comunicado no da MWh ni el reparto entre baterías usadas y nuevas (JRC, pv magazine y Electrek dan 2,8 MWh; ninguna fuente dio el reparto). La ficha técnica adjunta de Nissan no se pudo descargar con curl (redirige a la portada). «Mayor sistema europeo de este tipo» es afirmación de la empresa.
+- **`segunda_vida-f5`** · confianza alta · [26] [30]
+  - Hecho: El Reglamento (UE) 2023/1542 llama «adaptación» (en inglés, repurposing) a usar una batería que no es residuo para una finalidad distinta de la original, y «remanufacturación» a restablecer al menos el 90 % de su capacidad asignada, con diferencias de estado de salud entre celdas de como máximo el 3 %, para el mismo uso original.
+  - Valor: Remanufacturación: ≥90 % de la capacidad asignada y ≤3 % de diferencia de SoH entre celdas
+  - Alcance: UE; art. 3, apartado 1, puntos 30 (preparación para la adaptación), 31 (adaptación) y 32 (remanufacturación); el texto oficial en español no emplea la palabra «reconversión» (cero apariciones) y usa «adaptación» para lo que en inglés es «repurposing».
+  - Evidencia: "finalidad o aplicación distinta de aquella para la que se diseñó originalmente" (Art. 3.1, punto 31 «adaptación»; punto 32 para la remanufacturación)
+  - Uso previsto: anexo de normativa, capítulo, anexo de indicadores
+  - Matiz: Redacción exacta del punto 32: «en un 90 % como mínimo de la capacidad asignada original» y «el estado de salud individual de las celdas no difiere entre sí más del 3 %» (EN: «at least 90 % of the original rated capacity», «does not differ more than 3 % between cells»). El punto 13 (industrial) confirma el cambio de categoría tras la adaptación.
+- **`segunda_vida-f6`** · confianza alta · [26] [30]
+  - Hecho: Quien realiza la preparación para la reutilización, la preparación para la adaptación, la adaptación o la remanufacturación y comercializa la batería resultante se considera fabricante a efectos del Reglamento, debe pasar una evaluación de conformidad adicional (módulo A, control interno de la producción) y garantizar controles de calidad y seguridad.
+  - Alcance: UE; arts. 38 (apartado 11), 17 (apartado 3) y 45 (apartados 1 y 2) del Reglamento (UE) 2023/1542; la batería resultante puede pasar a otra categoría (por ejemplo, industrial o sistema estacionario).
+  - Evidencia: "Se considerarán fabricantes a efectos del presente Reglamento" (Art. 38, apartado 11; art. 17.3; art. 45)
+  - Uso previsto: anexo de normativa, anexo de seguridad, capítulo
+  - Matiz: Confirmados art. 38.11, 17.3 («evaluación de la conformidad adicional», módulo A), 45.1 y 45.2, 56.2 (productor con responsabilidad ampliada), 7.5 y 8.4 (exención si la batería ya estaba en el mercado antes de la operación), 10.4 (exención condicionada a fechas) y 12.2 (revisión de la documentación técnica de sistemas estacionarios). Matiz: en el art. 38.11 el requisito es que introduzcan en el mercado o pongan en servicio las baterías resultantes.
+- **`segunda_vida-f7`** · confianza alta · [196]
+  - Hecho: NREL estimó en 2015, con un modelo de degradación de baterías de ion-litio de vehículos enchufables, que al terminar unos 15 años de vida del vehículo la batería conservaría aproximadamente el 70 % de su capacidad inicial y que, en condiciones favorables, un segundo uso podría durar más de 10 años.
+  - Valor: ≈70 % de capacidad tras ≈15 años
+  - Alcance: EE. UU.; informe NREL/TP-5400-63332 (febrero de 2015); proyección por simulación para baterías de ion-litio de vehículos enchufables, no medición de una flota real; muy sensible al clima, al ciclado y a la gestión térmica.
+  - Evidencia: "approximately 70% of its initial capacity remaining" (Resumen ejecutivo, pregunta 1, y apartado 7.1)
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: Es una proyección por simulación para baterías de ion-litio de vehículos enchufables, no una medición de flota; el informe es de NREL (hoy el servidor es docs.nlr.gov).
+- **`segunda_vida-f8`** · confianza alta · [197] [198]
+  - Hecho: El 26 de octubre de 2017 BMW Group puso oficialmente en servicio en su planta de Leipzig (Alemania) un almacén de baterías con capacidad para hasta 700 baterías de alto voltaje usadas del BMW i3, de las que entonces había 500 integradas entre nuevas y usadas.
+  - Valor: hasta 700 baterías; 500 integradas en 2017
+  - Alcance: Alemania (Leipzig), 26-10-2017; sistema conectado a la red pública y comercializado como energía de balance primaria; integrado en la iniciativa WindNODE con ayuda del programa SINTEG del Ministerio Federal de Economía y Energía.
+  - Evidencia: "up to 700 used BMW i3 high-capacity batteries" (Nota de prensa BMW del 26-10-2017, apartado «Battery2ndLife»)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Matiz de lectura: las 500 baterías integradas son «new and used», no 500 usadas.
+- **`segunda_vida-f9`** · confianza alta · [199] [200]
+  - Hecho: Renault Group informó en octubre de 2020 de la primera instalación «Advanced Battery Storage» en su fábrica de Douai (Francia), con 4,7 MWh entre baterías de segunda vida y nuevas guardadas para posventa, y del proyecto SmartHubs con Connected Energy en West Sussex (Reino Unido), que prevé usar unas 1 000 baterías de segunda vida y 14,5 MWh.
+  - Valor: Douai 4,7 MWh (2020) / 4,9 MWh (2022); SmartHubs 14,5 MWh
+  - Alcance: Francia y Reino Unido; notas de Renault Group del 21-10-2020 (Douai 4,7 MWh) y del 27-01-2022 (Douai 4,9 MWh; SmartHubs con 1 000 baterías reutilizadas y 14,5 MWh); objetivo de la red ABS de casi 50 MWh en Francia (2020) y de 70 MWh en Europa (2022).
+  - Evidencia: "total installed capacity of 4.7 MWh using second life batteries" (Nota de Renault Group de 21-10-2020, apartado sobre Douai; página de 27-01-2022)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Matiz: en la nota de 2020 las unas 1 000 baterías y los 14,5 MWh corresponden a «un gran sistema E-STOR» dentro de SmartHubs; la página de 2022 los atribuye al proyecto completo. La discrepancia 4,7 MWh (2020) frente a 4,9 MWh (2022) es real y ambas fuentes son de la empresa. La URL de 2020 redirige a ?lang=fra (navegación en francés, texto de la nota en inglés).
+- **`segunda_vida-f10`** · confianza alta · [201] [202] [203]
+  - Hecho: El 18 de marzo de 2022 Endesa (Grupo Enel) puso en marcha en su central de Melilla el proyecto Second Life, con 78 baterías de vehículos eléctricos Nissan (48 en desuso y 30 nuevas para comparar su rendimiento), 4 MW de potencia y hasta 1,7 MWh.
+  - Valor: 78 baterías (48 usadas + 30 nuevas); 4 MW; 1,7 MWh
+  - Alcance: España (Melilla, red eléctrica aislada de la península), 18-03-2022; desarrollado por Enel con Nissan (baterías) y Loccioni (integración); según Endesa, la instalación podría inyectar energía durante 15 minutos si la central se desconectara.
+  - Evidencia: "de las cuales 48 están en desuso y 30 son completamente nuevas" (Nota de prensa de Endesa de 18-03-2022, segundo párrafo)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de ODS
+  - Matiz: El titular de la página coincide con el título declarado en la fuente [201].
+- **`segunda_vida-f11`** · confianza alta · [26] [30]
+  - Hecho: Desde el 18 de agosto de 2024 el sistema de gestión de baterías de los vehículos eléctricos, las baterías de transporte ligero y los sistemas estacionarios debe recoger los parámetros de estado de salud y vida útil del anexo VII, y quien haya adquirido legalmente la batería, incluidos los operadores independientes, tiene acceso de solo lectura y no discriminatorio a esos datos para evaluar su valor residual y facilitar su reutilización o adaptación.
+  - Alcance: UE; art. 14 y anexo VII del Reglamento (UE) 2023/1542; para baterías de vehículos eléctricos el parámetro es el estado de energía certificada (SOCE); para sistemas estacionarios y baterías de transporte ligero, la capacidad restante y, en la medida de lo posible, la potencia restante, la eficiencia de ida y vuelta, la autodescarga y la resistencia óhmica.
+  - Evidencia: "acceso de solo lectura, no discriminatorio" (Art. 14, apartado 2; anexo VII, parte A)
+  - Uso previsto: anexo de normativa, anexo de arquitectura, anexo de datos, capítulo
+  - Matiz: El enunciado es correcto; matices para la redacción del alcance y las notas: (1) en la parte A del anexo VII solo la capacidad de potencia restante, la eficiencia de ida y vuelta restante y la resistencia óhmica llevan «en la medida de lo posible»; la evolución de los índices de autodescarga no lo lleva. (2) El art. 14.3 (reinicialización del software) se refiere a quien realiza preparación para la reutilización, preparación para la adaptación, adaptación o remanufacturación, no a quien «repare». (3) El art. 14.2 incluye también a operadores de gestión de residuos y a terceros que actúen en nombre del adquirente.
+- **`segunda_vida-f12`** · confianza alta · [26] [30]
+  - Hecho: Las baterías sometidas a reutilización, adaptación o remanufacturación deben llevar etiquetas nuevas con un código QR que informe del cambio de estado y disponer de un nuevo pasaporte de batería vinculado al original, cuya responsabilidad recae en el operador que las introduce en el mercado.
+  - Alcance: UE; arts. 13 (apartado 9) y 77 (apartado 7) y anexo XIII, punto 4, del Reglamento (UE) 2023/1542; el pasaporte es obligatorio desde el 18-02-2027 para baterías de transporte ligero, industriales de más de 2 kWh y de vehículos eléctricos.
+  - Evidencia: "Dicha batería tendrá un nuevo pasaporte para baterías vinculado" (Art. 77, apartado 7; art. 13.9; anexo XIII, punto 4)
+  - Uso previsto: anexo de normativa, anexo de arquitectura, capítulo, pantalla 3D
+  - Matiz: Para exactitud legal, la norma dice «preparación para la reutilización, preparación para la adaptación, adaptación o remanufacturación» (el enunciado lo abrevia). El art. 13.9 habla de etiquetas o marcados nuevos con información sobre el cambio de estado «a la que se podrá acceder mediante un código QR». En el anexo XIII, punto 4, solo el apartado a) (parámetros de rendimiento y durabilidad) se vincula a «cuándo se realizan cambios en su estado»; el estado de salud (apartado b) se guarda con arreglo al art. 14 sin esa precisión. El acto de ejecución del art. 77.9 (plazo 18-08-2026) sigue sin comprobar. Actualización (reglamento-f10, pasaporte_qr-f18): el acto de ejecución del art. 77.9 no está adoptado; el borrador se publicó el 19-10-2026 con comentarios hasta el 16-11-2026.
+  - Conflictos: C22
+- **`segunda_vida-f13`** · confianza alta · [26] [30]
+  - Hecho: El Reglamento (UE) 2023/1542 define la batería de arranque, encendido o alumbrado (SLI) como la diseñada específicamente para esos fines, y los artículos sobre datos de estado de salud (14) y pasaporte de batería (77) no la incluyen entre las categorías a las que se aplican.
+  - Alcance: UE; art. 3.1 puntos 12 (SLI), 13 (industrial) y 15 (sistema estacionario), art. 14.1 y art. 77.1 del Reglamento (UE) 2023/1542 (texto original y consolidado a 13-8-2026).
+  - Evidencia: "a los fines de arranque, encendido o alumbrado" (Art. 3.1, punto 12; art. 14, apartado 1; art. 77, apartado 1)
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: Ni el art. 14.1 (sistemas estacionarios, transporte ligero y vehículos eléctricos) ni el art. 77.1 (transporte ligero, industriales de más de 2 kWh y vehículos eléctricos) nombran la SLI; el art. 8.1 sí la incluye (contenido reciclado) y el art. 61.1.b cita a quienes remanufacturan o adaptan baterías SLI, industriales y de VE. La frase usada como evidencia solo aparece literal en el punto 12 del art. 3.1.
+- **`segunda_vida-f14`** · confianza alta · [204] [205] [214]
+  - Hecho: La Agencia Internacional de la Energía señala (Global EV Outlook 2026) que reutilizar baterías de vehículos eléctricos para almacenamiento sigue siendo difícil por los requisitos de seguridad y garantía, la incertidumbre sobre la vida restante, el abaratamiento de las baterías nuevas y los costes de desmontaje y reacondicionamiento seguro, y su edición de 2025 ya advertía de que la viabilidad económica se complica por la competencia de los recicladores y de las baterías nuevas.
+  - Alcance: Mundo; Global EV Outlook 2026 (publicado el 20-05-2026) y 2025 (14-05-2025), capítulo «Electric vehicle batteries»; valoración cualitativa del mercado de reutilización, sin cifra de SoH.
+  - Evidencia: "EV battery reuse, for example for energy storage applications, remains challenging" (GEVO 2026, capítulo «Electric vehicle batteries», sección sobre baterías usadas y recicladores)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: GEVO 2026 añade el traspaso de responsabilidad al reacondicionador; «casi todas siguen en uso» se refiere a baterías de vehículos eléctricos y de almacenamiento estacionario desplegadas en los últimos años. En los capítulos de baterías de GEVO 2025 y 2026 no aparece ninguna cifra de estado de salud de retirada.
+- **`segunda_vida-f15`** · confianza alta · [190] [196]
+  - Hecho: El informe encargado por el JRC en 2019 señala como barrera clave de la segunda vida la falta de trazabilidad y normalización de los packs y la información insuficiente, inaccesible o no normalizada del sistema de gestión de la batería sobre su historial de uso y su estado.
+  - Alcance: UE; informe final «Circular Economy Perspectives for the Management of Batteries used in Electric Vehicles» (Ricardo Energy & Environment para el JRC, 2019), resumen ejecutivo; situación anterior al Reglamento (UE) 2023/1542.
+  - Evidencia: "insufficient, inaccessible or unstandardized information on usage history/battery status" (JRC117790, resumen ejecutivo, p. 7 del PDF)
+  - Uso previsto: capítulo, pantalla 3D, anexo de arquitectura, anexo de normativa
+- **`segunda_vida-f16`** · confianza alta · [206] [207]
+  - Hecho: El Reglamento Técnico Mundial n.º 22 de la ONU sobre durabilidad de baterías en vehículo fija como requisito mínimo que los vehículos ligeros eléctricos puros e híbridos enchufables conserven el 80 % de su energía certificada (SOCE) hasta los 5 años o 100 000 km y el 70 % hasta los 8 años o 160 000 km.
+  - Valor: 80 % (5 años/100 000 km) y 70 % (8 años/160 000 km)
+  - Alcance: ONU/CEPE; GTR 22 establecido en el Registro Global el 9-03-2022 y modificado por la Enmienda 1 (26-06-2024); categorías 1-1 y 1-2 del ámbito del GTR (la categoría 2 tiene 75 % y 65 %); cada Parte contratante puede aplicar solo uno de los dos tramos.
+  - Evidencia: Tabla 1 (MPR basados en energía, SOCE): "80 per cent" hasta "5 years or 100,000 km" y "70 per cent" hasta "8 years or 160,000 km"
+  - Uso previsto: anexo de normativa, anexo de indicadores, anexo de datos, capítulo
+  - Matiz: El original consta como «Established in the Global Registry on 9 March 2022» y la Enmienda 1 como «Established in the Global Registry on 26 June 2024». Un GTR no es exigible por sí mismo: el texto permite a cada Parte contratante aplicar solo uno de los dos tramos. No se comprobó la definición de las categorías 1-1, 1-2 y 2 en R.E.3.
+- **`segunda_vida-f17`** · confianza alta · [26] [208] [66]
+  - Hecho: Para «reutilización» y «preparación para la reutilización» el Reglamento (UE) 2023/1542 remite a la Directiva 2008/98/CE, según la cual reutilizar es volver a usar con la misma finalidad productos o componentes que no son residuos, y preparar para la reutilización es comprobar, limpiar o reparar residuos para que puedan reutilizarse sin otra transformación previa.
+  - Alcance: UE; Reglamento (UE) 2023/1542, art. 3.1 punto 29 y art. 3.2 letra a); Directiva 2008/98/CE, art. 3 puntos 13 y 16 (texto original DOUE L 312, 22.11.2008).
+  - Evidencia: "con la misma finalidad para la que fueron concebidos" (Directiva 2008/98/CE, art. 3, punto 13 «reutilización»; punto 16 para la preparación)
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: Reglamento 3.2.a remite a la Directiva para «reutilización»; el punto 29 remite al art. 3, punto 16, para «preparación para la reutilización».
+- **`segunda_vida-f18`** · confianza alta · [26] [30]
+  - Hecho: Para que un residuo de batería de transporte ligero, industrial o de vehículo eléctrico sometido a preparación para la reutilización o para la adaptación deje de considerarse residuo, su propietario debe acreditar ante la autoridad, si esta lo pide, una evaluación o ensayo de estado de salud, el uso posterior documentado con factura o contrato y una protección adecuada durante el transporte.
+  - Alcance: UE; art. 73, apartados 1 y 2, del Reglamento (UE) 2023/1542; la información sobre el estado de salud debe acompañar a la batería y estar a disposición de los usuarios finales en igualdad de condiciones.
+  - Evidencia: "ensayos sobre el estado de salud realizados en un Estado miembro" (Art. 73, apartado 1, letra a))
+  - Uso previsto: anexo de normativa, anexo de seguridad, capítulo
+  - Matiz: Art. 73.1 a), b) y c) y 73.2 literales. El acto de ejecución del art. 73.4 sigue sin comprobar; la página de la Comisión sobre baterías consultada no lo menciona. El anexo XIV (requisitos mínimos para envíos de baterías usadas) es una norma distinta que también exige ensayo de estado de salud. Actualización (reglamento-f17): a 21-10-2026 no consta ningún acto de ejecución adoptado del art. 73.4.
+  - Conflictos: C22
+- **`segunda_vida-f19`** · confianza alta · [209] [210]
+  - Hecho: La Unión Europea ha financiado proyectos de segunda vida como ELSA (Horizon 2020, 2015–2018, 9,86 M€ de aportación de la UE y con Renault y Nissan entre los participantes), cuyo objetivo era integrar baterías de ion-litio de segunda vida en seis sitios de demostración, y Battery2Life (Horizon Europe, 2024–2026, 4,01 M€), que desarrolla sistemas de gestión de baterías para segunda vida.
+  - Valor: ELSA 9,86 M€ (UE); Battery2Life 4,01 M€ (UE)
+  - Alcance: UE; ELSA (acuerdo 646125, 1-4-2015 a 31-12-2018, coste total 13,08 M€, coordinado por Bouygues Energies & Services) y Battery2Life (acuerdo 101137615, 1-1-2024 a 31-12-2026, coordinado por Erevnitiko Panepistimiako Institouto Systimaton Epikoinonion kai Ypologiston, Grecia); datos de las fichas CORDIS consultadas el 2026-10-21.
+  - Evidencia: "integrating low-cost second-life Li-ion batteries" (Ficha CORDIS de ELSA, apartado «Objective»; ficha de Battery2Life, apartado «Objective»)
+  - Uso previsto: capítulo, anexo de datos, anexo de ODS, anexo de arquitectura
+  - Matiz: ELSA: inicio 1 abril 2015, fin 31 diciembre 2018, coste total 13 083 061,25 €, aportación UE 9 861 612,50 €, coordina Bouygues Energies & Services, seis sitios de prueba, participantes Renault SAS y Nissan West Europe SAS. Battery2Life: 1 enero 2024 a 31 diciembre 2026, aportación UE 4 008 064,66 €, coste total «No data», palabra clave «battery digital passport», indicadores SOS y SOW. La frase citada como evidencia («integrating low-cost second-life Li-ion batteries») aparece solo en la ficha de ELSA.
+- **`segunda_vida-f20`** · confianza alta · corregido por el verificador · [211] [196]
+  - Hecho: Las cifras de coste de la segunda vida son escenarios y no precios: el JRC (2018) estima que la segunda vida podría reducir en torno a un 20 % el coste del almacenamiento estacionario con ion-litio (unos 30–45 por kWh, con el símbolo de moneda ilegible en el PDF) si los packs usados se revenden al 50 % del coste de uno nuevo, y NREL (2015) indica que el coste de reacondicionamiento puede llegar a ser tan bajo como 20 USD por kWh nominal cuando se dispone de datos de diagnóstico del vehículo (valor mínimo de su modelo, no un coste típico).
+  - Valor: ≈20 % de ahorro (JRC); reacondicionamiento desde ≈20 USD/kWh nominal como mínimo (NREL, «as low as»)
+  - Alcance: UE (JRC, escenario de 2018 con primera vida de 10 años y packs usados revendidos al 50 % del coste de uno nuevo) y EE. UU. (NREL, 2015, USD de esa época); resultados de modelos, no precios verificados.
+  - Evidencia: "could reduce costs of stationary storage further by about 20 %" (JRC113360, p. 47 conclusiones y p. 42 escenario «Second life»; NREL, resumen ejecutivo, pregunta 2)
+  - Uso previsto: anexo de presupuesto, anexo de datos, capítulo
+  - Texto original (antes de la corrección): Las cifras de coste de la segunda vida son escenarios y no precios: el JRC (2018) estima un ahorro de en torno al 20 % en almacenamiento estacionario con ion-litio si los packs usados se compran al 50 % del precio de uno nuevo, y NREL (2015) calcula unos 20 USD por kWh nominal de coste de reacondicionamiento cuando hay datos de diagnóstico del vehículo.
+  - Matiz: El 20 USD/kWh de NREL es un límite inferior («as low as»), no una estimación central: sale de su escenario de precio mínimo (instalación regional que procesa 1 000 000 kWh al año, diagnóstico a bordo disponible y tiempos de manipulación mínimos), con un precio de venta de 40 USD/kWh nominal de los cuales 20 USD son coste de reacondicionamiento y se impone además un valor de rescate de 20 USD/kWh para el propietario del coche. El propio informe cita estudios previos con unos 60 USD/kWh nominal y con 83–114 USD/kWh de reacondicionamiento. No usar estas cifras como precio de compra de baterías usadas. El ahorro del JRC es un resultado de escenario («what-if») con packs usados al 50 % del coste.
+
+### 4.8 pasaporte_qr: Pasaporte digital de baterías, código QR y protección de datos
+
+20 hechos (19 confirmados, 1 con corrección); 35 fuentes distintas.
+
+- **`pasaporte_qr-f1`** · confianza alta · [26] [30] [219] [68]
+  - Hecho: A partir del 18 de febrero de 2027, toda batería de vehículo eléctrico, toda batería para medios de transporte ligeros y toda batería industrial de más de 2 kWh que se introduzca en el mercado de la UE o se ponga en servicio debe tener un registro electrónico llamado «pasaporte para baterías».
+  - Valor: 2027-02-18
+  - Alcance: UE; Reglamento (UE) 2023/1542, art. 77, apdo. 1; obligación desde 2027-02-18 para baterías de vehículo eléctrico, de medios de transporte ligeros y industriales de más de 2 kWh; el texto consolidado de 2026-08-13 no cambia ni la fecha ni las categorías.
+  - Evidencia: dispondrán de un registro electrónico (en lo sucesivo, «pasaporte para baterías») - art. 77, apdo. 1
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de datos
+  - Matiz: Art. 77(1) literal e idéntico en original y consolidado (el consolidado solo añade el apdo. 10). Art. 3: punto 11 transporte ligero, 12 arranque/encendido/alumbrado, 13 industrial, 14 vehículos eléctricos (categoría L de más de 25 kg; M, N, O). Art. 96: obligatorio en todos sus elementos y directamente aplicable. Página DPP de la Comisión (modificada 2026-10-15) mantiene el 18 de febrero de 2027. FAQ 3.1 confirma que el pasaporte se exige a la batería terminada.
+- **`pasaporte_qr-f2`** · confianza alta · [26] [30]
+  - Hecho: Desde el 18 de febrero de 2027 todas las pilas y baterías deben llevar marcado un código QR, que en las baterías de vehículo eléctrico, de transporte ligero e industriales de más de 2 kWh da acceso al pasaporte y en las demás (incluidas las de arranque de los coches) da acceso a la información de etiquetado, la declaración UE de conformidad, el informe de diligencia debida y la gestión de residuos.
+  - Valor: QR obligatorio en todas las baterías desde 2027-02-18
+  - Alcance: UE; Reglamento (UE) 2023/1542, art. 13, apdos. 6 y 7, y anexo VI parte C; aplicable desde 2027-02-18 a todas las categorías de pilas y baterías.
+  - Evidencia: todas las pilas o baterías llevarán marcado un código QR - art. 13, apdo. 6
+  - Uso previsto: capítulo, pantalla 3D, anexo de normativa, anexo de arquitectura
+  - Matiz: Art. 13(6) dice «A partir del 18 de febrero de 2027, todas las pilas o baterías llevarán marcado un código QR»; letras a) pasaporte, b) etiquetado + declaración de conformidad + informe art. 52(3) + residuos, c) cantidad valorizada en SLI. Texto de art. 13(6)-(9) idéntico en el consolidado. Considerando 44 cita ISO/IEC 18004:2015 y la Directiva (UE) 2019/882. Anexo VI parte C: alto contraste y tamaño legible con lector QR de uso general.
+  - Conflictos: C20
+- **`pasaporte_qr-f3`** · confianza alta · [26] [30] [229] [68] [82]
+  - Hecho: El QR del pasaporte enlaza con un identificador único que atribuye el operador económico que introduce la batería en el mercado, definido como una cadena única de caracteres que además facilita un enlace web al pasaporte, y tanto el QR como el identificador deben cumplir la serie ISO/IEC 15459 (partes 1 a 6) o sus equivalentes.
+  - Valor: ISO/IEC 15459-1 a 15459-6 (o equivalentes)
+  - Alcance: UE; Reglamento (UE) 2023/1542, art. 3 punto 66 y art. 77 apdos. 3 y 10; para baterías con pasaporte (desde 2027-02-18).
+  - Evidencia: una cadena única de caracteres para la identificación de baterías - art. 3, punto 66
+  - Uso previsto: anexo de normativa, anexo de arquitectura, anexo de datos
+  - Matiz: Art. 77(10) solo existe en el consolidado: lo añade el art. 78 del ESPR (confirmado en el texto del ESPR) y el consolidado lo marca como rectificado (C2) citando el Reglamento 2024/1781. Los títulos de la serie ISO/IEC 15459 (partes 1 a 6) coinciden con DIN DKE SPEC 99100. FAQ 5.2: cada operador crea los identificadores o usa un servicio comercial. Guía v2.0: punto 1 = identificador único, obligatorio en EV, LMT e industrial.
+- **`pasaporte_qr-f4`** · confianza alta · [26] [30] [68]
+  - Hecho: La parte pública del pasaporte (anexo XIII, punto 1, apartados a a s) abarca los datos de la etiqueta, la composición material y química, la huella de carbono, el abastecimiento responsable, el contenido reciclado y renovable, parámetros de capacidad, tensión, potencia, vida útil y eficiencia, la declaración UE de conformidad y la información de gestión de residuos.
+  - Valor: 19 apartados públicos (anexo XIII, punto 1, a-s)
+  - Alcance: UE; Reglamento (UE) 2023/1542, art. 77 apdo. 2 letra a) y anexo XIII punto 1 (19 apartados); datos referidos al modelo de batería, aplicables desde 2027-02-18 salvo los que tengan fecha propia.
+  - Evidencia: información accesible al público en general - art. 77, apdo. 2, letra a)
+  - Uso previsto: capítulo, anexo de datos, anexo de normativa, pantalla 3D
+  - Matiz: El único cambio del anexo XIII en el consolidado es la corrección C4 de una remisión cruzada en la letra q) (artículo 13, apartados 4 y 5 en lugar de 3 y 4); no altera el recuento. FAQ 7.2: huella de carbono, contenido reciclado y diligencia debida no se exigen aún en febrero de 2027.
+  - Conflictos: C21
+- **`pasaporte_qr-f5`** · confianza alta · [26] [30] [68]
+  - Hecho: Fuera de la parte pública, el anexo XIII reserva la composición detallada, el despiece, las piezas de recambio y las medidas de seguridad (punto 2) a personas con interés legítimo y a la Comisión, los informes de ensayo (punto 3) a organismos notificados, autoridades de vigilancia del mercado y Comisión, y los datos de cada batería (punto 4: estado de salud, estado, ciclos, accidentes, temperatura, estado de carga) a personas con interés legítimo.
+  - Valor: Anexo XIII: punto 2 (4 apartados), punto 3 (1) y punto 4 (4)
+  - Alcance: UE; Reglamento (UE) 2023/1542, art. 77 apdo. 2 letras b) y c) y anexo XIII puntos 2, 3 y 4.
+  - Evidencia: accesible únicamente a cualquier persona física o jurídica con un interés legítimo - art. 77, apdo. 2, letra c)
+  - Uso previsto: capítulo, anexo de datos, anexo de seguridad, anexo de normativa
+  - Matiz: Recuento exacto: punto 2 tiene 4 apartados (a-d), punto 3 uno y punto 4 cuatro (a-d). Art. 77(2)(b) y (c) coinciden con el enunciado. FAQ 6.3: el acceso a los puntos 2 y 4 depende del acto de ejecución pendiente. Actualización: desde el 2026-10-19 hay un borrador publicado (ver pasaporte_qr-f18), todavía no adoptado.
+  - Conflictos: C22
+- **`pasaporte_qr-f6`** · confianza alta · [215] [240]
+  - Hecho: El RGPD recoge en su artículo 5, apartado 1, letra c), el principio de «minimización de datos»: los datos personales deben ser adecuados, pertinentes y limitados a lo necesario para los fines por los que se tratan.
+  - Valor: «adecuados, pertinentes y limitados a lo necesario en relación con los fines para los que son tratados («minimización de datos»)» (art. 5.1.c RGPD, texto oficial en español)
+  - Alcance: UE; Reglamento (UE) 2016/679, art. 5 apdo. 1 letra c), texto español del DOUE L 119 de 2016-05-04; solo se aplica a datos personales; en España es directamente aplicable y lo completa la Ley Orgánica 3/2018.
+  - Evidencia: adecuados, pertinentes y limitados a lo necesario en relación con los fines
+  - Uso previsto: anexo de normativa, anexo de seguridad, capítulo
+  - Matiz: Art. 5.1.c) literal: «adecuados, pertinentes y limitados a lo necesario en relación con los fines para los que son tratados («minimización de datos»)». Art. 5.1.e) y 5.2 y art. 25.1-25.2 coinciden con las notas. BOE: LO 3/2018, art. 1.a) adapta el ordenamiento al RGPD y completa sus disposiciones; consolidado con «Última actualización publicada el 27/12/2025».
+- **`pasaporte_qr-f7`** · confianza alta · [215] [26]
+  - Hecho: El RGPD define como datos personales toda información sobre una persona física identificada o identificable, y su considerando 26 excluye la información anónima y manda valorar los medios que razonablemente podría usar el responsable u otra persona para identificar a alguien.
+  - Valor: Dato personal = información sobre una persona física identificada o identificable (RGPD art. 4.1)
+  - Alcance: UE; Reglamento (UE) 2016/679, art. 4 punto 1, art. 2 apdo. 1 y considerando 26.
+  - Evidencia: toda información sobre una persona física identificada o identificable - art. 4, punto 1
+  - Uso previsto: anexo de normativa, anexo de seguridad, capítulo
+  - Matiz: «Privacidad» aparece solo en el considerando 126 y en el art. 78, letra h), del Reglamento 2023/1542. La frase sobre el anexo XIII y la analogía con medios razonables es razonamiento del investigador, no cita de una fuente, y así está señalado en el hecho.
+- **`pasaporte_qr-f8`** · confianza alta · [218]
+  - Hecho: El Tribunal de Justicia de la UE declaró el 9 de noviembre de 2023 (asunto C-319/22) que el número de bastidor de un vehículo (VIN), que de por sí no es un dato personal, pasa a serlo para quien dispone razonablemente de medios para asociarlo con una persona, por ejemplo con el titular que figura en el permiso de circulación.
+  - Valor: STJUE 2023-11-09, C-319/22, ECLI:EU:C:2023:837
+  - Alcance: UE; STJUE de 2023-11-09, asunto C-319/22 (Gesamtverband Autoteile-Handel/Scania), apartados 44 a 50; interpreta el art. 4 punto 1 del RGPD.
+  - Evidencia: adquiere ese carácter para quien dispone razonablemente de medios - apdo. 46
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Matiz: Apdo. 46: el VIN «adquiere ese carácter para quien dispone razonablemente de medios que permiten asociarlo con una persona determinada»; apdos. 47-48: permiso de circulación con el nombre del titular; apdo. 49: indirectamente también para el fabricante; apdo. 50: entonces cae bajo el art. 2.1 del RGPD. SPARQL: ECLI:EU:C:2023:837, fecha 2023-11-09. Aplicarlo a la batería es una analogía propia, no del Tribunal (ya señalado en el hecho).
+- **`pasaporte_qr-f9`** · confianza alta · [227] [229] [68]
+  - Hecho: El consorcio Battery Pass advierte de que los datos detallados de uso de una batería permiten deducir patrones de uso y acceder a información sensible a nivel personal o comercial, y la especificación DIN DKE SPEC 99100 pide que el registro de accidentes tenga en cuenta la normativa de protección de datos personales.
+  - Valor: Anexo XIII, punto 4(d): ciclos, accidentes, condiciones ambientales (temperatura) y estado de carga
+  - Alcance: UE/Alemania; Battery Pass Content Guidance v1.1 (p. 161) y DIN DKE SPEC 99100:2025-02 (apdo. 6.7.8.4, letra f); recomendaciones técnicas no vinculantes sobre los datos dinámicos de uso del anexo XIII, punto 4(d).
+  - Evidencia: providing access to personally or commercially sensitive information - Content Guidance, p. 161
+  - Uso previsto: anexo de seguridad, anexo de normativa, capítulo
+  - Matiz: Frase literal: «Use patterns may be derived from detailed data, providing access to personally or commercially sensitive information». DIN SPEC 6.7.8.4 f): «Reporting of information on accidents should consider requirements of personal data protection legislation». Son recomendaciones no vinculantes, como indica el hecho. FAQ 8.3: actualizar como mínimo cuando cambia o se plantea cambiar el estado; FAQ 8.4: no se exige tiempo real.
+- **`pasaporte_qr-f10`** · confianza alta · [82] [217] [26]
+  - Hecho: En el marco europeo de pasaportes digitales de producto, los datos personales de clientes no pueden almacenarse en un pasaporte regulado por el ESPR sin su consentimiento expreso, y los datos personales que prevé guardar el registro DPP de la Comisión son los de sus usuarios (nombre, correo electrónico, credenciales, dirección postal), no los del producto.
+  - Valor: ESPR art. 10.1.e: consentimiento expreso para datos de clientes; Reglamento 2026/1778 art. 18: datos personales de usuarios del registro
+  - Alcance: UE; Reglamento (UE) 2024/1781 (ESPR), art. 10 apdo. 1 letra e) y art. 13; Reglamento de Ejecución (UE) 2026/1778, art. 18 (publicado el 2026-07-17); el pasaporte de baterías se rige por el Reglamento (UE) 2023/1542, que exige interoperabilidad con otros pasaportes (art. 78, letra a).
+  - Evidencia: los datos personales relativos a clientes no se almacenarán - ESPR, art. 10, apdo. 1, letra e)
+  - Uso previsto: anexo de seguridad, anexo de normativa
+  - Matiz: ESPR art. 10.1.e) literal: los datos personales de clientes no se almacenarán en el pasaporte sin su consentimiento expreso conforme al art. 6 del RGPD. Reglamento 2026/1778 (de 16 de julio de 2026, DOUE 17.7.2026) art. 18: nombre, credenciales, dirección postal, correo, metadatos de documentos e identificadores personales de personas físicas, tratados conforme al Reglamento (UE) 2018/1725. La parte «no los del producto» es una lectura razonable (el art. 18 solo enumera datos de usuarios), no una frase literal. La regla del consentimiento es del ESPR; el Reglamento 2023/1542 no la repite.
+- **`pasaporte_qr-f11`** · confianza media · [235] [239] [233] [234] [26] [224] [243]
+  - Hecho: El código QR se inventó en 1994 en Denso (entonces Nippondenso), en Japón, con Masahiro Hara entre los inventores, y se normaliza como ISO/IEC 18004, cuya edición de 2015 citada en el considerando 44 del Reglamento de baterías fue retirada el 15 de agosto de 2024 y sustituida por la de 2024.
+  - Valor: 1994; ISO/IEC 18004:2015 retirada 2024-08-15; vigente ISO/IEC 18004:2024
+  - Alcance: Mundo (origen en Japón, 1994); UE para la cita de ISO/IEC 18004:2015 en el considerando 44 del Reglamento (UE) 2023/1542; ISO/IEC 18004:2015 retirada y ISO/IEC 18004:2024 vigente desde 2024-08-15 según el catálogo de EVS.
+  - Evidencia: US5726435A: Priority date 1994-03-14; EVS: Withdrawn from 15.08.2024
+  - Uso previsto: capítulo, pantalla 3D, anexo de arquitectura, anexo de normativa
+  - Matiz: Patente US 5726435: prioridad 1994-03-14, inventores M. Hara, M. Watabe, T. Nojiri, T. Nagaya y Y. Uchiyama; cedente original NipponDenso y Toyota Central R&D Labs; actual Denso Wave. El texto de la patente no usa la expresión «QR code» (solo aparece en patentes que la citan): que sea la patente del QR y que se creara para piezas de automóvil procede de Wikipedia, fuente secundaria. EVS: 2015 «Withdrawn from 15.08.2024»; 2024 «Valid from 15.08.2024». El Standards Council of Canada muestra la edición 2015 con estado «Revised». Las páginas oficiales de Denso Wave siguen sin responder, por eso la confianza se queda en media.
+  - Conflictos: C20
+- **`pasaporte_qr-f12`** · confianza media · [236] [239]
+  - Hecho: El estándar del QR define cuatro niveles de corrección de errores que permiten recuperar aproximadamente el 7 % (L), el 15 % (M), el 25 % (Q) y el 30 % (H) de las palabras código del símbolo.
+  - Valor: L ~7 %, M ~15 %, Q ~25 %, H ~30 %
+  - Alcance: Mundo; ISO/IEC 18004 (el código de ZXing remite a ISO 18004:2006, 6.5.1); capacidad aproximada de recuperación por nivel, que no equivale a la superficie que se puede tapar porque los patrones de posición deben quedar legibles.
+  - Evidencia: L = ~7% correction ... H = ~30% correction (ErrorCorrectionLevel.java)
+  - Uso previsto: anexo de arquitectura, capítulo, pantalla 3D
+  - Matiz: El código dice «L = ~7% correction», «M = ~15%», «Q = ~25%», «H = ~30%» y remite a ISO 18004:2006, 6.5.1. Wikipedia coincide y añade que el nivel H puede perder teóricamente hasta el 30 % de las palabras código y que los patrones de posición deben quedar legibles. Los porcentajes no se pudieron cotejar con el texto de ISO/IEC 18004 (de pago) ni con la página de Denso Wave (inaccesible).
+- **`pasaporte_qr-f13`** · confianza media · [237] [238] [239]
+  - Hecho: La capacidad máxima de un QR (versión 40, de 177 x 177 módulos) con corrección L es de 7.089 dígitos, 4.296 caracteres alfanuméricos, 2.953 bytes o 1.817 caracteres kanji, y con corrección H baja a 3.057, 1.852, 1.273 y 784 respectivamente.
+  - Valor: 40-L: 7089 / 4296 / 2953 / 1817; 40-H: 3057 / 1852 / 1273 / 784 (dígitos / alfanuméricos / bytes / kanji)
+  - Alcance: Mundo; ISO/IEC 18004; capacidad de un único símbolo QR (no Micro QR) de la versión 40 (la mayor), con corrección L o H; cifras comprobadas con las tablas de ZXing.
+  - Evidencia: Tabla 40-L: 7,089 - 4,296 - 2,953 - 1,817 (Wikipedia, «QR code»); ZXing Version.java, versión 40
+  - Uso previsto: anexo de arquitectura, pantalla 3D
+  - Matiz: Resultado del recálculo: 40-L = 7089 / 4296 / 2953 / 1817; 40-M = 5596 / 3391 / 2331 / 1435; 40-Q = 3993 / 2420 / 1663 / 1024; 40-H = 3057 / 1852 / 1273 / 784. Lado de la versión 40 = 177 módulos. Versión 1 admite 17 / 14 / 11 / 7 bytes (L/M/Q/H). 70 bytes: versión 4 en L, 5 en M, 6 en Q y 8 en H (33, 37, 41 y 49 módulos). Las tablas de ZXing siguen ISO 18004:2006; no se cotejaron con la edición 2024 (de pago).
+- **`pasaporte_qr-f14`** · confianza alta · [228]
+  - Hecho: Según la guía técnica del consorcio Battery Pass, el QR almacena información estática mientras que el pasaporte cambia, por lo que recomienda que apunte a una dirección estable que redirija al pasaporte vigente y desaconseja codificar datos dentro del identificador (como hace el VIN) por el riesgo de minería de datos no autorizada.
+  - Valor: QR estático -> URL estable con redirección; identificador sin datos incrustados
+  - Alcance: UE/Alemania; Battery Pass Technical Guidance (2024), apartados 3.3.1, 6.1 y 6.2; recomendaciones técnicas no vinculantes.
+  - Evidencia: QR codes themselves store static information - apdo. 6.1
+  - Uso previsto: anexo de arquitectura, anexo de seguridad, pantalla 3D
+  - Matiz: Apdo. 6.1: «QR codes themselves store static information» y mecanismo de enlace a una URL estable que redirige. Apdo. 6.2: la codificación de datos dentro del identificador, como en el VIN, se descartó por el riesgo de minería de datos no autorizada; urn:uuid: como opción; límite de 70 caracteres de la solicitud de normalización «not coming out of the different regulatory sources». Apdo. 3.3.1: Data Matrix en automoción y enlace doble sin normalizar. La portada indica Version 1.0 / March 2024 (el archivo está en la carpeta docs/1.1 del repositorio).
+- **`pasaporte_qr-f15`** · confianza alta · [230] [231] [232]
+  - Hecho: GS1 Digital Link es el estándar de GS1 que expresa identificadores GS1 (GTIN, lote, número de serie) como una dirección web que puede codificarse en un QR, GS1 lo presenta como identificador conforme con ISO/IEC 15459 de tipo «ruta estructurada con acceso web» (ISO/IEC 18975) y propone usarlo como identificador y enlace del pasaporte de baterías.
+  - Valor: GS1 Digital Link URI (método 1 de 6 evaluados por GS1)
+  - Alcance: Mundo/UE; GS1 in Europe: libro blanco de baterías industriales y de vehículo eléctrico (v1.7, julio de 2024) y «Implementation Considerations for Unique DPP Product Identifiers» (v1.0, abril de 2025); es una de varias opciones admitidas y una posición de GS1, no un requisito legal.
+  - Evidencia: (referred to in GS1 as GS1 Digital Link URI)
+  - Uso previsto: anexo de arquitectura, anexo de normativa
+  - Matiz: Documento de 2025 (Release 1.0, April 2025): Método 1 = «ISO/IEC 15459 conformant identifiers / 18975 web-enabled, structured path identifiers qualified by ISO/IEC 15418 GS1 Application Identifiers (referred to in GS1 as GS1 Digital Link URI)», de 6 métodos. Libro blanco de baterías (Issue 1.7, 03.07.2024): ejemplo GTIN 09506000134369 -> https://example.com/01/09506000134369 y recomendación de un solo QR por batería. README: «Web URI syntax for expressing GS1 Application Identifiers and their values».
+- **`pasaporte_qr-f16`** · confianza alta · [222] [223] [224] [216] [219]
+  - Hecho: CEN y Cenelec (JTC 24) han publicado ocho normas europeas EN 18xxx de pasaporte digital de producto (seis el 27-05-2026, entre ellas EN 18219 de identificadores únicos y EN 18220 de soportes de datos, y dos el 16-09-2026), y la Decisión de Ejecución (UE) 2026/1736 publicó el 15-07-2026 en el DOUE las referencias de las seis primeras.
+  - Valor: EN 18219:2026 y EN 18220:2026 (2026-05-27); Decisión (UE) 2026/1736 (DOUE 2026-07-15)
+  - Alcance: UE; normas armonizadas de apoyo al Reglamento (UE) 2024/1781 (arts. 10 y 11) en virtud de la solicitud de normalización C(2024) 5423; la presunción de conformidad que menciona la Decisión se refiere al ESPR, y no se ha comprobado su efecto sobre el pasaporte de baterías.
+  - Evidencia: EN 18219:2026 Digital product passport - Unique identifiers - 2026-05-27
+  - Uso previsto: anexo de normativa, anexo de arquitectura
+  - Matiz: Lista de CEN: EN 18216, 18219, 18220, 18221, 18222 y 18223 con fecha 2026-05-27; EN 18239 y EN 18246 con fecha 2026-09-16. Decisión 2026/1736 (de 14 de julio de 2026, DOUE 15.7.2026) cita exactamente las seis primeras. Fichas de CEN: «Citation in OJEU: OJ L, 2026/1736 (2026-07-15)». Alcance de EN 18219 y EN 18220 y referencias normativas (ISO/IEC 15459-2/-3/-4/-6, 18975:2024, 18004:2024, 16022:2024) coinciden con las notas. Calendario de la Comisión: decisión sobre las dos restantes en noviembre de 2026.
+- **`pasaporte_qr-f17`** · confianza alta · [26] [30] [82] [68] [221]
+  - Hecho: El pasaporte de baterías es un sistema descentralizado: lo almacena el operador económico responsable o quien este autorice (sin poder vender ni reutilizar los datos), el registro DPP de la Comisión solo guarda identificadores únicos y metadatos, y el pasaporte deja de existir cuando la batería se recicla.
+  - Valor: Registro DPP operativo desde 2026-07-20; pasaporte alojado por el operador
+  - Alcance: UE; Reglamento (UE) 2023/1542, arts. 77 y 78, y Reglamento (UE) 2024/1781, art. 13; el registro DPP está operativo desde 2026-07-20 según la Comisión.
+  - Evidencia: serán almacenados por el operador económico responsable - art. 78, letra c)
+  - Uso previsto: anexo de arquitectura, anexo de seguridad, capítulo, pantalla 3D
+  - Matiz: Matiz de redacción: la página del registro dice que guarda «unique identifiers, registration data, and high-level metadata» (y, según la norma sectorial, información adicional), no solo identificadores y metadatos; lo que no guarda es el pasaporte completo (FAQ 6.5). Art. 78 c), d), e), g), h) y art. 77(8) coinciden. Registro operativo desde 2026-07-20 según la página DPP, la de baterías y la FAQ 1.2 (la FAQ menciona también un entorno de pruebas).
+- **`pasaporte_qr-f18`** · confianza alta · corregido por el verificador · [68] [219] [26] [241] [242]
+  - Hecho: El acto de ejecución que debía precisar quiénes tienen «interés legítimo» para acceder a los datos restringidos del pasaporte (art. 77.9, plazo 18-08-2026) seguía sin adoptarse a 30-09-2026; la Comisión publicó el borrador para consulta en «Have your say» el 19-10-2026 (Ares(2026)9814179, comentarios hasta el 16-11-2026) y el acto sigue sin adoptarse (adopción prevista en el cuarto trimestre de 2026).
+  - Valor: Borrador publicado el 2026-10-19; consulta hasta el 2026-11-16; acto aún no adoptado
+  - Alcance: UE; situación según la FAQ de baterías de la Comisión (2026-09-30) y su calendario indicativo (página DPP modificada el 2026-10-15); no se comprobó si el borrador apareció entre el 15 y el 21 de octubre de 2026.
+  - Evidencia: is still being developed following stakeholder consultation - FAQ 1.4
+  - Uso previsto: anexo de normativa, capítulo
+  - Texto original (antes de la corrección): El acto de ejecución que debía precisar quiénes tienen «interés legítimo» para acceder a los datos restringidos del pasaporte (art. 77.9, plazo 18-08-2026) seguía sin adoptarse a 30-09-2026 y la Comisión preveía publicar un borrador para consulta en octubre o noviembre de 2026.
+  - Matiz: FAQ 1.4 (2026-09-30) confirma «still being developed» y borrador en octubre o noviembre de 2026; FAQ 6.3 confirma que los puntos 2 y 4 dependen del acto. La API de Have your say muestra la iniciativa 16473 con el borrador REG_IMPL_DRAFT publicado el 2026-10-19, retroalimentación abierta hasta 2026-11-16 y adopción planificada entre 2026-10-01 y 2026-12-31. El borrador (que advierte de que no está adoptado ni refrendado) nombra como personas con interés legítimo a reparadores, remanufacturadores, quienes reconvierten baterías, gestores de residuos que las tratan, recicladores, centros de formación y el comprador de la batería. El hecho original era correcto a su fecha; la corrección resuelve la duda que dejaba abierta sobre el 15-21 de octubre.
+  - Conflictos: C22
+- **`pasaporte_qr-f19`** · confianza alta · [226] [225] [227] [229]
+  - Hecho: La lista de atributos del consorcio Battery Pass (versión 1.2, enero de 2025) contiene 93 atributos de datos del pasaporte de baterías, de los que 60 se clasifican como públicos, 27 como accesibles a personas con interés legítimo, 5 a personas con interés legítimo y a la Comisión y 1 a organismos notificados, autoridades de vigilancia del mercado y Comisión.
+  - Valor: 93 atributos: 60 públicos / 27 interés legítimo / 5 interés legítimo y Comisión / 1 organismos notificados, autoridades y Comisión
+  - Alcance: UE/Alemania; Battery Pass Data Attribute Longlist v1.2 (2025-01), alineada con DIN DKE SPEC 99100:2025-02; la «x» marca los atributos obligatorios por el Reglamento y la «o» los voluntarios recomendados por el consorcio; la clasificación de acceso es del consorcio y se apoya en los puntos 1 a 4 del anexo XIII; recuento propio de las filas de la hoja.
+  - Evidencia: Battery Passport Data Attribute Longlist - hoja «Data attribute longlist_v1.2», columna de derechos de acceso
+  - Uso previsto: anexo de datos, capítulo
+  - Matiz: Recuento propio: 93 atributos; Public 60; persons with a legitimate interest 27; persons with a legitimate interest and the Commission 5; Notified bodies, market surveillance authorities and the Commission 1. Para vehículos eléctricos: 70 atributos con «x» (53 públicos, 11 interés legítimo, 5 interés legítimo y Comisión, 1 organismos notificados y autoridades). Cabecera: «January 2025, Version 1.2». README: proyecto concluido en abril de 2025, modelo v1.2.0 basado en DIN DKE SPEC 99100:2025-02, sucesor BatteryPass-Ready; Content Guidance: cofinanciado por el BMWK, liderado por Systemiq, once socios. thebatterypass.eu devuelve 401 y batterypass.eu no resuelve.
+  - Conflictos: C21
+- **`pasaporte_qr-f20`** · confianza alta · [220] [69] [67]
+  - Hecho: La guía «Digital Batteries Passport - data points by category» de la Comisión (versión 2.0, 15 de agosto de 2026) reúne 71 puntos de datos para baterías de vehículo eléctrico, de transporte ligero e industriales, e indica cuáles son obligatorios, opcionales, aplicables solo en ciertos casos o no exigibles en febrero de 2027.
+  - Valor: 71 puntos de datos (versión 2.0, 2026-08-15)
+  - Alcance: UE; documento de orientación no vinculante de la DG GROW (no es la posición oficial de la Comisión ni añade obligaciones), anunciado el 2026-08-21; aplicable a baterías de vehículo eléctrico, de medios de transporte ligeros e industriales de más de 2 kWh.
+  - Evidencia: the document brings together 71 data points - Comisión, noticia de 2026-08-21
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: Noticia: «In total, the document brings together 71 data points». PDF: punto 1 identificador único (BR Art. 77(3)), punto 2 identidad de quien registra o es responsable, punto 67 estado de la batería (Mandatory en las tres categorías) y puntos 68 a 71 ciclos, accidentes, condiciones ambientales y estado de carga (if applicable). El PDF dice que no representa la posición oficial de la Comisión y cita el consolidado 02023R1542-20250731. Los 71 puntos y los 93 atributos de Battery Pass siguen sin reconciliarse.
+  - Conflictos: C21
+
+### 4.9 ods: Objetivos de Desarrollo Sostenible 9, 12 y 13: redacción oficial de los objetivos, metas e indicadores (ONU) y su aplicación en España y la UE
+
+20 hechos (18 confirmados, 2 con corrección); 43 fuentes distintas.
+
+- **`ods-f1`** · confianza alta · [244] [245] [246] [247] [248] [249]
+  - Hecho: Los títulos oficiales en español de los ODS 9, 12 y 13 son los que publica la ONU en su sitio de desarrollo sostenible y en la Resolución 70/1 de la Asamblea General.
+  - Valor: ODS 9: «Construir infraestructuras resilientes, promover la industrialización inclusiva y sostenible y fomentar la innovación». ODS 12: «Garantizar modalidades de consumo y producción sostenibles». ODS 13: «Adoptar medidas urgentes para combatir el cambio climático y sus efectos». Nombres cortos usados en España (INE): «Industria, innovación e infraestructura», «Producción y consumo responsables», «Acción por el clima». Páginas oficiales: https://sdgs.un.org/es/goals/goal9, https://sdgs.un.org/es/goals/goal12 y https://sdgs.un.org/es/goals/goal13.
+  - Alcance: Mundo (Naciones Unidas); títulos vigentes en la consulta del 2026-10-21; Agenda 2030 aprobada el 2015-09-25.
+  - Evidencia: «Garantizar modalidades de consumo y producción sostenibles»
+  - Uso previsto: capítulo, pantalla 3D, anexo de ODS
+  - Matiz: Los tres títulos coinciden letra a letra en sdgs.un.org y en A/RES/70/1 (el del Objetivo 13 lleva un asterisco con la nota sobre la CMNUCC). Nombres cortos del INE confirmados: «Industria, innovación e infraestructura», «Producción y consumo responsables», «Acción por el clima». Resolución «aprobada por la Asamblea General el 25 de septiembre de 2015» (distribuida el 21-10-2015). Las páginas de sdgs.un.org no traen el texto de las metas en el HTML estático (0 coincidencias de «De aquí a»), como dijo el investigador.
+- **`ods-f2`** · confianza alta · [247] [248]
+  - Hecho: La meta 12.5 de la Agenda 2030 pide reducir considerablemente la generación de residuos de aquí a 2030 mediante prevención, reducción, reciclado y reutilización, y su indicador oficial es el 12.5.1, la tasa nacional de reciclado.
+  - Valor: Meta 12.5, plazo 2030. Indicador 12.5.1: «Tasa nacional de reciclado, en toneladas de material reciclado».
+  - Alcance: Mundo; texto aprobado en 2015 (A/RES/70/1) que sigue vigente en el marco de indicadores de la ONU tras el refinamiento de marzo de 2026.
+  - Evidencia: «De aquí a 2030, reducir considerablemente la generación de desechos»
+  - Uso previsto: capítulo, pantalla 3D, anexo de ODS, anexo de indicadores
+  - Matiz: Texto literal: «12.5 De aquí a 2030, reducir considerablemente la generación de desechos mediante actividades de prevención, reducción, reciclado y reutilización» e «12.5.1 Tasa nacional de reciclado, en toneladas de material reciclado». La página indicators-list de la UNSD enlaza este mismo PDF y declara los refinamientos de la 57.ª sesión (marzo de 2026, E/CN.3/2026/12, Anexo I). Los metadatos internos del PDF dan como fecha de creación 2026-04-07 (la fuente figura como «2026-03» en la lista; es el contenido, no el archivo, lo que es de marzo).
+- **`ods-f3`** · confianza alta · [247] [248]
+  - Hecho: La meta 12.4 fijaba el año 2020 para lograr la gestión ecológicamente racional de los productos químicos y de todos los desechos durante su ciclo de vida, según los marcos internacionales convenidos, y para reducir su liberación al aire, al agua y al suelo.
+  - Valor: Plazo: 2020 (ya vencido; la ONU mantiene la redacción «De aquí a 2020»). Finalidad: minimizar los efectos adversos en la salud humana y el medio ambiente. Indicador 12.4.1: número de partes en los acuerdos ambientales multilaterales sobre desechos peligrosos y otros productos químicos que cumplen sus obligaciones de información. Indicador 12.4.2: «a) Desechos peligrosos generados per cápita y b) proporción de desechos peligrosos tratados, desglosados por tipo de tratamiento».
+  - Alcance: Mundo; texto de 2015 (A/RES/70/1) vigente en el marco de indicadores de la ONU tras el refinamiento de marzo de 2026; plazo vencido a 2026-10-21.
+  - Evidencia: «De aquí a 2020, lograr la gestión ecológicamente racional»
+  - Uso previsto: capítulo, anexo de ODS, anexo de indicadores, anexo de normativa, anexo de seguridad
+  - Matiz: Texto literal de la meta: «De aquí a 2020, lograr la gestión ecológicamente racional de los productos químicos y de todos los desechos a lo largo de su ciclo de vida, de conformidad con los marcos internacionales convenidos, y reducir significativamente su liberación a la atmósfera, el agua y el suelo a fin de minimizar sus efectos adversos en la salud humana y el medio ambiente». El marco UNSD de 2026 mantiene «De aquí a 2020». Los metadatos 12.4.1 (UNEP, 2024-07-29) listan Basilea, Rotterdam, Estocolmo, Protocolo de Montreal y Minamata. Indicador 12.4.2 literal: «a) Desechos peligrosos generados per cápita y b) proporción de desechos peligrosos tratados, desglosados por tipo de tratamiento».
+- **`ods-f4`** · confianza alta · [247] [248]
+  - Hecho: La meta 9.4 pide modernizar la infraestructura y reconvertir las industrias para que sean sostenibles de aquí a 2030, con uso más eficiente de los recursos y más tecnologías y procesos industriales limpios y ambientalmente racionales, y su indicador oficial es el 9.4.1, las emisiones de CO2 por unidad de valor añadido.
+  - Valor: Meta 9.4, plazo 2030, con todos los países actuando según sus capacidades. Indicador 9.4.1: «Emisiones de CO2 por unidad de valor añadido».
+  - Alcance: Mundo; texto aprobado en 2015 (A/RES/70/1) vigente en el marco de indicadores de la ONU tras el refinamiento de marzo de 2026.
+  - Evidencia: «De aquí a 2030, modernizar la infraestructura y reconvertir las industrias»
+  - Uso previsto: capítulo, pantalla 3D, anexo de ODS, anexo de indicadores
+  - Matiz: Texto literal: «9.4 De aquí a 2030, modernizar la infraestructura y reconvertir las industrias para que sean sostenibles, utilizando los recursos con mayor eficacia y promoviendo la adopción de tecnologías y procesos industriales limpios y ambientalmente racionales, y logrando que todos los países tomen medidas de acuerdo con sus capacidades respectivas»; indicador «9.4.1 Emisiones de CO2 por unidad de valor añadido». La resolución dice «con mayor eficacia» (el enunciado parafrasea «más eficiente»; sentido idéntico).
+- **`ods-f5`** · confianza alta · corregido por el verificador · [247] [248]
+  - Hecho: La meta 13.2 de la Agenda 2030 pide incorporar medidas relativas al cambio climático en las políticas, estrategias y planes nacionales, sin fijar año, y la ONU la mide con dos indicadores: el 13.2.1 (países que han presentado informes en virtud del Acuerdo de París a la secretaría de la CMNUCC) y el 13.2.2 (emisiones totales de gases de efecto invernadero por año). Que sea la meta de clima que mejor encaja con el proyecto es un criterio del equipo, no una afirmación de la ONU.
+  - Valor: Meta 13.2, sin plazo propio. Indicador 13.2.1: «Número de países que han presentado informes en virtud del Acuerdo de París a la secretaría de la Convención Marco de las Naciones Unidas sobre el Cambio Climático». Indicador 13.2.2: «Emisiones totales de gases de efecto invernadero por año». Resto del ODS 13: 13.1 resiliencia y adaptación, 13.3 educación y sensibilización, 13.a financiación climática, 13.b capacidad de planificación en países menos adelantados y pequeños Estados insulares.
+  - Alcance: Mundo; texto aprobado en 2015 (A/RES/70/1); indicadores según el marco vigente tras el refinamiento de marzo de 2026.
+  - Evidencia: «Incorporar medidas relativas al cambio climático en las políticas»
+  - Uso previsto: capítulo, anexo de ODS, anexo de indicadores
+  - Texto original (antes de la corrección): La meta de clima que mejor encaja con el proyecto es la 13.2, que pide incorporar medidas contra el cambio climático en las políticas, estrategias y planes nacionales sin fijar año, y que se sigue con el indicador 13.2.2, las emisiones totales de gases de efecto invernadero por año.
+  - Matiz: : 13.2 «Incorporar medidas relativas al cambio climático en las políticas, estrategias y planes nacionales» (sin año); 13.2.1 y 13.2.2 con el texto citado; 13.1, 13.3, 13.a y 13.b como se describen; nota al Objetivo 13 sobre la CMNUCC presente. Corrección menor de redacción: la meta 13.2 tiene dos indicadores (13.2.1 y 13.2.2), no solo el 13.2.2, y que sea la meta que «mejor encaja con el proyecto» es un criterio del equipo (el investigador lo reconoce en las notas), no un dato de la ONU. Además la UNSD señala que el 13.2.1 se repite como 13.b.1 (texto de la UNSD: «13.2.1/13.b.1 (with a slight amendment)»).
+- **`ods-f6`** · confianza alta · [247] [250] [252]
+  - Hecho: La Asamblea General de la ONU aprobó la Agenda 2030 el 25 de septiembre de 2015 con 17 ODS y 169 metas, y de las metas clave para el proyecto la 9.4 y la 12.5 vencen en 2030, la 12.4 venció en 2020 y la 13.2 no fija año.
+  - Valor: Resolución A/RES/70/1 «Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible», aprobada el 2015-09-25; 17 Objetivos y 169 metas; horizonte de «los próximos 15 años» (2030). Seguimiento: el marco de indicadores mundiales tiene 234 indicadores únicos (251 si se cuentan los que se repiten bajo varias metas) tras el refinamiento de marzo de 2026.
+  - Alcance: Mundo; Agenda 2030 (2015-2030); marco de indicadores vigente en la consulta del 2026-10-21.
+  - Evidencia: «Los 17 Objetivos de Desarrollo Sostenible y las 169 metas»
+  - Uso previsto: capítulo, pantalla 3D, anexo de ODS
+  - Matiz: A/RES/70/1: «Resolución aprobada por la Asamblea General el 25 de septiembre de 2015»; «Los 17 Objetivos de Desarrollo Sostenible y las 169 metas»; «durante los próximos 15 años». UNSD: «The global indicator framework includes 234 unique indicators... the total number of indicators ... is 251» (refinamientos de la 57.ª sesión, marzo de 2026). INE y EDS revisada (p. 13) también dicen 234. La nota de La Moncloa de 2024 dice 232 (dato anterior), como señaló el investigador. Plazos comprobados en A/RES/70/1: 9.4 y 12.5 «De aquí a 2030», 12.4 «De aquí a 2020», 13.2 sin año.
+  - Conflictos: C19
+- **`ods-f7`** · confianza alta · [251] [252] [253] [254] [277] [278]
+  - Hecho: En España la Agenda 2030 la impulsa el Ministerio de Derechos Sociales, Consumo y Agenda 2030, cuyo sitio oficial es dsca.gob.es, y la aplica mediante la Estrategia de Desarrollo Sostenible 2030, de la que el Consejo de Ministros tomó conocimiento el 8 de junio de 2021 junto con el Informe de Progreso 2021.
+  - Valor: Sitio oficial del Gobierno: https://www.dsca.gob.es/es/agenda-2030/conoce-la-agenda (el dominio anterior mdsocialesa2030.gob.es/agenda2030 redirige a dsca.gob.es). EDS 2030 de 2021: 8 retos país y 8 políticas aceleradoras. Plan de Acción para la Implementación de la Agenda 2030: 2018. Exámenes Nacionales Voluntarios ante la ONU: 2018, 2021 y 2024. Gobernanza: Comisión Delegada del Gobierno para la Agenda 2030, Conferencia Sectorial para la Agenda 2030, Consejo de Desarrollo Sostenible y Dirección General de Agenda 2030.
+  - Alcance: España (Gobierno de España); 2015-2026; estado a la consulta del 2026-10-21.
+  - Evidencia: «INFORME de Progreso 2021 y Estrategia de Desarrollo Sostenible 2030»
+  - Uso previsto: capítulo, anexo de ODS, anexo de normativa
+  - Matiz: Confirmado: referencia del 08/06/2021 «Derechos Sociales y Agenda 2030: INFORME de Progreso 2021 y Estrategia de Desarrollo Sostenible 2030» (el texto dice literalmente «El Consejo de Ministros conocido el Informe de Progreso 2021 que incluye la Estrategia...», falta «ha»); 8 retos; Plan de Acción 2018; ENV 2018, 2021 y 2024 (EDS revisada p. 11); Comisión Delegada, Conferencia Sectorial, Consejo de Desarrollo Sostenible y Dirección General de Agenda 2030 (copia Wayback de dsca.gob.es y nota La Moncloa 2024); «8 retos país y 8 políticas aceleradoras» en la nota de 2024. Discrepancia 5 vs 8 de junio de 2021 resuelta a favor del 8: además de la referencia del Consejo, la página La Moncloa del 8.6.2021 y la respuesta del Gobierno a la pregunta escrita 184/93987 (Congreso, 15/09/2022) dicen «El Consejo de Ministros aprobó el 8 de junio de 2021 la Estrategia de Desarrollo Sostenible 2030»; la…
+  - Conflictos: C19
+- **`ods-f8`** · confianza alta · [256]
+  - Hecho: Los metadatos oficiales del indicador 12.4.2 definen el residuo peligroso según el Convenio de Basilea y citan las baterías como ejemplo de residuo peligroso doméstico y entre los flujos no industriales que generan cantidades significativas.
+  - Valor: Residuo peligroso generado: cantidad producida en el país en el año, antes de recogida, tratamiento, recuperación, reciclado o exportación; incluye lo exportado y excluye lo importado. Tratamiento: operaciones de eliminación D1-D15 y de valorización R1-R13 del Anexo IV de Basilea. Unidades: toneladas, kg per cápita y %. Justificación: se generan cantidades significativas fuera de la industria, como lodos del sector sanitario y de depuradoras, aceites usados y baterías usadas. Custodios: PNUMA, UNSD y UNITAR. Metodología completa: «Global Chemicals and Waste Indicator Review Document» (PNUMA, 2021).
+  - Alcance: Mundo; metadatos del indicador 12.4.2 actualizados el 2024-07-29.
+  - Evidencia: «domestic items such as batteries»
+  - Uso previsto: anexo de indicadores, anexo de seguridad, anexo de ODS, capítulo
+  - Matiz: Apartado 2.a: «Hazardous waste is generated from many sources, ranging from industrial manufacturing process waste to domestic items such as batteries»; definición ligada a Basilea (Art. 1.1(a), Anexos VIII y IX); tratamiento = operaciones D1-D15 y R1-R13 del Anexo IV. Apartado 4.a: cantidades significativas fuera de la industria, «including sludge from the healthcare sector; waste-water treatment plants, waste oils, and waste batteries». Apartado 4.c: «Generated hazardous waste includes exported hazardous waste and excludes imports of hazardous waste». Custodios UNEP, UNSD, UNITAR; última actualización 2024-07-29; documento metodológico «Global Chemicals and Waste Indicator Review Document» (UNEP, 2021). Sin serie específica de baterías: lista de series EN_EWT_\*, EN_HAZ_\*, EN_MWT_\*, EN_TWT_GENV.
+- **`ods-f9`** · confianza alta · [257]
+  - Hecho: Según los metadatos de la ONU, la tasa nacional de reciclado (12.5.1) es la cantidad reciclada en el país más la exportada para reciclar, menos la importada para reciclar, dividida entre el total de residuos generados, y no mide prevención, reutilización ni reparación.
+  - Valor: Fórmula (en texto): (reciclado en el país + exportado para reciclar - importado para reciclar) / residuos totales generados x 100. El reciclado incluye codigestión o digestión anaerobia y compostaje, pero no incineración ni aplicación al suelo. Se puede desglosar por tipo de residuo (residuos electrónicos, plásticos, municipales...). Series publicadas: residuos electrónicos y residuos municipales reciclados (toneladas, % y kg per cápita). Custodios: PNUMA, UNSD y UNITAR.
+  - Alcance: Mundo; metadatos del indicador 12.5.1 actualizados el 2024-05-24.
+  - Evidencia: «it does not capture prevention, reduction, reuse and repair»
+  - Uso previsto: anexo de indicadores, anexo de ODS, capítulo
+  - Matiz: Apartado 2.a/4.c: tasa = (reciclado en el país + exportado para reciclar - importado para reciclar) / total de residuos generados en el país, x 100; el reciclado incluye codigestión/digestión anaerobia y compostaje, no incineración ni aplicación al suelo; desglose por tipo de residuo (e-waste, plástico, municipal). Apartado 4.b: «it does not capture prevention, reduction, reuse and repair». Series: EN_EWT_RCYPCAP, EN_EWT_RCYR, EN_EWT_RCYV, EN_MWT_RCYR, EN_MWT_RCYV (sin baterías). Custodios UNEP, UNSD, UNITAR; actualizado 2024-05-24.
+- **`ods-f10`** · confianza alta · [258] [259]
+  - Hecho: El indicador 9.4.1 se calcula como emisiones de CO2 por combustión divididas entre valor añadido (de toda la economía o de la manufactura; custodios AIE y ONUDI) y el 13.2.2 como emisiones totales de gases de efecto invernadero en Mt de CO2 equivalente (custodio: secretaría de la CMNUCC).
+  - Valor: 9.4.1: series EN_ATM_CO2 (CO2 por combustión, millones de toneladas), EN_ATM_CO2GDP (kg de CO2 por dólar constante de 2021, paridad de poder adquisitivo) y EN_ATM_CO2MVA (kg de CO2 por dólar constante de 2020 de valor añadido manufacturero); la manufactura incluye, entre otras ramas, equipo de transporte (CIIU 29 y 30) y maquinaria (CIIU 25-28); metadatos del 2026-03-27. 13.2.2: series EN_ATM_GHGT_WLU y EN_ATM_GHGT_WOLU (Mt de CO2 equivalente con y sin UTCUTS); metadatos del 2025-12-12; los países informan con el marco de transparencia reforzado del Acuerdo de París (primeros informes bienales de transparencia a finales de 2024).
+  - Alcance: Mundo; metadatos de la ONU vigentes en la consulta del 2026-10-21.
+  - Evidencia: «ratio between CO2 emissions from fuel combustion and the value added»
+  - Uso previsto: anexo de indicadores, anexo de ODS, capítulo
+  - Matiz: 9.4.1: «computed as ratio between CO2 emissions from fuel combustion and the value added of associated economic activities»; series EN_ATM_CO2 (millones de toneladas), EN_ATM_CO2GDP (kg CO2 por USD constante de 2021, PPA) y EN_ATM_CO2MVA (kg CO2 por USD constante de 2020 de VAM); transport equipment = ISIC 29 y 30, machinery = ISIC 25 a 28; custodios IEA y UNIDO; actualizado 2026-03-27. 13.2.2: series EN_ATM_GHGT_WLU y EN_ATM_GHGT_WOLU en Mt CO2 equivalente; custodio secretaría de la CMNUCC; actualizado 2025-12-12; BTR del marco de transparencia reforzado «by the end of 2024».
+- **`ods-f11`** · confianza alta · [261] [262] [265] [267] [275]
+  - Hecho: El INE publica para España subindicadores de 12.5.1 y 12.4.2: en 2023 se reciclaron el 53,9 % de los residuos tratados, cada habitante generó 68,6 kg de residuos peligrosos y se reciclaron el 71,0 % de los peligrosos tratados.
+  - Valor: 12.5.1.1 (residuos reciclados / residuos tratados): 53,90 % en 2023 (38,30 % en 2015). 12.5.1.2 (sin minerales): 55,1 % en 2023 (49,6 % en 2015). 12.4.2.1: 68,6 kg por habitante y año en 2023 (72,8 en 2015). 12.4.2.2 reciclados: 71,0 % (67,8 % en 2015); 12.4.2.4 incinerados: 5,5 % (7,3 %); 12.4.2.5 vertidos: 23,5 % (24,9 %); 12.4.2.3 relleno: 0,0 %. Eurostat da 72 kg por habitante de residuos peligrosos en España en 2022 (UE-27: 266 kg).
+  - Alcance: España; 2023 (último dato) y 2015 (base) del INE, con la Estadística sobre recogida y tratamiento de residuos; Eurostat 2022 para el contraste; todo tipo de residuos y toda la economía.
+  - Evidencia: «Último dato: 53,90%»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores, pantalla 3D
+  - Matiz: INE: 12.5.1.1 = 53,90 % (2023; 38,30 en 2015); 12.5.1.2 = 55,1 % (49,6); 12.4.2.1 = 68,6 kg/hab/año (72,8); 12.4.2.2 reciclados 71,0 % (67,8); 12.4.2.3 relleno 0,0 %; 12.4.2.4 incinerados 5,5 % (7,3); 12.4.2.5 vertidos 23,5 % (24,9). Metadatos 12.5.1.1: «Global (s)» (similar), «residuos finalmente tratados», actualizado 05/12/2024. Eurostat env_wasgen (actualizado 2026-10-14): España 72 kg/hab y UE-27 266 kg/hab en 2022 (HAZ, TOTAL_HH). UNSD EN_MWT_RCYR España: 18,39 (2015), 19,67 (2019), 37,76 (2020), 37,38 (2022), fuente Eurostat. La explicación de que la media UE es mayor por la minería y la construcción es del investigador y no figura en las fuentes comprobadas.
+- **`ods-f12`** · confianza alta · [263] [264] [266] [276]
+  - Hecho: El INE publica para España subindicadores de 9.4.1 y 13.2.2: en 2024 las emisiones de la industria manufacturera fueron de 0,41 kg de CO2 (rotulados por el INE como «CO2 equivalente») por euro de valor añadido bruto real y las emisiones totales de gases de efecto invernadero de 5,73 t de CO2 equivalente por habitante.
+  - Valor: 9.4.1.1: 0,17 kg de CO2 por euro de PIB real (2024; 0,25 en 2015). 9.4.1.2 industria manufacturera: 0,41 kg de CO2 por euro de valor añadido bruto real, volumen encadenado con referencia 2020 (2024; 0,57 en 2015); el INE rotula la unidad «Kg CO2 equivalente por euro». 9.4.1.3 y 9.4.1.4 (fuente MTED): emisiones de gases de efecto invernadero un 5,88 % por debajo de 1990 y un 39,14 % por debajo de 2005 en 2024. 13.2.2.1: 5,73 t de CO2 equivalente por habitante (2024; 7,39 en 2015). 13.2.2.2: 0,21 kg de CO2 equivalente por euro de PIB real (2024; 0,30 en 2015). Base mundial de la ONU (serie EN_ATM_CO2MVA, valores estimados): 0,15 kg de CO2 por dólar constante de 2020 de valor añadido manufacturero en España en 2023 (0,188 en 2015).
+  - Alcance: España; 2024 (último dato) y 2015 (base) del INE y del MTED; ONU: 2023 y 2015; emisiones de las unidades residentes en euros reales (INE) frente a CO2 por combustión en dólares constantes (ONU).
+  - Evidencia: «Último dato: 0,41»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: INE 2024: 9.4.1.1 = 0,17 (0,25 en 2015); 9.4.1.2 = 0,41 (0,57) con unidad rotulada «Kg CO2 equivalente por euro» y VAB manufacturero en volumen encadenado con referencia 2020 (metadatos del 13/11/2025; custodia UNIDO, IEA); 9.4.1.3 = -5,88 % respecto a 1990 y 9.4.1.4 = -39,14 % respecto a 2005 (fuente MTED); 13.2.2.1 = 5,73 t CO2 eq/hab (7,39); 13.2.2.2 = 0,21 kg CO2 eq/euro (0,30). UNSD EN_ATM_CO2MVA España: 0,15 en 2023 y 0,188 en 2015 (Nature E = estimado; kg CO2 por USD constante de 2020).
+- **`ods-f13`** · confianza alta · [254]
+  - Hecho: La Estrategia de Desarrollo Sostenible 2030 revisada (febrero de 2026) enlaza las metas ODS 12.4, 12.5, 9.4 y 13.2 con metas españolas a 2030, como reducir un 15 % la generación de residuos, llegar al 60 % de preparación para la reutilización y el reciclado de residuos municipales y reducir un 32 % las emisiones de gases de efecto invernadero respecto a 1990.
+  - Valor: Meta 50: reducir un 30 % el consumo nacional de materiales respecto al PIB (base 2010). Meta 51: reducir un 15 % la generación de residuos en 2030 (base 2010). Meta 52: aumentar al 60 % la tasa de preparación para la reutilización y el reciclado de residuos municipales en 2030. Meta 42: reducir un 32 % las emisiones de gases de efecto invernadero en 2030 respecto a 1990.
+  - Alcance: España; metas de la EDS 2030 revisada (edición de febrero de 2026) con horizonte 2030; bases: 2010 (residuos y materiales) y 1990 (emisiones).
+  - Evidencia: «Aumentar al 60% la tasa de preparación para la reutilización»
+  - Uso previsto: capítulo, anexo de ODS, anexo de indicadores, anexo de normativa
+  - Matiz: Meta 42 (p. 119): «Reducir las emisiones de gases de efecto invernadero (GEI) en un 32% para 2030 respecto a los niveles de 1990», enlazada con ODS 13.2, 13.3 y 12.2. Meta 50 (p. 136): -30 % de consumo nacional de materiales respecto al PIB (base 2010), enlazada con 8.4, 12.2, 12.5, 9.4 y 13.2. Meta 51 (p. 136): -15 % de residuos en 2030 (base 2010), enlazada con 12.5, 12.2 y 11.6. Meta 52 (p. 137): «Aumentar al 60% la tasa de preparación para la reutilización y reciclado de residuos municipales en 2030», enlazada con 11.6, 12.5 y 12.4. La EDS cita 12.5 como «reducir sustancialmente» y 12.4 como «gestión ambientalmente racional» (el texto de la ONU dice «considerablemente» y «ecológicamente»), como anotó el investigador. El texto se leyó en la copia local del PDF, cuyo digest SHA-1 coincide con el índice CDX de Wayback para la captura citada (ver estado de la fuente ods-s11).
+- **`ods-f14`** · confianza alta · [35] [270] [260] [271] [149] [279] [280]
+  - Hecho: El Convenio de Basilea, uno de los cinco acuerdos que vigila el indicador 12.4.1, adoptó en 2002 directrices técnicas para la gestión ecológicamente racional de las baterías de plomo-ácido usadas y en la COP-17 (2025) acordó seguir elaborando las de otras baterías y la actualización de las de plomo-ácido para su examen en 2026 y su posible adopción en 2027.
+  - Valor: Decisión BC-6/22 (diciembre de 2002): directrices técnicas sobre residuos de baterías de plomo-ácido. BC-15/11: actualizarlas y elaborar directrices para otras baterías. BC-16/6: prórroga hasta la COP-17 (2025). BC-17/5: prórroga hasta la COP-18 (2027), con examen en la reunión 15 del Grupo de Trabajo de Composición Abierta en 2026. Acuerdos vigilados por 12.4.1: Basilea, Rotterdam, Estocolmo, Protocolo de Montreal y Minamata. Informe ampliado de la ONU de 2026: en el periodo de referencia las Partes de Basilea elaboraron proyectos de directrices sobre baterías de plomo-ácido y otras baterías.
+  - Alcance: Mundo; Convenio de Basilea; estado a 2026-10-21 (decisiones hasta la COP-17, 2025).
+  - Evidencia: «consideration and possible adoption by COP18, in 2027»
+  - Uso previsto: anexo de normativa, anexo de seguridad, anexo de ODS, capítulo
+  - Matiz: Technical guidelines: «In December 2002 ... COP-6, by decision BC-6/22, adopted the Technical Guidelines for the Environmentally Sound Management of Waste Lead-acid Batteries»; BC-15/11 (actualizar plomo-ácido y elaborar otras baterías); BC-16/6 (SIWG hasta COP17); BC-17/5 (SIWG hasta COP18). Overview: «At the seventeenth meeting, the COP decided to continue the work on both technical guidelines for consideration of the fifteenth meetings of the OEWG, in 2026 and consideration and possible adoption by COP18, in 2027. (Decision BC-17/5)». Metadatos 12.4.1: cinco acuerdos (Basilea, Rotterdam, Estocolmo, Montreal, Minamata). Informe ampliado 2026, indicador 12.4.1: las Partes de Basilea «have developed draft technical guidelines for ... waste lead-acid batteries and other batteries». Hueco del investigador resuelto en parte: el OEWG-15 se celebró en Ginebra del 23 al 26 de junio de 2026 y…
+- **`ods-f15`** · confianza alta · [255] [254]
+  - Hecho: El 10 de febrero de 2026 el Consejo de Ministros tomó conocimiento del informe sobre la Revisión 2025 de la Estrategia de Desarrollo Sostenible 2030, que fija 100 metas en cuatro retos país, uno de ellos dedicado a un sistema económico circular con descarbonización y economía circular.
+  - Valor: 100 metas con horizonte 2030, de las que 75 amplían los objetivos fijados a nivel internacional. Cuatro retos país: (1) estado del bienestar fuerte y universal; (2) sistema económico circular generador de bienestar y justicia social, laboral y ambiental; (3) vertebración territorial sostenible y emergencia climática; (4) vidas libres, iguales y en comunidad. El reto 2 incluye la descarbonización de la economía y el avance hacia producción y consumo basados en la economía circular. Renueva la estrategia vigente en 2020-2025.
+  - Alcance: España; Consejo de Ministros del 2026-02-10; horizonte 2030.
+  - Evidencia: «El documento está compuesto de 100 metas»
+  - Uso previsto: capítulo, anexo de ODS, anexo de normativa
+  - Matiz: Literal de La Moncloa: «El Consejo de Ministros ha tomado conocimiento del Informe sobre la Revisión 2025 de la Estrategia de Desarrollo Sostenible 2030. El documento está compuesto de 100 metas...» y «amplía los objetivos fijados a nivel internacional en 75 de las 100 metas»; cuatro retos de país con los nombres citados; el reto 2 incluye «la descarbonización de la economía y el avance hacia un modelo de producción y consumo basado en la economía circular»; «Esta nueva estrategia, que renueva la anterior vigente durante el periodo 2020-2025» (redacción literal de La Moncloa).
+- **`ods-f16`** · confianza alta · [26]
+  - Hecho: El Reglamento (UE) 2023/1542 sobre pilas y baterías presenta las baterías como un factor clave del desarrollo sostenible y la neutralidad climática y solo menciona la Agenda 2030 y los ODS una vez, al vincular la diligencia debida con una resolución del PNUMA.
+  - Valor: Considerando 2: las pilas y baterías son «un factor clave para promover el desarrollo sostenible, la movilidad ecológica, la energía limpia y la neutralidad climática». Considerando 90: las obligaciones de diligencia debida deben contribuir a aplicar la Resolución 4/19 del PNUMA sobre gobernanza de los recursos minerales, que reconoce la contribución del sector minero a la Agenda 2030 y a los ODS. El texto no cita los ODS 9, 12 ni 13.
+  - Alcance: UE; Reglamento (UE) 2023/1542 de 12 de julio de 2023 (DOUE L 191 de 28.7.2023), considerandos 2 y 90.
+  - Evidencia: «un factor clave para promover el desarrollo sostenible, la movilidad ecológica»
+  - Uso previsto: anexo de normativa, anexo de ODS, capítulo
+  - Matiz: Considerando 2: «Las pilas o baterías son pues una importante fuente de energía y un factor clave para promover el desarrollo sostenible, la movilidad ecológica, la energía limpia y la neutralidad climática». Considerando 90: diligencia debida «debe contribuir a la aplicación de la Resolución 4/19 del PNUMA sobre la gobernanza de los recursos minerales, que reconoce la importante contribución del sector minero al cumplimiento de la Agenda 2030 y al logro de los Objetivos de Desarrollo Sostenible». Resultados de la búsqueda en el texto completo: «Agenda 2030» 1 coincidencia, «Objetivos de Desarrollo Sostenible» 1, «ODS» 0, «SDG» 0, «Objetivo 9/12/13» 0. DOUE L 191, 28.7.2023.
+- **`ods-f17`** · confianza alta · [273] [274]
+  - Hecho: El Informe de los ODS 2026 de la ONU indica que, de las 139 metas con datos de tendencia, solo el 36 % va por buen camino o con progreso moderado, mientras que el 49 % de las metas evaluables avanza demasiado despacio y el 15 % ha retrocedido por debajo de 2015, a menos de cinco años de 2030.
+  - Valor: 36 % en camino o con progreso moderado; 49 % demasiado despacio; 15 % por debajo de la línea base de 2015; 139 metas con datos de tendencia; informe publicado el 2026-07-07; «menos de cinco años» hasta 2030.
+  - Alcance: Mundo; metas de los 17 ODS con datos de tendencia; informe del 2026-07-07.
+  - Evidencia: «just over a third (36 per cent) are on track»
+  - Uso previsto: capítulo, pantalla 3D
+  - Matiz: Key Messages: «Of the 139 SDG targets with trend data, just over a third (36 per cent) are on track or making moderate progress»; «Nearly half (49 per cent) of assessable SDG targets are moving too slowly, and 15 per cent have slipped below 2015 baselines»; «With less than five years to achieve the Sustainable Development Goals». Página del informe: «7 July 2026: The Sustainable Development Goals Report 2026 ...». Los 36+49+15 suman 100. El PDF de Key Messages se creó el 2026-06-26 (antes del lanzamiento).
+- **`ods-f18`** · confianza alta · corregido por el verificador · [268] [269] [282] [283]
+  - Hecho: Eurostat publica para 2024 una tasa de uso circular de materiales del 12,2 % en la UE y del 7,4 % en España (valores imputados por Eurostat, marca «i»), frente al objetivo europeo del 24 % para 2030.
+  - Valor: UE-27: 11,2 % (2015), 11,2 % (2020), 11,4 % (2022), 12,1 % (2023), 12,2 % (2024). España: 7,6 % (2015), 9,4 % (2020), 9,6 % (2022), 8,2 % (2023), 7,4 % (2024). Objetivo de la UE: 24 % en 2030. Entre 2009 y 2024 la UE pasó del 10,4 % al 12,2 %.
+  - Alcance: UE-27 y España; 2015-2024; porcentaje del uso de materiales que procede de residuos recogidos (uso circular / uso total de materiales); datos de la API de Eurostat actualizados el 2025-11-24 y artículo con datos de abril de 2026.
+  - Evidencia: «from 10.4% to 12.2%»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores, pantalla 3D
+  - Texto original (antes de la corrección): Eurostat sitúa en 2024 la tasa de uso circular de materiales en el 12,2 % en la UE y en el 7,4 % en España, frente al objetivo europeo del 24 % para 2030.
+  - Matiz: Los números coinciden: Eurostat cei_srm030 (actualizado 2025-11-24) da UE-27 11,2 (2015), 11,2 (2020), 11,4 (2022), 12,1 (2023), 12,2 (2024) y España 7,6, 9,4, 9,6, 8,2 y 7,4. El artículo dice «Between 2009 and 2024, the EU circular material use (CMU) rate ... increased only by 1.8 percentage points, from 10.4% to 12.2%» y fija el objetivo de «24% by 2030» (datos extraídos en abril de 2026). Corrección: los dos valores de 2024 (UE 12,2 y España 7,4) llevan la marca «i» en el JSON, que en la lista oficial de marcas de Eurostat significa «value imputed by Eurostat or other receiving agencies» (valor imputado). Hay que decirlo al citarlos. Los metadatos ESMS añaden que las estadísticas de residuos son bienales y que Eurostat estima los años impares que faltan.
+- **`ods-f19`** · confianza alta · [254] [281]
+  - Hecho: La Estrategia de Desarrollo Sostenible 2030 revisada (febrero de 2026) clasifica las metas 9.4, 12.4, 12.5 y 13.2 entre las de «progreso significativo» en España según los indicadores del INE, aunque señala desafíos significativos en los ODS 9 y 13.
+  - Valor: ODS 9: 4 de 8 metas con progreso significativo (9.4, 9.5, 9.a, 9.c). ODS 12: 5 de 11 (12.1, 12.4, 12.5, 12.8, 12.a), con 12.2 en estancamiento y cuatro metas sin información suficiente. ODS 13: 2 de 5 (13.2, 13.3). Diagnóstico del ODS 12: España ha avanzado en reciclaje y economía circular pero aún debe mejorar la tasa de uso circular de materiales, reducir el desperdicio alimentario y la huella ecológica. SDG Index europeo: España ocupa el puesto 20 de 34 países europeos. El INE cubre el 74 % del marco global de indicadores.
+  - Alcance: España; valoración del Gobierno incluida en la EDS 2030 revisada (edición de febrero de 2026) según los indicadores del INE disponibles al preparar esa edición.
+  - Evidencia: «cinco metas con progreso significativo (metas: 12.1, 12.4, 12.5, 12.8, 12.a)»
+  - Uso previsto: capítulo, anexo de ODS, anexo de datos
+  - Matiz: p. 13: «cobertura del 74% del marco global de indicadores»; «puesto 20 de un total de 34 países europeos»; «persisten desafíos significativos, como es el caso del ODS 9 ... y del ODS 13». p. 14: ODS 9 = 4 de 8 con progreso significativo (9.4, 9.5, 9.a, 9.c); ODS 12 = 5 de 11 (12.1, 12.4, 12.5, 12.8, 12.a), 12.2 estancamiento, 12.b retroceso significativo, 4 sin información; ODS 13 = 2 de 5 (13.2, 13.3). p. 15: diagnóstico del ODS 12 como cita el investigador. Precaución sobre el «SDG Index europeo»: la edición 2026 (séptima) del Europe Sustainable Development Report de la SDSN sitúa a España en el puesto 22 de 35 (eu-dashboards.sdgindex.org/rankings, comprobado con curl); el 20 de 34 de la EDS corresponde presumiblemente a una edición anterior que no se pudo comprobar, así que debe citarse solo como «según la EDS revisada».
+  - Conflictos: C19
+- **`ods-f20`** · confianza alta · [272]
+  - Hecho: El informe ampliado de la ONU de 2026 sobre el ODS 9 recoge que, desde 2019, la expansión conjunta de la solar fotovoltaica, la eólica, la nuclear, los coches eléctricos y las bombas de calor evitó unos 3 Gt de CO2 en 2025, cerca del 8 % de las emisiones mundiales de la energía.
+  - Valor: Aprox. 3 Gt de CO2 evitadas en 2025 (aprox. 8 % de las emisiones mundiales relacionadas con la energía); solar fotovoltaica 1,5 Gt; eólica 1,1 Gt. Emisiones mundiales de CO2 por combustión y procesos industriales en 2025: 38,1 Gt, récord.
+  - Alcance: Mundo; año 2025; datos de la AIE (Global Energy Review 2026) recogidos en el informe ampliado de la ONU con aportaciones hasta el 2026-04-30.
+  - Evidencia: «solar PV, wind, nuclear power, electric cars and heat pumps»
+  - Uso previsto: capítulo, pantalla 3D, anexo de ODS
+  - Matiz: Literal: «Global CO2 emissions from fuel combustion and industrial processes reached a record high in 2025 at 38.1 gigatonnes (Gt)»; «Since 2019, solar PV, wind, nuclear power, electric cars and heat pumps have together avoided around 3 Gt of CO2 emissions annually in 2025, equal to about 8% of global energy-related emissions. Solar PV ... 1.5 Gt CO2, followed by wind at 1.1 Gt». Autores de la reseña: UNIDO, IEA; fuente IEA Global Energy Review 2026; aportaciones hasta el 30 de abril de 2026.
+
+### 4.10 clima_energia: Beneficio ambiental del reciclaje del plomo y riesgos del reciclaje informal
+
+20 hechos (15 confirmados, 5 con corrección); 35 fuentes distintas.
+
+- **`clima_energia-f1`** · confianza alta · [284] [285] [298] [307]
+  - Hecho: Según los análisis de ciclo de vida de la ILA con datos de 2015, producir 1 kg de plomo refinado por la vía secundaria (reciclaje) en Europa requiere 10,0 MJ de energía primaria y emite 0,977 kg CO2-eq, frente a 23,1 MJ y 1,82 kg CO2-eq por la vía primaria (mineral) en Europa y Norteamérica.
+  - Valor: Secundario: 10,0 MJ/kg y 0,977 kg CO2-eq/kg. Primario: 23,1 MJ/kg y 1,82 kg CO2-eq/kg.
+  - Alcance: Secundario: Europa, datos de 2015 de empresas que suponen el 50 % de la producción secundaria europea. Primario: Europa y Norteamérica, datos de 2015 de empresas que suponen el 86 % de la producción primaria. Por 1 kg de plomo refinado (pureza 99,00-99,99 %) a puerta de fábrica (de la cuna a la puerta), media ponderada por producción; mide demanda de energía primaria (renovable y no renovable) y potencial de calentamiento global a 100 años (CML 2001, factores IPCC AR5).
+  - Evidencia: Tabla 4-1 (apartado 4.1) de cada informe, columna Total.
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores, anexo de ODS
+  - Matiz: Cálculos propios comprobados: 10,0/23,1 = 0,43 (-57 %) y 0,977/1,82 = 0,54 (-46 %). El PED secundario es neto de créditos (la preparación de baterías aporta -0,613 MJ). Coberturas geográficas distintas (Europa frente a Europa y Norteamérica). Una ACV china independiente con DOI (Hong et al., Int J Life Cycle Assess 22(6):909-918, publicada en línea 17-10-2016; resumen: «Approximately 57 to 96 % environmental benefits through waste lead recycling in all key categories») concuerda en el orden de magnitud, pero no da MJ ni CO2 por ruta ([307]).
+- **`clima_energia-f2`** · confianza alta · [286] [287]
+  - Hecho: El Panel Internacional de Recursos del PNUMA (2013) recoge que reciclar plomo ahorra entre el 55 % y el 65 % de la energía de producirlo desde mineral, cifra que la OMS citó en 2017.
+  - Valor: 55-65 % menos energía
+  - Alcance: Mundo; rango de la literatura (Norgate y Rankin 2002; Gaballah y Kanari 2001) sintetizado en 2013; ahorro de energía de la producción secundaria frente a la primaria de plomo.
+  - Evidencia: «energy savings ranging from 55% (lead) to 98% (palladium)»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de ODS
+  - Matiz: La Tabla 4.4 está adaptada de Norgate (2004): es síntesis bibliográfica, no medición propia del PNUMA. El PDF se obtiene en /file/364/download?token=hYEpbJx2, enlazado desde la página [286].
+- **`clima_energia-f3`** · confianza alta · [288] [289] [297]
+  - Hecho: El ILZSG estima que el plomo refinado obtenido de materias primas secundarias (recicladas) supuso el 67,4 % de la producción mundial en 2025, frente al 67,8 % en 2024.
+  - Valor: 67,4 % (2025); 67,8 % (2024); 67 % (2023)
+  - Alcance: Mundo; 2025 (datos preliminares) y 2024 (cifra revisada); porcentaje de la producción de plomo refinado que procede de materia prima secundaria.
+  - Evidencia: «accounted for 67.4% of global production in 2025»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores, anexo de ODS
+  - Matiz: Cifras de notas de prensa del ILZSG (el boletín estadístico completo no se abrió). La cifra de 2024 pasó de 67,5 % (nota de 2025) a 67,8 % (nota de 2026).
+  - Conflictos: C10
+- **`clima_energia-f4`** · confianza alta · [290]
+  - Hecho: La Comisión Europea indica que el plomo refinado secundario fue el 80 % de la producción de plomo refinado de la UE (unas 1.100 kt de 1.400 kt al año, media de 2012-2016).
+  - Valor: 80 % (UE, 2012-2016)
+  - Alcance: UE; media 2012-2016; parte del plomo refinado producido que procede de materias secundarias (sobre todo baterías de plomo usadas, además de tubería, láminas y cables).
+  - Evidencia: «Secondary refined lead production represented 80% (1,100 kt)»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: Datos de 2012-2016. Comprobada la errata '6,3 kt' y la discrepancia 57 % / 58 % para el mundo, tal como indicaban las notas.
+  - Conflictos: C10
+- **`clima_energia-f5`** · confianza alta · corregido por el verificador · [291] [292] [304]
+  - Hecho: UNICEF y Pure Earth estimaron en 2020 que alrededor de 1 de cada 3 niños, hasta unos 800 millones en el mundo, tiene una concentración de plomo en sangre igual o superior a 5 µg/dL, el valor que los CDC de EE. UU. consideraban entonces umbral de actuación (desde octubre de 2021 su valor de referencia es 3,5 µg/dL).
+  - Valor: hasta unos 800 millones de niños (IHME: unos 815 millones); casi la mitad en el sur de Asia
+  - Alcance: Mundo; informe de julio de 2020 con datos del IHME (Global Burden of Disease 2019) para todos los países; población de 0-19 años; todas las fuentes de exposición, no solo las baterías.
+  - Evidencia: «around 1 in 3 children – up to approximately 800 million globally»
+  - Uso previsto: capítulo, pantalla 3D, anexo de seguridad, anexo de ODS
+  - Texto original (antes de la corrección): UNICEF y Pure Earth estimaron en 2020 que alrededor de 1 de cada 3 niños, hasta unos 800 millones en el mundo, tiene una concentración de plomo en sangre igual o superior a 5 µg/dL, nivel que exige actuar.
+  - Matiz: Las cifras (1 de cada 3, 800 millones, 815 millones del IHME) son exactas; la corrección actualiza el umbral. Matices. (1) El umbral de 5 µg/dL era el valor de referencia de los CDC en 2020; desde el 28-10-2021 es 3,5 µg/dL ([304]; la ficha de la OMS de 2026 ya usa 3,5), así que 'nivel que exige actuar' describe 2020, no hoy. (2) El PDF citado es la 2.ª edición (PDF creado el 14-10-2020); la nota de prensa muestra 29-07-2020 en la cabecera y 'NEW YORK, 30 July 2020' como línea de fecha. (3) Corrección a las notas del investigador sobre el coste económico: el capítulo 4 del informe cita 977.000 millones USD anuales (Attina y Trasande 2013), mientras la nota de prensa dice 'almost USD $1 trillion ... over their lifetime'; no usarlo sin aclarar. (4) La cifra incluye todas las fuentes; un cálculo de think tank (CGD, 21-01-2026, una fuente no numerada) atribuye ~33 % de la exposición al reci…
+- **`clima_energia-f6`** · confianza media · [291] [292] [295]
+  - Hecho: UNICEF y Pure Earth afirman que, en muchos países de renta baja y media, hasta la mitad de las baterías de plomo usadas acaba en la economía informal, donde se rompen las carcasas y se funde el plomo a cielo abierto.
+  - Valor: hasta el 50 %
+  - Alcance: Países de renta baja y media; informe y nota de prensa de julio de 2020; estimación de la parte de baterías de plomo usadas que se recicla de forma informal, sin año de referencia concreto.
+  - Evidencia: «half of the used lead-acid batteries end up in the informal economy»
+  - Uso previsto: capítulo, anexo de seguridad, anexo de ODS
+  - Matiz: Atribución correcta, pero la cifra no tiene origen verificable: Ericson et al. calculan el flujo informal por diferencia (plomo que entra al mercado secundario menos reciclado formal) y no dan un porcentaje global; una búsqueda adicional no halló otra fuente que cuantifique la parte informal a escala global. Citar como 'UNICEF y Pure Earth afirman', no como dato medido. Corrección a las notas del investigador: el informe dice 'In the United States and Europe, more than 95 per cent', no 'UE y EE. UU.'; y 'approximately 85 per cent of the lead used worldwide goes into lead-acid batteries'.
+- **`clima_energia-f7`** · confianza alta · [16] [291] [287]
+  - Hecho: La OMS señala que la exposición al plomo se asoció a más de 3,5 millones de muertes en el mundo en 2023 y que el polvo y el suelo contaminados por el reciclaje de baterías y la minería han causado brotes de intoxicación masiva, con muertes de niños pequeños.
+  - Valor: más de 3,5 millones de muertes y más de 71,5 millones de AVAD en 2023
+  - Alcance: Mundo; 2023 (estimación del IHME, Global Burden of Disease 2023); ficha descriptiva de la OMS «Lead poisoning» actualizada el 10-06-2026; muertes y años de vida ajustados por discapacidad (AVAD) atribuidos al plomo por todas las fuentes.
+  - Evidencia: «attributed to more than 3.5 million deaths globally in 2023»
+  - Uso previsto: capítulo, anexo de seguridad, anexo de ODS
+  - Matiz: La ficha atribuye las cifras al IHME (GBD 2023); no son comparables con las de 2015 o 2019 (otras ediciones del GBD).
+- **`clima_energia-f8`** · confianza alta · [291] [306] [308]
+  - Hecho: En Kathgora (Bangladés), dos recicladores informales de baterías de plomo dejaron el suelo con más de 100.000 ppm de plomo, 250 veces el límite de 400 ppm de la EPA de EE. UU., y 75 niños menores de 7 años tenían entre 8 y 47 µg/dL de plomo en sangre (media 21,3).
+  - Valor: más de 100.000 ppm en suelo (250 veces 400 ppm); plombemia media de 21,3 µg/dL en 75 niños
+  - Alcance: Kathgora, a unos 15 km al noroeste de Dacca (Bangladés); caso estudiado por Pure Earth entre 2017 y 2019 y recogido en el informe de UNICEF/Pure Earth de 2020; suelo de antiguos sitios de reciclaje y análisis de sangre de niños antes de la limpieza.
+  - Evidencia: «lead concentrations of over 100,000 ppm»
+  - Uso previsto: capítulo, pantalla 3D, anexo de seguridad
+  - Matiz: Reducción de plombemia: UNICEF y el texto de Pure Earth dan -4,3 µg/dL a los 9 meses y -9,1 µg/dL (-42 %) a los 18 meses, pero el título actual de la página de Pure Earth dice 'Fall 35%'; no citar el porcentaje sin aclararlo. El 'límite de 400 ppm de la EPA' es el nivel que cita el informe (estándar de peligro para suelo desnudo de zonas de juego); en enero de 2024 la EPA recomendó un nivel de cribado residencial Superfund de 200 ppm (100 ppm con otras fuentes) ([306]), y su página indica que esa guía fue sustituida por una directiva de 2025 (no revisada).
+- **`clima_energia-f9`** · confianza alta · [293] [291] [303]
+  - Hecho: La OMS documenta que entre noviembre de 2007 y marzo de 2008 murieron 18 niños de una enfermedad neurológica grave en un suburbio de Dakar (Senegal) donde se reciclaba plomo de forma informal, y que los 81 vecinos examinados tenían plomo en sangre elevado (39,8-613,9 µg/dL en niños).
+  - Valor: 18 niños fallecidos; 81 personas examinadas; 39,8-613,9 µg/dL en niños
+  - Alcance: Suburbio de Dakar (Senegal), noviembre de 2007-marzo de 2008; estudio de caso de la OMS (2017) sobre reciclaje informal de baterías de plomo usadas, con suelo contaminado en el entorno.
+  - Evidencia: «18 children died from an aggressive central nervous system disease»
+  - Uso previsto: capítulo, anexo de seguridad
+  - Matiz: La URL de [293] con curl solo devuelve el cascarón JavaScript de DSpace (755 bytes, título 'DSpace'); en un navegador redirige al PDF en /server/api/core/bitstreams/f547253b-.../content (comprobado con Playwright). WebFetch recibe 403. Precisión: el rango 39,8-613,9 µg/dL corresponde a los 50 niños analizados; las 81 personas son todas las examinadas. DOI y datos de la revista confirmados en Crossref (doi.org redirige a una página bloqueada por Cloudflare).
+- **`clima_energia-f10`** · confianza alta · [8]
+  - Hecho: Un estudio de IHS Markit encargado por ACEA, JAMA, KAMA, EUROBAT e ILA calculó que en 2015-2017 se recogió y envió a reciclar el 97,3 % de las baterías de plomo de automoción disponibles para recogida en la UE.
+  - Valor: 97,3 %
+  - Alcance: 14 países de la UE (aprox. 92 % del parque de vehículos en uso en 2017; incluye el Reino Unido, entonces miembro), 2015-2017; 3.121.409 t recogidas sobre 3.207.909 t disponibles; tasa de recogida y reciclaje de baterías de plomo de automoción.
+  - Evidencia: Resultados clave (p. 3): Collection and Recycling rate 97.3 %.
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: La tasa es recogido/disponible para recogida (se asume que lo recogido se recicla); estudio encargado por la industria. Metadatos del PDF: creado el 29-10-2020 (la portada dice marzo de 2020).
+  - Conflictos: C11
+- **`clima_energia-f11`** · confianza alta · [26] [301] [63] [44] [62]
+  - Hecho: El Reglamento (UE) 2023/1542 exige que, desde el 18 de agosto de 2031, las baterías industriales de más de 2 kWh, de vehículos eléctricos y de arranque, encendido o alumbrado que contengan plomo acrediten un mínimo del 85 % de plomo valorizado a partir de residuos, y fija para las baterías de plomo una eficiencia de reciclado del 75 % a finales de 2025 y del 80 % a finales de 2030.
+  - Valor: 85 % de plomo reciclado (2031 y 2036); eficiencia de reciclado de baterías de plomo 75 % (2025) y 80 % (2030)
+  - Alcance: UE; Reglamento (UE) 2023/1542 de 12 de julio de 2023 (DOUE L 191, 28-7-2023), artículo 8 y anexo XII partes B y C; contenido reciclado (documentación técnica) y eficiencia de reciclado en peso medio.
+  - Evidencia: Art. 8, apartado 2, letra b: «85 % para el plomo».
+  - Uso previsto: anexo de normativa, anexo de indicadores, capítulo
+  - Matiz: Matices: la obligación del art. 8.2 se refiere a baterías industriales de más de 2 kWh 'a excepción de las provistas exclusivamente de almacenamiento externo', a las de vehículos eléctricos y a las de arranque, encendido o alumbrado que contengan plomo en sus materiales activos. Los objetivos de eficiencia del anexo XII B los deben cumplir los recicladores (art. 71.2) y se calculan con el Reglamento Delegado (UE) 2025/606 ([44]). Posición de EUROBAT ([301]) comprobada: 'recycled content of lead can be higher than 80%, depending on the application' y 'the impact assessment estimates a value of 67% ... No sources are provided'. Existen propuestas de modificación pendientes (por ejemplo COM(2026) 590, de contratación pública); no se revisó qué artículos tocan.
+  - Conflictos: C10
+- **`clima_energia-f12`** · confianza alta · corregido por el verificador · [294] [26] [44] [305] [62]
+  - Hecho: España declaró a Eurostat una eficiencia de reciclado de baterías de plomo del 71,9 % en 2023 (199.181 t recicladas sobre 277.016 t que entraron al reciclado); el Reglamento (UE) 2023/1542 fija para esas baterías un objetivo del 75 % a más tardar el 31-12-2025, que deben cumplir los recicladores y que se calcula con otra metodología (Reglamento Delegado (UE) 2025/606), por lo que la cifra de 2023 es solo una referencia y no prueba un incumplimiento.
+  - Valor: 71,9 % en 2023 (70,7 % en 2022)
+  - Alcance: España; 2023 (último año del conjunto, actualizado el 27-11-2025); baterías de plomo (código de residuo 160601), indicador «Recycling» del conjunto env_wasbat de Eurostat; porcentaje y toneladas.
+  - Evidencia: env_wasbat, W160601, RCY, PC, ES, 2023 = 71.9; RCY_INP = 277016 t.
+  - Uso previsto: capítulo, anexo de indicadores, anexo de datos
+  - Texto original (antes de la corrección): España declaró a Eurostat una eficiencia de reciclado de baterías de plomo del 71,9 % en 2023 (199.181 t recicladas sobre 277.016 t que entraron al reciclado), por debajo del 75 % que el Reglamento (UE) 2023/1542 exige a finales de 2025.
+  - Matiz: Las cifras son exactas; lo que cambia es la lectura. (1) El objetivo del 75 % (anexo XII B, art. 71.2) obliga a los recicladores, no es un objetivo nacional. (2) Desde el 24-07-2025 el método es el Reglamento Delegado (UE) 2025/606 ([44]), no el 493/2012 que cita el considerando 115; el 71,9 % de 2023 sigue el método anterior (no se comparó si da resultados distintos). (3) Los primeros datos de los recicladores a las autoridades se esperan a mediados de 2027 y los de los Estados miembros a la Comisión a mediados de 2028 (COM(2026) 470, [62]). Corrección a las notas del investigador: el art. 71.3 remite el cálculo al acto delegado del art. 71.4, que es el Reglamento Delegado 2025/606; el considerando 115 citaba el 493/2012 como norma aplicable antes de ese acto (no se verificó si el 493/2012 sigue formalmente vigente).
+  - Conflictos: C12
+- **`clima_energia-f13`** · confianza alta · [19]
+  - Hecho: El análisis de ciclo de vida de baterías de plomo de automoción encargado por EUROBAT e ILA (Sphera, 2022) estima 21 kg CO2-eq por batería estándar de arranque (18 kg, 70 Ah) de la cuna a la puerta, el 60 % por la producción del plomo.
+  - Valor: 21 kg CO2-eq por batería; 390 MJ; 60 % del GWP por el plomo
+  - Alcance: Europa; producción representativa de 2017 (informe v6.0 de 12-05-2022); una batería de plomo estándar SLI de 12 V, 70 Ah y 18 kg de media; potencial de calentamiento global a 100 años y demanda de energía primaria (390 MJ), de la cuna a la puerta.
+  - Evidencia: «60% of GWP stems from the upstream production of lead»
+  - Uso previsto: capítulo, anexo de datos
+  - Matiz: Corrección a las notas del investigador: la declaración de revisión crítica del Anexo A recoge como 'Review panel' solo al Prof. Dr. Matthias Finkbeiner (Alemania), y el apartado 2.11 también menciona solo a Finkbeiner; el apartado 1 del informe anuncia además a J. Spangenberger (Argonne), pero el Anexo A no lo incluye. El informe indica que no pretende respaldar afirmaciones comparativas públicas.
+- **`clima_energia-f14`** · confianza alta · [295]
+  - Hecho: Un estudio revisado por pares estimó entre 10.599 y 29.241 sitios informales de procesado de baterías de plomo usadas en 90 países de renta baja y media, con entre 6 y 16,8 millones de personas expuestas.
+  - Valor: 10.599-29.241 sitios; 6-16,8 millones de personas expuestas
+  - Alcance: 90 países de renta baja y media; modelo con datos públicos y evaluaciones de sitios, carga de enfermedad de 2013; número de sitios informales y personas expuestas; plombemia media geométrica estimada de 31,15 µg/dL en niños de 0-4 años y de 21,2 µg/dL en adultos.
+  - Evidencia: «10,599 to 29,241 informal ULAB processing sites»
+  - Uso previsto: anexo de seguridad, anexo de datos, anexo de ODS
+  - Matiz: La web muestra paginación 686-689; el PDF y UNICEF dan 686-699. Modelo con rangos amplios; no es un recuento de sitios.
+- **`clima_energia-f15`** · confianza alta · corregido por el verificador · [296]
+  - Hecho: El estudio de la Comisión Europea sobre materias primas fundamentales de 2023 da al plomo una tasa de aportación de reciclado de fin de vida (EoL-RIR) del 83 % en la UE, es decir, la parte de la demanda de plomo cubierta con material secundario procedente de productos usados (no es una tasa de recogida ni de reciclado de baterías).
+  - Valor: 83 %
+  - Alcance: UE; evaluación de criticidad de 2023 (anexo 11); EoL-RIR = parte de la demanda de una materia prima cubierta por reciclaje posconsumo (chatarra «vieja»).
+  - Evidencia: Anexo 11, tabla EOL-RIR: «Lead 83%».
+  - Uso previsto: anexo de indicadores, anexo de datos
+  - Texto original (antes de la corrección): El estudio de la Comisión Europea sobre materias primas fundamentales de 2023 da al plomo una tasa de reciclado al final de vida (EoL-RIR) del 83 % en la UE, es decir, la parte de la demanda cubierta con material secundario de productos usados.
+  - Matiz: El valor 83 % es correcto. Se corrige la terminología: EoL-RIR es una tasa de aportación (input) y 'tasa de reciclado al final de vida' puede confundirse con la tasa de recogida y reciclaje de residuos (p. ej. 97,3 % de clima_energia-f10). Corrección a las notas del investigador: la referencia es la 203 (ILZSG 2021), no la 205; la extracción con layout mezcló filas de la tabla.
+  - Conflictos: C10
+- **`clima_energia-f16`** · confianza alta · [297] [298]
+  - Hecho: Según el ILZSG, en 2022 el plomo refinado secundario fue el 83 % de la producción en Europa, el 92 % en América y el 55 % en Asia.
+  - Valor: Europa 83 %; América 92 %; Asia 55 % (2022)
+  - Alcance: Regiones del ILZSG (Europa incluye países que no son de la UE, como el Reino Unido); año 2022; parte de la producción de plomo refinado procedente de materia secundaria.
+  - Evidencia: «The proportion of secondary refined lead production in Europe was 83%»
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: El ILZSG no define su región 'Europa'; su nota de prensa de 2026 ([288]) incluye al Reino Unido (fundición de Northfleet) en 'Europe', coherente con que no sea solo UE.
+  - Conflictos: C10
+- **`clima_energia-f17`** · confianza alta · [20]
+  - Hecho: Un artículo revisado por pares de autores de la ILA y thinkstep (DOI 10.1007/s11367-015-1021-5) calcula que producir 1 kg de plomo refinado en Europa, con una mezcla del 44 % primario y 56 % secundario, requiere 18,5 MJ de energía primaria y emite 1,31 kg CO2-eq.
+  - Valor: 18,5 MJ/kg; 1,31 kg CO2-eq/kg
+  - Alcance: Europa (UE-27); datos de referencia de 2008/2009 de empresas cuyas tecnologías suponen el 80 % de las usadas; 1 kg de plomo refinado (99,99 %) a puerta de fábrica; mezcla de producción europea (no separa primario y secundario).
+  - Evidencia: Tabla 2 del artículo: PED 18,5 MJ; GWP 1,31 kg CO2-eq.
+  - Uso previsto: anexo de datos
+  - Matiz: Posible conflicto de interés (autores de la ILA y thinkstep); datos de 2008/2009 y mezcla primaria/secundaria, no comparables con clima_energia-f1.
+- **`clima_energia-f18`** · confianza media · corregido por el verificador · [291] [309] [310]
+  - Hecho: UNICEF y Pure Earth citan un estudio de campo (Gottesfeld et al., Environmental Research, 2018) con 118 muestras de suelo en 15 plantas de reciclaje de baterías de plomo y una fábrica de baterías de siete países africanos, en el que el plomo varió de menos de 40 a 140.000 mg/kg considerando muestras de dentro y de fuera de las plantas, con una media de unos 2.600 mg/kg en las comunidades del entorno.
+  - Valor: De menos de 40 a 140.000 mg/kg en el conjunto de muestras (dentro y fuera de las plantas); media del entorno de unos 2.600 mg/kg (unas 22 veces menos que dentro de las plantas); máximo fuera de las plantas de unos 48.000 ppm según la nota de prensa de los autores
+  - Alcance: Siete países africanos (entre ellos Nigeria, Ghana, Kenia y Túnez); muestras de suelo del exterior de plantas de reciclaje de baterías de plomo; informe de 2020 que cita un estudio de Occupational Knowledge International (2016); el valor de comparación es el límite de 400 ppm de la EPA de EE. UU. para suelo de juego.
+  - Evidencia: «range from < 40 ppm to 140,000 ppm»
+  - Uso previsto: anexo de seguridad, anexo de datos
+  - Texto original (antes de la corrección): UNICEF y Pure Earth recogen que el suelo junto a plantas de reciclaje de baterías de plomo en siete países africanos tenía entre menos de 40 y 140.000 ppm de plomo, y que el 64 % de las muestras superaba los 400 ppm.
+  - Matiz: El informe de UNICEF dice 'Soil samples taken from outside lead battery recycling plants ... range from < 40 ppm to 140,000 ppm', pero según el resumen del estudio ese rango abarca muestras de dentro y de fuera; no usar '140.000 ppm junto a las plantas'. Los porcentajes 64 % (> 400 ppm) y 81 % (> 80 ppm) no aparecen en el resumen ni en las notas de prensa consultadas: sin verificar (texto completo del artículo de pago, no abierto). UNICEF cita 400 ppm de la EPA para suelo desnudo de zonas de juego y 1.200 ppm para otras zonas.
+- **`clima_energia-f19`** · confianza alta · corregido por el verificador · [299] [300] [302]
+  - Hecho: La EPA de EE. UU. documenta que el emplazamiento de The Battery Recycling Company (Arecibo, Puerto Rico), que operó como fundición secundaria de plomo y recicladora de baterías desde c. 1994 hasta 2014, dejó suelo con plomo a concentraciones muy altas dentro y fuera de la propiedad, y lo incluyó en la lista de prioridades nacionales (Superfund) el 3-08-2017; en el agua subterránea hay sobre todo compuestos orgánicos volátiles clorados y, en algunos pozos, arsénico y plomo total (el sitio tuvo antes un uso químico, 1966-1979).
+  - Valor: operó c. 1994-2014; en la lista Superfund desde 2017; retirada inicial de plomo terminada en 2022
+  - Alcance: Arecibo (Puerto Rico, EE. UU.); instalación operada aproximadamente de 1994 a 2014; comunicados de la EPA de agosto de 2023 (plan propuesto) y marzo de 2024 (plan final); contaminación de suelo y aguas subterráneas por plomo.
+  - Evidencia: «operated as a secondary lead smelter and battery recycling operation»
+  - Uso previsto: anexo de seguridad
+  - Texto original (antes de la corrección): La EPA de EE. UU. documenta que el emplazamiento de The Battery Recycling Company (Arecibo, Puerto Rico), que fue fundición secundaria de plomo y recicladora de baterías hasta 2014, dejó plomo en suelo y aguas subterráneas y lo incluyó en la lista Superfund en 2017.
+  - Matiz: El suelo contaminado con plomo está bien respaldado (hasta 57.500 mg/kg en una zanja en 2008 y hasta 88.800 mg/kg en cribado XRF de 2015, según el ROD). El plomo en agua subterránea es más débil: el ROD dice plomo total > 15 µg/L en 1 pozo (ronda 1) y 3 pozos (ronda 3), pero el plomo disuelto nunca superó el criterio (posible efecto de partículas); el comunicado de 2024 resume 'arsenic and lead-contaminated soil, and VOCs in groundwater'. Corrección a las notas del investigador: 'instalación formal que contamina por mala gestión' no está respaldado; el ROD recoge incumplimientos reiterados de BRC (PREQB 1996-2004: operar sin los permisos requeridos, almacenamiento inadecuado, vertidos de ácido) y que la EPA asumió la limpieza porque la empresa no la terminó. Presentarlo como instalación incumplidora, no como ejemplo de planta que cumplía la norma.
+- **`clima_energia-f20`** · confianza alta · [26] [63] [62]
+  - Hecho: El Reglamento (UE) 2023/1542 solo permite contabilizar para los objetivos de la UE los residuos de baterías exportados si el exportador prueba, con documentos aprobados por la autoridad competente del país de destino, que el tratamiento se hizo en condiciones equivalentes a las exigidas en la UE.
+  - Valor: condición de «condiciones equivalentes» para contabilizar los residuos exportados
+  - Alcance: UE; Reglamento (UE) 2023/1542, artículo 72, apartados 1 y 3; traslado de residuos de baterías fuera del Estado miembro o de la Unión para su tratamiento o reciclado.
+  - Evidencia: «pruebas documentales aprobadas por la autoridad competente de destino»
+  - Uso previsto: anexo de normativa, capítulo
+  - Matiz: El art. 72.3 se refiere a las obligaciones, niveles de eficiencia y objetivos de los arts. 70 y 71 (no solo 'objetivos'). COM(2026) 470 (11-09-2026, [62]) recuerda que, por el art. 72.3, cualquier reducción de los objetivos se aplicaría también al reciclado en terceros países; es coherente con la lectura de las notas.
+
+### 4.11 tecnologias: Tecnologías del prototipo y alojamiento
+
+20 hechos (18 confirmados, 2 con corrección); 66 fuentes distintas.
+
+- **`tecnologias-f1`** · confianza alta · [311] [312] [313] [314] [315] [316] [372] [373]
+  - Hecho: La versión estable vigente de Flask es la 3.1.3 (febrero de 2026), con licencia BSD-3-Clause y mantenida por la organización de código abierto Pallets.
+  - Valor: 3.1.3 · BSD-3-Clause · Pallets
+  - Alcance: Microframework web de Python de código abierto, ámbito mundial; versión estable consultada el 2026-10-21 (documentación 3.1.x; requiere Python 3.9 o superior).
+  - Evidencia: "Version 3.1.3" / "Released 2026-02-18" (Changes); "BSD-3-Clause License" (License)
+  - Uso previsto: capítulo, pantalla 3D, anexo de arquitectura
+  - Matiz: La fecha del registro de cambios (18-feb) y la de PyPI (19-feb UTC) corresponden a la misma versión.
+- **`tecnologias-f2`** · confianza alta · [317] [318]
+  - Hecho: La versión estable más reciente de SQLite es la 3.54.1, publicada el 16 de octubre de 2026.
+  - Valor: 3.54.1 (2026-10-16)
+  - Alcance: Biblioteca de base de datos SQL embebida, ámbito mundial; versión vigente el 2026-10-21.
+  - Evidencia: "Latest Release" "Version 3.54.1 (2026-10-16)."
+  - Uso previsto: anexo de arquitectura, pantalla 3D
+- **`tecnologias-f3`** · confianza alta · [319] [317]
+  - Hecho: El código y la documentación de SQLite han sido dedicados al dominio público por sus autores, de modo que cualquiera puede copiarlos, modificarlos, venderlos o distribuirlos con fines comerciales o no comerciales.
+  - Valor: Dominio público
+  - Alcance: Condición legal del código y la documentación entregables de SQLite (no de los scripts de compilación), ámbito mundial; texto oficial consultado el 2026-10-21.
+  - Evidencia: "SQLite is in the Public Domain"
+  - Uso previsto: capítulo, pantalla 3D, anexo de arquitectura, anexo de normativa
+  - Matiz: La propia página añade que Hwaci vende una Warranty of Title para quien necesite garantías jurídicas (p. ej. en jurisdicciones que no reconocen el dominio público).
+- **`tecnologias-f4`** · confianza alta · [320] [321] [322] [323] [376]
+  - Hecho: La versión estable vigente de Chart.js es la 4.5.1 (publicada el 13 de octubre de 2025) y se distribuye con licencia MIT.
+  - Valor: 4.5.1 · MIT
+  - Alcance: Biblioteca JavaScript de gráficos para navegador (lienzo HTML5), ámbito mundial; versión vigente el 2026-10-21.
+  - Evidencia: "The MIT License (MIT)" (LICENSE.md); npm: "version": "4.5.1"
+  - Uso previsto: capítulo, pantalla 3D, anexo de arquitectura
+  - Matiz: Un listado de jsDelivr visto en WebSearch mostraba 4.4.9 como última (desfasado); el registro npm oficial manda.
+- **`tecnologias-f5`** · confianza alta · [324] [325] [326] [368] [369]
+  - Hecho: Segno 1.6.6 (marzo de 2025) es una biblioteca Python pura y sin dependencias que genera códigos QR y Micro QR conforme a ISO/IEC 18004:2015, con licencia BSD de tres cláusulas.
+  - Valor: 1.6.6 · BSD-3-Clause · sin dependencias
+  - Alcance: Generador de códigos QR para Python, ámbito mundial; versión vigente el 2026-10-21.
+  - Evidencia: "Pure Python QR Code generator with no dependencies."
+  - Uso previsto: anexo de arquitectura, pantalla 3D
+  - Matiz: La afirmación es fiel a la fuente, con dos matices. (1) 'Sin dependencias': el metadato de PyPI declara importlib-metadata>=3.6.0 solo para Python <3.10; en 3.10 o superior no hay dependencias. (2) ISO/IEC 18004:2015 figura en iso.org como 'Withdrawn' (retirada el 2024-08-15) y está sustituida por ISO/IEC 18004:2024 (4.ª edición, 2024-08); Segno sigue declarando la edición 2015. Conviene citar 'ISO/IEC 18004' sin año o aclarar que la edición 2015 está retirada. Cierra el hueco del informe sobre la edición vigente de ISO/IEC 18004.
+  - Conflictos: C20
+- **`tecnologias-f6`** · confianza alta · [327] [328] [329]
+  - Hecho: La biblioteca python-qrcode (paquete «qrcode» de PyPI) está en la versión 8.2 (mayo de 2025) y se distribuye con licencia BSD.
+  - Valor: 8.2 · BSD
+  - Alcance: Generador de códigos QR para Python, ámbito mundial; versión vigente el 2026-10-21.
+  - Evidencia: "Copyright (c) 2011, Lincoln Loop" (LICENSE); PyPI: "License :: OSI Approved :: BSD License"
+  - Uso previsto: anexo de arquitectura
+  - Matiz: La afirmación es correcta. Matiz en las notas: el README (y la descripción de PyPI) dicen que la instalación estándar usa pypng, pero el metadato requires_dist de 8.2 declara pypng solo como extra ('png' o 'all') y Pillow como extra 'pil'; con un simple 'pip install qrcode' no se instalan. El clasificador de PyPI añade 'License :: Other/Proprietary License' junto a BSD (por el aviso MIT heredado).
+- **`tecnologias-f7`** · confianza alta · [330] [331] [332] [333]
+  - Hecho: PythonAnywhere ofrece una cuenta gratuita (Beginner, 0 $/mes) y su plan de pago más bajo, Developer, cuesta 10 $ al mes en el sistema de EE. UU. y 10 € al mes en el sistema de la UE.
+  - Valor: Gratis · Developer 10 $/mes (10 €/mes en la rama UE)
+  - Alcance: Precios de lista mensuales en USD (sistema de EE. UU.) y en EUR (eu.pythonanywhere.com), consultados el 2026-10-21; las páginas no indican si incluyen impuestos; Developer incluye 1 aplicación web, 3 web workers, 5 000 s de CPU diarios y 5 GB de disco.
+  - Evidencia: Developer "$10/month" (EE. UU.) y "€10/month" (UE); Beginner "$ 0 /month"
+  - Uso previsto: anexo de presupuesto, capítulo
+  - Matiz: Los cálculos propios son correctos: 10/1,1234 = 8,90 EUR; 10 meses x 10 EUR = 100 EUR al año. Las páginas no mencionan impuestos.
+  - Conflictos: C23
+- **`tecnologias-f8`** · confianza alta · [334] [335] [336]
+  - Hecho: El tipo de cambio de referencia del BCE del 21 de octubre de 2026 fue de 1,1234 dólares estadounidenses por euro.
+  - Valor: 1 EUR = 1,1234 USD (1 USD ≈ 0,8902 EUR)
+  - Alcance: Tipo de referencia diario euro/dólar estadounidense (USD por 1 EUR) del 2026-10-21, publicado con cuatro decimales; el BCE lo difunde solo con fines informativos.
+  - Evidencia: <Cube time='2026-10-21'> <Cube currency='USD' rate='1.1234'/>
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: Una búsqueda en español (WebSearch) no halló confirmación secundaria del tipo de 2026 (los buscadores aún no lo indexan); bastan los tres puntos oficiales del BCE.
+- **`tecnologias-f9`** · confianza alta · [337]
+  - Hecho: Render ofrece un espacio de trabajo Hobby gratuito (0 $/mes más el cómputo), un servicio web gratuito de 512 MB de RAM y 0,1 CPU, y su instancia de pago más barata, Starter, cuesta 7 $ al mes con 512 MB de RAM y 0,5 CPU.
+  - Valor: Free 0 $ · Starter 7 $/mes (≈6,23 €) · Standard 25 $/mes (≈22,25 €)
+  - Alcance: Precios de lista mensuales en USD consultados el 2026-10-21 en la página oficial; no se indica si incluyen impuestos.
+  - Evidencia: "$7/month 512 MB RAM 0.5c-512mb"; Hobby "$ 0 /mo + compute"
+  - Uso previsto: anexo de presupuesto
+  - Matiz: en las cifras. Matices: (1) 'instancia de pago más barata' vale para servicios web y workers; Postgres de pago empieza en 6 $/mes (256 MB) y Key Value en 10 $/mes, que son otros productos. (2) Los datos 'Free 0.1 CPU' y el nombre 'Starter' aparecen en la tabla incrustada de la página; la lista visible muestra 'Free ... 512 MB RAM' y 'Less than 1 CPU'. La página no indica impuestos.
+- **`tecnologias-f10`** · confianza alta · [338] [339]
+  - Hecho: En Render, los servicios web gratuitos tienen un sistema de archivos efímero, por lo que una base SQLite local se pierde en cada redespliegue, reinicio o parada por inactividad, y solo los servicios de pago pueden adjuntar un disco persistente.
+  - Valor: SQLite sin persistencia en el plan gratuito
+  - Alcance: Condiciones del plan gratuito de Render según su documentación oficial, consultada el 2026-10-21; afecta a servicios web, no a sitios estáticos.
+  - Evidencia: "local SQLite databases, etc.) are lost every time the service redeploys"
+  - Uso previsto: anexo de arquitectura, anexo de presupuesto
+  - Matiz: Implicación para EcoBat (inferencia del informe original): SQLite en Render exige instancia de pago con disco o cambiar a Postgres.
+- **`tecnologias-f11`** · confianza alta · [340] [341] [333] [330] [342] [343]
+  - Hecho: La cuenta gratuita de PythonAnywhere incluye una aplicación web con un solo worker y caducidad de un mes, 512 MiB de disco, 100 segundos de CPU y dos consolas, y SQLite está disponible para todos aunque la plataforma no lo recomienda como base de datos de producción.
+  - Valor: 512 MiB · 100 s de CPU/día · SQLite incluido
+  - Alcance: Condiciones de las cuentas gratuitas actuales (creadas desde 2026-01-15; 2026-01-08 en la rama UE), consultadas el 2026-10-21; los segundos de CPU se asignan por día.
+  - Evidencia: "1 web app with 1 web worker and 1 month expiry"
+  - Uso previsto: anexo de arquitectura, anexo de presupuesto
+- **`tecnologias-f12`** · confianza alta · corregido por el verificador · [344] [345]
+  - Hecho: Railway factura por uso: su plan Free cuesta 0 $/mes (prueba de 30 días con 5 $ de crédito y, después, 1 $ de crédito gratuito al mes), Hobby tiene un mínimo de 5 $ al mes que incluye 5 $ de uso y Pro un mínimo de 20 $ al mes.
+  - Valor: Free 0 $ (1 $ de crédito al mes tras la prueba) · Hobby 5 $/mes (≈4,45 €) · Pro 20 $/mes (≈17,80 €)
+  - Alcance: Precios de lista mensuales en USD consultados el 2026-10-21; los recursos se cobran por segundo; no se indica si los importes incluyen impuestos.
+  - Evidencia: "Hobby $ 5 minimum usage"; "Pro $ 20 minimum usage"
+  - Uso previsto: anexo de presupuesto
+  - Texto original (antes de la corrección): Railway factura por uso: su plan Free cuesta 0 $/mes (prueba de 30 días con 5 $ de crédito y luego 1 $ al mes), Hobby tiene un mínimo de 5 $ al mes que incluye 5 $ de uso y Pro un mínimo de 20 $ al mes.
+  - Matiz: La frase de la página de precios ('then $1 per month') es ambigua y la documentación oficial aclara que el plan Free incluye 1 $ de crédito gratuito al mes; redactado como 'luego 1 $ al mes' puede leerse como un cobro. El resto de cifras (Hobby 5 $, Pro 20 $, 5 $ y 20 $ de uso incluido, recursos) coincide.
+- **`tecnologias-f13`** · confianza alta · [346] [347] [367]
+  - Hecho: Fly.io no tiene plan gratuito para organizaciones nuevas (solo una prueba de hasta 2 horas de máquina o 7 días) y su máquina de pago más barata, shared-cpu-1x con 256 MB, cuesta 2,19 $ por 30 días de funcionamiento continuo en Ashburn o Secaucus.
+  - Valor: 2,19 $/mes (≈1,95 €) · sin plan gratuito
+  - Alcance: Precios de lista en USD con pago por uso, consultados el 2026-10-21; los 2,19 $ corresponden a Ashburn (iad) y Secaucus (ewr), las regiones más baratas; otras regiones cuestan más.
+  - Evidencia: "It costs $2.19 per 30 days of continuous runtime"
+  - Uso previsto: anexo de presupuesto
+  - Matiz: en el enunciado. Los resúmenes de buscadores que citan 1,94 $ o 2,02 $ (también aparecieron en WebSearch) no coinciden con las páginas oficiales leídas directamente hoy (docs.fly.io, fly.io/pricing y fly.io/pricing.md), que dan 2,19 $; prevalecen las páginas oficiales. Datos nuevos de fly.io/pricing.md: 'Prices in USD, excluding tax' (cierra el hueco sobre impuestos para Fly.io) y el precio del preset 256 MB por región europea: Ámsterdam y Estocolmo 2,28 $, París y Londres 2,49 $, Fráncfort 2,53 $.
+  - Conflictos: C23
+- **`tecnologias-f14`** · confianza alta · corregido por el verificador · [348]
+  - Hecho: La documentación de SQLite estima que cualquier sitio con menos de 100 000 accesos (hits) diarios funciona bien con SQLite, y advierte de que admite lectores simultáneos ilimitados pero solo un escritor a la vez.
+  - Valor: < 100 000 accesos (hits) al día (estimación conservadora)
+  - Alcance: Orientación del propio proyecto SQLite (página «Appropriate Uses For SQLite»), consultada el 2026-10-21; la cifra es una estimación conservadora para sitios web de tráfico bajo o medio, no un límite estricto.
+  - Evidencia: "fewer than 100K hits/day should work fine with SQLite"
+  - Uso previsto: anexo de arquitectura, capítulo
+  - Texto original (antes de la corrección): La documentación de SQLite estima que cualquier sitio con menos de 100 000 visitas diarias funciona bien con SQLite, y advierte de que admite lectores simultáneos ilimitados pero solo un escritor a la vez.
+  - Matiz: La fuente habla de 'hits/day' (accesos o peticiones HTTP; su propio ejemplo cuenta 'HTTP requests per day'), no de 'visitas'. Una visita genera varios hits, así que '100 000 visitas' sobrestima la capacidad descrita. Lo demás (estimación conservadora, 10 veces ese tráfico, un solo escritor) es correcto.
+- **`tecnologias-f15`** · confianza alta · [349] [350] [351] [352] [370]
+  - Hecho: HTML se mantiene como estándar abierto en el «HTML Living Standard» del WHATWG (Apple, Google, Mozilla y Microsoft), actualizado por última vez el 20 de octubre de 2026 y, según el sitio del WHATWG, publicado con licencia Creative Commons Atribución 4.0.
+  - Valor: Living Standard · CC BY 4.0 (según whatwg.org)
+  - Alcance: Estándar web de actualización continua, ámbito mundial; texto consultado el 2026-10-21.
+  - Evidencia: "HTML Living Standard — Last Updated 20 October 2026"
+  - Uso previsto: anexo de arquitectura, anexo de normativa
+  - Matiz: Salvedad menor: el estándar indica que las porciones incorporadas en código fuente se licencian BSD-3-Clause. El memorando del W3C devuelve 403 (Cloudflare) con el user-agent por defecto y carga con user-agent Firefox.
+- **`tecnologias-f16`** · confianza alta · [353] [354] [371]
+  - Hecho: JavaScript se estandariza como ECMAScript en la norma ECMA-262, cuya edición vigente es ECMAScript 2026 (17.ª edición, junio de 2026), elaborada bajo la política de patentes «RF» de Ecma International.
+  - Valor: ECMA-262, 17.ª edición (junio de 2026)
+  - Alcance: Norma internacional del lenguaje; edición publicada en junio de 2026; consultada el 2026-10-21.
+  - Evidencia: "ECMAScript® 2026 language specification 17th edition, June 2026"
+  - Uso previsto: anexo de arquitectura, anexo de normativa
+- **`tecnologias-f17`** · confianza alta · [355] [356] [357] [358]
+  - Hecho: El JDK 27 es la versión más reciente de la plataforma Java SE y el JDK 25 la última de soporte a largo plazo (LTS), y OpenJDK, la implementación de código abierto de la plataforma, se licencia bajo GPLv2 con la Classpath Exception.
+  - Valor: JDK 27 (última) · JDK 25 (LTS) · GPLv2 + Classpath Exception
+  - Alcance: Plataforma Java SE, ámbito mundial; versiones y licencias consultadas el 2026-10-21 en las páginas de Oracle y OpenJDK.
+  - Evidencia: "JDK 25 is the latest Long-Term Support (LTS) release"
+  - Uso previsto: anexo de arquitectura
+  - Matiz: La Classpath Exception afecta a los ficheros que Oracle marca expresamente, según el texto de la página.
+- **`tecnologias-f18`** · confianza alta · [359] [360] [361] [374]
+  - Hecho: La versión más reciente de PHP es la 8.5.12 (publicada el 21 de octubre de 2026) y la licencia vigente del proyecto es la Modified BSD License (PHP License v4, equivalente a BSD-3-Clause), a la que también pueden acogerse las versiones anteriores.
+  - Valor: 8.5.12 (2026-10-21) · BSD-3-Clause (PHP License v4)
+  - Alcance: Lenguaje de script para web, ámbito mundial; ramas con soporte a 2026-10-21: 8.2 a 8.5 (la 8.6 está en fase de candidata de lanzamiento); consultada el 2026-10-21.
+  - Evidencia: "PHP 8.5.12 Released!"; "under the terms of the Modified BSD License"
+  - Uso previsto: anexo de arquitectura
+  - Matiz: WebSearch aún no indexa la 8.5.12 (publicada hoy; la más reciente indexada era la 8.5.11 de septiembre de 2026); php.net oficial la confirma.
+- **`tecnologias-f19`** · confianza alta · [362] [363] [364]
+  - Hecho: MySQL Community Server se distribuye bajo la licencia GPL versión 2 con permisos adicionales, y el manual oficial de licencias de Oracle (actualizado en septiembre de 2026) corresponde a la edición 26.10.0.
+  - Valor: 26.10.0 · GPLv2 (con permisos adicionales)
+  - Alcance: Sistema de gestión de bases de datos relacional, edición Community, ámbito mundial; repositorio oficial de Oracle consultado el 2026-10-21.
+  - Evidencia: "released under version 2 of the GNU General Public License"
+  - Uso previsto: anexo de arquitectura
+  - Matiz: Cierra el hueco del informe: la lista de versiones sí se comprobó en bruto, porque dev.mysql.com da 403 con user-agent de navegador pero 200 con el de curl.
+- **`tecnologias-f20`** · confianza alta · [365] [366] [315] [343] [375]
+  - Hecho: Python 3.15.1 es la versión más reciente que ofrece python.org, y el software y la documentación de Python se licencian bajo la Python Software Foundation License Version 2.
+  - Valor: 3.15.1 · PSF License v2
+  - Alcance: Lenguaje de programación sobre el que se ejecuta Flask, ámbito mundial; versión consultada el 2026-10-21.
+  - Evidencia: "licensed under the Python Software Foundation License Version 2"; "Download Python 3.15.1"
+  - Uso previsto: anexo de arquitectura
+  - Matiz: python.org/downloads responde siempre comprimida en gzip, hay que usar curl --compressed.
+
+### 4.12 presupuesto: Presupuesto de materiales: etiquetas QR y material de presentación
+
+19 hechos (17 confirmados, 2 con corrección); 31 fuentes distintas.
+
+- **`presupuesto-f1`** · confianza media · corregido por el verificador · [377] [378] [379] [380] [381] [382] [390] [399] [402]
+  - Hecho: Con los precios verificados, las partidas de 10–30 € para códigos QR y de 10–30 € para material de presentación son realistas si se imprimen hojas de etiquetas o se recurre a una copistería, pero una impresora de etiquetas dedicada (Brother QL-700 o QL-800) con su primer rollo costaría unos 93–153 €, es decir, entre el 77 % y el 127 % del tope de 120 €.
+  - Valor: QR en hojas ≈28,31 € (20,32 € + 7,99 € de envío); impresora QL-700 o QL-800 + rollo DK-11221 ≈93–153 € (QL-700 69,99 € + 22,66 € = 92,65 €; QL-800 130,30 € + 22,66 € = 152,96 €); póster A2 + dossier de 30 páginas ≈12,10 €
+  - Alcance: España; consulta 2026-10-21; precios con IVA de tiendas y copisterías; cálculo propio sobre otros hechos de este informe, no un dato de una sola fuente.
+  - Evidencia: Cálculo propio: 20,32 + 7,99 = 28,31 €
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Texto original (antes de la corrección): Con los precios verificados, las partidas de 10–30 € para códigos QR y de 10–30 € para material de presentación son realistas si se imprimen hojas de etiquetas o se recurre a una copistería, pero una impresora de etiquetas dedicada con su primer rollo costaría unos 97–153 €, es decir, entre el 81 % y el 127 % del tope de 120 €.
+  - Matiz: La aritmética es exacta. Problema de alcance: 97–153 € vale solo para la QL-800; la QL-700 (69,99 € en PcComponentes, vendida por la tienda y con envío gratis) más el rollo da 92,65 € (77 % de 120 €). Con el precio de lista de Brother España la QL-700 cuesta 117,27 € ([380]), 139,93 € con rollo. Además, el extremo alto de la QL-800 (130,30 €) es el precio de lista de Brother, que figura sin stock; con ofertas con stock (PcComponentes 74,29 €; PcComponentes-Penguin 92,36 €; MediaMarkt 87,90 € + 6,45 € de envío) la QL-800 con rollo sale por ≈97–117 € (81–98 % del tope). La conclusión no cambia: una impresora dedicada cuesta unas 3–5 veces el máximo de 30 € de la partida QR. Las partidas 10–30 €, 10–30 € y 20–120 € coinciden con src/content.js; el 20–120 € incluye 0–60 € de alojamiento web.
+- **`presupuesto-f2`** · confianza alta · [377] [403] [402]
+  - Hecho: Avery España vende 8 hojas A4 con 192 etiquetas de poliéster blanco permanente de 63,5 × 33,9 mm para impresora láser por 20,32 € con IVA (16,79 € sin IVA), más 7,99 € de envío en pedidos inferiores a 69 €.
+  - Valor: 20,32 € IVA incl. por 192 etiquetas (≈0,11 € por etiqueta) + 7,99 € de envío
+  - Alcance: España (tienda online de Avery); consulta 2026-10-21; precio del pack con IVA; envío gratuito por encima de 69 €.
+  - Evidencia: 192 Etiquetas / 8 Hoja; 20,32 €; 16,79 € sin IVA
+  - Uso previsto: anexo de presupuesto, pantalla 3D
+  - Matiz: (16,79 × 1,21 = 20,32). Matiz de la nota: el '62 % más' (32,92/20,32) compara sin los 7,99 € de envío de Avery; con envío Avery cuesta 28,31 €, OCASIONIA 32,92 € (+16 %) y el vendedor más barato de PcComponentes (27,96 €, envío no verificado) quedaría ≈1 % por debajo de Avery. WebFetch recibió 403 (Cloudflare) en Avery; curl con cabecera de navegador carga.
+- **`presupuesto-f3`** · confianza alta · [378]
+  - Hecho: La tienda oficial de Brother España lista la impresora de etiquetas térmica directa QL-800 a 130,30 € con IVA (107,69 € sin IVA), y los datos estructurados de la ficha la marcan sin stock en esa tienda.
+  - Valor: 130,30 € IVA incl.
+  - Alcance: España (store.brother.es); consulta 2026-10-21; precio con IVA; modelo QL-800 (ancho máximo de etiqueta 62 mm, conexión USB).
+  - Evidencia: adjustedpricewithvat="130,30 €"; listprice="107,69 €"
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: La resolución es 300×300 ppp estándar y 300×600 ppp en alta resolución (la nota cita solo 300×300). La ficha no menciona códigos QR (hueco ya declarado).
+- **`presupuesto-f4`** · confianza alta · [379] [383] [405]
+  - Hecho: Los minoristas españoles venden la Brother QL-800 por debajo del precio de lista de Brother: 74,29 € en PcComponentes (precio recomendado 139,99 €) y 87,90 € con IVA en MediaMarkt, donde la ofrece un vendedor externo con 6,45 € de envío.
+  - Valor: 74,29 € (PcComponentes, vendido y enviado por la tienda); 87,90 € + 6,45 € de envío (MediaMarkt, vendedor externo); 92,36 € (PcComponentes, vendedor externo)
+  - Alcance: España; consulta 2026-10-21; precios mostrados al consumidor en pccomponentes.com y mediamarkt.es; la página de PcComponentes da validez de la oferta hasta 2026-10-23.
+  - Evidencia: 74,29€ · PVPR 139,99€ | 87,90€ IVA incl., envío no incl.
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: Matices: al releer, el priceValidUntil del JSON-LD de [379] y [383] es 2026-10-22 (no 2026-10-23; campo variable). El 74,29 € es inferior incluso al mínimo de 30 días (79,99 €): precio volátil. PcComponentes no rotula 'IVA incluido' (el enunciado solo afirma IVA para MediaMarkt, correcto). La oferta de 94,37 € de otros vendedores de MediaMarkt aparece en el estado embebido de la página, no en el texto visible de la descarga.
+- **`presupuesto-f5`** · confianza alta · [384]
+  - Hecho: La Universidad de Zaragoza fija en sus precios públicos 2025-2026, con IVA incluido, 0,12 € por copia automática A4 en color y entre 3,00 € y 6,50 € por un cartel o plano A2 en papel satinado de 130 g, según la cobertura de tinta.
+  - Valor: Copia A4 color 0,12 € (A3 0,24 €); cartel A2 en 130 g: 3,00 € (hasta 50 % de masa) o 6,50 € (más del 50 %)
+  - Alcance: España (Aragón); curso 2025-2026, documento actualizado el 2026-03-20; Servicio de Publicaciones de la Universidad de Zaragoza; precios públicos con IVA.
+  - Evidencia: Automáticas DIN A-4, en color Unidad 0,12 | DIN A2 Unidad 6,50
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: Los precios de cartel/plano están en el apartado 'Impresión plotter blanco y negro o color en Reprografía EINA' de la lista del Servicio de Publicaciones. El aviso 'NO llevan incluido el IVA' afecta solo a composición y maquetación.
+- **`presupuesto-f6`** · confianza alta · [381] [385] [386] [382] [404]
+  - Hecho: Copistería Alfambra (Barcelona) cobra, con IVA incluido, 6,75 € por un póster A2 en papel mate de 130 g, 1,75 € por una encuadernación en espiral A4, 1,60 € por plastificar un A4 y 0,12 € por cara en impresión láser color A4 de 100 g.
+  - Valor: Póster A2 6,75 €; espiral A4 1,75 €; plastificado A4 1,60 €; color A4 0,12 € por cara
+  - Alcance: España (Barcelona); consulta 2026-10-21; precios con IVA; la web no muestra fecha de publicación.
+  - Evidencia: Precios en papel 130g mate: A2 6,75€ A1 9,50€ A0 14,35€
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: Aparte: plastificar un A2 cuesta 12 € y un soporte rígido A2 de 10 mm 16 € ([381]).
+- **`presupuesto-f7`** · confianza alta · [387]
+  - Hecho: Avery España vende 20 hojas A4 con 800 etiquetas redondas de 30 mm de poliéster blanco permanente para impresora láser por 46,21 € con IVA (38,19 € sin IVA).
+  - Valor: 46,21 € IVA incl. por 800 etiquetas (≈0,06 € por etiqueta)
+  - Alcance: España (tienda online de Avery); consulta 2026-10-21; precio del pack con IVA, más 7,99 € de envío en pedidos inferiores a 69 €.
+  - Evidencia: 800 Etiquetas / 20 Hoja; 46,21 €; 38,19 € sin IVA
+  - Uso previsto: anexo de presupuesto, pantalla 3D
+- **`presupuesto-f8`** · confianza alta · [377] [387]
+  - Hecho: Avery indica que sus etiquetas de poliéster blanco permanente resisten agentes químicos, abrasión, rayos UV, agua y aceite, soportan de −20 °C a +80 °C y pueden aplicarse sobre metal, plástico, superficies pintadas, policarbonato y vidrio.
+  - Valor: −20 °C a +80 °C; resistencia a agua, aceite, UV, abrasión y químicos (según Avery)
+  - Alcance: Declaración del fabricante (Avery España) para la gama de poliéster blanco permanente (códigos L4773-8 y L4716-20); consulta 2026-10-21; no es un ensayo independiente.
+  - Evidencia: Resisten a los agentes químicos, abrasiones, rayos UV, agua
+  - Uso previsto: anexo de presupuesto
+  - Matiz: Es una declaración genérica del fabricante, sin ensayo ni mención a electrolito, calor de motor o vibración (el enunciado ya lo advierte).
+- **`presupuesto-f9`** · confianza alta · [382]
+  - Hecho: Copistería Alfambra tarifa la impresión láser color sobre papel adhesivo (mate, brillante o transparente) en 1,70 € por cara en A4 y 3,60 € por cara en A3, con IVA incluido.
+  - Valor: 1,70 € por hoja A4 adhesiva impresa
+  - Alcance: España (Barcelona); consulta 2026-10-21; precio por cara; la web no muestra fecha de publicación.
+  - Evidencia: Papel adhesivo (mate, brillante o transparente) 1,70€ 3,60€
+  - Uso previsto: anexo de presupuesto
+  - Matiz: La web no dice si el papel adhesivo es de papel o de película (el enunciado ya lo señala); la misma tabla lista aparte 'Papel poliéster 110g 1,50€' y 'Papel poliéster 300g 2,00€' (A4), sin indicar adhesivo.
+- **`presupuesto-f10`** · confianza alta · [380] [388] [389] [378]
+  - Hecho: En la tienda de Brother España, el rollo DK-11221 de 1.000 etiquetas cuadradas de 23 × 23 mm en papel térmico cuesta 22,66 € con IVA, el DK-11209 de 800 etiquetas de 29 × 62 mm cuesta 21,83 € y la cinta continua de película plástica DK-22211 (29 mm × 15,24 m) cuesta 31,57 €.
+  - Valor: DK-11221 22,66 €; DK-11209 21,83 €; DK-22211 31,57 €; DK-11204 (400 etiquetas de 17 × 54 mm) 10,78 €
+  - Alcance: España (store.brother.es); consulta 2026-10-21; precios con IVA; rollos compatibles con la serie QL (incluida la QL-800).
+  - Evidencia: 1.000 etiquetas blancas de 23 x 23 mm 22,66 € IVA incluido
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: El folleto [390] incluye el DK-11221 ('Square label (1000/roll)') bajo 'DK rolls for the QL label printer range'.
+- **`presupuesto-f11`** · confianza alta · [390]
+  - Hecho: Brother declara en su folleto técnico que sus etiquetas DK de papel y de película, como toda etiqueta térmica directa, no están pensadas para un etiquetado duradero, que no son idóneas en exterior durante más de un mes y que para uso duradero recomienda cintas laminadas TZe.
+  - Valor: Etiquetas DK = corta duración; exterior de más de 1 mes no recomendado
+  - Alcance: Documento del fabricante (Brother, folleto 'Technical data for DK Rolls', archivo de 2023-02-24); pruebas de laboratorio de Brother sin garantía para otros entornos.
+  - Evidencia: not designed for durable, permanent labelling
+  - Uso previsto: anexo de presupuesto, otro
+  - Matiz: Matiz de alcance: el folleto atribuye los ensayos a Allion Japan Inc. (marzo de 2022), no a un laboratorio propio de Brother, y no hay ensayos con baterías. GET con cabecera de navegador devuelve 200 (HEAD devuelve 403).
+- **`presupuesto-f12`** · confianza alta · [391]
+  - Hecho: La copistería 1001FA (Madrid) publica precios orientativos con IVA desde 0,14 € por fotocopia A4 en color y desde 0,28 € en A3, 2,10 € por plastificar un A4 y 2,10 € por encuadernación en espiral A4.
+  - Valor: Color A4 desde 0,14 €; color A3 desde 0,28 €; espiral A4 2,10 €
+  - Alcance: España (Madrid, Argüelles); página actualizada el 2026-09-28; precios orientativos con IVA.
+  - Evidencia: Fotocopia Color A4 desde 0.14€ · A3 desde 0.28€
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: El ejemplo 30 × 0,14 + 2,10 = 6,30 € es correcto.
+- **`presupuesto-f13`** · confianza alta · [392] [393]
+  - Hecho: Iris Copy, copistería online con tiendas en Sevilla, cobra desde 0,03 € por página A4 en color y 1,50 € por encuadernar (1,80 € con espiral o tapas de color), y calcula 8,10 € para un TFG de 100 hojas en blanco y negro con espiral, envío incluido.
+  - Valor: A4 color desde 0,03 € por página; encuadernación 1,50–1,80 €; TFG de 100 hojas 8,10 €
+  - Alcance: España (envío a domicilio; tiendas en Sevilla); páginas actualizadas el 2026-10-15; precios con IVA incluido; envío desde 2,90 € y gratis desde 39 €.
+  - Evidencia: A4 Color Desde 0,03€ | precio fijo de 1,50 € por bloque
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: tal como las publica la web, pero la web es incoherente: el texto dice que el espiral suma 0,30 € (1,80 €), mientras que el ejemplo del TFG cobra la 'Encuadernación en espiral' a 1,50 €; con 1,80 € el total sería 8,40 €. Conviene citar 8,10 € como 'ejemplo de la web' y no combinarlo con el recargo.
+- **`presupuesto-f14`** · confianza alta · [394] [395]
+  - Hecho: Las hojas A4 de poliéster blanco impermeable para láser, sin imprimir, de la tienda de Avery cuestan 2,02 € por hoja en el pack de 25 hojas (50,52 € con IVA) y 1,26 € por hoja en el de 100 (125,84 €); en el formato de 60 × 60 mm cada hoja trae 12 etiquetas.
+  - Valor: 50,52 € por 25 hojas (300 etiquetas de 60 × 60 mm); 125,84 € por 100 hojas
+  - Alcance: España (tienda online de Avery); consulta 2026-10-21; precios con IVA; el mismo precio por hoja se aplica a los formatos cuadrados comprobados (25, 35, 40, 45 y 60 mm); envío 7,99 € en pedidos inferiores a 69 €.
+  - Evidencia: 25 Hojas (300 Etiquetas) 50,52 €
+  - Uso previsto: anexo de presupuesto, anexo de datos
+  - Matiz: La ficha de 60×60 no nombra el material en el texto (solo la tabla genérica de materiales); lo identifica como poliéster el enlace desde la categoría 'Poliéster Impermeable'. Avery lanza un reto de Cloudflare (403) ante ráfagas de peticiones; con peticiones espaciadas carga.
+- **`presupuesto-f15`** · confianza media · [396] [397] [398]
+  - Hecho: En la categoría de impresoras de etiquetas de PcComponentes aparecen la Brother QL-700 a 69,99 € (vendida por la propia tienda, precio recomendado 119 €), la Brother QL-600B a 76,79 € y la Dymo LabelWriter 550 a 106 €, mientras la tienda de Brother España lista la QL-600B a 93,07 € con IVA.
+  - Valor: QL-700 69,99 €; QL-600B 76,79 € (PcComponentes) o 93,07 € (Brother); LabelWriter 550 106 €
+  - Alcance: España; consulta 2026-10-21; precios mostrados al consumidor; la QL-700 se comprobó en su ficha (JSON-LD price 69.99, priceValidUntil 2026-10-23, InStock).
+  - Evidencia: Brother QL-700 Impresora de Etiquetas Profesional 69,99€ PVPR 119€
+  - Uso previsto: anexo de presupuesto
+  - Matiz: En la ficha DK11221 de Brother España ([380]) la QL-700 figura a 117,27 € con IVA.
+- **`presupuesto-f16`** · confianza alta · [399]
+  - Hecho: Filament2Print vende un pack de 20 hojas A4 de papel adhesivo de vinilo mate imprimible con inyección de tinta por 7,20 € con IVA (5,95 € sin IVA), y su ficha lo describe como resistente al agua.
+  - Valor: 7,20 € IVA incl. por 20 hojas A4 (≈0,36 € por hoja)
+  - Alcance: España (tienda online); consulta 2026-10-21; producto LOKLIK; la resistencia al agua es una afirmación del vendedor.
+  - Evidencia: Con IVA 7,20 €; Sin IVA 5,95 €; paquete de 20 hojas
+  - Uso previsto: anexo de presupuesto
+  - Matiz: La resistencia al agua es afirmación del vendedor (texto de Loklik), no un ensayo.
+- **`presupuesto-f17`** · confianza media · corregido por el verificador · [400]
+  - Hecho: SR DTF, un impresor español de pegatinas de vinilo monomérico, indica 33,08 € más IVA (40,03 € con el IVA del 21 %) en total por 100 unidades de 5 × 5 cm con plazo estándar de 6–7 días (0,33 € por unidad sin IVA) y 50,70 € más IVA por 100 de 10 × 10 cm.
+  - Valor: 33,08 € sin IVA (40,03 € con IVA) por 100 pegatinas de 5 × 5 cm; 50,70 € sin IVA (≈61,35 € con IVA, cálculo propio) por 100 de 10 × 10 cm
+  - Alcance: España (envío con Nacex a toda España); consulta 2026-10-21; el configurador de la página indica 'IVA no incluido'; envío gratis desde 50 €.
+  - Evidencia: Para 5×5 cm × 100 uds … 33,08 € total (0,33 €/u)
+  - Uso previsto: anexo de presupuesto
+  - Texto original (antes de la corrección): SR DTF, un impresor español de pegatinas de vinilo monomérico, indica 33,08 € en total por 100 unidades de 5 × 5 cm con plazo estándar de 6–7 días (0,33 € por unidad) y 50,70 € por 100 de 10 × 10 cm.
+  - Matiz: Los importes coinciden, pero la frase del enunciado no decía que son sin IVA (solo lo decían el alcance y el valor); la calculadora lo confirma. El dato de 10×10 cm sale de la misma frase de la FAQ y no lo reproduje en la calculadora. El material 'vinilo monomérico diseñado para resistir agua, rayos UV moderados y manipulación intensiva' es texto del impresor.
+- **`presupuesto-f18`** · confianza media · [401]
+  - Hecho: Optimalprint, que imprime en España, cobra 22,45 € por un póster A3 y 32,45 € por un A2 en papel de 170 g, sin que la página aclare si el precio incluye IVA ni envío.
+  - Valor: A3 22,45 €; A2 32,45 €
+  - Alcance: España; consulta 2026-10-21; precio por unidad en el selector de tamaño; la página muestra un banner promocional ('80 % rebaja').
+  - Evidencia: (A3) 22,45 € | 42 x 59 cm (A2) 32,45 €
+  - Uso previsto: anexo de presupuesto
+  - Matiz: ; que la página no aclare IVA ni envío y muestre un banner promocional justifica la confianza media.
+- **`presupuesto-f19`** · confianza alta · [394] [327] [328]
+  - Hecho: Generar los códigos QR no tiene coste de software: el programa gratuito Crea e Imprime de Avery incluye generación de códigos QR y la biblioteca Python qrcode (versión 8.2) se publica con licencia BSD.
+  - Valor: 0 € de software para generar QR
+  - Alcance: Software; consulta 2026-10-21; Avery España (programa online) y PyPI (última versión 8.2, publicada el 2025-05-01).
+  - Evidencia: genera códigos QR, códigos de barras, números de serie | license: BSD
+  - Uso previsto: anexo de presupuesto, anexo de arquitectura
+  - Matiz: Los clasificadores de PyPI incluyen además 'License :: Other/Proprietary License', pero el campo license y el LICENSE del repositorio son BSD (con un aviso MIT heredado de pyqrnative).
+
+### 4.13 proceso_reciclaje: Cómo se recicla industrialmente una batería de plomo-ácido: trituración, separación, fundición, refino y fracciones obtenidas (UE y España)
+
+20 hechos (19 confirmados, 1 con corrección); 29 fuentes distintas.
+
+- **`proceso_reciclaje-f1`** · confianza alta · [298] [422]
+  - Hecho: El reciclaje industrial de una batería de plomo-ácido recorre las etapas de recogida, preparación (retirada del ácido, desmontaje y separación de las fracciones metálica y polimérica), fundición, refino y colado en lingotes, y entre sus coproductos figuran ácido sulfúrico, yeso, sulfato de sodio y polipropileno.
+  - Valor: Recogida → preparación → fundición → refino → colado
+  - Alcance: Mundo y UE; descripción genérica de la ruta de plomo secundario en la guía de ILA publicada el 29-01-2026 (datos de producción de 2022); la Comisión Europea describe la misma cadena en 2019.
+  - Evidencia: «removal of acid, dismantling, separation of metallic and polymeric components» (ILA 2026, apartado 4, etapas del plomo secundario; coproductos en el apartado 7.1)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Matiz solo de las notas: ILA escribe 'In Europe the share of secondary lead was 83%' (ref. [20], World Lead Factbook 2023 de ILZSG) sin decir 'del plomo refinado'; esa precisión es interpretación del investigador (ya marcada como confianza media).
+  - Conflictos: C10
+- **`proceso_reciclaje-f2`** · confianza alta · [11] [419] [423]
+  - Hecho: En los procesos con rotura previa, la batería se drena de ácido y se tritura en molinos de martillos u otros equipos, y las piezas se separan en agua por densidad en pasta fina de óxidos y sulfatos de plomo, fracción metálica (placas, rejillas, conectores y bornes), polipropileno (orgánicos ligeros) y ebonita con separadores (orgánicos pesados).
+  - Valor: 4 corrientes: pasta, metálicos, polipropileno, ebonita y separadores
+  - Alcance: Mundo; directrices técnicas del Convenio de Basilea (2003) que describen el proceso de rotura moderno con carácter general, no una planta concreta.
+  - Evidencia: «separated into polypropylene wastes (called light organics)» (Basilea 2003, apartado 4.1.2, párr. 48; figura 2)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Las notas son exactas (párr. 36-38, 54, 84, 89, 98 y 'cap and box ... polypropylene or co-polymer'). Las decisiones BC-15/11, BC-16/6 y BC-17/5 sobre la actualización de las directrices figuran en la página de decisiones de basel.int; que BC-17/5 extienda el mandato hasta la COP-18 sale de un resumen de búsqueda (ECOLEX), no leído directamente.
+- **`proceso_reciclaje-f3`** · confianza alta · [8] [7] [11]
+  - Hecho: Una batería de plomo-ácido de automoción pesa aproximadamente un 60 % en componentes de plomo (placas, pasta y bornes), un 7 % en carcasa de plástico y un 30 % en electrolito de ácido sulfúrico diluido.
+  - Valor: ≈60 % plomo; ≈7 % plástico; ≈30 % electrolito
+  - Alcance: UE, baterías de plomo de automoción; estimación de la industria (IHS Markit para ACEA, JAMA, KAMA, EUROBAT e ILA), estudio de marzo de 2020; porcentajes del peso total de la batería.
+  - Evidencia: «representing approximately 60% of the weight» (EUROBAT/IHS 2020, p. 5, Overview of Lead Battery Recycling in the EU)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Las tres cifras suman 97 %; el resto no se desglosa en la fuente. Son estimaciones de la industria; Basilea 2003 da otra composición para baterías SLI, algo que las notas del hecho ya reconocen.
+  - Conflictos: C8
+- **`proceso_reciclaje-f4`** · confianza alta · [11] [406] [419]
+  - Hecho: Antes de fundir, la pasta de plomo puede desulfurarse con carbonato o hidróxido de sodio, que convierte el sulfato de plomo en óxido y reduce la escoria y, según el método de fusión, el SO2 emitido, y la lixiviación alcalina previa de materiales con sulfato figura entre las mejores técnicas disponibles de la UE para el plomo.
+  - Valor: SO2: nivel de emisión asociado 50-350 mg/Nm3 (tabla 28)
+  - Alcance: Mundo y UE; técnica descrita en las directrices de Basilea (2003, procesos CX y similares) y recogida en la MTD 100 de la Decisión de Ejecución (UE) 2016/1032.
+  - Evidencia: «converting the lead sulfate (PbSO4) to lead oxide (PbO)» (Basilea 2003, párr. 53); ver también MTD 100(a), Decisión (UE) 2016/1032
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de normativa
+  - Matiz: Nota (92) de la tabla 28: si el lavador húmedo no es aplicable, el extremo superior del rango es 500 mg/Nm3 (ver proceso_reciclaje-f16). Basilea habla de una mezcla de carbonato e hidróxido; Engitec admite cualquiera de los tres reactivos.
+- **`proceso_reciclaje-f5`** · confianza alta · [407] [419] [22] [414]
+  - Hecho: En un horno rotativo se cargan pasta y fracción metálica con chatarra de hierro y carbonatos como fundentes y coque o carbón como reductor, y al terminar cada ciclo se sangra un plomo bruto o de obra de pureza aproximada del 98 %, separado de la escoria por densidad, a unos 800 °C.
+  - Valor: ≈98 % de pureza del plomo bruto; colada a ≈800 °C
+  - Alcance: España; ficha técnica del INSST (2016) sobre hornos de fundición rotatorios de recuperación secundaria de plomo; funcionamiento por ciclos de fusión; la temperatura de colada es aproximada y depende de la instalación.
+  - Evidencia: «con una pureza aproximada del 98 %» (INSST, BASEQUIM ficha 020, descripción de la situación de trabajo)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de seguridad
+  - Matiz: La frase de EPA sobre rotativos (chatarra pobre en plomo) y reverbero (rica) corresponde al sudado del pretratamiento, no a la fundición; para la fundición EPA da plomo semiblando con 3-4 % de Sb (reverbero y rotativo) y duro con ~10 % de Sb (alto horno). Basilea párr. 89 cita ~1.000 °C para el plomo que sale del horno; la discrepancia con los 800 °C del INSST se explica por instalaciones distintas.
+- **`proceso_reciclaje-f6`** · confianza alta · [22] [11] [417] [411]
+  - Hecho: El plomo bruto se refina en calderas a unos 320-700 °C con reactivos que retiran cobre, estaño, antimonio, arsénico, plata y bismuto hasta obtener plomo blando, y después se alea y se cuela en lingotes.
+  - Valor: Refino y aleado: 320-700 °C (EPA); plomo blando con ≤10 g/t de Cu, Sb, As y Sn (Basilea)
+  - Alcance: EE. UU. (EPA, texto de 1986) y mundo (Basilea, 2003); datos de productos de dos recicladores españoles según sus webs sin fecha.
+  - Evidencia: «Antimony, tin, arsenic, copper, and nickel are the most common alloying materials.» (EPA AP-42, apartado 12.11.2.3)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: El rango 320-700 °C de EPA abarca refino y aleado; Basilea acota el refino térmico a más de 327 °C y menos de 650 °C (párr. 67). La frase de evidencia de EPA trata de elementos de aleación; la retirada de impurezas está en Basilea.
+- **`proceso_reciclaje-f7`** · confianza alta · [406] [7] [8] [11] [410]
+  - Hecho: El electrolito (ácido sulfúrico diluido, cerca del 30 % del peso de la batería) puede regenerarse como ácido, reutilizarse en decapado o como materia prima química, convertirse en yeso o en sulfato de sodio, o bien neutralizarse y eliminarse según el proceso de cada planta.
+  - Valor: 5 técnicas de valorización en la MTD 106: decapado, materia prima química, regeneración por craqueo, yeso, sulfato de sodio
+  - Alcance: UE; técnicas de la MTD 106 de la Decisión (UE) 2016/1032 y descripción de la industria (EUROBAT/IHS 2014 y 2020); el destino depende de la planta.
+  - Evidencia: «Reuse as a pickling agent» (MTD 106, técnica a; técnicas b-e: materia prima química, regeneración del ácido, yeso, sulfato de sodio)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de normativa
+  - Matiz: La técnica 106(c) (regeneración por craqueo) solo es aplicable si hay planta de ácido sulfúrico o de SO2 líquido. Las notas citan el Reglamento 2023/1542 ([26]) y Engitec ([419]), que no figuran en las fuentes declaradas del hecho.
+- **`proceso_reciclaje-f8`** · confianza alta · [406] [8] [11] [417] [420] [410]
+  - Hecho: La carcasa de plástico de la batería (polipropileno o copolímero, cerca del 7 % del peso) se separa antes de fundir, algo que las MTD de la UE recogen para recuperar el polipropileno, y se reprocesa para fabricar carcasas nuevas u otras piezas de automoción.
+  - Valor: ≈7 % del peso de la batería
+  - Alcance: UE; MTD 105 de la Decisión (UE) 2016/1032 y descripción de la industria en EUROBAT/IHS (2020); los usos concretos del reciclado son afirmaciones de empresas.
+  - Evidencia: «BAT is to separate it from the batteries prior to smelting» (MTD 105, Decisión (UE) 2016/1032)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de normativa
+  - Matiz: BAT 105 menciona polipropileno y polietileno; el enunciado cita solo el polipropileno. Ecobat dice que Seculene y Reprolene proceden 'solely from secondary raw materials', sin precisar que sean carcasas de baterías; es afirmación de la empresa.
+- **`proceso_reciclaje-f9`** · confianza alta · [8] [7] [422] [39]
+  - Hecho: Entre 2015 y 2017 se recogió y envió a reciclar el 97,3 % de las baterías de plomo de automoción disponibles para recogida en 14 países de la UE (3,12 de 3,21 millones de toneladas), frente al 99 % estimado para 2010-2012 con siete países.
+  - Valor: 97,3 % (2015-2017); 99 % (2010-2012)
+  - Alcance: 14 países de la UE (≈92 % del parque de vehículos en 2017), 2015-2017, baterías de plomo de automoción; mide toneladas recogidas entre toneladas disponibles para recogida, no el rendimiento de las plantas.
+  - Evidencia: «calculated using this methodology was 97.3%» (EUROBAT/IHS 2020, p. 3, Key Findings)
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores, anexo de ODS
+  - Matiz: Entre los 14 países figura el Reino Unido, miembro de la UE en 2015-2017 y no ahora. La cifra de BCI 2020-2024 mide plomo recuperado (97,7 %); el titular dice casi 98 %. El enunciado ya aclara que no mide el rendimiento de las plantas.
+  - Conflictos: C11
+- **`proceso_reciclaje-f10`** · confianza alta · [408] [409] [46] [305]
+  - Hecho: En España, los procesos de reciclado de baterías de plomo alcanzaron en 2023 una eficiencia de reciclado del 71,9 % en masa y una tasa de plomo reciclado del 92,5 %, tras recibir 277.016 t de baterías de plomo.
+  - Valor: 71,9 % (eficiencia 2023); 92,5 % (plomo 2023); 277.016 t de entrada
+  - Alcance: España, 2023; datos notificados a Eurostat bajo la Directiva 2006/66/CE y el Reglamento (UE) 493/2012: eficiencia = masa de fracciones de salida contabilizadas como reciclaje entre masa de baterías de entrada (incluye fluidos y ácidos, no cuenta emisiones); tasa de plomo = plomo reciclado entre plomo de entrada (no cuenta el plomo de la escoria).
+  - Evidencia: Eurostat env_wasbat: wst_oper=RCY, waste=W160601, unit=PC, geo=ES, time=2023 → 71,9; waste=W160601PB → 92,5
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores, anexo de ODS, anexo de normativa
+  - Matiz: Cociente comprobado: 199.181/277.016 = 71,9 % y 182.695/197.472 = 92,5 %. 2023 es el último año del dataset. El art. 95 del Reglamento 2023/1542 mantuvo el art. 12(4)-(5) de la Directiva (el 65 %) hasta el 31-12-2025, así que el 65 % era el umbral vigente para 2023 y el 75 % rige desde esa fecha. La comparación del investigador es aritméticamente correcta. La comparación con el 75 % es del investigador: el objetivo obliga a los recicladores y se mide con el Reglamento Delegado (UE) 2025/606 (ver clima_energia-f12 y C12); no afirmar incumplimiento.
+  - Conflictos: C12
+- **`proceso_reciclaje-f11`** · confianza alta · [26] [46] [65] [64]
+  - Hecho: El Reglamento (UE) 2023/1542 exige que el reciclado de baterías de plomo-ácido alcance una eficiencia del 75 % en peso antes del 31-12-2025 y del 80 % antes del 31-12-2030, que se recupere el 90 % del plomo antes del 31-12-2027 y el 95 % antes del 31-12-2031, y que desde el 18-08-2031 las baterías de arranque, de vehículos eléctricos e industriales de más de 2 kWh con plomo acrediten un 85 % de plomo recuperado de residuos.
+  - Valor: Eficiencia 75 % (2025) y 80 % (2030); plomo 90 % (2027) y 95 % (2031); contenido reciclado 85 % (2031)
+  - Alcance: UE; obligaciones de los recicladores (artículo 71 y anexo XII, partes B y C) y de los fabricantes (artículo 8); Reglamento de 12-07-2023 (DO L 191, 28.7.2023).
+  - Evidencia: «recycling of 80 % by average weight of lead-acid batteries» (Reglamento (UE) 2023/1542, anexo XII, parte B, punto 2)
+  - Uso previsto: anexo de normativa, anexo de indicadores, capítulo, anexo de ODS
+  - Matiz: El texto legal dice 'a más tardar el' (no 'antes del') en las fechas de las partes B y C. El art. 8(2) excluye las baterías industriales con almacenamiento exclusivamente externo y se aplica a baterías que contienen cobalto, plomo, litio o níquel en materiales activos. La Directiva se derogó el 18-8-2025, pero su art. 12(4)-(5) siguió aplicándose hasta el 31-12-2025.
+- **`proceso_reciclaje-f12`** · confianza alta · [412] [413] [416] [417] [418] [411]
+  - Hecho: El registro oficial PRTR-España incluye como complejos de reciclado o fundición de plomo a Azor Ambiental (Molina de Segura, Murcia), Metalúrgica de Medina (Medina del Campo, Valladolid), Exide Technologies en San Esteban de Gormaz (Soria) y en Sant Julià del Llor i Bonmatí (Girona), Derichebourg España en Albalate del Arzobispo (Teruel) y Pina de Ebro (Zaragoza), y Plomos Industriales de Madrid (Fuenlabrada).
+  - Valor: 6 complejos de fundición o reciclado de plomo + la planta de Pina de Ebro (3 entradas en el registro)
+  - Alcance: España; inventario de complejos industriales del PRTR-España (fichero fechado 21-10-2026), con la descripción de actividad que declara cada titular; el registro no indica si la planta funciona hoy ni su capacidad.
+  - Evidencia: «RECICLADO DE PB» (PRTR-España, complejo 1710 Azor Ambiental, S.A., CNAE 24.43)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Pina de Ebro tiene 3 entradas: 1567 RECOBAT, S.L. (38.22, RECICLAJE), 5781 RECUPERACIÓN ECOLÓGICA DE BATERÍAS (38.22) y 6936 DERICHEBOURG ESPAÑA_PINA (38.12, RECICLAJE DE CHATARRA Y DESECHOS DE METAL); las notas del hecho solo describen las dos primeras. Solo Azor y Exide Recycling declaran plomo en el texto de actividad; las demás se identifican por CNAE 24.43, nombre o UNIPLOM. Otras entradas con plomo no son recicladoras de baterías (CRM Synergies, Abbey Metals Europe, Amat Metalplast).
+  - Conflictos: C7
+- **`proceso_reciclaje-f13`** · confianza alta · [410] [411]
+  - Hecho: Derichebourg España (antes Recuperación Ecológica de Baterías, Recobat) opera en Aragón una planta de trituración de baterías de plomo en Pina de Ebro, desde 1998 y con autorización ambiental integrada para 37.175 t/año, y una instalación completa de trituración y metalurgia en Albalate del Arzobispo, desde 2006.
+  - Valor: 37.175 t/año autorizadas en Pina de Ebro
+  - Alcance: España (Aragón); resolución de 19-04-2022 del Instituto Aragonés de Gestión Ambiental publicada en el BOA de 13-05-2022 y web de la empresa sin fecha.
+  - Evidencia: «planta de reciclado parcial de baterías y compuestos de plomo» (BOA núm. 91, 13/05/2022, título de la resolución)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: Los 37.175 t/año son la capacidad total de materias primas (baterías de plomo, chatarra, productos y otros materiales con plomo, cables y baterías Ni-Cd), no solo baterías de plomo. La web da además la AAI AR/AAI-34 para Pina. En el BOA no hay modificación posterior al 13-5-2022; consta un anuncio del 24-11-2021 sobre la revisión de la AAI (INAGA 500301/02/2021/7692) sin resolución localizada.
+- **`proceso_reciclaje-f14`** · confianza alta · [410]
+  - Hecho: La autorización ambiental de la planta de Pina de Ebro prevé que el tratamiento de baterías y otros materiales plomíferos (36.705 t/año de salidas) dé 27.845 t/año de pastas y compuestos semielaborados de plomo, 3.960 t/año de aguas de electrolito neutralizadas, 2.000 t/año de metales no férreos, 1.775 t/año de separadores de polietileno, 1.020 t/año de polipropileno y 105 t/año de carcasas metálicas.
+  - Valor: 27.845 t pasta; 3.960 t electrolito neutralizado; 1.775 t separadores PE; 1.020 t polipropileno; 2.000 t metales; 105 t carcasas
+  - Alcance: España (Pina de Ebro, Zaragoza); cantidades autorizadas por año en la resolución de 19-04-2022 (BOA 13-05-2022), no mediciones reales; la entrada de 37.175 t/año mezcla baterías de plomo, chatarra, productos y cables.
+  - Evidencia: BOA 13/05/2022, condicionado 1.2.bis «Fracciones obtenidas en el tratamiento» (p. 16893)
+  - Uso previsto: anexo de datos, capítulo, pantalla 3D
+  - Matiz: Son cantidades autorizadas, no medidas. No hay plomo metálico refinado entre las salidas, coherente con 'reciclado parcial'.
+- **`proceso_reciclaje-f15`** · confianza alta · [11] [419] [22]
+  - Hecho: Una fundición de plomo secundario genera del orden de 300-350 kg de escoria por tonelada de plomo, con alrededor del 5 % de compuestos de plomo, y la escoria cálcica puede usarse en cemento, carreteras o ladrillos mientras la sódica va a vertedero de residuos peligrosos.
+  - Valor: 300-350 kg de escoria por t de plomo; ~5 % de compuestos de plomo en la escoria
+  - Alcance: Mundo; directrices técnicas del Convenio de Basilea (2003), cifra genérica de fusión-reducción sin especificar desulfuración previa; la reutilización de escorias depende del fundente empleado.
+  - Evidencia: «300-350kg of slag is produced for each ton of metallic lead» (Basilea 2003, párr. 64(g))
+  - Uso previsto: anexo de datos, capítulo
+  - Matiz: Cifra genérica de 2003; la de Engitec es de fabricante y específica tras desulfurar. Coherente con las notas del hecho.
+- **`proceso_reciclaje-f16`** · confianza alta · corregido por el verificador · [406]
+  - Hecho: Las MTD de la UE para el plomo fijan niveles de emisión asociados de polvo ≤5 mg/Nm3 en la preparación de baterías, polvo de 2-4 mg/Nm3 y plomo ≤1 mg/Nm3 en carga, fusión y colada, y SO2 de 50-350 mg/Nm3 (hasta 500 mg/Nm3 cuando el lavador húmedo no es aplicable).
+  - Valor: Polvo ≤5 y 2-4 mg/Nm3; Pb ≤1 mg/Nm3; SO2 50-350 mg/Nm3 (hasta 500 si no es aplicable el lavador húmedo, nota 92 de la tabla 28)
+  - Alcance: UE; Decisión de Ejecución (UE) 2016/1032, de 13-06-2016, MTD 95, 96 y 100 (tablas 23, 24 y 28), aplicables a producción de plomo primario y secundario; sujetos a las notas de cada tabla.
+  - Evidencia: Referencia a tablas de la Decisión (UE) 2016/1032: tabla 23 (Dust ≤ 5), tabla 24 (Dust 2-4; Pb ≤ 1) y tabla 28 (SO2 50-350), en mg/Nm3
+  - Uso previsto: anexo de normativa, anexo de indicadores, anexo de seguridad
+  - Texto original (antes de la corrección): Las MTD de la UE para el plomo fijan niveles de emisión asociados de polvo ≤5 mg/Nm3 en la preparación de baterías, polvo de 2-4 mg/Nm3 y plomo ≤1 mg/Nm3 en carga, fusión y colada, y SO2 de 50-350 mg/Nm3.
+  - Matiz: La nota (92) de la tabla 28 eleva el extremo superior a 500 mg/Nm3 si el lavador húmedo no es aplicable; la nota (81) de la tabla 24 dice que el polvo tiende al extremo inferior si Cu, Sb, As o Cd superan ciertos niveles. Promedios: tabla 23 media del periodo de muestreo (79); tabla 24 polvo media diaria o del periodo (80) y Pb media del periodo (82); tabla 28 media diaria o del periodo (91).
+- **`proceso_reciclaje-f17`** · confianza alta · [414] [415] [421]
+  - Hecho: España no tiene producción primaria de plomo desde 1991 (cierre de Peñarroya) y toda su producción es secundaria, cifrada por el inventario de emisiones del MITECO en 188.422 t en 2017 con datos de cinco plantas.
+  - Valor: 188.422 t de plomo secundario (2017); 5 plantas
+  - Alcance: España; producción secundaria de plomo en toneladas en 2017, ficha del Sistema Español de Inventario (SNAP 04.03.09) actualizada en octubre de 2019.
+  - Evidencia: «IQ de cinco plantas de producción secundaria de plomo» (MITECO, ficha 04.03.09, fuentes de la variable de actividad 2015-2017)
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: La ficha del MITECO y la guía de 2000 repiten la misma tasa de recuperación del 80-95 %, sin fuente: no usar. El PRTR lista 6 complejos más Pina de Ebro (3 entradas) frente a las cinco plantas: sigue sin resolverse. El número de plantas no concilia con otras fuentes (C7).
+  - Conflictos: C7
+- **`proceso_reciclaje-f18`** · confianza alta · [22]
+  - Hecho: Según el AP-42 de la EPA, la fundición de plomo secundario tiene tres operaciones —pretratamiento de chatarra (rotura, trituración y sudado), fundición en alto horno, reverbero u horno rotativo, y refino en calderas— y una batería de automoción contiene unos 8,2 kg de plomo, un 40 % en aleaciones y un 60 % en óxido.
+  - Valor: 3 operaciones; 8,2 kg de plomo por batería
+  - Alcance: EE. UU.; texto de octubre de 1986 (reformateado en 1995, erratas de 2010 en las tablas de emisiones); describe tecnología antigua y no plantas modernas.
+  - Evidencia: «Secondary lead smelting includes 3 major operations: scrap pretreatment, smelting, and refining.» (EPA AP-42, apartado 12.11.2)
+  - Uso previsto: capítulo, anexo de datos
+  - Matiz: Datos de 1986 para EE. UU.; las notas (más del 60 % del plomo secundario viene de baterías, separación manual, 1.260 °C en reverbero, 650-730 °C en gases de alto horno) coinciden con el texto.
+- **`proceso_reciclaje-f19`** · confianza media · [419]
+  - Hecho: El proveedor de tecnología Engitec describe una planta de reciclado de baterías con unidades sucesivas: neutralización del electrolito, rotura y separación (CX Breaker), desulfuración de pasta, cristalización de sulfato de sodio, fusión de rejillas, fusión en hornos rotativos y refinería de calderas con colada de lingotes.
+  - Valor: Unidades 100 a 800 (electrolito, rotura, desulfuración, sulfato, depuración de gases, fundición de rejillas, fundición, refinería)
+  - Alcance: Mundo; descripción comercial de la tecnología CX de Engitec Technologies S.p.A., página sin fecha; las cifras son del fabricante.
+  - Evidencia: «smelting of lead-based materials in fixed-axis or in tilting rotary furnaces» (Engitec, Unit 700: Lead smelting)
+  - Uso previsto: pantalla 3D, anexo de datos
+  - Matiz: La nota dice 'colada robotizada'; la página dice que la línea de lingotes tiene 'robotized stacking and strapping' (apilado y flejado robotizados). Descripción y cifras son del fabricante.
+- **`proceso_reciclaje-f20`** · confianza alta · [413] [412]
+  - Hecho: En 2024, las plantas españolas de reciclado de plomo declararon al registro PRTR emisiones de plomo al aire desde 0,1 kg (Exide en Girona) hasta 858 kg (Azor Ambiental), con 437,5 kg en Metalúrgica de Medina, 215 kg en Exide en Soria, 60,8 kg en Derichebourg Albalate y 1,1 kg en Ploinmasa.
+  - Valor: Pb al aire 2024: Azor 858; Medina 437,5; Exide Soria 215; Derichebourg Albalate 60,79; Ploinmasa 1,09; Exide Girona 0,105 (kg)
+  - Alcance: España, 2024; kg al año de plomo y compuestos (como Pb) emitidos al aire, declarados por cada titular y validados por la autoridad competente; no son comparables sin conocer la producción de cada planta.
+  - Evidencia: PRTR_Espana_MITECO_Emisiones2024.xml, contaminante «Plomo y compuestos (como Pb)», medio «Aire»
+  - Uso previsto: anexo de indicadores, anexo de seguridad, anexo de datos
+  - Matiz: Valores declarados por cada titular con su método (medida o cálculo). Otra instalación con plomo, CRM Synergies (perdigones y lingotes), declara 43,5 kg de Pb al aire en 2024 y no es recicladora de baterías.
+
+### 4.14 taller_resultados: Averías por batería y resultados reales de pruebas en taller (taller_resultados)
+
+20 hechos (19 confirmados, 1 con corrección); 38 fuentes distintas.
+
+- **`taller_resultados-f1`** · confianza alta · [424] [183] [187] [449]
+  - Hecho: En Alemania, la batería de arranque de 12 V fue en 2025 la causa más frecuente de asistencia en carretera del ADAC, con el 45,4 % de las averías atendidas, frente al 35,7 % de 2015.
+  - Valor: 45,4 % (2025)
+  - Alcance: Alemania; año 2025 (nota de prensa del 10/03/2026: 3.691.813 intervenciones de la Straßenwacht del ADAC) y serie 2015-2025 de la Pannenstatistik 2026 (23/04/2026); mide la causa de la avería atendida, no cuántas baterías se sustituyen.
+  - Evidencia: «Starterbatterie mit 45,4 Prozent die häufigste Pannenursache» (nota ADAC, 10/03/2026)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de indicadores
+  - Matiz: Matiz de ámbito: las 3.691.813 intervenciones son de la «ADAC Pannenhilfe» (unos 1.700 «Gelbe Engel» de la Straßenwacht más 550 empresas colaboradoras), no solo de la Straßenwacht. La nota de prensa dice «Starterbatterie»; la página de estadística la identifica como «12-Volt-Batterie» y «Bordnetzbatterie». Se confirma también que la página de estadística usa modelos de 2 a 9 años (Erstzulassung 2016-2023). Las demás cifras de las notas del hecho coinciden con las fuentes.
+  - Conflictos: C15
+- **`taller_resultados-f2`** · confianza alta · [425] [426]
+  - Hecho: En España, entre julio y agosto de 2026 el RACE atendió 120.248 asistencias en carretera y la batería fue la tercera causa, con el 20,7 %, por detrás del motor (31,5 %) y de los neumáticos (24,8 %).
+  - Valor: 20,7 % (verano de 2026)
+  - Alcance: España; julio-agosto de 2026; asistencias en carretera del RACE (periodo estival, no todo el año); porcentaje sobre el total de asistencias.
+  - Evidencia: «los problemas de batería, que representan el 20,7% de las asistencias»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: No se localizó una nota de prensa original del RACE: el listado del Área de prensa de race.es no recoge el barómetro y una búsqueda web solo devolvió la propia revista. La Revista Autoclub es publicación del propio RACE, por lo que se trata como fuente primaria. El barómetro de Semana Santa de 2026 (92,1 %) que citan las notas del hecho no se ha comprobado.
+  - Conflictos: C15
+- **`taller_resultados-f3`** · confianza media · [427] [428] [451] [452]
+  - Hecho: En España, Autoclub Mutua informó de que el 43 % de sus intervenciones de asistencia en carretera entre diciembre y febrero se debieron a problemas con la batería, frente al 40 % de averías mecánicas y el 16 % de neumáticos.
+  - Valor: 43 % (invierno)
+  - Alcance: España; invierno (diciembre-febrero), datos de 2025 según la nota difundida el 16/02/2026; Autoclub Mutua (Grupo Mutua Madrileña); más de 380.000 asistencias de invierno en 2025 frente a 182.000 en 2015.
+  - Evidencia: «el 43% de las intervenciones realizadas entre diciembre y febrero» (copia de agencia, Diario Siglo XXI)
+  - Uso previsto: anexo de datos
+  - Matiz: No se localizó la nota original de Autoclub Mutua (los intentos directos a sus sitios devolvieron 403/404). Todas las coberturas parecen reescrituras de la misma nota, así que la corroboración es de transcripción y no independiente. El titular y el primer párrafo hablan de «más del 40 %» por fallos de batería «o del sistema de arranque»; el 43 % se atribuye a «problemas con la batería». La nota atribuye el aumento de asistencias a más socios, parque envejecido y fenómenos meteorológicos extremos (confirmado). Confianza media adecuada.
+  - Conflictos: C15
+- **`taller_resultados-f4`** · confianza alta · [183]
+  - Hecho: El ADAC indica que las baterías de arranque duran de media entre cinco y seis años, aunque muchos vehículos jóvenes se quedan parados por una batería descargada o defectuosa debido a la carga de los consumidores eléctricos.
+  - Valor: 5-6 años
+  - Alcance: Alemania; recomendación del ADAC publicada en su página de la Pannenstatistik 2026 (actualizada el 23/04/2026); no cita el estudio ni la muestra de la que sale la cifra.
+  - Evidencia: «Im Schnitt halten Starterbatterien fünf bis sechs Jahre»
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos
+  - Matiz: El ADAC dice que la carga de consumidores eléctricos es «oft» (a menudo) la causa; el enunciado lo formula sin ese matiz. El ADAC sigue sin citar estudio ni muestra para los 5-6 años.
+  - Conflictos: C16
+- **`taller_resultados-f5`** · confianza alta · [429] [424]
+  - Hecho: También en los coches eléctricos la batería de 12 V es la primera causa de asistencia: el ADAC la cifra en el 50,5 % de las averías de eléctricos frente al 44,6 % de los de combustión en 2024, y en cerca de la mitad de las 50.445 intervenciones a eléctricos puros de 2025.
+  - Valor: 50,5 % (eléctricos, 2024)
+  - Alcance: Alemania; datos de 2024 (Pannenstatistik 2025, nota del 10/04/2025) y de 2025 (nota del 10/03/2026); coches eléctricos puros; se refiere a la batería de 12 V, no a la de tracción.
+  - Evidencia: «mit 50,5 % höher als beim Verbrenner (44,6%)»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: Dos matices en las notas del hecho. (1) Los índices 4,0 y 1,7 por 1.000 (vehículos de 2 a 4 años) aparecen en el párrafo de la batería de 12 V y, por el contexto y la aritmética (9,4 x 44,6 % = 4,2; 3,8 x 50,5 % = 1,9), parecen ser índices de averías de batería y no de todas las averías; el índice global que da la misma nota para ese tramo es 9,4 en combustión y 3,8 en eléctricos. (2) El ADAC atribuye el aumento de averías de eléctricos al mayor número de coches y a su mayor edad, no solo al parque.
+  - Conflictos: C15
+- **`taller_resultados-f6`** · confianza alta · [430]
+  - Hecho: El fabricante de comprobadores Midtronics define para una batería de arranque cuatro decisiones principales: buena (volver al servicio), buena-recargar (cargar a fondo y volver al servicio), cargar y volver a probar (si se repite tras cargar, sustituir) y reemplazar.
+  - Valor: 4 decisiones: GOOD BATTERY, GOOD-RECHARGE, CHARGE & RETEST, REPLACE BATTERY
+  - Alcance: Documentación del fabricante (manual del MDX-650P, sin fecha editorial; fichero subido en 2019); comprobador de conductancia para baterías de arranque de 6 y 12 V; no contiene porcentajes de resultados ni tamaño de muestra.
+  - Evidencia: «Fully charge the battery and return it to service» (decisión GOOD-RECHARGE)
+  - Uso previsto: capítulo, pantalla 3D, anexo de datos, anexo de arquitectura
+  - Matiz: La misma tabla lista además BAD CELL-REPLACE («Replace the battery and retest»), 24 VOLT SYSTEM y, solo para moto, READY TO INSTALL y NEEDS CHARGE: «cuatro decisiones principales» es correcto, pero no son los únicos mensajes. Metadatos del PDF: creado el 21/04/2008 (InDesign CS3); el servidor lo marca como modificado el 17/05/2021; la ruta de subida es 2019/06. Es un manual antiguo y no contiene porcentajes de resultados.
+- **`taller_resultados-f7`** · confianza baja · [431] [161] [432] [433]
+  - Hecho: Battery University (Cadex) recoge, sin fecha ni método, que un fabricante alemán de coches de lujo halló sin problema 200 de 400 baterías devueltas en garantía y que un fabricante europeo de baterías cifra los defectos de fábrica en menos del 7 %.
+  - Valor: 50 % (200 de 400); defectos de fábrica < 7 %
+  - Alcance: Alemania/Europa (fabricantes sin nombre); sin año ni metodología; baterías de arranque devueltas en garantía; página de divulgación de un fabricante de analizadores (publicada en 2010, revisada el 29/10/2025).
+  - Evidencia: «of 400 car batteries returned under warranty, 200 are working well»
+  - Uso previsto: capítulo, anexo de datos
+  - Matiz: Dato anónimo y de segunda mano, sin año ni método; el sitio es de Cadex Electronics, fabricante de analizadores, y no cita el origen. Confianza baja adecuada. Una búsqueda web adicional con términos de «no fault found» en baterías de coche devueltas en garantía tampoco halló ningún estudio con año, método y tamaño de muestra, lo que respalda el hueco declarado; no se pudo buscar de forma específica a Midtronics, Exide, Clarios o Johnson Controls porque la cuota de búsqueda se agotó.
+- **`taller_resultados-f8`** · confianza alta · corregido por el verificador · [47] [434]
+  - Hecho: Eurostat solo registra ventas y recogida de las baterías portátiles y, en el reciclado, no distingue entre baterías portátiles e industriales o de automoción (no se puede determinar el tipo de batería una vez enviada a la planta; los datos se dan por química: plomo-ácido, Ni-Cd y otras). El reparto de las baterías de coche sustituidas entre seguir en servicio, segunda vida y reciclaje no figura en estos datos (inferencia del proyecto, no afirmación de Eurostat). En España entraron a reciclado 277.016 t de baterías de plomo en 2023, con una eficiencia de reciclado del 71,9 % (199.181 t).
+  - Valor: 277.016 t (entrada a reciclado, plomo-ácido, España, 2023); eficiencia de reciclado 71,9 %
+  - Alcance: UE y España; datos de Eurostat hasta el año de referencia 2023 (extraídos en noviembre de 2025; artículo editado el 05/10/2026); baterías de plomo = residuo 16 06 01, que incluye automoción e industriales.
+  - Evidencia: «not possible to determine the type of batteries once they are shipped»
+  - Uso previsto: anexo de datos, anexo de ODS, anexo de indicadores
+  - Texto original (antes de la corrección): Eurostat no puede separar las baterías de automoción de las industriales en el reciclado y solo registra ventas y recogida de las portátiles, por lo que no hay un reparto oficial de las baterías de coche sustituidas entre seguir en servicio, segunda vida y reciclaje; en España entraron a reciclado 277.016 t de baterías de plomo en 2023.
+  - Matiz: Lo que se corrige es la atribución: Eurostat no declara que no pueda separar automoción de industriales; dice que en el reciclado no separa lo portátil de lo industrial o de automoción (las agrupa como «industrial and automotive»). La conclusión de que no hay reparto oficial entre servicio, segunda vida y reciclaje es una inferencia razonable (la extracción de env_wasbat para España solo trae las operaciones RCY y RCY_INP, sin ninguna categoría de reutilización o segunda vida) pero no la dice Eurostat. La categoría de plomo (16 06 01) puede incluir también baterías de plomo portátiles.
+- **`taller_resultados-f9`** · confianza alta · [435]
+  - Hecho: En Países Bajos, la ANWB Wegenwacht registró en 2025 unas 337.000 asistencias relacionadas con la batería, primera causa de avería en coches de combustión, y renovó más de 80.000 baterías, frente a 60.000 el año anterior.
+  - Valor: 337.000 asistencias; más de 80.000 sustituciones
+  - Alcance: Países Bajos; año 2025; asistencias de la ANWB Wegenwacht (más de 1,3 millones de personas atendidas); la nota no da porcentaje ni dice qué se hizo en el resto de asistencias de batería.
+  - Evidencia: «337.000 accugerelateerde hulpverleningen»; «ruim 80.000 accu’s vernieuwd»
+  - Uso previsto: capítulo, anexo de datos, anexo de indicadores
+  - Matiz: El 24 % (80.000 / 337.000 = 23,7 %) es cálculo del investigador y comparar sustituciones con asistencias es solo orientativo. La nota no aclara si las 337.000 asistencias abarcan solo coches de combustión.
+  - Conflictos: C15
+- **`taller_resultados-f10`** · confianza alta · [436]
+  - Hecho: En EE. UU., AAA recibió en 2024 más de 27 millones de llamadas de asistencia en carretera, de las que unas 13 millones fueron remolques y unas 7 millones problemas de batería, y ambos tipos suman aproximadamente el 74 % del total.
+  - Valor: unas 7 de más de 27 millones de llamadas
+  - Alcance: EE. UU.; año 2024; llamadas de asistencia en carretera de AAA (nota de abril de 2025); AAA no da el porcentaje de batería por separado.
+  - Evidencia: «battery issues (approximately 7 million)»; «over 27 million emergency roadside service calls»
+  - Uso previsto: anexo de datos
+  - Matiz: El 26 % de batería (7 / 27) es cálculo del investigador; AAA solo da el 74 % combinado. En esta comprobación curl cargó la sala de prensa nacional sin bloqueo.
+  - Conflictos: C15
+- **`taller_resultados-f11`** · confianza alta · [437] [438]
+  - Hecho: En Reino Unido, el RAC sostiene que los problemas de batería son desde hace tiempo la primera causa de sus asistencias, y que el primer lunes de 2025 el 24 % de todas sus averías fueron por baterías descargadas.
+  - Valor: 24 % (un solo día)
+  - Alcance: Reino Unido; afirmación general sin año de cálculo (RAC, 30/12/2024 y 31/12/2025) y dato de un solo día (primer lunes de 2025); no es un porcentaje anual.
+  - Evidencia: «a quarter (24%) of all RAC breakdowns were due to flat batteries»
+  - Uso previsto: anexo de datos
+  - Matiz: El 24 % es de un solo día (primer lunes de 2025), no un dato anual; las páginas no dan porcentaje anual. [438] añade que las patrullas del RAC atienden más de dos millones de averías al año y que el primer día laborable tras Navidad suele ser el más ocupado.
+  - Conflictos: C15
+- **`taller_resultados-f12`** · confianza alta · [439]
+  - Hecho: GS Yuasa indica a los talleres que solo un resultado «BAD CELL», «WARRANTY FAILURE» o equivalente, es decir, un defecto interno, debe dar lugar a la sustitución en garantía, y excluye la sulfatación, la carga insuficiente y los errores del usuario.
+  - Valor: 12 meses; sustitución solo con defecto interno
+  - Alcance: Reino Unido/Europa; guía para el canal profesional de GS Yuasa (publicada el 21/10/2024, actualizada el 16/02/2026); garantía de 12 meses desde la compra; no incluye estadísticas de devoluciones.
+  - Evidencia: «indication of internal defects should lead to a warranty replacement»
+  - Uso previsto: anexo de datos, anexo de arquitectura
+  - Matiz: La guía es para el canal profesional del Reino Unido (talleres, distribuidores, motor factors); no contiene estadísticas de devoluciones.
+- **`taller_resultados-f13`** · confianza alta · [30] [450] [26]
+  - Hecho: El Reglamento (UE) 2023/1542 obliga a comunicar cada año, para las baterías de arranque, industriales y de vehículos eléctricos, las cantidades de residuos enviadas a preparación para la reutilización o adaptación, a tratamiento o exportadas, pero el primer periodo de comunicación empieza tras el acto de ejecución que fije el formato.
+  - Valor: arts. 75 y 76
+  - Alcance: UE; artículos 75 y 76 del Reglamento (UE) 2023/1542 (texto consolidado de 13/08/2026, con la misma redacción que el original del DOUE L 191 de 28/07/2023 en esos artículos); el acto de ejecución del artículo 76.5 debía adoptarse a más tardar el 18/08/2025; no comprobé si ya existe ese acto ni si hay datos publicados.
+  - Evidencia: «preparación para la reutilización o preparación para la adaptación» (art. 75, apartado 2)
+  - Uso previsto: anexo de normativa, anexo de datos
+  - Matiz: Actualización que cierra un hueco del investigador: el acto de ejecución del art. 76.5 ya existe. Es el Reglamento de Ejecución (UE) 2025/2289 de la Comisión, de 13 de noviembre de 2025 (DOUE de 21.11.2025), que entra en vigor a los veinte días de su publicación; se adoptó unos tres meses después del plazo del 18/08/2025. Por los arts. 75.7 y 76.1, el primer periodo de comunicación abarca el primer año civil completo posterior a su entrada en vigor (por tanto 2026, inferencia), con datos de productores a seis meses del cierre del año y publicación por los Estados miembros a los 18 meses. Su anexo I (cuadro 3) pide para las baterías de arranque solo las comercializadas, los residuos recogidos y los exportados; el envío a preparación para la reutilización o adaptación se pide solo para industriales (cuadro 4) y de vehículos eléctricos (cuadro 5), en línea con el art. 76.1 c). No se compro…
+  - Conflictos: C22
+- **`taller_resultados-f14`** · confianza media · [441] [442]
+  - Hecho: Generational (Reino Unido) halló en más de 8.000 evaluaciones de baterías de eléctricos hechas en 2025 una salud media del 95,15 %, con una mediana de alrededor del 85 % a los 8-9 años, y en un análisis de 2.000 usados el 4,70 % de los híbridos enchufables y el 1,50 % de los eléctricos puros estaban por debajo del 85 % de estado de salud.
+  - Valor: SoH medio 95,15 %
+  - Alcance: Reino Unido; evaluaciones de 2025 (turismos y furgonetas, BEV y PHEV, de 0 a 12 años) publicadas el 18/02/2026, y muestra de 2.000 usados publicada el 11/05/2026; baterías de tracción; datos de la propia empresa.
+  - Evidencia: «Average battery health: 95.15% across all vehicles tested»
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: El primer dato (95,15 %) incluye PHEV además de BEV; conviene escribir «eléctricos puros y enchufables» en lugar de «eléctricos». El valor de alrededor del 85 % a los 8-9 años es una mediana de capacidad, mientras que el 95,15 % es una media. Datos autopublicados y sin auditoría externa.
+- **`taller_resultados-f15`** · confianza media · [440]
+  - Hecho: En un análisis publicado el 24/08/2026 sobre unas 10.000 pruebas de baterías de eléctricos usados hechas en concesionarios del Reino Unido, Generational halló una mediana de 8 mV entre la celda más alta y la más baja, y desequilibrios de más de 50 mV en 1 de cada 85 pruebas y de más de 100 mV en 1 de cada 200.
+  - Valor: 1 de 85 (> 50 mV); 1 de 200 (> 100 mV)
+  - Alcance: Reino Unido; unas 10.000 pruebas a través de cientos de concesionarios (periodo no indicado); baterías de tracción de eléctricos usados; datos de la propia empresa.
+  - Evidencia: «around 1 in 85 tests showed a significant imbalance above 50 mV»
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: Las proporciones son aproximadas («around»); no hay periodo ni auditoría externa.
+- **`taller_resultados-f16`** · confianza media · [443]
+  - Hecho: AVILOO (Austria) publicó el 03/09/2026 un informe basado en más de 500.000 pruebas FLASH de eléctricos usados (2022-2026, 20 modelos) en el que la mediana del estado de salud a 150.000 km va del 86,7 % (Nissan Leaf ZE1) al 93,8 % (Hyundai Ioniq 5).
+  - Valor: SoH mediana 86,7-93,8 % a 150.000 km
+  - Alcance: Global (datos de América, Europa, Australia y Asia); baterías de tracción de 20 modelos; pruebas FLASH 2022-2026; datos de la propia empresa.
+  - Evidencia: «more than 500,000 independent AVILOO FLASH Test results for used electric cars»
+  - Uso previsto: anexo de datos, anexo de indicadores
+  - Matiz: La página es internamente inconsistente. En la sección de los cuatro modelos de ejemplo da para el Leaf ZE1 y el Ioniq 5, a 150.000 km, 85,9 % y 93,4 % (frente a 86,7 % y 93,8 % del resumen); a 100.000 km 87,6 / 95,1 % (resumen 88,3 / 95,3 %); a 50.000 km 90,8 / 97,3 % (resumen 91,2 / 97,1 %). Además el recuadro dice dispersión de hasta 13,5 puntos y el detalle 16,4. El enunciado usa las cifras del resumen; presentarlas como aproximadas.
+- **`taller_resultados-f17`** · confianza media · [444] [39] [8] [7]
+  - Hecho: EUROBAT sitúa entre el 96 % y el 99 % la recogida y reciclado de baterías de arranque de plomo en la UE (97,3 % en su actualización con un panel que cubre el 92 % del parque, 99,7 % con el panel antiguo), reconoce problemas de datos, y BCI estima un 97,7 % de reciclado del plomo en EE. UU. en 2020-2024.
+  - Valor: 96-99 % (UE); 97,7 % (EE. UU.)
+  - Alcance: UE (EUROBAT, documento del 05/05/2020, con un estudio de 2014 y una actualización entonces pendiente de publicar) y EE. UU. (BCI, estudio del 06/08/2026, periodo 2020-2024); asociaciones del sector, cifras no auditadas por terceros.
+  - Evidencia: «99% of automotive lead-based batteries are collected and recycled in the EU»
+  - Uso previsto: anexo de datos, anexo de ODS
+  - Matiz: Las cifras de EUROBAT son tasas de recogida sobre las baterías «disponibles para recoger» (excluye las exportadas y las aún en uso), no un porcentaje de todas las baterías retiradas de vehículos ni una tasa de reciclado en sentido estricto. La tasa se calcula como recogido dividido entre «made-available» (baterías que deberían entrar en el flujo de residuos, estimadas a partir del parque de vehículos y de la vida útil estimada de la batería), es decir, con un modelo y no con un recuento directo; el estudio de 2020 estima que las baterías exportadas en coches de segunda mano (unas 45.000 t al año) son cerca del 0,8 % de las disponibles. Los periodos son distintos: 99 % corresponde a 2010-2012 y 97,3 % a 2015-2017. No se pudo abrir la evaluación SWD(2019)1300 (el enlace de la Comisión devuelve 404), así que el 96-98 % se confirma solo como lo cita EUROBAT. El 96-98 % atribuido a la evalua…
+  - Conflictos: C11
+- **`taller_resultados-f18`** · confianza alta · [445] [446]
+  - Hecho: En Austria y Luxemburgo la batería también encabeza las asistencias: el ÖAMTC atribuyó a baterías débiles, descargadas o defectuosas aproximadamente un tercio de sus 700.881 intervenciones de 2025, y el ACL registró 8.123 casos de batería entre 33.040 intervenciones en 2024.
+  - Valor: aprox. 1/3 (Austria, 2025); 8.123 de 33.040 (Luxemburgo, 2024)
+  - Alcance: Austria (2025) y Luxemburgo (2024); intervenciones de los clubes ÖAMTC y ACL; el porcentaje de Luxemburgo (24,6 %) es cálculo propio.
+  - Evidencia: «Etwa ein Drittel aller Einsätze war auf schwache, leere oder defekte Batterien»
+  - Uso previsto: anexo de datos
+  - Matiz: El 24,6 % de Luxemburgo (8.123 / 33.040 = 24,58 %) es cálculo correcto del investigador.
+  - Conflictos: C15
+- **`taller_resultados-f19`** · confianza media · [447]
+  - Hecho: En la comunidad de Recurrent (más de 30.000 eléctricos, EE. UU.), menos del 4 % de las baterías de tracción se habían sustituido salvo en las grandes retiradas, con tasas de aproximadamente 8,5 % en la primera generación, 2 % en la segunda y 0,3 % en los modelos de 2022 en adelante.
+  - Valor: menos del 4 % sustituidas
+  - Alcance: EE. UU.; comunidad de Recurrent (más de 30.000 eléctricos, no representativa según la propia empresa); sustituciones detectadas por retiradas, informes de propietarios y saltos de autonomía; publicado el 11/11/2025.
+  - Evidencia: «under 4% have been replaced -- including 10+ year old cars»
+  - Uso previsto: anexo de datos
+  - Matiz: Datos autopublicados; la sustitución se detecta por retiradas, informes de propietarios y saltos de autonomía.
+- **`taller_resultados-f20`** · confianza baja · [448]
+  - Hecho: La cadena británica National publica una encuesta de 10 días con clientes en la que el 45 % de los coches probados tenía la batería en buen estado, el 40 % necesitaba recarga y el 15 % sustitución.
+  - Valor: 45 % / 40 % / 15 %
+  - Alcance: Reino Unido; encuesta de 10 días con clientes del servicio de revisión gratuita de baterías de National; sin tamaño de muestra ni fecha; datos de una empresa de servicios, no de un fabricante de comprobadores.
+  - Evidencia: «45% of the cars tested were in good condition»
+  - Uso previsto: anexo de datos
+  - Matiz: Sin tamaño de muestra, fecha ni método; los clientes aceptaron voluntariamente la prueba (posible sesgo de selección). Confianza baja adecuada: solo como orden de magnitud y con aviso.
+
+### 4.15 vehiculo_electrico: Baterías de vehículos eléctricos: composición y seguridad de alta tensión
+
+20 hechos (18 confirmados, 2 con corrección); 24 fuentes distintas.
+
+- **`vehiculo_electrico-f1`** · confianza alta · [453]
+  - Hecho: El Reglamento nº 100 de la ONU (UNECE) clasifica como «alta tensión» cualquier componente o circuito de un vehículo eléctrico cuya tensión de trabajo supera 60 V y llega hasta 1 500 V en corriente continua, o supera 30 V y llega hasta 1 000 V en corriente alterna (valor eficaz).
+  - Valor: > 60 V y ≤ 1 500 V CC; > 30 V y ≤ 1 000 V CA (rms)
+  - Alcance: UE/UNECE; texto de la serie 05 de enmiendas (en vigor desde el 26-09-2025) publicado en el DOUE L 2026/1695 el 17-08-2026; vehículos de las categorías M, N y O de más de 25 km/h; mide la clasificación de circuitos y componentes según su tensión de trabajo.
+  - Evidencia: «working voltage is > 60 V and ≤ 1500 V DC» (UN R100, párr. 2.24)
+  - Uso previsto: capítulo, pantalla 3D, anexo de seguridad, anexo de normativa
+  - Matiz: Texto literal: «its working voltage is > 60 V and ≤ 1500 V DC or > 30 V and ≤ 1000 V AC root mean square (rms)». unece.org devuelve 403 (WebFetch), así que no se contrastó con el original de la UNECE; el DOUE advierte de que solo los textos originales de la UNECE tienen efecto jurídico.
+  - Conflictos: C14
+- **`vehiculo_electrico-f2`** · confianza media · corregido por el verificador · [466] [459] [460] [30]
+  - Hecho: Según Porsche, lo habitual en los coches eléctricos son 400 V y su Taycan fue el primer modelo de serie con un sistema de 800 V; las guías de prevención no coinciden entre sí: el HSE (2025) habla de «hasta 650 V CC», la guía práctica del IRSST (2023) de «entre 200 y 1000 V» (y «650-1000 V CC» en una nota) y su supuesto práctico de «entre 400 y 1000 V».
+  - Valor: ≈400 V habitual y 800 V (Taycan, dato del fabricante); rangos de guías: HSE hasta 650 V CC; IRSST 200 a 1 000 V (guía práctica) y 400 a 1 000 V (supuesto práctico)
+  - Alcance: Turismos eléctricos de batería (Europa y mercado global), modelos recientes; tensión del sistema de tracción de alta tensión (no la de 12 V ni la de una celda); no existe estadística oficial del reparto entre 400 V y 800 V.
+  - Evidencia: «800 volts instead of the usual 400 volts for electric cars» (Porsche Newsroom)
+  - Uso previsto: pantalla 3D, capítulo, anexo de datos, anexo de seguridad
+  - Texto original (antes de la corrección): Según Porsche, lo habitual en los coches eléctricos son 400 V y su Taycan fue el primer modelo de serie con un sistema de 800 V, mientras que las guías de prevención sitúan las tensiones de trabajo de estos vehículos entre 400 y 1 000 V en corriente continua.
+  - Matiz: Porsche: «The Taycan is the first production vehicle with a system voltage of 800 volts instead of the usual 400 volts for electric cars» (página sin fecha propia; es afirmación del fabricante; una consulta a la página de Wikipedia del Taycan no encontró esa afirmación). El rango «400 a 1 000 V» procede de una sola guía, el supuesto práctico del IRSST ([459]: «tensiones entre 400 y 1000V», sin «CC» en esa frase; su nota 4 dice «hasta 650 voltios CC»). La guía práctica del IRSST ([458]) dice «entre 200 y 1000V» en la introducción y «hasta 650-1000 voltios CC» en la nota 3; el HSE ([460]) dice «currently up to 650 Volts direct current». Anexo XIII, punto 1, letra h) confirmado: «tensión mínima, nominal y máxima».
+  - Conflictos: C14
+- **`vehiculo_electrico-f3`** · confianza alta · [460] [458]
+  - Hecho: El organismo británico de seguridad laboral HSE advierte de que, en seco, el contacto accidental con partes activas a más de 110 V de corriente continua puede ser mortal y de que las baterías de los vehículos eléctricos almacenan energía capaz de provocar explosión o incendio.
+  - Valor: > 110 V CC en seco puede ser mortal
+  - Alcance: Reino Unido (HSE), guía para talleres y recuperación de vehículos actualizada el 08-05-2025; la guía cifra las tensiones de los eléctricos en hasta 650 V CC frente a 12/24 V de otros vehículos.
+  - Evidencia: «voltages above 110 Volts dc can be fatal» (HSE, Electric and hybrid vehicles)
+  - Uso previsto: pantalla 3D, anexo de seguridad, capítulo
+  - Matiz: El HSE añade «currently up to 650 Volts direct current» frente a 12/24 V y avisa de que «high voltage» (60 a 1500 V CC en esta guía) se define de forma distinta en otros sectores. También enumera movimiento inesperado por fuerzas magnéticas, manipulación manual en la sustitución de baterías, gases explosivos y líquidos nocivos si la batería se daña, y efecto sobre marcapasos.
+  - Conflictos: C14
+- **`vehiculo_electrico-f4`** · confianza alta · [458] [453] [463] [460]
+  - Hecho: Un daño térmico, eléctrico o mecánico puede llevar a una celda de ion-litio a un embalamiento térmico (aumento incontrolado de temperatura por reacciones exotérmicas), y una batería de alta tensión en llamas puede volver a inflamarse hasta consumirse por completo.
+  - Alcance: UE y Reino Unido; guías oficiales de 2023 a 2025 y texto UNECE de 2026; riesgo cualitativo de baterías de ion-litio de tracción, sin cifras de frecuencia de incendios.
+  - Evidencia: «altamente propensas a incendios y explosiones por fuga térmica» (IRSST, guía práctica, p. 20)
+  - Uso previsto: pantalla 3D, anexo de seguridad, capítulo
+  - Matiz: Texto IRSST: baterías de ion-litio «altamente propensas a incendios y explosiones por fuga térmica cuando se exponen a daños térmicos, fallas eléctricas o abuso mecánico»; nota 4: una batería de alto voltaje que arda «puede volver a inflamarse hasta que haya ardido por sí misma». La guía cita además 65-75 °C como inicio de la fuga térmica (fuente secundaria) y HF y otros gases tóxicos en un incendio; la cifra de temperatura no se usa en el hecho, lo cual es correcto. Sin estadísticas de frecuencia de incendios en las fuentes.
+- **`vehiculo_electrico-f5`** · confianza alta · [460] [459] [458] [455] [457]
+  - Hecho: El HSE advierte de que algunos componentes pueden conservar tensión peligrosa con el vehículo apagado y la batería aislada, y la guía IRSST de Madrid propone esperar entre 5 y 10 minutos a que se descarguen los condensadores del inversor y comprobar la ausencia de tensión antes de intervenir.
+  - Valor: Espera recomendada: 5 a 10 minutos (IRSST); medir 0 V antes de trabajar
+  - Alcance: Reino Unido (HSE, 2025) y Comunidad de Madrid (IRSST, octubre de 2023); trabajo en talleres; el tiempo de espera es la recomendación de un caso práctico y el procedimiento definitivo es el del fabricante del vehículo.
+  - Evidencia: «may retain a dangerous voltage even when a vehicle is switched off» (HSE)
+  - Uso previsto: anexo de seguridad, pantalla 3D, capítulo
+  - Matiz: La guía práctica IRSST ([458]) dice «unos 10 minutos» y «multímetro ... 0 V»; el supuesto práctico ([459]) dice «5-10 minutos». Ambos documentos (octubre de 2023) indican que el vehículo, «especialmente si presenta daños, se considerará con tensión en tanto no se determine la ausencia». El RD 614/2001, anexo II.A, etapa 1: «Los condensadores u otros elementos de la instalación que mantengan tensión después de la desconexión deberán descargarse mediante dispositivos adecuados».
+- **`vehiculo_electrico-f6`** · confianza alta · [461] [458]
+  - Hecho: El seguro obligatorio de accidentes alemán (DGUV) establece que los trabajos en sistemas de alta tensión de vehículos, incluso sin tensión, solo pueden hacerlos personas cualificadas (FHV) o bajo su dirección y supervisión, y reserva un nivel superior (3S) para trabajar con el sistema en tensión.
+  - Alcance: Alemania (DGUV Información 209-093, agosto de 2021); vehículos con sistemas de alta tensión según UN R100; personal de talleres y de producción.
+  - Evidencia: «nur von Fachkundigen Personen (FHV) oder unter Leitung und Aufsicht einer FHV» (DGUV 209-093, 5.1.4)
+  - Uso previsto: anexo de seguridad, anexo de normativa, capítulo
+  - Matiz: La DGUV Información es una guía; su Vorwort remite a la DGUV Vorschrift 3 y 4 (los trabajos electrotécnicos solo por Elektrofachkraft o bajo su dirección y supervisión) y declara que la FHV es una Elektrofachkraft para sistemas de alta tensión. «Seguro obligatorio de accidentes» traduce libremente «Deutsche Gesetzliche Unfallversicherung». La guía IRSST ([458]) indica que el cambio del paquete de baterías lo hace «personal especialista eléctrico en automoción en talleres especializados».
+- **`vehiculo_electrico-f7`** · confianza alta · [464]
+  - Hecho: Según la Agencia Internacional de la Energía, un coche eléctrico con batería de 75 kWh (cátodo NMC 622 y ánodo de grafito) contiene, en el conjunto del vehículo, unos 8,9 kg de litio, 39,9 kg de níquel, 13,3 kg de cobalto, 24,5 kg de manganeso, 66,3 kg de grafito y 53,2 kg de cobre.
+  - Valor: Li 8,9 kg; Ni 39,9 kg; Co 13,3 kg; Mn 24,5 kg; grafito 66,3 kg; Cu 53,2 kg por vehículo (75 kWh NMC 622)
+  - Alcance: Mundo; coche eléctrico tipo con batería de 75 kWh NMC 622 y grafito; kilogramos por vehículo completo (batería, motor y carrocería); datos de la AIE actualizados el 05-05-2021; sin acero ni aluminio.
+  - Evidencia: «based on a 75 kWh NMC (nickel manganese cobalt) 622 cathode» (IEA, notas del gráfico); cifras en el CSV del gráfico
+  - Uso previsto: anexo de datos, pantalla 3D, capítulo, anexo de indicadores
+  - Matiz: El gráfico se carga por script y no aparece en el HTML estático de la página de la AIE; la correspondencia se apoya en los metadatos del gráfico de datawrapper (intro «Minerals used in electric cars compared to conventional cars (kg/vehicle)», source-name «IEA»). El cobre incluye motor y cableado; el aluminio y el acero no están cuantificados.
+- **`vehiculo_electrico-f8`** · confianza alta · [204] [469]
+  - Hecho: En 2025 la batería media de un turismo eléctrico de batería era de casi 70 kWh en la UE y de menos de 60 kWh en China, y las baterías LFP superaron el 55 % de las baterías de vehículo eléctrico desplegadas en el mundo (casi el 50 % en 2024).
+  - Valor: UE ≈70 kWh; China <60 kWh; EE. UU. ≈90 kWh; LFP >55 % del despliegue mundial en 2025
+  - Alcance: UE y China (capacidad media por turismo de batería) y mundo (cuota de químicas por capacidad desplegada), año 2025; Global EV Outlook 2026 de la AIE.
+  - Evidencia: «close to 70 kWh and below 60 kWh, respectively» (IEA, GEVO 2026)
+  - Uso previsto: anexo de datos, anexo de indicadores, capítulo, pantalla 3D
+  - Matiz: Notas también confirmadas: LFP >10 % de la demanda de baterías de VE en la UE en 2025; fuera de China casi 80 % con químicas de níquel y el resto LFP; hasta 265 Wh/kg (NMC) y 205 Wh/kg (LFP) en celdas de última generación; NMC721 y NMC811 con en torno al 10 % de cobalto en contenido metálico sin litio (nota 2); cuatro componentes de la celda: cátodo, ánodo, electrolito y separador. La cuota de químicas se basa en la capacidad de los vehículos eléctricos nuevos matriculados y excluye vehículos de dos y tres ruedas.
+- **`vehiculo_electrico-f9`** · confianza media · [465] [458]
+  - Hecho: Los sistemas de batería de la plataforma MEB de Volkswagen (ID.3 e ID.4), de 45 a 77 kWh netos, pesan entre unos 320 y unos 500 kg, y la guía IRSST de Madrid indica que las baterías de los vehículos eléctricos llegan a pesar cerca de 500 kg.
+  - Valor: ≈320 a ≈500 kg por paquete de 45 a 77 kWh
+  - Alcance: Europa; baterías de tracción de los Volkswagen ID.3 e ID.4 (nota de 2021) como ejemplo de turismo; masa del sistema de batería completo (módulos, carcasa y refrigeración) en kg; no es una media de mercado.
+  - Evidencia: «weigh between approximately 320 kg and around 500 kg» (VW Group Components)
+  - Uso previsto: pantalla 3D, anexo de datos, capítulo
+  - Matiz: Texto no contrastado en bruto con curl, porque WebFetch resume con un modelo pequeño (las citas se repitieron de forma coherente en las tres consultas). El enlace a la nota original de Volkswagen (volkswagen-newsroom.com, id 7130) devuelve 404. Es una nota de prensa de un fabricante, no una media de mercado, y el rango no asigna un peso a cada capacidad.
+- **`vehiculo_electrico-f10`** · confianza alta · [26] [30] [468] [74] [80]
+  - Hecho: El Reglamento (UE) 2023/1542 obliga a que, desde el 18 de febrero de 2027, toda batería para vehículos eléctricos introducida en el mercado o puesta en servicio disponga de un pasaporte para baterías, un registro electrónico accesible mediante un código QR.
+  - Valor: 18-02-2027
+  - Alcance: UE; baterías de tracción de vehículos de las categorías L (más de 25 kg), M, N y O (art. 3.1.14); aplicable desde el 18-02-2027 (arts. 77.1 y 13.6); texto consolidado en vigor a 13-08-2026.
+  - Evidencia: «dispondrán de un registro electrónico (en lo sucesivo, «pasaporte para baterías»)» (art. 77.1)
+  - Uso previsto: anexo de normativa, anexo de arquitectura, capítulo, pantalla 3D
+  - Matiz: SPARQL de la Oficina de Publicaciones: versiones consolidadas 2023-07-28, 2024-07-18, 2025-07-31 y 2026-08-13 (la usada es la última a 21-10-2026). La búsqueda por títulos que citan 2023/1542 (2024 a 2026) no halló acto de ejecución del art. 77.9 (personas con interés legítimo) ni del art. 13.10; la ausencia en esa búsqueda no es concluyente. Las propuestas pendientes COM(2025) 981 (solo definiciones, art. 11.5, art. 76.4 y anexo VI) y COM(2025) 504 (formatos electrónicos, contacto electrónico y, en el anexo XIII, instrucciones de uso solo para almacenamiento estacionario) no tocan el art. 77.1 ni el art. 14 y no figuran en el texto consolidado.
+- **`vehiculo_electrico-f11`** · confianza alta · [26] [30] [468] [74] [80]
+  - Hecho: Desde el 18 de agosto de 2024 el sistema de gestión de la batería de los vehículos eléctricos debe guardar los parámetros del estado de salud (para estas baterías, el «estado de energía certificada», SOCE), y quien haya adquirido legalmente la batería tiene acceso de solo lectura y no discriminatorio a esos datos.
+  - Valor: Desde 18-08-2024; parámetro: SOCE
+  - Alcance: UE; baterías para vehículos eléctricos; obligación vigente desde el 18-08-2024 (art. 14 y anexo VII, parte A); el acceso permite valorar la vida útil residual y la reutilización.
+  - Evidencia: «acceso de solo lectura, no discriminatorio» (art. 14.2)
+  - Uso previsto: anexo de normativa, anexo de arquitectura, anexo de indicadores, capítulo
+  - Matiz: El art. 14.2 beneficia a quien haya adquirido legalmente la batería, incluidos operadores independientes y gestores de residuos, o a un tercero que actúe en su nombre, y respeta los derechos de propiedad intelectual e industrial del fabricante. El art. 14.4 prevé alinear los parámetros con el Reglamento Técnico Mundial n.º 22 de la ONU.
+- **`vehiculo_electrico-f12`** · confianza alta · [26] [30]
+  - Hecho: El pasaporte de la batería de un vehículo eléctrico incluirá, con acceso restringido a personas con interés legítimo, la composición detallada del cátodo, el ánodo y el electrolito, los diagramas y la secuencia de desmontaje, las herramientas necesarias, las advertencias de riesgo de daño a las piezas y las medidas de seguridad.
+  - Alcance: UE; baterías para vehículos eléctricos introducidas en el mercado desde el 18-02-2027 (art. 77 y anexo XIII, puntos 2 y 4); usuarios previstos: reparadores, remanufacturadores, operadores de segunda vida y recicladores.
+  - Evidencia: «información sobre el desmontaje, incluyendo como mínimo lo siguiente» (anexo XIII, punto 2, letra c)
+  - Uso previsto: anexo de normativa, anexo de seguridad, anexo de arquitectura, capítulo
+  - Matiz: El punto 2 del anexo XIII dice «accesible solo a personas con un interés legítimo y a la Comisión». Etiqueta (art. 13.1 y anexo VI parte A: peso, capacidad, composición química, sustancias peligrosas, agente extintor): se aplica desde el 18-08-2026 o 18 meses después de la entrada en vigor del acto de ejecución del art. 13.10 (plazo de adopción: 18-08-2025), si esa fecha es posterior; no se halló en la Oficina de Publicaciones ningún acto de ejecución de etiquetado, de modo que la etiqueta podría no ser aún exigible (no concluyente).
+  - Conflictos: C22
+- **`vehiculo_electrico-f13`** · confianza alta · [453]
+  - Hecho: El Reglamento UN R100 exige proteger las partes activas de alta tensión contra el contacto (grado IPXXD en el habitáculo e IPXXB en el resto), que los cables de alta tensión fuera de envolventes sean de color naranja, que la batería lleve un símbolo de alta tensión sobre fondo amarillo y que la resistencia de aislamiento sea de al menos 100 Ω/V en corriente continua.
+  - Valor: Aislamiento ≥100 Ω/V (CC) y ≥500 Ω/V (CA); cables naranja; símbolo negro sobre amarillo
+  - Alcance: UE/UNECE; vehículos M, N y O; serie 05 en vigor desde el 26-09-2025 (párrafos 5.1.1.1, 5.1.1.2, 5.1.1.4.1, 5.1.1.4.3 y 5.1.3.1).
+  - Evidencia: «an outer covering with the colour orange» (UN R100, párr. 5.1.1.4.3)
+  - Uso previsto: pantalla 3D, anexo de seguridad, anexo de normativa
+  - Matiz: Matiz: los 100 Ω/V rigen para buses de CC aislados galvánicamente de los de CA (5.1.3.1); si los buses de CC y CA están conectados galvánicamente se exigen 500 Ω/V, salvo que todos los buses de CA tengan protección adicional (5.1.3.2), caso en que bastan 100 Ω/V. Excepciones del 5.1.1 sobre apertura sin herramientas: conectores con bloqueo de dos acciones o que bajan a 60 V CC o 30 V CA en 1 s.
+- **`vehiculo_electrico-f14`** · confianza alta · corregido por el verificador · [453]
+  - Hecho: El Reglamento UN R100 exige que, en un REESS con electrolito inflamable o ánodos de metal alcalino, los ocupantes no queden expuestos a un entorno peligroso por propagación térmica originada por el embalamiento de una sola celda: el sistema debe emitir un aviso para que puedan salir y, durante los 5 minutos siguientes al aviso, no debe haber fuego, explosión ni liberación de humo al habitáculo; basta alternativamente con que no se produzca propagación en 2 horas (o que el embalamiento no pueda provocarse).
+  - Valor: Aviso + 5 minutos sin fuego, explosión ni humo hacia el habitáculo; o 2 h sin propagación; el párr. 6.15 no se aplica a REESS instalados solo en vehículos de categoría O
+  - Alcance: UE/UNECE; baterías (REESS) de vehículos M, N y O; serie 05 en vigor desde el 26-09-2025 (párr. 6.15 y 6.15.3.4); se comprueba con un ensayo que dispara una celda.
+  - Evidencia: «none of the following hazardous situations caused by thermal propagation shall occur» (párr. 6.15.3.4)
+  - Uso previsto: anexo de seguridad, anexo de normativa, pantalla 3D
+  - Texto original (antes de la corrección): El Reglamento UN R100 exige que una batería con electrolito inflamable no exponga a los ocupantes a un entorno peligroso por propagación térmica tras el embalamiento de una sola celda: debe avisar para que puedan salir y no debe haber fuego, explosión ni humo en el habitáculo durante los 5 minutos siguientes al aviso, o bien no producirse propagación en 2 horas.
+  - Matiz: Correcciones: (1) el criterio de aprobado del 6.15.3.4 es «(a) Fire; (b) Explosion; (c) Smoke release into the passenger compartment», es decir, «en el habitáculo» solo califica al humo; (2) el párr. 6.15 no se aplica a REESS instalados únicamente en vehículos de la categoría O (la ficha decía M, N y O); (3) además de «no hay propagación en 2 horas» existe la vía (c): que el embalamiento no pueda provocarse; (4) el requisito alcanza también a REESS con ánodos de metal alcalino y, si el ensayo físico no es posible, se admite análisis de riesgos (6.15.4). Confirmado: aviso para que los ocupantes puedan salir y 5 minutos tras la señal de aviso; origen en un cortocircuito interno que provoca el embalamiento de una sola celda.
+- **`vehiculo_electrico-f15`** · confianza alta · [454] [459]
+  - Hecho: Tras el ensayo de colisión frontal del Reglamento UN R94, el sistema de alta tensión debe cumplir al menos uno de cuatro criterios alternativos: tensión de 60 V CC o menos (30 V CA) en 60 s, energía total inferior a 0,2 J, protección física IPXXB o resistencia de aislamiento mínima de 100 Ω/V en corriente continua.
+  - Valor: ≤60 V CC (30 V CA) en 60 s; o <0,2 J; o IPXXB; o ≥100 Ω/V
+  - Alcance: UE/UNECE; turismos M1 de hasta 3 500 kg y N1 de hasta 2 500 kg; UN R94 serie 05, suplemento 1 (en vigor desde el 12-06-2025), párr. 5.2.8.1; la tensión se mide entre 10 y 60 s tras el impacto.
+  - Evidencia: «equal or less than 30 VAC or 60 VDC within 60 s» (UN R94, párr. 5.2.8.1.1)
+  - Uso previsto: anexo de seguridad, anexo de normativa
+  - Matiz: Los cuatro criterios son alternativos (al menos uno). El de protección física añade requisitos de continuidad (<0,1 Ω y <0,2 Ω) y el de aislamiento exige 100 Ω/V en buses CC y 500 Ω/V en buses CA. La guía IRSST ([458] y [459]) aconseja tratar el vehículo dañado como «con tensión» mientras no se compruebe la ausencia; la frase del hecho sobre que el vehículo puede conservar alta tensión protegida es una inferencia razonable del redactor.
+- **`vehiculo_electrico-f16`** · confianza alta · [462] [463]
+  - Hecho: El protocolo de rescate de Euro NCAP (v1.1, aplicable desde enero de 2026) exige que los eléctricos cumplan la seguridad eléctrica de UN R94, R95, R135 y R137 tras el choque y valora que la alta tensión se desactive sin herramientas ni EPI específicos, con puntos de corte marcados según ISO 17840, y que la propagación térmica se evite o se avise.
+  - Alcance: Europa; evaluación de turismos nuevos desde enero de 2026; protocolo Post Crash v1.1 (septiembre de 2025) y boletín técnico PC 101-1 v2.2 (marzo de 2025).
+  - Evidencia: «No specific tools or PPE shall be required» (Euro NCAP, protocolo Post Crash v1.1)
+  - Uso previsto: anexo de seguridad, anexo de normativa
+  - Matiz: Euro NCAP es una organización de ensayos de consumidores, no un regulador. El PDF de PC 101-1 lleva la leyenda «Version 2.2 March 2025 ... Implementation January 2026». No se pudo comprobar si existe una versión posterior del boletín.
+- **`vehiculo_electrico-f17`** · confianza alta · [455] [457] [456]
+  - Hecho: El Real Decreto 614/2001 define como instalación eléctrica de un lugar de trabajo también las baterías y los condensadores y establece que los trabajos en tensión deben ser realizados por trabajadores cualificados, con conocimientos especializados acreditados por formación o por dos o más años de experiencia certificada.
+  - Alcance: España; riesgo eléctrico en lugares de trabajo como talleres y centros de tratamiento; texto consolidado del BOE (publicado el 21-06-2001); remite a los reglamentos electrotécnicos para distinguir alta y baja tensión.
+  - Evidencia: «Los trabajos en tensión deberán ser realizados por trabajadores cualificados» (anexo III.A.1)
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Matiz: Anexo II.A: las maniobras para dejar sin tensión las hacen trabajadores autorizados, y cualificados solo en alta tensión; por eso la exigencia de personal cualificado en trabajos sin tensión sobre un paquete de 400 a 800 V procede de las guías (IRSST, DGUV) y no de un literal del RD (interpretación ya señalada en la ficha). El texto consolidado del RD 614/2001 indica «Última actualización, publicada el 21/06/2001».
+- **`vehiculo_electrico-f18`** · confianza media · [467]
+  - Hecho: La norma ISO 6469-3:2021 fija los requisitos de seguridad eléctrica de los circuitos de «clase de tensión B» de los vehículos de carretera de propulsión eléctrica para proteger a las personas frente a descargas e incidentes térmicos, pero no contiene información de seguridad completa para el personal de fabricación, mantenimiento y reparación.
+  - Alcance: Internacional (ISO); edición de 2021 registrada por el organismo de normalización estonio EVS con vigencia desde el 28-10-2021; vehículos de carretera de propulsión eléctrica.
+  - Evidencia: «electrical safety requirements for voltage class B electric circuits» (alcance)
+  - Uso previsto: anexo de normativa, anexo de seguridad
+  - Matiz: Norma de pago (180,07 € en EVS); la vista previa de EVS no se pudo descargar (devuelve una página HTML) y iso.org queda fuera de alcance, de modo que los límites numéricos de la clase B no se verificaron en la norma.
+- **`vehiculo_electrico-f19`** · confianza alta · [65] [30]
+  - Hecho: El Reglamento (UE) 2026/1738 obliga a los fabricantes, desde el 1 de septiembre de 2029 en los nuevos tipos de vehículo, a dar a gestores de residuos, reparadores y editores de información técnica acceso sin restricciones a la información para retirar y sustituir con seguridad la batería de tracción, incluidas las instrucciones de descarga segura.
+  - Alcance: UE; nuevos tipos de vehículo homologados; Reglamento publicado en el DOUE L 2026/1738 el 24-07-2026 y aplicable con carácter general desde el 01-09-2028; este artículo, desde el 01-09-2029 (art. 11 y anexo VI).
+  - Evidencia: «instrucciones para la descarga segura de la batería» (anexo VI, punto 1, letra e)
+  - Uso previsto: anexo de normativa, anexo de seguridad, anexo de arquitectura
+  - Matiz: Matices: la obligación se limita a los nuevos tipos de vehículo homologados y no se aplica si la información ya está disponible con arreglo a otra legislación de la UE; el acceso es «sin restricciones, normalizado y no discriminatorio» y la información debe darse de forma gratuita (con tasas razonables solo por los costes administrativos de las plataformas de comunicación). El anexo VI incluye también número de equipo original, ubicación, peso, composición química, instrucciones técnicas de retirada y sustitución y herramientas.
+- **`vehiculo_electrico-f20`** · confianza alta · [453] [30] [142]
+  - Hecho: El umbral de «alta tensión» cambia según la norma: UN R100 lo fija en más de 60 V CC, el anexo I del Reglamento (UE) 2023/1542 define «sistemas de alta tensión» como los de más de 75 V CC (Directiva 2014/35/UE) y en el REBT español la baja tensión llega hasta 1 500 V CC, con los automóviles excluidos de su ámbito.
+  - Valor: UN R100 >60 V CC; Reglamento 2023/1542 >75 V CC; REBT baja tensión ≤1 500 V CC
+  - Alcance: UE y España; textos vigentes en 2026: UN R100 serie 05, Reglamento 2023/1542 consolidado a 13-08-2026 (anexo I, nota 2) y RD 842/2002 consolidado a 03-09-2025 (art. 2).
+  - Evidencia: «Corriente continua: igual o inferior a 1.500 voltios» (REBT, art. 2.1.b)
+  - Uso previsto: anexo de normativa, anexo de seguridad, otro
+  - Matiz: La nota (2) del anexo I fue añadida por el Reglamento (UE) 2026/1738 (marcador M3 del consolidado; no figura en el texto original de 2023) y define «sistemas de alta tensión» a efectos del punto 6, letra a), de la fila de plomo del anexo I (límite de plomo en baterías de vehículos eléctricos de los vehículos M1 y N1). El REBT fija su campo de aplicación por tensiones nominales (CA ≤1.000 V; CC ≤1.500 V); la guía IRSST ([458]) usa la misma lectura. REBT consolidado con última actualización publicada el 03/09/2025.
+  - Conflictos: C14
+
+## 5. Descartados
+
+### 5.1 Hechos descartados
+
+Ninguno. Los 298 veredictos del verificador son «confirmado» (266) o «confirmado-con-correccion» (32); no hay «no-confirmado» ni «fuente-inaccesible».
+
+### 5.2 Fuentes excluidas de la numeración
+
+- `diagnostico-s10` · SAE J537 (rev. septiembre 2023): texto de la norma, copia alojada por un tercero (solo para verificación) (Copia alojada por Discover Battery (editor original: SAE International)). Motivo: Copia de la norma SAE J537 alojada por un tercero: el investigador la marca «solo verificación; no citar en el anexo» (se cita la ficha oficial de SAE, diagnostico-s8).
+- `diagnostico-x6` · Battery Regulation: The European Commission notifies draft text on battery label format and specifications (Normachem). Motivo: Comentario sectorial (Normachem) marcado por el verificador como «solo contexto, no citar».
+- `diagnostico-x7` · 18 August 2026 and the EU Battery Regulation: what the date actually means (Pryor Technology). Motivo: Comentario sectorial (Pryor Technology) marcado por el verificador como «solo contexto, no citar».
+- `clima_energia-x9` · Battery Recycling Is a Far Bigger Source of Lead Exposure Than We Thought (Mitchell y Crawfurd) (Center for Global Development). Motivo: Entrada de blog de un think tank (CGD), no revisada por pares, marcada como «solo contexto».
+- `clima_energia-x14` · Hazardous contamination found around lead battery recycling plants in 7 African countries (reproducción de la nota de prensa de los autores) (bioengineer.org (reproduce nota de prensa de San Francisco, 2018-01-18)). Motivo: Reproducción de una nota de prensa, marcada como «fuente secundaria, solo para contrastar rangos».
+
+Los hechos que citaban estas fuentes se mantienen porque tienen otras fuentes numeradas.
+
+### 5.3 Afirmaciones que no deben usarse (dentro de hechos conservados)
+
+Los hechos se conservan, pero estas afirmaciones concretas aparecen en notas o en la versión original y el verificador las marcó como no verificadas, erróneas o frágiles.
+
+- `clima_energia-f18`: «El 64 % de las muestras supera 400 ppm y el 81 % supera 80 ppm»: no aparece en el resumen del estudio ni en las notas de prensa (el texto completo es de pago). Tampoco «140.000 ppm junto a las plantas»: ese máximo incluye muestras de dentro de las plantas; fuera, la media fue ≈2.600 mg/kg y el máximo ≈48.000 ppm.
+- `clima_energia-f6`: «Hasta la mitad de las baterías usadas acaba en la economía informal»: afirmación de UNICEF y Pure Earth sin origen verificable (Ericson et al. 2016 no da ese porcentaje global); citar como «UNICEF y Pure Earth afirman», no como dato medido.
+- `clima_energia-f5`: El umbral de 5 µg/dL como «nivel que exige actuar» describe 2020: desde el 28-10-2021 el valor de referencia de los CDC es 3,5 µg/dL. Los 800 millones de niños incluyen todas las fuentes de plomo, no solo las baterías.
+- `clima_energia-f12`: El 71,9 % de 2023 no prueba un incumplimiento del 75 %: el objetivo obliga a los recicladores y se mide con otro método desde 2025.
+- `clima_energia-f15`: El 83 % del estudio de materias primas fundamentales es una tasa de aportación (EoL-RIR), no una tasa de recogida ni de reciclado de baterías.
+- `clima_energia-f19`: The Battery Recycling Company (Arecibo) no es un ejemplo de planta que cumplía la norma: el ROD recoge incumplimientos reiterados y la EPA asumió la limpieza; el plomo en agua subterránea está poco respaldado (el plomo disuelto no superó el criterio).
+- `clima_energia-f8`: No citar el porcentaje de descenso de la plombemia tras la limpieza de Kathgora sin aclarar: UNICEF y el texto de Pure Earth dan −42 % a los 18 meses, el título de la página de Pure Earth dice 35 %. El límite de 400 ppm de la EPA es el nivel que cita el informe; en 2024 la EPA recomendó un nivel de cribado residencial de 200 ppm.
+- `diagnostico-f3`: El «aumento de tensión del 5-8 % por el calcio» de Battery University no está contrastado: no usarlo.
+- `diagnostico-f10`: «Los comprobadores actuales se basan en las patentes de Champlin»: ninguna fuente lo dice (las patentes están caducadas, 1992 y 2008); solo describen el principio.
+- `diagnostico-f6`: Los 90 s de la segunda etapa del ensayo EN 50342-1 son la cifra que da el laboratorio TCS (y el nivel C1 de Banner), no una cifra leída en la norma (de pago).
+- `diagnostico-f13`: La síntesis «4,5-6 años» de vida media queda alta: el único dato español (RACE) es de 3-5 años; usar «3-6 años según la fuente».
+- `composicion-f10`: La nota «el agua del electrolito no se lista» es dudosa: la tabla de Sphera sí lista «Water (desalinated; deionised) 4,74 kg» sin precisar su uso. Las cifras son entradas de materiales a la fábrica, no la composición medida del producto.
+- `composicion-f5`: El 12,63 V calculado con la ecuación del DOE es una extrapolación; la página de la Universidad de Tartu (blog de 2011) es una fuente débil.
+- `composicion-f9`: Las categorías de IHS (15 / 22,5 / 45 kg) son vehículos ligeros de menos de 3,5 t y vehículos pesados, no «turismos»; son hipótesis de la industria, no mediciones.
+- `tasas-f3`: «Los datos se han revisado» (MITECO 73,42 % frente a Eurostat 70,7 % en 2022) es una inferencia del investigador: ninguna fuente lo dice.
+- `tasas-f7`: «Es la única cifra de recogida de la UE» no se puede demostrar; la Comisión solo dice que las baterías de automoción se recogen «a niveles muy altos».
+- `tasas-f9`: La cadena de citas de Eurobat para el «más del 80 %» de plomo reciclado no se sostiene: el informe de IHS de 2014 no contiene esa cifra.
+- `tasas-f11`: El 98,63 % no se reproduce con las cifras de 2024 impresas en el PEMAR; usar solo como estimación del sector (C3).
+- `normativa_es-f14`: El «coinciden» entre lo recogido según el MITECO (107.455,5 t) y según el Acuerdo (106.696,3 t) en 2019 es excesivo: difieren en 759 t (0,7 %).
+- `normativa_es-f4`: No escribir «ningún SCRAP gestiona baterías de automoción»: el MITECO dice «una mayoría» de productores usa acuerdos voluntarios y Ecopilas declara gestionar baterías de automoción o de vehículo eléctrico; lo que no consta es que sea el canal habitual de las de plomo.
+- `proceso_reciclaje-f17`: La «tasa de recuperación del 80-95 %» de la ficha del MITECO (copiada de una guía de 2000) no tiene fuente ni definición: no usar.
+- `pasaporte_qr-f11`: El origen del QR (1994, Denso, Masahiro Hara) y su finalidad en piezas de automóvil se apoyan en la patente US 5726435 (que no usa la expresión «QR code») y en Wikipedia: las páginas oficiales de Denso Wave no respondieron.
+- `pasaporte_qr-f12`: Los niveles de corrección L/M/Q/H (7/15/25/30 %) y las capacidades de la versión 40 se contrastaron con el código de ZXing y Wikipedia, no con el texto de ISO/IEC 18004 (de pago).
+- `pasaporte_qr-f10`: «No los del producto» es una lectura razonable del art. 18 del Reglamento de Ejecución 2026/1778, no una cita literal. La aplicación del RGPD al identificador de una batería (hechos f7 y f8) es una analogía propia, no una afirmación del Tribunal.
+- `segunda_vida-f20`: Los 20 USD/kWh de NREL son un límite inferior («as low as») de su escenario de precio mínimo, no un coste típico; no usarlos como precio de compra de baterías usadas.
+- `taller_resultados-f7`: Confianza baja: dato anónimo y de segunda mano de Battery University (200 de 400 baterías devueltas sin problema; defectos de fábrica por debajo del 7 %), sin año ni método.
+- `taller_resultados-f20`: Confianza baja: encuesta de 10 días de una cadena británica (45 % buenas, 40 % recarga, 15 % sustitución), sin tamaño de muestra ni fecha ni método y con sesgo de selección; solo como orden de magnitud y con aviso.
+- `taller_resultados-f16`: La página de AVILOO se contradice a sí misma (85,9 % y 93,4 % en los ejemplos frente a 86,7 % y 93,8 % del resumen a 150.000 km): presentar las cifras como aproximadas.
+- `taller_resultados-f5`: Los índices de 4,0 y 1,7 por 1.000 (vehículos de 2 a 4 años) parecen ser de averías de batería y no de todas las averías.
+- `vehiculo_electrico-f2`: No decir que «las guías sitúan las tensiones entre 400 y 1.000 V»: solo lo dice el supuesto práctico del IRSST; el HSE habla de «hasta 650 V CC».
+- `vehiculo_electrico-f17`: La exigencia de personal cualificado para trabajar sin tensión en un paquete de 400-800 V procede de las guías (IRSST, DGUV), no de un literal del RD 614/2001.
+- `presupuesto-f2`: El «62 % más caro en PcComponentes» ignora los 7,99 € de envío de Avery; con envío la diferencia es de ≈16 %.
+- `presupuesto-f13`: La web de Iris Copy es incoherente sobre el recargo del espiral (1,80 frente a 1,50 €); citar 8,10 € como ejemplo de la web.
+- `ods-f19`: La clasificación de metas («progreso significativo») es una valoración del Gobierno sin metodología detallada en el apartado leído; no atribuirla a la ONU.
+- `ods-f5`: Que la 13.2 sea «la meta que mejor encaja con el proyecto» es criterio del equipo; cualquier vínculo del proyecto con las metas es interpretación, no una medición oficial.
+- `tecnologias-f12`: «Luego 1 $ al mes» de Railway es un crédito gratuito de 1 $ al mes, no un cobro.
+- `tecnologias-f14`: SQLite habla de 100.000 accesos (hits) diarios, no de visitas.
+
+## 6. Huecos por tema
+
+### composicion
+
+- No hay tabla oficial de composición en masa de baterías SLI de la Comisión o el JRC (el BREF de 2017 devolvió 403); las cifras europeas vienen de Eurobat/ILA/IHS, del estudio de ciclo de vida de Sphera y de fichas de seguridad.
+- No existe una masa media oficial de una batería de coche en España o la UE: solo fichas de fabricantes (VARTA y Yuasa: 9,3-21,8 kg), la referencia Eurobat/ILA (18 kg con 70 Ah) y las hipótesis de IHS (15, 22,5 y 45 kg).
+- La concentración del electrolito en % de masa no tiene fuente primaria coherente (Basilea 36 % con datos inconsistentes, DOE ≈25 %, borrador de Basilea 2026 15-20 %).
+- La tensión en reposo a plena carga se apoya en la tabla del BCI reproducida por Battery University y en Crown y Moll; IEC 60095-1 y EN 50342-1 son de pago y no hay guía de un fabricante europeo.
+- No se obtuvo una fuente primaria del BCI con la composición porcentual ni una ficha de producto de Exide o Bosch con pesos; la única referencia con rangos por componente y DOI (Malecha 2023) trata de baterías usadas y toma datos de otros estudios.
+- La clasificación armonizada CLP desde ECHA no fue accesible; se usan la ficha de Bosch (2021) y la Directiva 2024/869.
+
+### tasas
+
+- No existe tasa oficial de la UE de recogida de baterías de plomo-ácido (Eurostat solo publica la de portátiles: 49 % en 2023); las cifras de 97,3 % (2015-2017) y 99 % (2010-2012) son de estudios encargados por la industria, sin actualización posterior.
+- No hay dato oficial del contenido reciclado de plomo de las baterías nuevas (67 % de la Comisión, más del 80 % de Eurobat); el acto delegado del art. 8.1 solo existe como borrador de 12-08-2026.
+- Eurostat llega solo a 2023 (Rumanía a 2022, Suecia a 2021, Malta sin toneladas); próxima edición prevista el 4-12-2026.
+- No hay dato de España posterior a 2024 ni desglose por comunidad autónoma; el informe del Acuerdo Voluntario de 2024 solo se conoce por el PEMAR (el de 2025 está en normativa_es).
+- BCI no publica tasa solo de automoción ni cifra anual (un único valor para 2020-2024).
+- No se leyeron la evaluación técnica del JRC de 2026, los datos del ILZSG sobre plomo secundario en la UE ni el texto de un posible nuevo real decreto español; la fecha de aprobación del PEMAR no está confirmada.
+
+### reglamento
+
+- Directrices de diligencia debida (art. 48.5, plazo 26-07-2026): no se encontró ni se confirmó su publicación.
+- Fecha efectiva de la etiqueta general (art. 13.1-13.3): depende de un acto de ejecución (art. 13.10) que solo existe como borrador (15-12-2025, notificación OMC G/TBT/N/EU/1181).
+- Acto de ejecución del art. 77.9 (interés legítimo): sin adoptar; borrador publicado el 19-10-2026, comentarios hasta el 16-11-2026, adopción prevista en el cuarto trimestre de 2026.
+- Actos delegados sobre huella de carbono (art. 7), contenido reciclado (art. 8) y rendimiento y durabilidad (art. 10): no adoptados; solo borradores (29-04-2024, 12-08-2026 y 29-09-2026).
+- Propuestas COM(2025) 501, 504, 981, 982 y COM(2026) 590 pendientes; sus textos finales pueden diferir (la 982 se votó en el pleno del PE el 20-10-2026, resultado no consultado).
+- Real decreto español de adaptación solo como proyecto; no se verificaron las autoridades competentes designadas ni el régimen sancionador (arts. 54 y 93).
+- La guía de puntos de datos de la Comisión v2.0 se leyó como texto extraído de un PDF en columnas: solo se usó para el alcance y el recuento de 71 puntos.
+
+### normativa_es
+
+- No hay listado oficial de SCRAP o SIG de pilas y baterías ni resoluciones autonómicas de autorización; los nombres salen de las webs de las entidades.
+- No se pudo confirmar tras el 3-09-2026 que el real decreto sustituto no se aprobó; se apoya en el BOE consolidado y en los sumarios hasta el 21-10-2026 (solo 2 búsquedas web disponibles).
+- El MITECO solo publica índices de recogida de baterías de automoción hasta 2019 y sus dos páginas difieren en las ventas de 2018; no hay verificación independiente de los datos del Acuerdo Voluntario de 2015-2025.
+- No hay guía oficial que diga si un taller que monta una batería nueva es «distribuidor» a efectos del art. 62 del Reglamento ni cómo se concreta la aceptación de baterías usadas en talleres.
+- No se revisaron normas autonómicas (registros, formularios, simplificaciones para pequeños productores) ni el transporte ADR.
+- El número de talleres (31.136 establecimientos) es una cifra autodeclarada por las asociaciones del Acuerdo (web de 2019); no hay censo oficial.
+
+### seguridad
+
+- La web de ECHA (lista de candidatas, C&L Inventory) devuelve 403: la clasificación CLP se verificó en los textos del Diario Oficial y la fecha SVHC en una copia de Internet Archive; sobre la inclusión del plomo en el anexo XIV de REACH solo consta que los reglamentos modificadores desde 2022 no lo mencionan, sin comprobarlo en los registros de ECHA o de la Comisión.
+- UNECE bloquea el acceso: el ADR 2025 se leyó en una copia alojada por un tercero (lerem.org); no se verificó el nombre oficial en español de UN 2794; el ADR 2027 se aplica desde el 1-1-2027 (citar «ADR 2025; ADR 2027 desde 1-1-2027»).
+- Transposición española de la Directiva 2024/869: real decreto aprobado el 20-10-2026 sin publicar en el BOE; el RD 665/1997 consolidado conserva 0,15 mg/m³ y 70 µg/100 ml.
+- No se obtuvo ficha de datos de seguridad de Exide, Clarios o Banner ni guías del INSST sobre salas de carga; tampoco una guía oficial española para almacenar baterías de plomo usadas en talleres (se usan la Ley 7/2022, Basilea 2002 y CEC 2016).
+- La concentración típica del electrolito no se verificó en fuente oficial (todas las cifras candidatas están en el tramo corrosivo de 15 % o más).
+- Las guías de OSHA, CCOHS, CEC y Environment Agency son referencias comparadas, no aplicables en España; el borrador de Basilea de 24-6-2026 no está adoptado.
+
+### diagnostico
+
+- Los textos íntegros de EN 50342-1:2015+A2:2021 e IEC 60095-1:2018 son de pago: las cifras de arranque en frío vienen de descripciones del TCS, Banner y Yuasa y de ediciones anteriores.
+- Los manuales del BCI no son accesibles: la tabla tensión-estado de carga se cita vía Battery University; el estudio de modos de fallo del BCI (2005/2010) y la presentación de Johnson Controls (AABC 2017) no se localizaron.
+- El criterio del 80 % de IEEE 450, IEEE 1188 e IEC 60896-11 solo se verificó en un documento sectorial (BATTCON 2014) y en Battery University; para SLI los umbrales de 40 % de capacidad o 50 % de CCA son criterios prácticos, no normativos.
+- No hay dato de vida útil específico y riguroso de España: solo el RACE (divulgativo, sin metodología), ADAC (Alemania), Banner (Austria) y BCI (EE. UU.).
+- No se verificó la vigencia del Reglamento 1103/2010 tras el 18-08-2026 ni la adopción del acto del art. 13(10) sobre la etiqueta de capacidad de las SLI.
+- Sin fuente primaria para la tensión de carga del alternador (13,5-14,8 V), la caída de tensión en el arranque ni el coeficiente de temperatura de la tensión en circuito abierto.
+- Sin datos independientes sobre la exactitud de los comprobadores de conductancia (solo fabricantes y Battery University, de Cadex, con posible sesgo comercial) ni fuente de un organismo español sobre diagnóstico (RACE aparte, OCU, ministerios).
+
+### segunda_vida
+
+- No hay medición pública agregada del estado de salud de los paquetes retirados en Europa; el 70-80 % es una convención o una simulación y la AIE no da una cifra de retirada.
+- El Reglamento no fija un estado de salud mínimo para reutilización o adaptación (solo al menos el 90 % en la remanufacturación); el acto del art. 73.4 no consta adoptado.
+- No se verificó el estado en 2026 de los proyectos citados (Nissan ArenA, BMW Leipzig, Renault ABS, Endesa Melilla): solo su anuncio o puesta en marcha, sin estado de salud de las baterías; la nota original de Daimler (Lünen, 13 MWh) no es accesible.
+- No hay cifra pública fiable de capacidad total de segunda vida instalada en la UE o en España; los demostradores van de 1,7 a 15 MWh y mezclan baterías usadas y nuevas.
+- Los costes de JRC 2018 y NREL 2015 son escenarios de modelo; no hay precios de mercado verificados de baterías usadas de vehículos eléctricos.
+- No hay fuente normativa o de fabricante de baterías de arranque sobre la profundidad de descarga admisible de una SLI: los 12-15 ciclos son de Battery University y las advertencias son de fabricantes de ciclo profundo.
+- No se verificó la definición de las categorías 1-1, 1-2 y 2 del GTR 22.
+
+### pasaporte_qr
+
+- Las páginas oficiales de Denso Wave (qrcode.com) no respondieron: niveles de corrección, capacidad y origen de 1994 se contrastaron con ZXing, la patente US 5726435 y Wikipedia; el texto de ISO/IEC 18004 es de pago.
+- No se leyeron los textos de EN 18219:2026 y EN 18220:2026 (de pago): se desconoce el nivel de corrección de errores o la sintaxis de URL que exigen.
+- Los sitios de Battery Pass no respondieron (thebatterypass.eu 401, batterypass.eu sin resolver): se usó el repositorio de GitHub (proyecto concluido en abril de 2025, sucesor BatteryPass-Ready).
+- No se pudo leer la norma «GS1 Digital Link URI Syntax» ni confirmar su versión vigente (gs1.org inaccesible).
+- No hay criterios de la AEPD ni del CEPD sobre datos de vehículos o baterías ni fuente española específica sobre datos de uso de baterías.
+- Los 71 puntos de datos de la Comisión y los 93 atributos de Battery Pass no se han reconciliado; la guía de la Comisión no es vinculante y se basa en el consolidado de 2025-07-31.
+- El borrador del acto del art. 77.9 (19-10-2026) no está adoptado y puede cambiar; no se buscaron costes de marcado QR.
+
+### ods
+
+- dsca.gob.es no se pudo abrir en vivo (se usaron copias de Internet Archive de 2026-10-12 y 2026-08-02): comprobar las URL antes de publicarlas; el PDF de la EDS cambió en origen entre febrero y julio de 2026, citar la versión consultada.
+- Las páginas sdgs.un.org/es/goals/\* cargan las metas por script: el texto de las metas procede de A/RES/70/1 y del marco de la UNSD.
+- El marco de los ODS no tiene ninguna serie de baterías de vehículos; cualquier afirmación de que el proyecto contribuye a una meta es interpretación del equipo.
+- No se halló el valor de España del 12.5.1 con la definición exacta de la ONU (el INE publica indicadores similares) ni un valor oficial único del 9.4.1 (INE y ONU no son comparables).
+- El «SDG Index europeo» de la EDS (puesto 20 de 34) no identifica editor ni edición (SDSN 2026: 22 de 35) y la metodología de clasificación de metas de la EDS no está detallada.
+- El Reglamento 2023/1542 solo cita la Agenda 2030 en el considerando 90; no vincula expresamente los ODS 9, 12 ni 13.
+- No se obtuvo el desglose por meta del gráfico de progreso 2026 de la ONU; la meta 13.2 no fija objetivo numérico ni año, y los objetivos climáticos de España y la UE proceden de otras normas (solo consta el −32 % de GEI respecto a 1990 de la EDS).
+- Basilea (OEWG-15, junio de 2026) solo tomó nota de los borradores de directrices; siguen sin adoptarse (COP-18, 2027).
+
+### clima_energia
+
+- No hay cifra de la Comisión sobre la parte secundaria del plomo en la UE posterior a 2016 (el 83 % del ILZSG es «Europa», con países no UE); no hay cifra específica de España.
+- Energía y CO2 de plomo primario frente a secundario: solo los informes de la ILA/thinkstep de 2018 (encargados por la industria, sin DOI, coberturas geográficas distintas); no se halló un ACV independiente con DOI que separe las rutas; el ahorro de energía del PNUMA (55-65 %) no tiene cifra de CO2.
+- No hay cifras de energía o CO2 del reciclaje informal ni de la ruta secundaria en España.
+- Los 800 millones de niños incluyen todas las fuentes de plomo; la estimación específica más citable es la de Ericson et al. (6-16,8 millones de personas expuestas en sitios informales, modelo con datos de 2013).
+- El «hasta la mitad» de baterías recicladas de forma informal es una afirmación de UNICEF y Pure Earth que no se pudo comprobar en Ericson et al. (solo el resumen).
+- No se encontró ningún ejemplo oficial verificable de contaminación por plomo de baterías mal gestionadas en España o la UE.
+- Eurostat env_wasbat no da agregado UE ni datos posteriores a 2023: la eficiencia de España en 2024-2025 y el cumplimiento del 75 % a finales de 2025 no están verificados.
+- Las cifras de muertes por plomo (902.000 en 2019, 495.550 en 2015, más de 3,5 millones en 2023) proceden de ediciones distintas del GBD y no son comparables; los porcentajes del ILZSG salen de notas de prensa (el boletín es de pago).
+
+### tecnologias
+
+- qrcode.com (Denso Wave) dio 504: la política de patentes y marca del QR solo consta por el aviso de marca registrada del LICENSE de python-qrcode.
+- No se leyó el texto de ISO/IEC 18004 (iso.org dio 403); consta que la edición 2015 está retirada y la 2024 vigente.
+- dev.mysql.com y www.mysql.com devuelven 403 según el cliente (200 con el user-agent de curl): la lista de versiones se comprobó así; la licencia se comprobó en el repositorio oficial.
+- Las páginas de precios no indican IVA, salvo Fly.io (precios sin impuestos); solo PythonAnywhere publica precios en euros; no se verificó el IVA para un cliente español.
+- No se verificó qué versión de Flask, Python o SQLite instala por defecto cada alojamiento (PythonAnywhere enumera Python hasta la 3.13); Render no indica un tamaño mínimo de disco persistente.
+- Las páginas de precios no tienen fecha y pueden cambiar sin aviso (PythonAnywhere los reestructuró en enero de 2026); las equivalencias en euros son cálculos propios con el tipo del BCE de 1,1234 del 2026-10-21.
+
+### presupuesto
+
+- No se encontró un pack de etiquetas de vinilo resistentes con precio e IVA claros para 100 o más unidades listas para imprimir en casa en una tienda española; solo hojas de poliéster para láser (Avery), vinilo A4 para inyección (Filament2Print) e impresión a medida (SR DTF, sin IVA).
+- El precio de 1 hoja de poliéster de Avery no se pudo comprobar (la tabla empieza en 25 hojas); Workcenter solo da precios tras subir un PDF; Copytop se descartó por incoherencia interna.
+- No se verificó el precio oficial de impresoras de etiquetas de bajo coste de otras marcas (Niimbot, Dymo); la ficha de la QL-800 solo menciona códigos de barras y logotipos, no QR.
+- No hay fuente que acredite la resistencia de las etiquetas de poliéster al electrolito, al calor de motor o a la vibración (solo el rango genérico de −20 a +80 °C del fabricante).
+- Los precios minoristas son volátiles (ofertas de PcComponentes válidas hasta 2026-10-22 o 23) y la mayoría de páginas no tienen fecha.
+- La partida de alojamiento (0-60 € del total de 20-120 €) no se investigó en este tema (ver tecnologias); la política de patentes del QR (Denso Wave) no se pudo consultar.
+
+### proceso_reciclaje
+
+- El documento BREF completo de metales no ferrosos (JRC107041, 2017) no se pudo leer (403); se usaron las conclusiones sobre MTD (Decisión 2016/1032).
+- No hay fuente del rendimiento de recuperación por fracción (plomo, polipropileno, ácido) como % de la entrada de una planta moderna concreta.
+- No consta qué parte del electrolito se regenera, se convierte en yeso o sulfato de sodio o se neutraliza en las plantas españolas (solo Pina de Ebro: neutralización y evaporación).
+- No se leyeron las autorizaciones ambientales integradas de Azor Ambiental, Metalúrgica de Medina, Exide ni Ploinmasa; no hay capacidades por planta salvo Pina de Ebro (37.175 t/año) y la afirmación de Azor (más de 30.000 t/año).
+- El número de plantas españolas de fundición de plomo secundario no está resuelto (5, 6 más Pina de Ebro, o 7).
+- El 97,3 % de la UE es una estimación encargada por la industria y la Comisión reconoció en 2019 que no había cifras oficiales; las directrices de Basilea usadas son la edición de 2003; no se explica por qué la eficiencia de España es 71,9 % frente al 93,9 % de Italia; el comunicado de BCI de 2026 se leyó solo con un resumen.
+- No se buscaron artículos con DOI sobre balances de masa ni páginas oficiales de Clarios o Exide sobre sus plantas españolas; los límites de exposición de la ficha del INSST (2016) pueden estar superados.
+
+### taller_resultados
+
+- No hay estudio con año, método y tamaño de muestra del porcentaje de baterías devueltas en garantía que resultan buenas (Midtronics, Exide, Clarios, Johnson Controls): solo afirmaciones anónimas de Battery University y la observación de un distribuidor británico.
+- No hay resultados agregados publicados de fabricantes de comprobadores para baterías de 12 V (buena / recargar / reemplazar) con tamaño de muestra; National UK (45/40/15 %) no tiene muestra ni fecha; las muestras grandes (Generational, AVILOO, Recurrent) son de baterías de tracción de eléctricos.
+- No hay datos reales del reparto «sigue en servicio / segunda vida / reciclaje» de las baterías de coche sustituidas; Eurostat no lo publica y los arts. 75 y 76 solo lo harán medible: cualquier porcentaje de reparto en la web es una hipótesis del proyecto.
+- No se halló el porcentaje anual de batería del RAC ni de la AA (el RAC da un día: 24 %); el 26 % de AAA es cálculo propio; la nota regional de AAA de 2026 dio 403; falta la cifra paneuropea de ARC Europe.
+- No se localizaron las fuentes originales de Autoclub Mutua (solo copias de prensa), del RACE (leído en su Revista Autoclub), de SWD(2019) 1300 (404) ni del estudio de IHS de 2014 (leído vía Eurobat).
+- España: sin tasas de devolución en garantía ni resultados de revisiones de batería en talleres; el barómetro del RACE de Semana Santa solo da 92,1 % para motor, neumáticos y batería juntos.
+
+### vehiculo_electrico
+
+- Los textos originales de la UNECE (R100, R94, GTR 20) dan 403: se usaron las reproducciones del DOUE, que no son los textos con efecto jurídico.
+- ISO 6469-3 es de pago: solo se verificó el alcance; no se verificaron los límites de la clase B ni su equivalencia con la «alta tensión» de UN R100.
+- Las guías de EE. UU. (NHTSA, ERG 2024 guía 147, NFPA) no fueron accesibles: no hay cita sobre incendio diferido o distancias de almacenamiento.
+- No se halló una nota técnica del INSST específica de vehículos eléctricos (se usaron la guía técnica del INSST de 2020, el RD 614/2001 y las guías del IRSST de Madrid).
+- No hay masa ni proporción de cobre y aluminio dentro del paquete ni reparto porcentual por material del paquete (el gráfico de la AIE es del vehículo completo y excluye aluminio y acero).
+- No hay estadística oficial del reparto 400 V / 800 V ni de la tensión nominal media de los paquetes (solo una declaración de Porsche y rangos de guías).
+- No hay cifras oficiales de frecuencia de incendios de baterías de vehículos eléctricos ni de tiempos de reignición; los 65-75 °C de inicio del embalamiento de la guía del IRSST son de una fuente secundaria no verificada.
+- No se leyeron el contenido de COM(2025) 981 ni la Decisión de Ejecución (UE) 2026/2048 sobre la norma armonizada de baterías.
+
+### transversal
+
+- Todos los datos están a 2026-10-21 (algunos verificadores consultaron el 2026-10-22): los actos pendientes de la UE (etiquetado, interés legítimo, actos delegados), las propuestas COM y el real decreto español pueden cambiar.
+- EUR-Lex y varias webs bloquean el acceso automatizado: los textos legales se leyeron en publications.europa.eu (reproducción del DOUE), que no son las versiones con efecto jurídico (las consolidadas tampoco).
+- El presupuesto de búsquedas web se agotó en todos los temas; la verificación se hizo sobre todo con lectura directa de las fuentes, y las afirmaciones de ausencia («no hay acto adoptado») no son concluyentes.
+
+## 7. Fuentes numeradas
+
+Todas consultadas el 2026-10-21. Formato: [n] título. Editor. Fecha de publicación o actualización. URL final. Idioma. Tipo.
+
+- [1] VARTA Dynamic SLI 544402044K262 (B18, 44 Ah) – Technical data sheet. VARTA Automotive (Clarios). s. f. (PDF generado el 2026-10-21). <https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/544402044K262.pdf> (en). ficha técnica de fabricante.
+- [2] VARTA Dynamic SLI 574012068K262 (E11, 74 Ah) – Technical data sheet. VARTA Automotive (Clarios). s. f. (PDF generado el 2026-10-21). <https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/574012068K262.pdf> (en). ficha técnica de fabricante.
+- [3] VARTA Dynamic SLI 595402080K262 (G3, 95 Ah) – Technical data sheet. VARTA Automotive (Clarios). s. f. (PDF generado el 2026-10-21). <https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/595402080K262.pdf> (en). ficha técnica de fabricante.
+- [4] Yuasa Technical Data Sheet – YBX3056 (YBX 3000 SMF, 12 V 36 Ah). Yuasa (yuasa.com/uk). 2026-10-21 (ficha generada en la consulta). <https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3056-036> (en). ficha técnica de fabricante.
+- [5] Yuasa Technical Data Sheet – YBX3075 (YBX 3000 SMF, 12 V 60 Ah). Yuasa (yuasa.com/uk). 2026-10-21 (ficha generada en la consulta). <https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3075-060> (en). ficha técnica de fabricante.
+- [6] Yuasa Technical Data Sheet – YBX3017 (YBX 3000 SMF, 12 V 90 Ah). Yuasa (yuasa.com/uk). 2026-10-21 (ficha generada en la consulta). <https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3017-090> (en). ficha técnica de fabricante.
+- [7] The Availability of Automotive Lead-Based Batteries for Recycling in the EU – A joint industry analysis of EU collection and recycling rates 2010-2012. IHS (IHS Markit) para EUROBAT, ILA, ACEA, JAMA y KAMA (copia alojada en eurobat.org). 2014 (PDF de octubre de 2014). <https://www.eurobat.org/wp-content/uploads/2021/09/ihs_eurobat_report_lead_lores_final_2.pdf> (en). estudio de asociaciones sectoriales (informe de consultora).
+- [8] An Analysis of EU Collection and Recycling of Lead-based Automotive Batteries During the Period 2015-2017. IHS Markit para ACEA, JAMA, KAMA, EUROBAT e ILA (copia alojada en eurobat.org). 2020-03. <https://www.eurobat.org/wp-content/uploads/2021/09/RECYCLING-Dec20.pdf> (en). estudio de asociaciones sectoriales (informe de consultora).
+- [9] Safety Data Sheet – Lead-acid battery filled with diluted sulphuric acid (SDS No. 00377-0089, versión 2.0). Robert Bosch GmbH, Automotive Aftermarket (copia alojada por Tayna). 2021-06-30. <https://media.tayna.co.uk/docs/v1/3968005.pdf> (en). ficha de datos de seguridad de fabricante (REACH).
+- [10] DOE-HDBK-1084-95 – Primer on Lead-Acid Storage Batteries. U.S. Department of Energy (copia alojada en EverySpec). 1995-09. <https://everyspec.com/DOE/DOE-HDBK/download.php?spec=DOE-HDBK-1084.003301.pdf> (en). manual técnico oficial (DOE).
+- [11] Technical Guidelines for the Environmentally Sound Management of Waste Lead-acid Batteries (Basel Convention series/SBC No. 2003/9). Secretariado del Convenio de Basilea / PNUMA. 2003 (adoptadas en la COP-6, diciembre de 2002). <https://www.basel.int/Portals/4/download.aspx?d=UNEP-CHW-WAST-GUID-WasteLeadAcidBatteries.English.pdf> (en). directrices técnicas de organismo internacional (ONU).
+- [12] IEC 60095-1:2018 RLV – Lead-acid starter batteries – Part 1: General requirements and methods of test. International Electrotechnical Commission (IEC). 2018-11-16 (edición 8.0; versión corregida 2026-02). <https://webstore.iec.ch/en/publication/64220> (en). norma técnica (ficha de catálogo con el alcance).
+- [13] Instructions for the handling of lead batteries. MOLL Batterien GmbH. 2023-02-23 (metadatos y pie del PDF). <https://moll-batterien.de/images/Downloads/pruefen_und_sicherheit/instructions_for_the_handling_of_lead_batteries.pdf> (en). instrucciones técnicas de fabricante.
+- [14] BU-903: How to Measure State-of-charge. Battery University (Cadex Electronics). 2021-11-04 (actualizado). <https://www.batteryuniversity.com/article/bu-903-how-to-measure-state-of-charge> (en). web técnica (reproduce la tabla del BCI).
+- [15] Crown Battery – Safety Sheet (battery inspection: specific gravity and open circuit voltage chart). Crown Battery Manufacturing Company. s. f. <https://www.crownbattery.com/hs-fs/hub/435823/file-2580924738.pdf?hsCtaTracking=2c037742-2851-4162-8879-558d2ca48cf4%7C92b8bf8f-f7a6-4d91-baaf-cb5c716bf091> (en). hoja técnica de fabricante.
+- [16] Lead poisoning (fact sheet). Organización Mundial de la Salud (OMS). 2026-06-10. <https://www.who.int/news-room/fact-sheets/detail/lead-poisoning-and-health> (en). ficha descriptiva de organismo de salud.
+- [17] ICSC 0362 – ÁCIDO SULFÚRICO, concentrado (> 51% y < 100%). OIT/OMS (versión española: INSST). 2016-11. <https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_card_id=0362&p_version=2&p_lang=es> (es). ficha internacional de seguridad química.
+- [18] ICSC 0052 – PLOMO (plomo metálico). OIT/OMS (versión española: INSST). 2019-11. <https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_card_id=0052&p_version=2&p_lang=es> (es). ficha internacional de seguridad química.
+- [19] Life Cycle Assessment of Automotive Lead Batteries – Europe (informe V6.0). Sphera Solutions para EUROBAT e ILA. 2022-05-12. <https://ila-lead.org/wp-content/uploads/2025/05/EU-LCA-of-Pb-based-batteries_Automotive-Report_REVIEWED_FINAL_report-with-review-statement.pdf> (en). estudio de ciclo de vida de asociaciones sectoriales (con revisión crítica).
+- [20] Lead industry life cycle studies: environmental impact and life cycle assessment of lead battery and architectural sheet production (A. J. Davidson, S. P. Binks, J. Gediga). Int J Life Cycle Assess 21, DOI 10.1007/s11367-015-1021-5. Springer (acceso abierto, CC BY 4.0); autores de ILA y thinkstep. 2016-01-22. <https://link.springer.com/article/10.1007/s11367-015-1021-5> (en). artículo científico con DOI. Variantes del mismo documento fusionadas: <https://batteryinnovation.org/wp-content/uploads/2019/02/LCA-journal-paper.-DavidsonBinksGediga.pdf>.
+- [21] National Recycling Rate Study (study years 2017-2021). Battery Council International (elaborado por Vault Consulting). 2023-07. <https://batterycouncil.org/wp-content/uploads/2023/07/BCI_National-Recycling-Rate-Study_FINAL-071323.pdf> (en). estudio de asociación sectorial.
+- [22] AP-42, Section 12.11 Secondary Lead Processing. U.S. Environmental Protection Agency (EPA). 1986-10 (reformateado 1995-01; corrección de tabla en 2010-09). <https://www.epa.gov/sites/default/files/2020-11/documents/c12s11_2010.pdf> (en). documento oficial de la EPA (factores de emisión).
+- [23] A Review of Battery Life-Cycle Analysis: State of Knowledge and Critical Needs (ANL/ESD/10-7). Argonne National Laboratory (U.S. DOE), J. L. Sullivan y L. Gaines (copia alojada en UNT Digital Library). 2010-10-01. <https://digital.library.unt.edu/ark:/67531/metadc840762/m2/1/high_res_d/1000659.pdf> (en). informe de laboratorio nacional (DOE).
+- [24] Recovery of Pure Lead-Tin Alloy from Recycling Spent Lead-Acid Batteries (Materials 16(17):5882, DOI 10.3390/ma16175882). MDPI (Materials); D. Malecha, S. Małecki, P. Jarosz, R. Kowalik, P. Żabiński. 2023-08-28. <https://pmc.ncbi.nlm.nih.gov/articles/PMC10488961/> (en). artículo científico (DOI).
+- [25] Directiva (UE) 2024/869 del Parlamento Europeo y del Consejo, de 13 de marzo de 2024, por la que se modifican la Directiva 2004/37/CE y la Directiva 98/24/CE en lo que respecta a los valores límite para el plomo y sus compuestos inorgánicos y para los diisocianatos. Parlamento Europeo y Consejo de la Unión Europea (Diario Oficial de la UE). 2024-03-13 (DOUE de 2024-03-19). <http://publications.europa.eu/resource/cellar/c1b2d956-e597-11ee-8b2b-01aa75ed71a1.0007.03/DOC_1> (es). texto legal de la UE (Diario Oficial). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/cellar/c1b2d956-e597-11ee-8b2b-01aa75ed71a1.0006.03/DOC_1>.
+- [26] Reglamento (UE) 2023/1542 del Parlamento Europeo y del Consejo, de 12 de julio de 2023, relativo a las pilas y baterías y sus residuos (texto original en español, DOUE L 191, 28.7.2023, p. 1; CELEX 32023R1542). Parlamento Europeo y Consejo de la Unión Europea (EUR-Lex, Oficina de Publicaciones de la UE). 2023-07-28. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32023R1542> (es). texto legal (UE). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/cellar/d0065c31-2ce3-11ee-95a2-01aa75ed71a1.0023.03/DOC_1>; <http://publications.europa.eu/resource/cellar/d0065c31-2ce3-11ee-95a2-01aa75ed71a1.0006.01/DOC_1>; <http://publications.europa.eu/resource/cellar/d0065c31-2ce3-11ee-95a2-01aa75ed71a1.0023.01/DOC_1>; <https://eur-lex.europa.eu/eli/reg/2023/1542/oj/spa>; <http://publications.europa.eu/resource/cellar/d0065c31-2ce3-11ee-95a2-01aa75ed71a1.0006.03/DOC_1>; <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32023R1542>; <http://publications.europa.eu/resource/celex/32023R1542>.
+- [27] Decisión 2014/955/UE de la Comisión, de 18 de diciembre de 2014, por la que se modifica la Decisión 2000/532/CE sobre la lista de residuos. Comisión Europea (Diario Oficial de la UE, L 370). 2014-12-18 (DOUE de 2014-12-30). <http://publications.europa.eu/resource/cellar/bb120f99-8ff5-11e4-b8a5-01aa75ed71a1.0022.03/DOC_1> (es). texto legal de la UE (Diario Oficial). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/cellar/bb120f99-8ff5-11e4-b8a5-01aa75ed71a1.0006.03/DOC_1>.
+- [28] Material Safety Data Sheet – Lead-Acid Battery Wet, Filled with Acid (UN2794), Form Auto/MSDS/01. Exide Industries Limited. 2024-01-01. <https://docs.exideindustries.com/pdf/eil-msds-UN2794.pdf> (en). ficha de datos de seguridad de fabricante.
+- [29] Car Battery and Winter (Auto aku ja talv). University of Tartu, Applied Measurement Science (autor: Ivo Leito). 2011-01-30. <https://ams.ut.ee/car-battery-and-winter-auto-aku-ja-talv/> (en). página divulgativa de un grupo universitario.
+- [30] Texto consolidado del Reglamento (UE) 2023/1542, versión de 13.08.2026 (003.001). Oficina de Publicaciones de la Unión Europea (EUR-Lex). 2026-08-13. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:02023R1542-20260813> (es). texto legal consolidado (UE). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/celex/02023R1542-20260813>; <https://publications.europa.eu/resource/celex/02023R1542-20260813>; <http://publications.europa.eu/resource/cellar/d86c4599-ac88-11f1-b9e5-01aa75ed71a1.0008.02/DOC_1>.
+- [31] Decisión Delegada (UE) 2025/934 de la Comisión, de 5 de marzo de 2025, por la que se modifica la Decisión 2000/532/CE en lo referente a la actualización de la lista de residuos en relación con los residuos de pilas y baterías. Comisión Europea (Diario Oficial de la Unión Europea). 2025-05-20. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32025D0934> (es). texto legal primario (UE). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/celex/32025D0934>; <http://publications.europa.eu/resource/cellar/b1832249-3512-11f0-8a44-01aa75ed71a1.0007.03/DOC_1>; <http://publications.europa.eu/resource/cellar/b1832249-3512-11f0-8a44-01aa75ed71a1.0006.03/DOC_1>.
+- [32] Corrección de errores de la Decisión Delegada (UE) 2025/934 (DO L, 2025/90657): aplicable desde el 9 de diciembre de 2026. Diario Oficial de la Unión Europea. 2025-08-19. <http://publications.europa.eu/resource/oj/L_202590657> (es). texto legal de la UE (corrección de errores).
+- [33] Decisión 2000/532/CE (lista de residuos) - texto consolidado a 09.12.2026 (versión 004.001). Oficina de Publicaciones de la Unión Europea (EUR-Lex). 2026-12-09 (fecha de aplicación). <http://publications.europa.eu/resource/celex/02000D0532-20261209> (es). texto legal de la UE (versión consolidada, sin valor jurídico).
+- [34] Decisión 2000/532/CE (lista de residuos) - texto consolidado a 06.12.2023. Oficina de Publicaciones de la Unión Europea (EUR-Lex). 2023-12-06. <http://publications.europa.eu/resource/celex/02000D0532-20231206> (es). texto legal de la UE (versión consolidada, sin valor jurídico).
+- [35] Waste batteries: Technical guidelines. Secretaría del Convenio de Basilea (PNUMA). 2026 (página vigente). <https://www.basel.int/Implementation/Wastebatteries/Technicalguidelines/tabid/9418/Default.aspx> (en). organismo oficial (Convenio de Basilea).
+- [36] UNEP/CHW/OEWG.15/INF/8/Rev.1 - Technical guidelines on the environmentally sound management of waste lead-acid batteries (versión revisada del 24 de junio de 2026, borrador no adoptado). Secretaría del Convenio de Basilea (PNUMA). 2026-07-01. <https://www.basel.int/Portals/4/download.aspx?d=UNEP-CHW-OEWG.15-INF-8-Rev.1.English.pdf> (en). borrador de guía técnica oficial (Naciones Unidas).
+- [37] Berichtigung der Richtlinie (EU) 2024/869 (DO L, 2024/90309): corrige μg/m3 por mg/m3 en el anexo II, punto 2 (solo versión alemana). Amtsblatt der Europäischen Union. 2024-05-24. <http://publications.europa.eu/resource/oj/L_202490309> (de). texto legal de la UE (corrección de errores).
+- [38] U.S. Recycling Rate Study. Study Years 2020-2024 (Maximizing Lead Battery Recycling for Critical-Mineral Recovery & Supply Chain Security). Battery Council International (BCI); resultados preparados por Vault Consulting. 2026-07 (portada: «Published July 2026»). <https://batterycouncil.org/wp-content/uploads/2026/08/Recycling-Rate-Report_FINAL.pdf> (en). estudio sectorial (asociación industrial).
+- [39] New Study Confirms Lead Batteries Are America's Most Recycled Consumer Product, With a 98% Recycling Rate (nota de prensa). Battery Council International (BCI). 2026-08-06. <https://batterycouncil.org/news/new-study-confirms-lead-batteries-are-americas-most-recycled-consumer-product-with-a-98-recycling-rate/> (en). nota de prensa (asociación industrial).
+- [40] New Study Confirms Lead Batteries Maintain 99% Recycling Rate (nota de prensa). Battery Council International (BCI). 2023-07-12. <https://batterycouncil.org/news/new-study-confirms-lead-batteries-maintain-remarkable-99-recycling-rate/> (en). nota de prensa (asociación industrial).
+- [41] Advancing Sustainable Materials Management: 2018 Fact Sheet. Assessing Trends in Materials Generation and Management in the United States. U.S. Environmental Protection Agency (EPA). 2020-12. <https://www.epa.gov/sites/default/files/2021-01/documents/2018_ff_fact_sheet_dec_2020_fnl_508.pdf> (en). informe oficial.
+- [42] Durable Goods: Product-Specific Data (apartado Lead Acid Batteries). U.S. Environmental Protection Agency (EPA). 2026-10-19 (página actualizada; los datos son de 2018). <https://www.epa.gov/facts-and-figures-about-materials-waste-and-recycling/durable-goods-product-specific-data> (en). página oficial con datos.
+- [43] Mineral Commodity Summaries 2026: Lead. U.S. Geological Survey (USGS). 2026-02. <https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-lead.pdf> (en). informe oficial.
+- [44] Commission Delegated Regulation (EU) 2025/606 of 21 March 2025 establishing the methodology for calculation and verification of rates for recycling efficiency and recovery of materials from waste batteries (CELEX 32025R0606). Comisión Europea (Oficina de Publicaciones de la UE). 2025-07-04 (publicación en el DOUE; adoptado el 2025-03-21). <http://publications.europa.eu/resource/cellar/5881a55e-5873-11f0-a9d0-01aa75ed71a1.0006.03/DOC_1> (en). texto legal. Variantes del mismo documento fusionadas: <https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202500606>.
+- [45] Report from the Commission to the European Parliament and the Council on the assessment of the appropriateness of revising the targets for recycling efficiency and recovery of materials set out in Parts B and C of Annex XII to Regulation (EU) 2023/1542, COM(2026) 470 final. Comisión Europea (copia del repositorio de la Oficina de Publicaciones; hay otra idéntica en el registro del Consejo, ST 13060/26). 2026-09-11. <http://publications.europa.eu/resource/cellar/2e647832-addd-11f1-b9e5-01aa75ed71a1.0015.02/DOC_1> (en). informe oficial. Variantes del mismo documento fusionadas: <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52026DC0470>.
+- [46] Directive 2006/66/EC of the European Parliament and of the Council of 6 September 2006 on batteries and accumulators and waste batteries and accumulators (CELEX 32006L0066; DOUE L 266, 26.9.2006). Parlamento Europeo y Consejo de la UE (Oficina de Publicaciones de la UE). 2006-09-26 (publicación en el DOUE; adoptada el 2006-09-06). <http://publications.europa.eu/resource/cellar/299096f6-f710-4a98-bc12-38f7e2289243.0005.03/DOC_1> (en). texto legal (derogado desde 2025-08-18).
+- [47] Waste statistics - recycling of batteries and accumulators. Eurostat, Statistics Explained. 2026-10-05 (página editada por última vez; datos extraídos en noviembre de 2025; próxima actualización prevista el 2026-12-04). <https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Waste_statistics_-_recycling_of_batteries_and_accumulators> (en). estadística oficial (artículo explicativo).
+- [48] Recycling of batteries and accumulators (env_wasbat; DOI 10.2908/ENV_WASBAT), descarga JSON-stat completa. Eurostat. 2025-11-27 (datos actualizados; último año de referencia: 2023). <https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wasbat?format=JSON&lang=EN> (en). base de datos oficial.
+- [49] Plan Estatal Marco de Gestión de Residuos (PEMAR) 2025-2035, capítulo 12 «Pilas y acumuladores» (pp. 135-139 de 251). Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO). 2026-01 (PDF creado el 2026-01-24; Last-Modified del servidor 2026-01-27; datos hasta 2024). <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/sgecocir/planes-estrategias-y-programas/Plan%20Estatal%20Marco%20de%20Gestion%20de%20Residuos%20(PEMAR)%202025-2035.pdf> (es). documento de planificación oficial.
+- [50] Memoria anual de generación y gestión de residuos. Residuos de pilas y acumuladores. MITECO, Dirección General de Calidad y Evaluación Ambiental. 2024-05-24 (fecha del PDF). <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/sgecocir/raee's/Memoria%20anual%20Pilas.pdf> (es). informe oficial.
+- [51] Resumen serie histórica: datos de recogida de pilas y acumuladores 2012-2018. MITECO. 2020-05-06 (fecha del PDF). <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/publicaciones/12generacionygestionderesiduosdepilasyacumuladores2012-2018_tcm30-510665.pdf> (es). informe oficial.
+- [52] Real Decreto 106/2008, de 1 de febrero, sobre pilas y acumuladores y la gestión ambiental de sus residuos (texto consolidado, BOE-A-2008-2387). Agencia Estatal Boletín Oficial del Estado (BOE). 2008-02-12 (BOE núm. 37); texto consolidado actualizado el 2021-01-20. <https://www.boe.es/buscar/act.php?id=BOE-A-2008-2387> (es). texto legal.
+- [53] El Acuerdo Voluntario de Baterías de plomo-ácido cumple 10 años (artículo de opinión del presidente de la FER, Ion Olaeta). Interempresas (autor: Federación Española de la Recuperación y el Reciclaje, FER). 2019-10-23. <https://www.interempresas.net/Reciclaje/257502-El-Acuerdo-Voluntario-de-Baterias-de-Plomo-acido-cumple-10-anos.html> (es). artículo de opinión de federación sectorial.
+- [54] Commission Staff Working Document. Impact Assessment Report accompanying the proposal for a Regulation concerning batteries and waste batteries, SWD(2020) 335 final, Part 1/3. Comisión Europea. 2020-12-10. <http://publications.europa.eu/resource/cellar/5ee7d299-3ad8-11eb-b27b-01aa75ed71a1.0001.02/DOC_1> (en). informe oficial.
+- [55] Commission Staff Working Document. Impact Assessment Report, SWD(2020) 335 final, Part 2/3. Comisión Europea. 2020-12-10. <http://publications.europa.eu/resource/cellar/5ee7d299-3ad8-11eb-b27b-01aa75ed71a1.0001.02/DOC_2> (en). informe oficial.
+- [56] Commission Staff Working Document. Impact Assessment Report, SWD(2020) 335 final, Part 3/3 (Annex 9: Detailed analysis of the Measures and their Sub-measures). Comisión Europea. 2020-12-10. <http://publications.europa.eu/resource/cellar/5ee7d299-3ad8-11eb-b27b-01aa75ed71a1.0001.02/DOC_3> (en). informe oficial.
+- [57] Setting the standard for Europe's circular economy (hoja informativa sobre baterías de plomo). Charge the Future / EUROBAT. 2019 (pie de página «© 2019»); archivo subido en 2022-03. <https://www.eurobat.org/wp-content/uploads/2022/03/Circular_Economy_v3.pdf> (en). documento de asociación sectorial.
+- [58] New study reveals lead batteries are the most recycled product in the U.S. with a 99% recycling rate. International Lead Association (ILA). 2023-07-17. <https://ila-lead.org/new-study-reveals-lead-batteries-are-the-most-recycled-product-in-the-u-s-with-a-99-recycling-rate/> (en). noticia de asociación sectorial.
+- [59] Lead Battery Recycling Rate: 99% Since 2000. Battery Council International (BCI). s. f. (cita el estudio de 2026). <https://batterycouncil.org/battery-facts-and-applications/essential-applications/lead-battery-recycling/> (en). página web de asociación sectorial.
+- [60] Batteries (política de baterías de la UE). Comisión Europea, DG Medio Ambiente. 2025-11-19 (modificada 2026-10-15). <https://environment.ec.europa.eu/topics/waste-and-recycling/batteries_en> (en). página oficial.
+- [61] ILA - International Lead Association (página de inicio). International Lead Association (ILA). s. f. <https://ila-lead.org/> (en). página web de asociación sectorial.
+- [62] Informe de la Comisión sobre la evaluación de la conveniencia de revisar los objetivos de eficiencia de reciclado y de valorización de materiales del anexo XII, partes B y C, del Reglamento (UE) 2023/1542 (COM(2026) 470 final; doc. Consejo 13060/26). Comisión Europea; Consejo de la UE. 2026-09-11. <https://data.consilium.europa.eu/doc/document/ST-13060-2026-INIT/es/pdf> (es). Documento oficial de la UE, PDF en español. Variantes del mismo documento fusionadas: <https://data.consilium.europa.eu/doc/document/ST-13060-2026-INIT/en/pdf>.
+- [63] Ficha del documento 32023R1542 en EUR-Lex: fechas, versiones consolidadas, actos modificadores y propuestas posteriores. Oficina de Publicaciones de la Unión Europea (EUR-Lex). 2026-08-13. <https://eur-lex.europa.eu/legal-content/ES/ALL/?uri=CELEX:32023R1542> (es). base de datos legal oficial. Variantes del mismo documento fusionadas: <https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=CELEX:32023R1542>.
+- [64] Reglamento (UE) 2025/1561 del Parlamento Europeo y del Consejo, de 18 de julio de 2025, por el que se modifica el Reglamento (UE) 2023/1542 en lo que respecta a las obligaciones de los operadores económicos en relación con las políticas de diligencia debida en materia de pilas o baterías. Parlamento Europeo y Consejo de la Unión Europea (Diario Oficial de la Unión Europea). 2025-07-30. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32025R1561> (es). texto legal primario (UE). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/oj/L_202501561>.
+- [65] Reglamento (UE) 2026/1738 del Parlamento Europeo y del Consejo, de 8 de julio de 2026, relativo a los requisitos de circularidad aplicables al diseño de los vehículos y a la gestión de los vehículos al final de su vida útil (modifica el anexo I del Reglamento (UE) 2023/1542). Parlamento Europeo y Consejo de la Unión Europea (Diario Oficial de la Unión Europea). 2026-07-24. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32026R1738> (es). texto legal primario (UE). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/oj/L_202601738>; <http://publications.europa.eu/resource/cellar/394bc298-86fd-11f1-bf5e-01aa75ed71a1.0023.03/DOC_1>.
+- [66] Texto consolidado de la Directiva 2008/98/CE sobre los residuos, versión de 16.10.2025. Oficina de Publicaciones de la Unión Europea (EUR-Lex). 2025-10-16. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:02008L0098-20251016> (es). texto legal consolidado (UE).
+- [67] Digital Product Passport for Batteries (Battery Passport). Comisión Europea, Dirección General de Mercado Interior, Industria, Emprendimiento y PYME (DG GROW). 2026-08-05 (modificada 2026-09-30). <https://single-market-economy.ec.europa.eu/single-market/digital-product-passport/batteries_en> (en). organismo oficial (Comisión Europea).
+- [68] EU Digital Product Passport FAQ for Batteries (1st edition, manuscript completed September 2026). Comisión Europea, Dirección General de Mercado Interior, Industria, Emprendimiento y PYME (DG GROW). 2026-09-30. <https://single-market-economy.ec.europa.eu/single-market/digital-product-passport/eu-digital-product-passport-faq-batteries_en> (en). documento oficial (Comisión Europea).
+- [69] Guidance Document: Digital Batteries Passport - data points by category (version 2.0). Comisión Europea, Dirección General de Mercado Interior, Industria, Emprendimiento y PYME (DG GROW). 2026-08-15. <https://single-market-economy.ec.europa.eu/document/download/cd1e5e6c-4a4a-4b99-995a-49eb6916187e_en?filename=Digital%20Batteries%20Passport%20-%20data%20point%20by%20category.pdf> (en). documento de orientación oficial (Comisión Europea).
+- [70] Notification Detail G/TBT/N/EU/1181: Draft Commission Implementing Regulation laying down rules for the application of Regulation (EU) 2023/1542 as regards format and harmonised specifications for certain labelling requirements. Comisión Europea, portal de Obstáculos Técnicos al Comercio (TBT). 2025-12-22 (fecha de recepción). <https://technical-barriers-trade.ec.europa.eu/en/notification/38474> (en). organismo oficial (Comisión Europea).
+- [71] EUR-Lex: actos de ejecución basados en el Reglamento (UE) 2023/1542 (resultados de búsqueda). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/search.html?SUBDOM_INIT=ALL_ALL&DTS_SUBDOM=ALL_ALL&DTS_DOM=ALL&lang=en&type=advanced&DB_IMPLEMENTING=32023R1542&qid=1792621768924> (en). base de datos legal oficial.
+- [72] EUR-Lex: actos delegados basados en el Reglamento (UE) 2023/1542 (resultados de búsqueda). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/search.html?SUBDOM_INIT=ALL_ALL&DTS_SUBDOM=ALL_ALL&DTS_DOM=ALL&DB_DELEGATED=32023R1542&lang=en&type=advanced&qid=1792621790156> (en). base de datos legal oficial.
+- [73] Commission Implementing Regulation (EU) 2026/1778 of 16 July 2026 laying down the implementation arrangements for the digital product passport registry. Comisión Europea (Diario Oficial de la Unión Europea). 2026-07-17. <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32026R1778> (en). texto legal primario (UE).
+- [74] Proposal for a Regulation amending Regulation (EU) 2023/1542 and Regulation (EU) 2024/1244 as regards simplification of some requirements and reduction of administrative burden (COM(2025) 981 final). Comisión Europea. 2025-12-10. <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0981> (en). propuesta legislativa (Comisión Europea). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/cellar/9ee90592-d67e-11f0-8da2-01aa75ed71a1.0014.03/DOC_1>.
+- [75] Proposal for a Regulation suspending the application of the rules on the appointment of an authorised representative for extended producer responsibility for batteries and waste batteries and packaging and packaging waste (COM(2025) 982 final). Comisión Europea. 2025-12-10. <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0982> (en). propuesta legislativa (Comisión Europea).
+- [76] Proposal for a Regulation amending Regulations (EU) 2016/679, (EU) 2016/1036, (EU) 2016/1037, (EU) 2017/1129, (EU) 2023/1542 and (EU) 2024/573 as regards the extension of certain mitigating measures available for small and medium sized enterprises to small mid-cap enterprises and further simplification measures (COM(2025) 501 final). Comisión Europea. 2025-05-21. <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0501> (en). propuesta legislativa (Comisión Europea).
+- [77] Legislative Train Schedule: Omnibus VIII (environment) - authorised representative for EPR (procedure 2025/0395(COD)). Parlamento Europeo. s. f. <https://www.europarl.europa.eu/legislative-train/theme-a-new-plan-for-europe-s-sustainable-prosperity-and-competitiveness/file-omnibus-viii-environment-authorised-representative-for-epr> (en). portal oficial (Parlamento Europeo).
+- [78] Ley 7/2022, de 8 de abril, de residuos y suelos contaminados para una economía circular (texto consolidado). Agencia Estatal Boletín Oficial del Estado (BOE). 2022-04-09 (última actualización 2025-04-02). <https://www.boe.es/buscar/act.php?id=BOE-A-2022-5809> (es). legislación española (BOE).
+- [79] Proyecto de Real Decreto sobre las pilas y baterías y la gestión de sus residuos (documento de información pública). Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), Dirección General de Calidad y Evaluación Ambiental. 2026-06-29 (fecha de creación del PDF). <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/participacion-publica/anexos/sgresiduos/pilas-y-baterias/Informaci%C3%B3n%20p%C3%BAblica%20del%20proyecto%20de%20real%20decreto%20sobre%20las%20pilas%20y%20bater%C3%ADas%20y%20la%20gesti%C3%B3n%20de%20sus%20residuos.pdf> (es). documento oficial (MITECO), proyecto normativo.
+- [80] Proposal for a Regulation amending Regulations (EU) No 765/2008, (EU) 2016/424, (EU) 2016/425, (EU) 2016/426, (EU) 2023/1230, (EU) 2023/1542 and (EU) 2024/1781 as regards digitalisation and common specifications (COM(2025) 504 final). Comisión Europea. 2025-05-21. <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0504> (en). propuesta legislativa (Comisión Europea). Variantes del mismo documento fusionadas: <http://publications.europa.eu/resource/cellar/080c9db1-3630-11f0-8a44-01aa75ed71a1.0002.03/DOC_1>.
+- [81] Proposal for a Regulation on public contracts and concessions (Public Procurement Act), amending among others Regulation (EU) 2023/1542 (COM(2026) 590 final). Comisión Europea. 2026-09-09. <https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52026PC0590> (en). propuesta legislativa (Comisión Europea).
+- [82] Reglamento (UE) 2024/1781 por el que se instaura un marco para el establecimiento de requisitos de diseño ecológico aplicables a los productos sostenibles (ESPR), DOUE L, 28.6.2024, versión española. Parlamento Europeo y Consejo de la UE; Oficina de Publicaciones de la UE (Cellar). 2024-06-28. <http://publications.europa.eu/resource/cellar/66b9f8da-34ea-11ef-b441-01aa75ed71a1.0023.03/DOC_1> (es). texto legal UE (DOUE). Variantes del mismo documento fusionadas: <https://publications.europa.eu/resource/celex/32024R1781>.
+- [83] Draft Commission Implementing Regulation laying down rules for the application of Regulation (EU) 2023/1542 as regards access to and use of certain information in the battery passport (Ares(2026)9814179). Comisión Europea (EUR-Lex, documentos preparatorios). 2026-10-19 (fecha del documento según EUR-Lex). <https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=PI_COM:Ares(2026)9814179> (en). borrador de acto de ejecución (Comisión Europea).
+- [84] Draft Commission Delegated Regulation supplementing and amending Regulation (EU) 2023/1542 by laying down minimum values for the electrochemical performance and durability of rechargeable industrial batteries, technical and safety parameters, and standards concerning the battery passport (Ares(2026)9188325). Comisión Europea (EUR-Lex, documentos preparatorios). 2026-09-29 (fecha del documento según EUR-Lex). <https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=PI_COM:Ares(2026)9188325> (en). borrador de acto delegado (Comisión Europea).
+- [85] EUR-Lex: búsqueda por título «labelling requirements 2023/1542» (un único resultado: borrador de Reglamento de Ejecución sobre formato y especificaciones armonizadas del etiquetado, 15/12/2025). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/search.html?type=advanced&lang=en&DTS_DOM=ALL&DTS_SUBDOM=ALL_ALL&SUBDOM_INIT=ALL_ALL&textScope0=ti&andText0=labelling+requirements+2023%2F1542&sortOne=DD&sortOneOrder=desc> (en). base de datos legal oficial.
+- [86] EUR-Lex: búsqueda por título «recycled 2023/1542» (borrador de acto delegado de contenido reciclado del 12/08/2026; Reglamento Delegado 2025/606; informe COM(2026) 470). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/search.html?type=advanced&lang=en&DTS_DOM=ALL&DTS_SUBDOM=ALL_ALL&SUBDOM_INIT=ALL_ALL&textScope0=ti&andText0=recycled+2023%2F1542&sortOne=DD&sortOneOrder=desc> (en). base de datos legal oficial.
+- [87] EUR-Lex: búsqueda por título «carbon footprint 2023/1542» (solo dos borradores del 29/04/2024). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/search.html?type=advanced&lang=en&DTS_DOM=ALL&DTS_SUBDOM=ALL_ALL&SUBDOM_INIT=ALL_ALL&textScope0=ti&andText0=carbon+footprint+2023%2F1542&sortOne=DD&sortOneOrder=desc> (en). base de datos legal oficial.
+- [88] EUR-Lex: búsqueda de actos legales de 2026 con «2023/1542» en el título (3 resultados: Decisión de Ejecución 2026/2048, Reglamento 2026/1738 y rectificación del 10.4.2026). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/search.html?type=advanced&lang=en&DTS_DOM=EU_LAW&DTS_SUBDOM=LEGISLATION&textScope0=ti&andText0=2023%2F1542&DD_YEAR=2026&sortOne=DD&sortOneOrder=desc> (en). base de datos legal oficial.
+- [89] Ficha EUR-Lex del Reglamento (UE) 2025/1561 (Proposal: 52025PC0258; Date of effect 31/07/2025). Oficina de Publicaciones de la Unión Europea (EUR-Lex). s. f. <https://eur-lex.europa.eu/legal-content/EN/ALL/?uri=CELEX:32025R1561> (en). base de datos legal oficial.
+- [90] Observatorio Legislativo: procedimiento 2025/0130(COD) (Omnibus IV, COM(2025) 501): acuerdo interinstitucional, pleno indicativo 23/11/2026. Parlamento Europeo. s. f. <https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025/0130(COD)> (en). portal oficial (Parlamento Europeo).
+- [91] Observatorio Legislativo: procedimiento 2025/0134(COD) (digitalización, COM(2025) 504): texto acordado, pleno indicativo 23/11/2026. Parlamento Europeo. s. f. <https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025/0134(COD)> (en). portal oficial (Parlamento Europeo).
+- [92] Observatorio Legislativo: procedimiento 2025/0397(COD) (COM(2025) 981): pendiente de decisión de la comisión, pleno indicativo 14/12/2026. Parlamento Europeo. s. f. <https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025/0397(COD)> (en). portal oficial (Parlamento Europeo).
+- [93] Observatorio Legislativo: procedimiento 2025/0395(COD) (COM(2025) 982): voto en comisión 05/10/2026, debate 19/10/2026, votación 20/10/2026. Parlamento Europeo. s. f. <https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025/0395(COD)> (en). portal oficial (Parlamento Europeo).
+- [94] Observatorio Legislativo: procedimiento 2025/0129(COD) (COM(2025) 258): procedimiento completado, acto final Reglamento 2025/1561. Parlamento Europeo. s. f. <https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2025/0129(COD)> (en). portal oficial (Parlamento Europeo).
+- [95] Observatorio Legislativo: procedimiento 2026/0265(COD) (COM(2026) 590): fase preparatoria en el Parlamento. Parlamento Europeo. s. f. <https://oeil.europarl.europa.eu/oeil/en/procedure-file?reference=2026/0265(COD)> (en). portal oficial (Parlamento Europeo).
+- [96] Informe A10-0041/2026 de la comisión del PE sobre COM(2025) 501 (Omnibus IV). Parlamento Europeo. 2026-03-03. <https://www.europarl.europa.eu/doceo/document/A-10-2026-0041_EN.html> (en). documento oficial (Parlamento Europeo).
+- [97] Informe A10-0024/2026 de la comisión del PE sobre COM(2025) 504 (digitalización y especificaciones comunes). Parlamento Europeo. 2026-02-17. <https://www.europarl.europa.eu/doceo/document/A-10-2026-0024_EN.html> (en). documento oficial (Parlamento Europeo).
+- [98] Informe A10-0266/2026 de la comisión del PE sobre COM(2025) 982 (suspensión del representante autorizado). Parlamento Europeo. 2026-10-09. <https://www.europarl.europa.eu/doceo/document/A-10-2026-0266_EN.html> (en). documento oficial (Parlamento Europeo).
+- [99] Real Decreto 553/2020, de 2 de junio, por el que se regula el traslado de residuos en el interior del territorio del Estado. Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio para la Transición Ecológica y el Reto Demográfico. 2020-06-19 (BOE núm. 171; en vigor desde 2020-07-01). <https://www.boe.es/eli/es/rd/2020/06/02/553/con> (es). texto legal (BOE).
+- [100] Real Decreto 265/2021, de 13 de abril, sobre los vehículos al final de su vida útil (texto consolidado). Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio de la Presidencia. 2021-04-14 (BOE núm. 89; última actualización del texto consolidado: 2024-09-18). <https://www.boe.es/eli/es/rd/2021/04/13/265/con> (es). texto legal (BOE).
+- [101] Real Decreto 27/2021, de 19 de enero, por el que se modifican el Real Decreto 106/2008 y el Real Decreto 110/2015. Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio para la Transición Ecológica y el Reto Demográfico. 2021-01-20 (BOE núm. 17). <https://www.boe.es/buscar/doc.php?id=BOE-A-2021-796> (es). texto legal (BOE).
+- [102] Metadatos de legislación consolidada BOE-A-2008-2387 (Real Decreto 106/2008): estatus de derogación. Agencia Estatal Boletín Oficial del Estado (BOE), API de datos abiertos. 2025-12-19 (fecha_actualizacion de los metadatos). <https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2008-2387/metadatos> (es). base de datos oficial (BOE).
+- [103] Información pública del proyecto de real decreto sobre las pilas y baterías y la gestión de sus residuos (plazo del 30-06-2026 al 03-09-2026). Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO). 2026-06-30 (apertura del plazo de información pública). <https://www.miteco.gob.es/en/calidad-y-evaluacion-ambiental/participacion-publica/pp-2026-informacion-publica-proyecto-real-decreto-sobre-pilas-y-baterias-y-gestion-residuos.html> (es). organismo oficial (MITECO).
+- [104] Memoria del Análisis de Impacto Normativo del Proyecto de Real Decreto sobre las pilas y baterías y la gestión de sus residuos. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), Dirección General de Calidad y Evaluación Ambiental. 2026-06-29. <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/participacion-publica/anexos/sgresiduos/pilas-y-baterias/MAIN%20Informaci%C3%B3n%20p%C3%BAblica%20del%20proyecto%20de%20real%20decreto%20sobre%20las%20pilas%20y%20bater%C3%ADas%20y%20la%20gesti%C3%B3n%20de%20sus%20residuos.pdf> (es). proyecto normativo (MITECO).
+- [105] Pilas y acumuladores: ¿Cómo y dónde se recogen?. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO). s. f. (tablas de recogida hasta 2019). <https://www.miteco.gob.es/es/calidad-y-evaluacion-ambiental/temas/prevencion-y-gestion-residuos/flujos/pilas-y-acumuladores/como-y-donde-se-recogen-2022.html> (es). organismo oficial (MITECO).
+- [106] Pilas y acumuladores: ¿Cuántas pilas y acumuladores se comercializan en España?. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), con datos del RII-PYA del Ministerio de Industria. s. f. (datos 2017-2021). <https://www.miteco.gob.es/es/calidad-y-evaluacion-ambiental/temas/prevencion-y-gestion-residuos/flujos/domesticos/fracciones/pilas-y-acumuladores/cuantas-pilas-y-acumuladores-se-comercializan-en-espana-2022.html> (es). organismo oficial (MITECO).
+- [107] Nota relativa a la aplicación del Real Decreto 553/2020, de 2 de junio, por el que se regula el traslado de residuos en el interior del territorio del Estado. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), Subdirección General de Economía Circular. 2022-07-26. <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/temas/prevencion-y-gestion-residuos/notasobrelaaplicaciondelrealdecretodetraslados_tcm30-509938.pdf> (es). organismo oficial (MITECO).
+- [108] Resolución de la Dirección General de Calidad y Evaluación Ambiental sobre los criterios a aplicar en relación con los traslados de residuos de pilas, acumuladores y baterías. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO), Dirección General de Calidad y Evaluación Ambiental. 2020-02-10 (aplicable desde 2020-07-01). <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/temas/prevencion-y-gestion-residuos/resoluciondgtrasladobateriaslitioyniquel_tcm30-507097.PDF> (es). organismo oficial (MITECO).
+- [109] Acuerdo Voluntario para la gestión de baterías plomo-ácido (página de inicio de Recicla tu Batería). Comisión de Seguimiento del Acuerdo Voluntario (SERNAUTO y asociaciones firmantes), reciclatubateria.com. s. f. (© 2019). <http://reciclatubateria.com/> (es). asociación sectorial (Acuerdo Voluntario).
+- [110] Informe de Gestión 2025 del Acuerdo Voluntario sobre baterías de plomo-ácido. Comisión de Seguimiento del Acuerdo Voluntario (SERNAUTO y asociaciones firmantes), reciclatubateria.com. 2026-03-20. <http://reciclatubateria.com/descargas?task=download.send&id=20&catid=2&m=0> (es). asociación sectorial (informe de gestión).
+- [111] Recicla tu Batería: Preguntas frecuentes. Comisión de Seguimiento del Acuerdo Voluntario (SERNAUTO y asociaciones firmantes), reciclatubateria.com. s. f. (© 2019). <http://reciclatubateria.com/preguntas-frecuentes> (es). asociación sectorial (Acuerdo Voluntario).
+- [112] Recicla tu Batería: Participantes, generadores (talleres, concesionarios y CAT asociados por comunidad autónoma). Comisión de Seguimiento del Acuerdo Voluntario (SERNAUTO y asociaciones firmantes), reciclatubateria.com. s. f. (© 2019). <http://reciclatubateria.com/participantes/generadores> (es). asociación sectorial (Acuerdo Voluntario).
+- [113] Baterías de automoción (gestión de baterías de plomo/ácido en Extremadura). Junta de Extremadura, Consejería de Agricultura, Desarrollo Rural, Medio Ambiente y Energía. s. f. <http://extremambiente.juntaex.es/index.php?option=com_content&view=article&id=2623> (es). administración autonómica.
+- [114] Registro nacional de productores de pilas y acumuladores (RII-PYA). Ministerio de Industria y Turismo. s. f. <https://industria.gob.es/registros-industriales/pilas/Paginas/Inicio.aspx> (es). organismo oficial (Ministerio de Industria y Turismo).
+- [115] Fundación Ecopilas: sistema colectivo de responsabilidad ampliada del productor (página de inicio). Fundación Ecopilas. s. f. (datos de 2024). <https://www.ecopilas.es/> (es). sistema colectivo de RAP (web propia).
+- [116] European Recycling Platform España recogió 2.000 toneladas de pilas en 2018. ERP España (European Recycling Platform). 2019-02. <https://erp-recycling.org/es-es/news-and-events/2019/02/erp-espana-recogio-2-000-toneladas-de-pilas-en-2018/> (es). sistema colectivo de RAP (nota de prensa propia).
+- [117] Pilas y acumuladores: ¿Qué obligaciones se derivan de la normativa de pilas y acumuladores?. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO). s. f. <https://www.miteco.gob.es/es/calidad-y-evaluacion-ambiental/temas/prevencion-y-gestion-residuos/flujos/domesticos/fracciones/pilas-y-acumuladores/que-obligaciones-se-derivan-normativa-pilas-acumuladores-2022.html> (es). organismo oficial (MITECO).
+- [118] Recyclia: entidad administradora de las fundaciones medioambientales Ecopilas, Ecofimática y Ecoasimelec (página de inicio). Recyclia. s. f. (datos de 2024-2025). <https://www.recyclia.es/> (es). sistema colectivo de RAP (entidad administradora, web propia).
+- [119] Real Decreto 764/2026, de 30 de septiembre, por el que se regula el Registro de producción y gestión de residuos. Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio para la Transición Ecológica y el Reto Demográfico. 2026-10-01 (BOE núm. 243; en vigor desde 2026-10-02). <https://www.boe.es/buscar/act.php?id=BOE-A-2026-20388> (es). texto legal (BOE).
+- [120] Sumarios diarios del BOE del 2026-09-01 al 2026-10-21 (44 ediciones; ejemplo: 2026-10-15). Agencia Estatal Boletín Oficial del Estado (BOE), API de datos abiertos. 2026-09-01 a 2026-10-21. <https://www.boe.es/datosabiertos/api/boe/sumario/20261015> (es). base de datos oficial (BOE).
+- [121] Informes de Gestión 2015 a 2024 del Acuerdo Voluntario sobre baterías de plomo-ácido (ejemplo: informe 2024). Comisión de Seguimiento del Acuerdo Voluntario (SERNAUTO y asociaciones firmantes), reciclatubateria.com. 2025-03-20 (informe 2024); los informes 2015 a 2023 son los ids 8, 9, 10, 12, 13, 15, 16, 17 y 18 de la misma página. <http://reciclatubateria.com/descargas?task=download.send&id=19&catid=2&m=0> (es). asociación sectorial (informe de gestión).
+- [122] TIPOS DE PILAS Y BATERIAS - Ecopilas. Fundación Ecopilas. s. f. <https://www.ecopilas.es/tipos-de-pilas-y-baterias/> (es). sistema colectivo de RAP (web propia).
+- [123] ADR 2025 - Agreement concerning the International Carriage of Dangerous Goods by Road, Volume I (ECE/TRANS/352 Vol.I), applicable as from 1 January 2025. Naciones Unidas, Comisión Económica para Europa (UNECE); copia del PDF alojada en lerem.org. 2024 (aplicable desde 2025-01-01). <https://lerem.org/wp-content/uploads/2025/01/ADR2025_Vol1e.pdf> (en). acuerdo internacional (texto oficial de la ONU, copia alojada por un tercero).
+- [124] ADR 2025 - Agreement concerning the International Carriage of Dangerous Goods by Road, Volume II (ECE/TRANS/352 Vol.II), applicable as from 1 January 2025. Naciones Unidas, Comisión Económica para Europa (UNECE); copia del PDF alojada en lerem.org. 2024 (aplicable desde 2025-01-01). <https://lerem.org/wp-content/uploads/2025/01/ADR2025_Vol2e.pdf> (en). acuerdo internacional (texto oficial de la ONU, copia alojada por un tercero).
+- [125] Real Decreto 97/2014, de 14 de febrero, por el que se regulan las operaciones de transporte de mercancías peligrosas por carretera en territorio español (texto consolidado). Ministerio de la Presidencia / Agencia Estatal Boletín Oficial del Estado. 2014-02-27 (BOE núm. 50); consolidado actualizado el 2024-12-04. <https://www.boe.es/eli/es/rd/2014/02/14/97/con> (es). texto legal (España).
+- [126] Commission Regulation (EU) 2016/1179 of 19 July 2016 amending, for the purposes of its adaptation to technical and scientific progress, Regulation (EC) No 1272/2008 (9th ATP to CLP). Comisión Europea (Diario Oficial de la UE, L 195, 20.7.2016, p. 11). 2016-07-20. <http://publications.europa.eu/resource/cellar/5de69f73-4e3f-11e6-89bd-01aa75ed71a1.0006.03/DOC_1> (en). texto legal (UE).
+- [127] Commission Delegated Regulation (EU) 2020/1182 of 19 May 2020 amending Part 3 of Annex VI to Regulation (EC) No 1272/2008 (15th ATP to CLP). Comisión Europea (Diario Oficial de la UE, L 261, 11.8.2020, p. 2). 2020-08-11. <http://publications.europa.eu/resource/cellar/c4dc636e-db91-11ea-adf7-01aa75ed71a1.0006.03/DOC_1> (en). texto legal (UE).
+- [128] Regulation (EC) No 1272/2008 of the European Parliament and of the Council of 16 December 2008 on classification, labelling and packaging of substances and mixtures (CLP), texto original. Parlamento Europeo y Consejo (Diario Oficial de la UE, L 353, 31.12.2008, p. 1). 2008-12-31. <http://publications.europa.eu/resource/cellar/6bf54b59-7673-461b-b8e1-f24c545cbd3c.0006.05/DOC_1> (en). texto legal (UE).
+- [129] Commission Regulation (EU) 2018/669 of 16 April 2018 amending Regulation (EC) No 1272/2008 (11th ATP to CLP). Comisión Europea (Diario Oficial de la UE, L 115, 4.5.2018, p. 1). 2018-05-04. <http://publications.europa.eu/resource/cellar/7243e2bd-4f66-11e8-be1d-01aa75ed71a1.0006.03/DOC_1> (en). texto legal (UE).
+- [130] 10 new substances added to the Candidate List (ECHA/PR/18/11, Helsinki, 27 June 2018). ECHA, Agencia Europea de Sustancias y Mezclas Químicas (copia de Internet Archive, captura del 2018-12-29). 2018-06-27. <https://web.archive.org/web/20181229195233/https://www.echa.europa.eu/de/-/ten-new-substances-added-to-the-candidate-list> (en). nota de prensa oficial (organismo de la UE).
+- [131] Implications of the Candidate Listing of Lead Metal: Frequently Asked Questions (v3, 29 June 2018). International Lead Association (ILA) / Lead REACH Consortium. 2018-06-29. <https://ila-reach.org/wp-content/uploads/2018/06/FAQ-SVHC-listing-Pb-metal-290618.pdf> (en). asociación sectorial.
+- [132] Carta de la Comisión Europea (vicepresidente Šefčovič y comisario Breton) al presidente de la comisión de asuntos europeos del Senado francés sobre el plomo y REACH, C(2022) 7990 final. Comisión Europea (diálogo político con el Senado francés). 2022-11-08. <https://www.senat.fr/fileadmin/import/files/dialogue_politique/20220721/Reponse_AP_Plomb_patrimoine_REACH.pdf> (fr). carta oficial de la Comisión Europea.
+- [133] Chemicals and Occupational Health & Safety (incluye el listado de la declaración EUROBAT sobre la 11.ª recomendación de ECHA, 12 de abril de 2023). EUROBAT, asociación europea de fabricantes de baterías de automoción e industriales. 2023-04-12 (declaración listada); página. <https://eurobat.org/what-we-do/eu-policy-and-regulation/chemicals-and-occupational-health-safety/> (en). asociación sectorial.
+- [134] ICSC 0001 - Hidrógeno (Ficha Internacional de Seguridad Química, abril de 2014; versión española INSST). OIT / OMS / Comisión Europea (versión en español: INSST). 2014-04 (versión española 2018). <https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_lang=es&p_card_id=0001&p_version=2> (es). ficha de seguridad (ICSC).
+- [135] Garages - Lead-acid Batteries (OSH Answers). Canadian Centre for Occupational Health and Safety (CCOHS). 2025-10-22 (última revisión). <https://www.ccohs.ca/oshanswers/safety_haz/garages/batteries.html> (en). organismo oficial (Canadá).
+- [136] Battery Charging - Industrial Lead-Acid Batteries (OSH Answers). Canadian Centre for Occupational Health and Safety (CCOHS). 2023-01-26 (última revisión). <https://www.ccohs.ca/oshanswers/safety_haz/battery-charging.html> (en). organismo oficial (Canadá).
+- [137] ICSC 0362 - Ácido sulfúrico, concentrado (> 51% y < 100%) (Ficha Internacional de Seguridad Química, noviembre de 2016; versión española INSST). OIT / OMS / Comisión Europea (versión en español: INSST). 2016-11 (versión española 2018). <https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_lang=es&p_card_id=0362&p_version=2> (es). ficha de seguridad (ICSC).
+- [138] Commission Directive 2009/161/EU of 17 December 2009 establishing a third list of indicative occupational exposure limit values. Comisión Europea (Diario Oficial de la UE, L 338, 19.12.2009, p. 87). 2009-12-19. <http://publications.europa.eu/resource/cellar/1943540f-fee8-430c-8b88-683b001e82df.0006.02/DOC_1> (en). texto legal (UE).
+- [139] ICSC 0052 - Plomo (Ficha Internacional de Seguridad Química, noviembre de 2019; versión española INSST). OIT / OMS / Comisión Europea (versión en español: INSST). 2019-11 (versión española 2018). <https://chemicalsafety.ilo.org/dyn/icsc/showcard.display?p_lang=es&p_card_id=0052&p_version=2> (es). ficha de seguridad (ICSC).
+- [140] 29 CFR 1926.441 - Batteries and battery charging (OSHA, construcción). Departamento de Trabajo de EE. UU. (OSHA) vía eCFR, Office of the Federal Register. 2016-09-01 (última modificación sustantiva). <https://www.ecfr.gov/api/versioner/v1/full/2026-10-01/title-29.xml?part=1926&section=1926.441> (en). reglamento federal de EE. UU..
+- [141] 29 CFR 1910.178 - Powered industrial trucks, apartado (g) Changing and charging storage batteries (OSHA). Departamento de Trabajo de EE. UU. (OSHA) vía eCFR, Office of the Federal Register. 2017-01-18 (última modificación sustantiva). <https://www.ecfr.gov/api/versioner/v1/full/2025-10-01/title-29.xml?part=1910&section=1910.178> (en). reglamento federal de EE. UU..
+- [142] Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el Reglamento electrotécnico para baja tensión (ITC-BT-30, apartado 7: locales con baterías de acumuladores; texto consolidado). Ministerio de Ciencia y Tecnología / Agencia Estatal Boletín Oficial del Estado. 2002-09-18 (BOE núm. 224); consolidado actualizado el 2025-09-03. <https://www.boe.es/buscar/act.php?id=BOE-A-2002-18099> (es). texto legal (España).
+- [143] 29 CFR 1910.1025 - Lead (OSHA, industria general). Departamento de Trabajo de EE. UU. (OSHA) vía eCFR, Office of the Federal Register. s. f. <https://www.ecfr.gov/api/versioner/v1/full/2026-10-01/title-29.xml?part=1910&section=1910.1025> (en). reglamento federal de EE. UU..
+- [144] Real Decreto 665/1997, de 12 de mayo, sobre la protección de los trabajadores contra los riesgos relacionados con la exposición a agentes cancerígenos, mutágenos o reprotóxicos durante el trabajo (texto consolidado). Ministerio de la Presidencia / Agencia Estatal Boletín Oficial del Estado. 1997-05-24 (BOE núm. 124); consolidado actualizado el 2024-07-03. <https://www.boe.es/buscar/act.php?id=BOE-A-1997-11145> (es). texto legal (España).
+- [145] UNEP/CHW.6/22 - Technical guidelines for the environmentally sound management of waste lead-acid batteries (Note by the secretariat; adoptadas por la decisión VI/22 de la COP-6). Secretaría del Convenio de Basilea (PNUMA). 2002-08-08 (documento); adoptada en diciembre de 2002. <https://www.basel.int/Portals/4/download.aspx?d=UNEP-CHW.6-22.English.pdf> (en). guía técnica oficial (Naciones Unidas).
+- [146] Environmentally Sound Management of Spent Lead-acid Batteries in North America: Technical Guidelines (copia alojada en leadbattery360.org). Commission for Environmental Cooperation (Canadá, México y EE. UU.). 2016-01. <https://leadbattery360.org/wp-content/uploads/2022/09/11665-environmentally-sound-management-spent-lead-acid-batteries-in-north-america-en-1.pdf> (en). guía técnica de organismo intergubernamental.
+- [147] Waste batteries: appropriate measures for permitted facilities, sección 4 «Waste storage and handling appropriate measures». Environment Agency (Reino Unido), GOV.UK. 2026-05-21. <https://www.gov.uk/guidance/waste-batteries-appropriate-measures-for-permitted-facilities/4-waste-storage-and-handling-appropriate-measures> (en). guía de regulador oficial (Reino Unido).
+- [148] Regulation (EU) 2024/1157 of the European Parliament and of the Council of 11 April 2024 on shipments of waste. Parlamento Europeo y Consejo (Diario Oficial de la UE, serie L, 30.4.2024). 2024-04-30. <http://publications.europa.eu/resource/cellar/158d0d27-068f-11ef-a251-01aa75ed71a1.0006.03/DOC_1> (en). texto legal (UE).
+- [149] Technical guidelines on the environmentally sound management of waste lead-acid batteries (decisión BC-14/7, que recuerda que la decisión VI/22 adoptó las directrices UNEP/CHW.6/22). Convenio de Basilea (PNUMA), texto alojado en InforMEA. 2019-04-29. <https://www.informea.org/en/akn/un-unep-basel/statement/decision/cop/2019-04-29/bc-14-7/eng%402019-04-29> (en). decisión de la Conferencia de las Partes (organismo internacional).
+- [150] Commission Delegated Regulation (EU) 2024/197 of 19 October 2023 amending Regulation (EC) No 1272/2008 as regards the harmonised classification and labelling of certain substances (19th ATP to CLP). Comisión Europea (Diario Oficial de la UE, serie L, 5.1.2024). 2024-01-05 (aplicable desde 2025-09-01). <http://publications.europa.eu/resource/celex/32024R0197> (en). texto legal (UE).
+- [151] Depositary Notification C.N.395.2026.TREATIES-XI.B.14 - ADR: entry into force of amendments by France to Annexes A and B, as amended. Naciones Unidas, Secretario General como depositario (Treaty Section). 2026-10-09. <https://treaties.un.org/doc/Publication/CN/2026/CN.395.2026-Eng.pdf> (en). notificación oficial del depositario (ONU).
+- [152] La Moncloa. Referencia del Consejo de Ministros del 20/10/2026 (Real Decreto por el que se modifican el RD 665/1997 y el RD 374/2001: valores límite de plomo y diisocianatos). Gobierno de España, Presidencia (La Moncloa). 2026-10-20. <https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/2026/20261020-referencia-rueda-de-prensa-ministros-aspx.aspx> (es). nota oficial del Gobierno de España.
+- [153] UN 2794 BATTERIES, WET, FILLED WITH ACID, electric storage - ADR 2025 Class 8. FreightUtils (base de datos de terceros que cita UNECE ECE/TRANS/352). 2026-08-27 (comprobación indicada en la página). <https://www.freightutils.com/adr/un/2794> (en). herramienta de terceros no oficial (solo corroboración del Cuadro A).
+- [154] ADR 2025 | UN 2794, BATTERIES, WET, FILLED WITH ACID, electric storage (ADR Tool). ADR Tool (base de datos de terceros). s. f. <https://adr-tool.com/1998/un-2794> (en). herramienta de terceros no oficial (solo corroboración del Cuadro A).
+- [155] ADR 2025 Corrigendum 2 (ECE/TRANS/352/Corr.2), publicado el 17.10.2025. Certifico (reproduce el texto de UNECE). 2025-11-09. <https://www.certifico.com/merci-pericolose/adr/adr-2025-corrigendum-2> (en). agregador de terceros que reproduce un documento de UNECE.
+- [156] ADR 2025 Corrigendum 1 (ECE/TRANS/352/Corr.1), publicado el 17.10.2024. Certifico (reproduce el texto de UNECE). 2024-12-09. <https://www.certifico.com/merci-pericolose/adr/adr-2025-corrigendum-1> (en). agregador de terceros que reproduce un documento de UNECE.
+- [157] Safety First. Starter Batteries: Battery Handling, Maintenance & Test Procedures (S.F. STARTER-PSD-D0126). Crown Battery Manufacturing Company. 2026. <https://www.crownbattery.com/hubfs/Downloads/Safety.First.Starter-Batteries.pdf> (en). documentación de fabricante.
+- [158] How can you tell if a battery is fully charged? (Table 5 - State of Charge vs. OCV). Discover Battery. s. f. (© 2026). <https://discoverbattery.com/support/learning-center/battery-101/how-can-you-tell-if-a-battery-is-fully-charged> (en). documentación de fabricante.
+- [159] Preguntas frecuentes (Conocimientos). VARTA Automotive (Clarios). s. f. <https://www.varta-automotive.com/es-es/knowledge/preguntas-frecuentes> (es). documentación de fabricante.
+- [160] Car battery testing instructions. VARTA Automotive (Clarios). s. f. <https://www.varta-automotive.com/en-gb/knowledge/articles/article-details/car-battery-testing-instructions> (en). documentación de fabricante.
+- [161] BU-901: Fundamentals in Battery Testing. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2021-11-04. <https://www.batteryuniversity.com/article/bu-901-fundamentals-in-battery-testing> (en). divulgación técnica.
+- [162] BU-905a: Testing Starter Batteries in Vehicles. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2021-11-04. <https://www.batteryuniversity.com/article/bu-905a-testing-starter-batteries-in-vehicles> (en). divulgación técnica.
+- [163] J537_202309 Storage Batteries (SAE Standard, ficha oficial). SAE International. 2023-09-28. <https://saemobilus.sae.org/standards/j537_202309-storage-batteries> (en). ficha oficial de norma.
+- [164] BU-902a: How to Measure CCA. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2021-11-04. <https://www.batteryuniversity.com/article/bu-902a-how-to-measure-cca> (en). divulgación técnica.
+- [165] Auf dem TCS-Prüfstand: Starterbatterien. TCS Touring Club Schweiz (Mobilitätsberatung, Emmen). 2017-05-12. <https://www.tcs.ch/mam/Digital-Media/PDF/Booklets/auf-dem-tcs-pruefstand-starterbatterien.pdf> (de). informe de laboratorio de club de movilidad.
+- [166] I.S. EN 50342-1:2015&A1:2018&A2:2021 Lead-acid starter batteries - Part 1: General requirements and methods of test (extracto gratuito). NSAI (Irlanda) / CENELEC, extracto distribuido por Intertek Inform. 2021-10 (A2); 2018-11 (A1); 2015-11 (EN 50342-1). <https://www.intertekinform.com/preview/878319400629.pdf?sku=881820_saig_nsai_nsai_3067293> (en). norma (extracto gratuito).
+- [167] Diccionario Banner: Corriente de prueba en frío. Banner GmbH (Linz, Austria). s. f. <https://www.bannerbatterien.com/es/Informaci%C3%B3n-sobre-bater%C3%ADas/60-Diccionario-Banner-Corriente-de-prueba-en-fr%C3%ADo> (es). documentación de fabricante.
+- [168] Guide to understanding battery specifications. Yuasa (GS Yuasa), sitio del Reino Unido. 2025-02-11. <https://www.yuasa.com/uk/info-hub/guide-to-understanding-battery-specifications> (en). documentación de fabricante.
+- [169] How to use hand-held battery tester correctly. VARTA Automotive (Clarios). s. f. <https://www.varta-automotive.com/en-gb/knowledge/articles/article-details/how-to-use-handheld-battery-tester> (en). documentación de fabricante.
+- [170] Car battery cold start test: cold start measurement with quick test device. Banner GmbH (Linz, Austria). s. f. <https://www.bannerbatterien.com/en/Battery-knowledge/163-Car-battery-cold-start-measurement-with-quick-tester> (en). documentación de fabricante.
+- [171] IEC 60095-1:2018 Lead-acid starter batteries - Part 1: General requirements and methods of test. IEC (Comisión Electrotécnica Internacional). 2018-11-16 (versión corregida 2026-02). <https://webstore.iec.ch/en/publication/59834> (en). ficha de norma (editor).
+- [172] EUROBAT Position Paper on labelling of Automotive SLI Batteries. EUROBAT. 2020-09-09. <https://eurobat.org/wp-content/uploads/2021/09/EUROBAT_position_paper_on_Automotive_SLI_labelling_of_Ah_CCA_9_Sept_2020.pdf> (en). documento de asociación sectorial.
+- [173] Commission Regulation (EU) No 1103/2010 of 29 November 2010 establishing, pursuant to Directive 2006/66/EC, rules as regards capacity labelling of portable secondary (rechargeable) and automotive batteries and accumulators. Comisión Europea / Oficina de Publicaciones de la UE (DOUE L 313, 30.11.2010, p. 3). 2010-11-29. <http://publications.europa.eu/resource/cellar/da83e514-480a-43fb-b143-aead87470d06.0010.02/DOC_1> (en). legislación UE (DOUE).
+- [174] US 3,909,708 A: Electronic battery testing device (Keith S. Champlin). Oficina de Patentes y Marcas de EE. UU. (vía Google Patents). 1975-09-30. <https://patents.google.com/patent/US3909708A/en> (en). patente.
+- [175] US 4,816,768 A: Electronic battery testing device (Keith S. Champlin). Oficina de Patentes y Marcas de EE. UU. (vía Google Patents). 1989-03-28. <https://patents.google.com/patent/US4816768A/en> (en). patente.
+- [176] BU-902: How to Measure Internal Resistance. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2021-11-04. <https://www.batteryuniversity.com/article/bu-902-how-to-measure-internal-resistance> (en). divulgación técnica.
+- [177] Battery testing guide (PDF). VARTA Automotive (Clarios). s. f. <https://www.varta-automotive.com/docs/default-source/default-document-library/battery_testing_guide.pdf?sfvrsn=3a10ec9c_32> (en). documentación de fabricante.
+- [178] Predictive Test Methods for Starter Batteries. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2018-08-31. <https://www.batteryuniversity.com/article/predictive-test-methods-for-starter-batteries> (en). divulgación técnica.
+- [179] Understanding and Differentiating Design Life, Service Life, Warranty and Accelerated Life Testing for Lead Acid Batteries (C. Searles y M. Schiemann, BATTCON 2014). BAE Batteries USA / BAE Batterien GmbH, publicado por Vertiv (BATTCON). 2014. <https://www.vertiv.com/48ddae/globalassets/documents/battcon-static-assets/2014/understanding-and-differentiating-design-life-service-life-warranty-and-accelerated.pdf> (en). ponencia de congreso sectorial.
+- [180] IEEE 450-2020 Recommended Practice for Maintenance, Testing, and Replacement of Vented Lead-Acid Batteries for Stationary Applications (ficha). IEEE (ficha en la tienda SFS, Finlandia). 2021-03-05. <https://store.sfs.fi/en/ieee-450-2020> (en). ficha de norma (tienda).
+- [181] IEC 60896-11:2002 Stationary lead-acid batteries - Part 11: Vented types - General requirements and methods of tests. IEC (Comisión Electrotécnica Internacional). 2002-12-04. <https://webstore.iec.ch/en/publication/3849> (en). ficha de norma (editor).
+- [182] Why won't the car start - is it because of the battery?. VARTA Automotive (Clarios). s. f. <https://www.varta-automotive.com/en-gb/knowledge/articles/article-details/why-won-t-the-car-start---is-it-because-of-the-battery> (en). documentación de fabricante.
+- [183] ADAC Pannenstatistik 2026: Die Gewinner und Verlierer. ADAC e. V. (autor: Wolfgang Rudschies). 2026-04-23. <https://www.adac.de/rund-ums-fahrzeug/unfall-schaden-panne/adac-pannenstatistik-2026/> (de). estadística de club de automovilistas.
+- [184] Longer battery life. Banner GmbH (Linz, Austria). s. f. <https://www.bannerbatterien.com/en/Battery-knowledge/135-Longer-battery-life> (en). documentación de fabricante.
+- [185] BU-806a: How Heat and Loading affect Battery Life. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2021-11-02. <https://www.batteryuniversity.com/article/bu-806a-how-heat-and-loading-affect-battery-life> (en). divulgación técnica.
+- [186] Caring for your Starter Battery. Battery University (Cadex Electronics; autor: Isidor Buchmann). 2015-05-26. <https://www.batteryuniversity.com/article/caring-for-your-starter-battery> (en). divulgación técnica.
+- [187] ADAC Pannenstatistik 2026: Immer mehr Elektroauto-Pannen wegen Batterieproblemen. auto motor und sport (autor: Torsten Seibt). 2026-03-10. <https://www.auto-motor-und-sport.de/verkehr/adac-pannenstatistik-2026-immer-mehr-elektroauto-pannen-wegen-batterieproblemen/> (de). prensa especializada que cita datos del ADAC (secundaria; solo corroboración).
+- [188] IEEE SA - IEEE 450-2020 (IEEE Recommended Practice for Maintenance, Testing, and Replacement of Vented Lead-Acid Batteries for Stationary Applications). IEEE Standards Association. 2021-03-05. <https://standards.ieee.org/ieee/450/6772/> (en). ficha oficial de norma (editor).
+- [189] Todo lo que debes saber sobre la duración de la batería de un coche (etiqueta title: Duración y carga de la batería de un coche | RACE). RACE (Real Automóvil Club de España). 2022-03-10. <https://www.race.es/duracion-carga-bateria-coche> (es). club de automovilistas de España (divulgación, sin metodología).
+- [190] Circular Economy Perspectives for the Management of Batteries used in Electric Vehicles — Final Project Report (Hill N., Clarke D., Blair L., Menadue H.; JRC117790; doi:10.2760/537140). Ricardo Energy & Environment para el Joint Research Centre de la Comisión Europea (Oficina de Publicaciones de la UE). 2019. <https://publications.jrc.ec.europa.eu/repository/bitstream/JRC117790/jrc117790_jrc_circular_econ_for_ev_batteries_ricardo2019_final_report_pubsy_online.pdf> (en). informe oficial UE (encargado por el JRC).
+- [191] On the potential of vehicle-to-grid and second-life batteries to provide energy and material security (Aguilar Lopez F., Lauinger D., Vuille F., Müller D.B.), Nature Communications 15:4179, doi:10.1038/s41467-024-48554-0. Springer Nature (Nature Communications); copia de acceso abierto en PubMed Central (NIH/NLM). 2024-05-16. <https://pmc.ncbi.nlm.nih.gov/articles/PMC11099178/> (en). artículo científico con DOI (acceso abierto).
+- [192] BU-201: How does the Lead Acid Battery Work?. Battery University (Cadex Electronics Inc.). 2021-10-21. <https://www.batteryuniversity.com/article/bu-201-how-does-the-lead-acid-battery-work> (en). sitio técnico de referencia (no normativo).
+- [193] Trojan Battery | Lead Acid FAQs (sección «Selecting a Battery»). Trojan Battery Company (fabricante de baterías de ciclo profundo). s. f. <https://www.trojanbattery.com/resources/faqs> (en). documentación técnica de fabricante.
+- [194] Energy Unlimited — Electricity on Board (Reinout Vader), Revision 9, junio de 2011. Victron Energy. 2011-06. <https://www.victronenergy.com/upload/documents/Book-Energy-Unlimited-EN.pdf> (en). documentación técnica de fabricante.
+- [195] Europe's largest energy storage system now live at the Johan Cruijff Arena. Nissan Motor Corporation (Nissan Global Newsroom). 2018-06-29. <https://global.nissannews.com/en/releases/europes-largest-energy-storage-system-now-live-at-the-johan-cruijff-arena> (en). nota de prensa de empresa.
+- [196] Identifying and Overcoming Critical Barriers to Widespread Second Use of PEV Batteries (Neubauer J., Smith K., Wood E., Pesaran A.; NREL/TP-5400-63332; doi:10.2172/1171780). National Renewable Energy Laboratory (NREL), EE. UU. (el servidor actual del informe es docs.nlr.gov). 2015-02. <https://docs.nlr.gov/docs/fy15osti/63332.pdf> (en). informe técnico de laboratorio nacional (DOE, EE. UU.). Variantes del mismo documento fusionadas: <https://www.osti.gov/biblio/1171780>.
+- [197] BMW Group underlines leading role in electro-mobility (Launch of BMW Battery Storage Farm with second-life batteries; 100,000th BMW i3 built at Plant Leipzig). BMW Group PressClub. 2017-10-26. <https://www.press.bmwgroup.com/global/article/detail/T0275547EN/bmw-group-underlines-leading-role-in-electro-mobility> (en). nota de prensa de empresa.
+- [198] Elverlingsen: Coal-fired power station becomes battery storage plant. The Mobility House (socio del proyecto con Daimler y GETEC). 2018-06-22. <https://www.mobilityhouse.com/int_en/our-company/newsroom/article/elverlingsen-battery-storage-plant> (en). nota de prensa de empresa (socio del proyecto).
+- [199] Renault eWays: The Group presents two major new energy storage projects. Renault Group. 2020-10-21. <https://media.renaultgroup.com/renault-eways-the-group-presents-two-major-new-energy-storage-projects/?lang=fra> (en). nota de prensa de empresa.
+- [200] Stationary energy battery storage: three new projects in Europe. Renault Group. 2022-01-27. <https://events.renaultgroup.com/en/2022/01/27/stationary-energy-battery-storage-three-new-projects-in-europe/> (en). página oficial de empresa.
+- [201] Se pone en marcha en la central de Endesa en Melilla un innovador sistema de almacenamiento para dar una «segunda vida» a las baterías usadas de los coches eléctricos. Endesa (Sala de prensa). 2022-03-18. <https://www.endesa.com/es/prensa/sala-de-prensa/noticias/eficiencia-energetica/economia-circular/puesta-en-marcha-central-almacenamiento-baterias-coches-electricos-melilla> (es). nota de prensa de empresa.
+- [202] Endesa da una segunda vida a las baterías de los coches eléctricos. Endesa (Sala de prensa). 2015-02-06. <https://www.endesa.com/es/prensa/sala-de-prensa/noticias/transicion-energetica/movilidad-electrica/endesa-da-una-segunda-vida-a-las-bateras-de-los-coches-elctricos> (es). nota de prensa de empresa.
+- [203] Green eMotion: Development and demonstration of a unique and user-friendly framework for green electromobility in Europe (FP7, acuerdo de subvención 265499). CORDIS, Comisión Europea. s. f. <https://cordis.europa.eu/project/id/265499> (en). ficha de proyecto UE (CORDIS).
+- [204] Electric vehicle batteries — Global EV Outlook 2026. Agencia Internacional de la Energía (IEA). 2026-05-20. <https://www.iea.org/reports/global-ev-outlook-2026/electric-vehicle-batteries> (en). informe de organismo internacional.
+- [205] Electric vehicle batteries — Global EV Outlook 2025. Agencia Internacional de la Energía (IEA). 2025-05-14. <https://www.iea.org/reports/global-ev-outlook-2025/electric-vehicle-batteries> (en). informe de organismo internacional.
+- [206] UN GTR No. 22 — In-vehicle Battery Durability for Electrified Light Duty Vehicles, Amendment 1 (ECE/TRANS/180/Add.22/Amend.1), versión consolidada. Comisión Económica de las Naciones Unidas para Europa (CEPE/UNECE), Foro Mundial WP.29. 2024-06-26. <https://unece.org/sites/default/files/2025-01/ECE-TRANS-180-Add.22-Amend.1e.pdf> (en). reglamento técnico mundial de la ONU. Variantes del mismo documento fusionadas: <https://documents.un.org/doc/undoc/gen/g24/137/53/pdf/g2413753.pdf>.
+- [207] UN GTR No. 22 — In-vehicle Battery Durability for Electrified Vehicles (ECE/TRANS/180/Add.22), versión original de 2022. Comisión Económica de las Naciones Unidas para Europa (CEPE/UNECE), Foro Mundial WP.29. 2022-03-09. <https://unece.org/sites/default/files/2023-01/ECE_TRANS_180a22e.pdf> (en). reglamento técnico mundial de la ONU. Variantes del mismo documento fusionadas: <https://documents.un.org/doc/undoc/gen/g22/310/34/pdf/g2231034.pdf>.
+- [208] Directiva 2008/98/CE del Parlamento Europeo y del Consejo, de 19 de noviembre de 2008, sobre los residuos (DOUE L 312, 22.11.2008, p. 3; CELEX 32008L0098). Parlamento Europeo y Consejo de la Unión Europea (EUR-Lex). 2008-11-22. <https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32008L0098> (es). texto legal (UE).
+- [209] Energy Local Storage Advanced system (ELSA) — H2020, acuerdo de subvención 646125, doi:10.3030/646125. CORDIS, Comisión Europea. s. f. <https://cordis.europa.eu/project/id/646125> (en). ficha de proyecto UE (CORDIS).
+- [210] BATTERY Management system and System design for stationary energy storage with 2nd LIFE batteries (Battery2Life) — Horizon Europe, acuerdo de subvención 101137615, doi:10.3030/101137615. CORDIS, Comisión Europea. s. f. <https://cordis.europa.eu/project/id/101137615> (en). ficha de proyecto UE (CORDIS).
+- [211] Li-ion batteries for mobility and stationary storage applications — Scenarios for costs and market growth (Tsiropoulos I., Tarvydas D., Lebedeva N.; EUR 29440 EN; JRC113360; doi:10.2760/87175). Joint Research Centre, Comisión Europea (Oficina de Publicaciones de la UE). 2018. <https://publications.jrc.ec.europa.eu/repository/bitstream/JRC113360/kjna29440enn.pdf> (en). informe científico para políticas (JRC).
+- [212] Nissan commissions 3 MW storage system at Amsterdam's Johan Cruijff Arena. pv magazine. 2018-06-29. <https://www.pv-magazine.com/2018/06/29/nissan-commissions-3-mw-storage-system-at-johan-cruijff-arena/> (en). prensa especializada (corroboración secundaria).
+- [213] Nissan Leaf battery packs now power large energy storage system at Johan Cruijff Arena. Electrek. 2018-06-29. <https://electrek.co/2018/06/29/nissan-leaf-battery-packs-power-large-energy-storage-johan-cruijff-arena/> (en). prensa especializada (corroboración secundaria).
+- [214] Global EV Outlook 2020. Agencia Internacional de la Energía (IEA). 2020-06-15. <https://www.iea.org/reports/global-ev-outlook-2020> (en). informe de organismo internacional.
+- [215] Reglamento (UE) 2016/679 (Reglamento general de protección de datos), DOUE L 119, 4.5.2016, versión española. Parlamento Europeo y Consejo de la UE; Oficina de Publicaciones de la UE (Cellar). 2016-05-04. <http://publications.europa.eu/resource/cellar/3e485e15-11bd-11e6-ba9a-01aa75ed71a1.0023.03/DOC_1> (es). texto legal UE (DOUE).
+- [216] Decisión de Ejecución (UE) 2026/1736 de la Comisión, de 14 de julio de 2026, relativa a las normas armonizadas para los pasaportes digitales de productos elaboradas en apoyo del Reglamento (UE) 2024/1781 (ELI http://data.europa.eu/eli/dec_impl/2026/1736/oj). Comisión Europea; Oficina de Publicaciones de la UE (Cellar). 2026-07-15. <http://publications.europa.eu/resource/cellar/0fe00734-8013-11f1-bf5e-01aa75ed71a1.0007.03/DOC_1> (es). texto legal UE (DOUE).
+- [217] Reglamento de Ejecución (UE) 2026/1778 de la Comisión, de 16 de julio de 2026, por el que se establecen las modalidades de aplicación del registro de pasaportes digitales de productos. Comisión Europea; Oficina de Publicaciones de la UE (Cellar). 2026-07-17. <http://publications.europa.eu/resource/cellar/56aaf918-8178-11f1-bf5e-01aa75ed71a1.0007.03/DOC_1> (es). texto legal UE (DOUE).
+- [218] Sentencia del Tribunal de Justicia (Sala Tercera) de 9 de noviembre de 2023, Gesamtverband Autoteile-Handel eV / Scania CV AB, asunto C-319/22 (ECLI:EU:C:2023:837). Tribunal de Justicia de la Unión Europea; texto servido por la Oficina de Publicaciones de la UE (Cellar). 2023-11-09. <http://publications.europa.eu/resource/cellar/0cf58274-7ee9-11ee-99ba-01aa75ed71a1.0007.05/DOC_1> (es). sentencia TJUE.
+- [219] Digital Product Passport (página principal, con calendario indicativo). Comisión Europea, DG de Mercado Interior, Industria, Emprendimiento y PYME (GROW). 2026-08-18, modificada 2026-10-15. <https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en> (en). organismo oficial (Comisión Europea).
+- [220] Guidance to support preparations for the Digital Batteries Passport (noticia). Comisión Europea, DG GROW. 2026-08-21. <https://single-market-economy.ec.europa.eu/news/guidance-support-preparations-digital-batteries-passport-2026-08-21_en> (en). organismo oficial (Comisión Europea).
+- [221] The DPP Registry. Comisión Europea, DG GROW. 2026-07-20, modificada 2026-10-13. <https://single-market-economy.ec.europa.eu/single-market/digital-product-passport/dpp-registry_en> (en). organismo oficial (Comisión Europea).
+- [222] CEN/CLC/JTC 24 Digital Product Passport - Framework and System: Published Standards. CEN-CENELEC (organismos europeos de normalización). 2026-09-16 (listado con normas de 2026-05-27 y 2026-09-16). <https://standards.cencenelec.eu/ords/f?cs=1FC22FDE02FD51137ADC6BE8CA4E10E8F&p=205%3A32%3A%3A%3A%3A%3AFSP_ORG_ID%2CFSP_LANG_ID%3A3342699%2C25> (en). organismo de normalización.
+- [223] Ficha de proyecto EN 18219:2026 Digital product passport - Unique identifiers (JT024001). CEN-CENELEC. 2026-05-27. <https://standards.cencenelec.eu/ords/f?p=205:110:::::FSP_PROJECT:79954&cs=14DC1F74D7E9F9DD3EA30959F19526334> (en). organismo de normalización.
+- [224] Ficha de proyecto EN 18220:2026 Digital product passport - Data carriers (JT024002). CEN-CENELEC. 2026-05-27. <https://standards.cencenelec.eu/ords/f?p=205:110:::::FSP_PROJECT:80081&cs=1EEB1FD069281C804EC0A5EEDB8295A77> (en). organismo de normalización.
+- [225] Battery Pass Data Model v1.2.0 (repositorio BatteryPassDataModel, README). Consorcio Battery Pass (liderado por Systemiq; cofinanciado por el BMWK alemán). 2025 (proyecto concluido en abril de 2025). <https://github.com/batterypass/BatteryPassDataModel> (en). documentación de consorcio/proyecto.
+- [226] Battery Passport Data Attribute Longlist, Version 1.2 (XLSX). Consorcio Battery Pass. 2025-01. <https://raw.githubusercontent.com/batterypass/BatteryPassDataModel/main/docs/1.2/2025_Battery_Passport_Data_Attributes_V1.2.xlsx> (en). documentación de consorcio/proyecto.
+- [227] Battery Passport Content Guidance (versión 1.1, PDF; marcada como superada por DIN DKE SPEC 99100). Consorcio Battery Pass. 2023 (v1.0 abril 2023; v1.1 agosto 2023). <https://raw.githubusercontent.com/batterypass/BatteryPassDataModel/main/docs/1.2/2023_Battery_Passport_Content_Guidance.pdf> (en). documentación de consorcio/proyecto.
+- [228] Battery Passport Technical Guidance (PDF). Consorcio Battery Pass. 2024. <https://raw.githubusercontent.com/batterypass/BatteryPassDataModel/main/docs/1.1/2024_BatteryPassport_Technical_Guidance.pdf> (en). documentación de consorcio/proyecto.
+- [229] DIN DKE SPEC 99100:2025-02 Requirements for data attributes of the battery passport (copia incluida en el repositorio Battery Pass). DIN / DKE (organismos alemanes de normalización). 2025-02. <https://raw.githubusercontent.com/batterypass/BatteryPassDataModel/main/docs/1.2/DIN_DKE_SPEC_99100.pdf> (en). especificación técnica de organismo de normalización.
+- [230] Implementation Considerations for Unique DPP Product Identifiers, Release 1.0. GS1 in Europe / GS1 AISBL. 2025-04. <https://gs1.eu/wp-content/uploads/2025/07/Implementation-Considerations-for-Unique-DPP-Product-Identifiers_GS1.pdf> (en). organización de estándares (GS1).
+- [231] Identification and labelling of industrial and electrical vehicle batteries - Driving the Battery Passport with GS1 Standards, Issue 1.7. GS1 in Europe. 2024-07-03. <https://gs1.eu/wp-content/uploads/2024/10/Identification-and-labelling-of-industrial-and-electrical-vehicle-batteries-1.pdf> (en). organización de estándares (GS1).
+- [232] GS1DigitalLinkToolkit.js (README del repositorio oficial de GS1 en GitHub). GS1. s. f. <https://raw.githubusercontent.com/gs1/GS1DigitalLinkToolkit.js/master/README.md> (en). organización de estándares (GS1), documentación de herramienta.
+- [233] ISO/IEC 18004:2015 QR Code bar code symbology specification (ficha de catálogo: retirada desde 15.08.2024). EVS - Centro Estonio de Normalización y Acreditación (miembro de ISO/CEN). 2015-02 (edición); retirada 2024-08-15. <https://www.evs.ee:443/en/iso-iec-18004-2015> (en). catálogo de organismo nacional de normalización.
+- [234] ISO/IEC 18004:2024 QR code bar code symbology specification (ficha de catálogo: vigente desde 15.08.2024). EVS - Centro Estonio de Normalización y Acreditación (miembro de ISO/CEN). 2024-08-15. <https://www.evs.ee:443/en/iso-iec-18004-2024> (en). catálogo de organismo nacional de normalización.
+- [235] US 5726435 A - Optically readable two-dimensional code and method and apparatus using the same (registro de patente). Google Patents (datos de la USPTO); solicitantes originales NipponDenso Co., Ltd. y Toyota Central R&D Labs. 1998-03-10; prioridad 1994-03-14. <https://patents.google.com/patent/US5726435A/en> (en). patente.
+- [236] ErrorCorrectionLevel.java (biblioteca ZXing, módulo qrcode). Proyecto ZXing (Google/Apache 2.0). s. f. <https://raw.githubusercontent.com/zxing/zxing/master/core/src/main/java/com/google/zxing/qrcode/decoder/ErrorCorrectionLevel.java> (en). documentación oficial de producto (código fuente abierto).
+- [237] Version.java (biblioteca ZXing, tabla de versiones y bloques de corrección de errores del QR). Proyecto ZXing (Google/Apache 2.0). s. f. <https://raw.githubusercontent.com/zxing/zxing/master/core/src/main/java/com/google/zxing/qrcode/decoder/Version.java> (en). documentación oficial de producto (código fuente abierto).
+- [238] Mode.java (biblioteca ZXing, bits del recuento de caracteres por modo de codificación del QR). Proyecto ZXing (Google/Apache 2.0). s. f. <https://raw.githubusercontent.com/zxing/zxing/master/core/src/main/java/com/google/zxing/qrcode/decoder/Mode.java> (en). documentación oficial de producto (código fuente abierto).
+- [239] QR code (artículo de enciclopedia; fuente secundaria usada solo como contraste). Wikipedia (edición en inglés). s. f. <https://en.wikipedia.org/wiki/QR_code> (en). enciclopedia (fuente secundaria).
+- [240] Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales (texto consolidado). Agencia Estatal Boletín Oficial del Estado (BOE-A-2018-16673). 2018-12-06; última actualización publicada 2025-12-27. <https://www.boe.es/buscar/act.php?id=BOE-A-2018-16673> (es). texto legal España (BOE).
+- [241] Commission Implementing Regulation on access rights to certain parts of the battery passport (Have your say, iniciativa 16473: borrador abierto a comentarios del 2026-10-19 al 2026-11-16). Comisión Europea, DG GROW (portal Have your say; API pública de iniciativas). 2026-10-19. <https://ec.europa.eu/info/law/better-regulation/brpapi/groupInitiatives/16473> (en). organismo oficial (Comisión Europea), registro de iniciativa.
+- [242] Draft Commission Implementing Regulation (EU) .../... laying down rules for the application of Regulation (EU) 2023/1542 as regards access to and use of certain information in the battery passport (Ref. Ares(2026)9814179, borrador no adoptado). Comisión Europea (documento del portal Have your say). 2026-10-19. <https://ec.europa.eu/info/law/better-regulation/api/download/090166e5356723d0> (en). borrador de acto de ejecución (Comisión Europea).
+- [243] ISO/IEC 18004:2015 QR Code bar code symbology specification (ficha del catálogo canadiense: estado «Revised», publicada 2015-02-15). Standards Council of Canada (SCC). 2015-02-15. <https://www.scc-ccn.ca/standardsdb/standards/2024903> (en). catálogo de organismo nacional de normalización.
+- [244] Objetivo 9 (Construir infraestructuras resilientes, promover la industrialización inclusiva y sostenible y fomentar la innovación). Naciones Unidas, Departamento de Asuntos Económicos y Sociales (UN DESA), sdgs.un.org. s. f. <https://sdgs.un.org/es/goals/goal9> (es). organismo oficial (ONU).
+- [245] Objetivo 12 (Garantizar modalidades de consumo y producción sostenibles). Naciones Unidas, Departamento de Asuntos Económicos y Sociales (UN DESA), sdgs.un.org. s. f. <https://sdgs.un.org/es/goals/goal12> (es). organismo oficial (ONU).
+- [246] Objetivo 13 (Adoptar medidas urgentes para combatir el cambio climático y sus efectos). Naciones Unidas, Departamento de Asuntos Económicos y Sociales (UN DESA), sdgs.un.org. s. f. <https://sdgs.un.org/es/goals/goal13> (es). organismo oficial (ONU).
+- [247] Resolución A/RES/70/1. Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible (versión en español). Naciones Unidas, Asamblea General. 2015-10-21 (resolución aprobada el 2015-09-25). <https://documents.un.org/doc/undoc/gen/n15/291/93/pdf/n1529193.pdf> (es). texto oficial (resolución de la ONU).
+- [248] Marco de indicadores mundiales para los Objetivos de Desarrollo Sostenible y metas de la Agenda 2030 (versión tras el refinamiento de 2026). Naciones Unidas, División de Estadística (UNSD). 2026-03 (incluye E/CN.3/2026/12, Anexo I). <https://unstats.un.org/sdgs/indicators/Global-Indicator-Framework-after-2026-refinement_Spa.pdf> (es). marco oficial de indicadores (ONU).
+- [249] Indicadores de la Agenda 2030 para el Desarrollo Sostenible (portada de la plataforma ODS del INE). Instituto Nacional de Estadística (INE), España. 2026 (página vigente). <https://www.ine.es/dyngs/ODS/es/index.htm> (es). estadística oficial (INE).
+- [250] SDG Indicators: Global indicator framework (official list of SDG indicators). Naciones Unidas, División de Estadística (UNSD). 2026 (incluye refinamientos de marzo de 2026). <https://unstats.un.org/sdgs/indicators/indicators-list/> (en). organismo oficial (ONU).
+- [251] Referencia del Consejo de Ministros, 08/06/2021 (Derechos Sociales y Agenda 2030: Informe de Progreso 2021 y Estrategia de Desarrollo Sostenible 2030). Gobierno de España, La Moncloa. 2021-06-08. <https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/2021/refc20210608.aspx> (es). documento oficial (Gobierno de España).
+- [252] La Agenda 2030 y los Objetivos de Desarrollo Sostenible: ¿qué son y para qué sirven?. Gobierno de España, La Moncloa (Ministerio de Derechos Sociales, Consumo y Agenda 2030). 2024-05-06. <https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/derechos-sociales-consumo-agenda-2030/paginas/2024/ods-que-es-la-agenda-2030.aspx> (es). documento oficial (Gobierno de España).
+- [253] Conoce la Agenda | Ministerio de Derechos Sociales, Consumo y Agenda 2030 (copia de Internet Archive de https://www.dsca.gob.es/es/agenda-2030/conoce-la-agenda). Ministerio de Derechos Sociales, Consumo y Agenda 2030 (copia archivada por Internet Archive). 2026-10-12 (fecha de la copia). <https://web.archive.org/web/20261012225558/https://www.dsca.gob.es/es/agenda-2030/conoce-la-agenda> (es). copia archivada de página oficial.
+- [254] Estrategia de Desarrollo Sostenible 2030 (revisada) (copia de Internet Archive de https://www.dsca.gob.es/sites/default/files/derechos-sociales/AGENDA_2030_EDSR.pdf). Ministerio de Derechos Sociales, Consumo y Agenda 2030 (copia archivada por Internet Archive). 2026-02 (edición de febrero de 2026, NIPO 233-26-010-4; copia del 2026-08-02). <https://web.archive.org/web/20260802151928id_/https://www.dsca.gob.es/sites/default/files/derechos-sociales/AGENDA_2030_EDSR.pdf> (es). copia archivada de documento oficial.
+- [255] Referencia del Consejo de Ministros, 10/02/2026 (Revisión 2025 de la Estrategia de Desarrollo Sostenible 2030). Gobierno de España, La Moncloa. 2026-02-10. <https://www.lamoncloa.gob.es/consejodeministros/referencias/paginas/2026/20260210-referencia-rueda-de-prensa-ministros.aspx> (es). documento oficial (Gobierno de España).
+- [256] SDG indicator metadata: Indicator 12.4.2 (hazardous waste generated per capita and proportion treated). Naciones Unidas, División de Estadística (UNSD) / PNUMA / UNITAR. 2024-07-29. <https://unstats.un.org/sdgs/metadata/files/Metadata-12-04-02.pdf> (en). metadatos oficiales (ONU).
+- [257] SDG indicator metadata: Indicator 12.5.1 (national recycling rate, tons of material recycled). Naciones Unidas, División de Estadística (UNSD) / PNUMA / UNITAR. 2024-05-24. <https://unstats.un.org/sdgs/metadata/files/Metadata-12-05-01.pdf> (en). metadatos oficiales (ONU).
+- [258] SDG indicator metadata: Indicator 9.4.1 (CO2 emission per unit of value added). Naciones Unidas, División de Estadística (UNSD) / AIE / ONUDI. 2026-03-27. <https://unstats.un.org/sdgs/metadata/files/Metadata-09-04-01.pdf> (en). metadatos oficiales (ONU).
+- [259] SDG indicator metadata: Indicator 13.2.2 (total greenhouse gas emissions per year). Naciones Unidas, División de Estadística (UNSD) / Secretaría de la CMNUCC. 2025-12-12. <https://unstats.un.org/sdgs/metadata/files/Metadata-13-02-02.pdf> (en). metadatos oficiales (ONU).
+- [260] SDG indicator metadata: Indicator 12.4.1 (parties meeting their commitments under multilateral environmental agreements on hazardous waste and chemicals). Naciones Unidas, División de Estadística (UNSD) / PNUMA. 2024-07-29. <https://unstats.un.org/sdgs/metadata/files/Metadata-12-04-01.pdf> (en). metadatos oficiales (ONU).
+- [261] Indicadores de la Agenda 2030 - Objetivo 12 - Indicador 12.5.1. Tasa Nacional de reciclado, en toneladas de material reciclado. Instituto Nacional de Estadística (INE), España. 2026 (último dato: 2023). <https://www.ine.es/dyngs/ODS/es/indicador.htm?id=5115> (es). estadística oficial (INE).
+- [262] Indicadores de la Agenda 2030 - Objetivo 12 - Indicador 12.4.2. Desechos peligrosos generados per cápita y proporción tratada. Instituto Nacional de Estadística (INE), España. 2026 (último dato: 2023). <https://www.ine.es/dyngs/ODS/es/indicador.htm?id=5113> (es). estadística oficial (INE).
+- [263] Indicadores de la Agenda 2030 - Objetivo 9 - Indicador 9.4.1. Emisiones de CO2 por unidad de valor añadido. Instituto Nacional de Estadística (INE), España. 2026 (último dato: 2024). <https://www.ine.es/dyngs/ODS/es/indicador.htm?id=5056> (es). estadística oficial (INE).
+- [264] Indicadores de la Agenda 2030 - Objetivo 13 - Indicador 13.2.2. Emisiones totales de gases de efecto invernadero por año. Instituto Nacional de Estadística (INE), España. 2026 (último dato: 2024). <https://www.ine.es/dyngs/ODS/es/indicador.htm?id=7747> (es). estadística oficial (INE).
+- [265] Metadatos del subindicador 12.5.1.1. Porcentaje de residuos reciclados respecto del total de residuos tratados. Instituto Nacional de Estadística (INE), España. 2024-12-05 (última actualización de los metadatos). <https://www.ine.es/dyngs/ODS/es/metadatos.htm?idSub=324> (es). metadatos oficiales (INE).
+- [266] API de la base de datos mundial de los ODS, serie EN_ATM_CO2MVA (emisiones de CO2 de la manufactura por unidad de valor añadido manufacturero), España (código de área 724). Naciones Unidas, División de Estadística (UNSD). 2026 (serie hasta 2023, consulta de la API). <https://unstats.un.org/sdgapi/v1/sdg/Series/Data?seriesCode=EN_ATM_CO2MVA&areaCode=724&pageSize=200> (en). base de datos oficial (ONU).
+- [267] Eurostat, Generation of waste by waste category, hazardousness and NACE Rev. 2 activity (env_wasgen), kg por habitante, residuos peligrosos, ES y UE-27. Eurostat (Comisión Europea). 2026-10-14 (actualización del conjunto de datos). <https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wasgen?format=JSON&lang=EN&geo=ES&geo=EU27_2020&unit=KG_HAB&hazard=HAZ&waste=TOTAL&nace_r2=TOTAL_HH&time=2022&time=2020&time=2018> (en). base de datos oficial (Eurostat).
+- [268] Eurostat, Circular material use rate (cei_srm030), ES y UE-27. Eurostat (Comisión Europea). 2025-11-24 (actualización del conjunto de datos). <https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/cei_srm030?format=JSON&lang=EN&geo=ES&geo=EU27_2020&time=2015&time=2020&time=2022&time=2023&time=2024> (en). base de datos oficial (Eurostat).
+- [269] SDG 12 - Responsible consumption and production (Statistics Explained). Eurostat (Comisión Europea). 2026-04 (datos extraídos en abril de 2026). <https://ec.europa.eu/eurostat/statistics-explained/index.php?title=SDG_12_-_Responsible_consumption_and_production> (en). artículo oficial (Eurostat).
+- [270] Waste batteries: Overview. Secretaría del Convenio de Basilea (PNUMA). 2026 (página vigente). <https://www.basel.int/Implementation/Wastebatteries/Overview/tabid/9415/Default.aspx> (en). organismo oficial (Convenio de Basilea).
+- [271] The Sustainable Development Goals Extended Report 2026: Goal 12. Naciones Unidas, División de Estadística (UNSD). 2026 (aportaciones hasta el 2026-04-30). <https://unstats.un.org/sdgs/report/2026/extended-report/Extended-Report-2026_Goal-12.pdf> (en). informe oficial (ONU).
+- [272] The Sustainable Development Goals Extended Report 2026: Goal 9. Naciones Unidas, División de Estadística (UNSD). 2026 (aportaciones hasta el 2026-04-30). <https://unstats.un.org/sdgs/report/2026/extended-report/Extended-Report-2026_Goal-9.pdf> (en). informe oficial (ONU).
+- [273] Key Messages: The Sustainable Development Goals Report 2026. Naciones Unidas, División de Estadística (UNSD). 2026-07-07. <https://unstats.un.org/sdgs/files/report/2026/SDGs_Report_Key_Messages_2026.pdf> (en). informe oficial (ONU).
+- [274] The Sustainable Development Goals Report 2026 (página del informe). Naciones Unidas, División de Estadística (UNSD). 2026-07-07. <https://unstats.un.org/sdgs/report/2026/> (en). informe oficial (ONU).
+- [275] API de la base de datos mundial de los ODS, serie EN_MWT_RCYR (proporción de residuos municipales reciclados, 12.5.1), España (código de área 724). Naciones Unidas, División de Estadística (UNSD). 2026 (serie hasta 2022, consulta de la API). <https://unstats.un.org/sdgapi/v1/sdg/Series/Data?seriesCode=EN_MWT_RCYR&areaCode=724&pageSize=200> (en). base de datos oficial (ONU).
+- [276] Metadatos del subindicador 9.4.1.2. Emisiones de CO2 equivalente de las unidades residentes por unidad de valor añadido. Industria Manufacturera. Instituto Nacional de Estadística (INE), España. 2025-11-13 (última actualización de los metadatos). <https://www.ine.es/dyngs/ODS/es/metadatos.htm?idSub=57> (es). metadatos oficiales (INE).
+- [277] Informe de progreso 2021 y Estrategia de Desarrollo Sostenible 2030 | 08/06/2021 [Consejo de Ministros]. Gobierno de España, La Moncloa. 2021-06-08. <https://www.lamoncloa.gob.es/consejodeministros/Paginas/enlaces/080621-enlace-estrategia.aspx> (es). documento oficial (Gobierno de España).
+- [278] Respuesta del Gobierno a la pregunta escrita en el Congreso 184/93987 (15/09/2022): «El Consejo de Ministros aprobó el 8 de junio de 2021 la Estrategia de Desarrollo Sostenible 2030». Congreso de los Diputados (respuesta del Gobierno). 2022-10-20 (respuesta del Gobierno; pregunta del 15/09/2022). <https://www.congreso.es/entradap/l14p/e23/e_0239550_n_000.pdf> (es). documento oficial (Gobierno de España / Cortes Generales).
+- [279] OEWG-15/4: Technical guidelines on the environmentally sound management of waste lead-acid batteries and on other waste batteries (decision of the fifteenth meeting of the Open-ended Working Group, Geneva, 23-26 June 2026). Secretaría del Convenio de Basilea (PNUMA). 2026-06. <https://www.basel.int/TheConvention/OpenendedWorkingGroup(OEWG)/Meetings/OEWG15/Overview/tabid/10424/ctl/Download/mid/30048/Default.aspx?id=161&ObjID=34607> (en). documento oficial (Convenio de Basilea).
+- [280] Fifteenth meeting of the Open-ended Working Group of the Basel Convention (OEWG-15): Overview. Secretaría del Convenio de Basilea (PNUMA). 2026-06-26 (reunión del 23 al 26 de junio de 2026). <https://www.basel.int/TheConvention/OpenendedWorkingGroup(OEWG)/Meetings/OEWG15/Overview/tabid/10424/Default.aspx> (en). organismo oficial (Convenio de Basilea).
+- [281] Europe Sustainable Development Report 2026 (7th edition): SDG Index rankings. SDSN y SDSN Europe (eu-dashboards.sdgindex.org). 2026. <https://eu-dashboards.sdgindex.org/rankings> (en). informe de red académica internacional (SDSN).
+- [282] Circular material use rate (cei_srm030): metadatos ESMS (Eurostat). Eurostat (Comisión Europea). 2024-01-30 (última actualización de los metadatos). <https://ec.europa.eu/eurostat/cache/metadata/en/cei_srm030_esmsip2.htm> (en). metadatos oficiales (Eurostat).
+- [283] Eurostat SDMX codelist OBS_FLAG (marcas de observación): i = value imputed by Eurostat or other receiving agencies. Eurostat (Comisión Europea). 2026 (consulta del 2026-10-22). <https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/codelist/ESTAT/OBS_FLAG/latest?format=TSV&lang=en> (en). metadatos oficiales (Eurostat).
+- [284] Life Cycle Assessment of Secondary Lead Production Mix - Europe (informe v4.0). thinkstep AG para la International Lead Association (ILA). 2018-08-21. <https://ila-lead.org/wp-content/uploads/2025/05/EU-Lead-LCA-Report_Secondary-Route.pdf> (en). Informe técnico de ACV encargado por una asociación sectorial, con revisión crítica de tercero.
+- [285] Life Cycle Assessment of Primary Lead Production Mix - Europe and North America (informe v4.0). thinkstep AG para la International Lead Association (ILA). 2018-08-21. <https://ila-lead.org/wp-content/uploads/2025/05/EUNA-Lead-LCA-Report_Primary-Route.pdf> (en). Informe técnico de ACV encargado por una asociación sectorial, con revisión crítica de tercero.
+- [286] Environmental Risks and Challenges of Anthropogenic Metals Flows and Cycles (informe completo; apartado 4.5.2 y tabla 4.4). PNUMA, Panel Internacional de Recursos (grupo de trabajo sobre flujos mundiales de metales). 2013. <https://www.resourcepanel.org/reports/environmental-risks-and-challenges-anthropogenic-metals-flows-and-cycles> (en). Informe de organismo de la ONU (ISBN 978-92-807-3266-5).
+- [287] Recycling used lead-acid batteries: health considerations. Organización Mundial de la Salud (OMS). 2017. <https://iris.who.int/server/api/core/bitstreams/9340a481-befc-4263-a965-e32ce66b11c4/content> (en). Publicación técnica de la OMS (ISBN 978-92-4-151285-5), PDF.
+- [288] Press release: Review of trends in 2025 - Lead. International Lead and Zinc Study Group (ILZSG). 2026-02-24. <https://www.ilzsg.org/wp-content/uploads/3.PRESS%20RELEASES/ILZSG%20February%202026%20Pb.pdf> (en). Nota de prensa de organismo intergubernamental con estadísticas preliminares.
+- [289] Press release: Review of trends in 2024 - Lead. International Lead and Zinc Study Group (ILZSG). 2025-02-24. <https://ilzsg.org/wp-content/uploads/3.PRESS%20RELEASES/20250224_ILZSG%20February%202024%20Press%20Release%20Pb.pdf> (en). Nota de prensa de organismo intergubernamental con estadísticas preliminares.
+- [290] Study on the EU's list of Critical Raw Materials (2020) - Factsheets on Non-critical Raw Materials (ficha 15, Lead). Comisión Europea (DG GROW y Centro Común de Investigación); Oficina de Publicaciones de la UE. 2020. <https://webgate.ec.europa.eu/circabc-ewpp/rest/download/288dafce-9f2e-44de-9d6b-5b43f4a7cba7> (en). Estudio oficial de la Comisión Europea, DOI 10.2873/587825.
+- [291] The toxic truth: Children's exposure to lead pollution undermines a generation of future potential. UNICEF y Pure Earth. 2020-07-30. <https://www.unicef.org/media/109361/file/The%20toxic%20truth.pdf> (en). Informe de organismo de la ONU y ONG, PDF.
+- [292] A third of the world's children poisoned by lead, new groundbreaking analysis says. UNICEF. 2020-07-30. <https://www.unicef.org/press-releases/third-worlds-children-poisoned-lead-new-groundbreaking-analysis-says> (en). Nota de prensa oficial de UNICEF.
+- [293] Recycling used lead-acid batteries: brief information for the health sector (WHO/FWC/PHE/EPE/17.02). Organización Mundial de la Salud (OMS). 2017. <https://iris.who.int/server/api/core/bitstreams/f547253b-7394-4c23-80c1-7388ac90dd7e/content> (en). Documento técnico breve de la OMS, PDF.
+- [294] env_wasbat - Recycling of batteries and accumulators (baterías de plomo, código W160601; España, 2023; también consultadas las toneladas RCY_INP y RCY y los demás países con la misma API). Eurostat (Comisión Europea). 2025-11-27. <https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wasbat?format=JSON&lang=EN&waste=W160601&geo=ES&time=2023&unit=PC&wst_oper=RCY> (en). Base de datos oficial, API de difusión (DOI 10.2908/ENV_WASBAT).
+- [295] The Global Burden of Lead Toxicity Attributable to Informal Used Lead-Acid Battery Sites (DOI 10.1016/j.aogh.2016.10.015). Annals of Global Health (Ubiquity Press); autores Ericson, Landrigan, Taylor, Frostad, Caravanos et al.. 2016 (vol. 82, n.º 5; publicado en línea el 2017-03-08). <https://annalsofglobalhealth.org/articles/10.1016/j.aogh.2016.10.015> (en). Artículo científico revisado por pares; se leyó el resumen. Variantes del mismo documento fusionadas: <https://annalsofglobalhealth.org/articles/231/files/submission/proof/231-1-536-1-10-20180511.pdf>.
+- [296] Study on the Critical Raw Materials for the EU 2023 - Final Report (anexo 11, EOL-RIR). Comisión Europea (DG GROW); Oficina de Publicaciones de la UE. 2023. <https://webgate.ec.europa.eu/circabc-ewpp/rest/download/5325d0a0-3c9d-4501-a187-57dc742570c4> (en). Estudio oficial de la Comisión Europea, DOI 10.2873/725585.
+- [297] World Lead Factbook 2023. International Lead and Zinc Study Group (ILZSG). 2023 (PDF generado el 2023-12-11). <https://www.ilzsg.org/wp-content/uploads/SitePDFs/1_ILZSG%20World%20Lead%20Factbook%202023.pdf> (en). Informe estadístico de organismo intergubernamental, PDF.
+- [298] Lead Product Carbon Footprint - Technical Guidance on Product Carbon Footprint Calculation for Primary and Secondary Lead Production (v1.0). Sphera Solutions GmbH para la International Lead Association (ILA). 2026-01-29. <https://ila-lead.org/wp-content/uploads/2026/03/ILA-Lead-Metal-Carbon-Footprint-Guidance.pdf> (en). Guía técnica de asociación sectorial.
+- [299] EPA Invites Public Input on Proposed Cleanup Plan for Battery Recycling Company Superfund Site in Arecibo, Puerto Rico. Agencia de Protección Ambiental de EE. UU. (US EPA), Región 2. 2023-08 (periodo de comentarios desde 2023-08-15). <https://www.epa.gov/newsreleases/epa-invites-public-input-proposed-cleanup-plan-battery-recycling-company-superfund> (en). Comunicado oficial de agencia federal de EE. UU..
+- [300] EPA Finalizes Cleanup Plan for The Battery Recycling Company Superfund Site in Arecibo, Puerto Rico. Agencia de Protección Ambiental de EE. UU. (US EPA), Región 2. 2024-03-14 (última actualización de la página). <https://www.epa.gov/newsreleases/epa-finalizes-cleanup-plan-battery-recycling-company-superfund-site-arecibo-puerto> (en). Comunicado oficial de agencia federal de EE. UU..
+- [301] Position paper on Recycled Content in the new Batteries Regulation. EUROBAT. 2021-03-01 (fecha de creación del PDF; el texto no lleva fecha). <https://www.eurobat.org/wp-content/uploads/2021/09/EUROBAT_Position_paper_recycled_content_0103.pdf> (en). Documento de posición de asociación sectorial; afirmaciones de parte.
+- [302] Record of Decision - The Battery Recycling Company Superfund Site, Arecibo, Puerto Rico. US EPA, Región 2. 2024-03. <https://semspub.epa.gov/work/02/704730.pdf> (en). Documento oficial de agencia federal de EE. UU. (ROD), PDF.
+- [303] Mass Lead Intoxication from Informal Used Lead-Acid Battery Recycling in Dakar, Senegal (Haefliger et al.; DOI 10.1289/ehp.0900696). Environmental Health Perspectives 117(10):1535-1540 (registro de Crossref con resumen). 2009-05-14. <https://api.crossref.org/works/10.1289/ehp.0900696> (en). Registro de Crossref de un artículo revisado por pares; se leyó el resumen.
+- [304] Updates to the blood lead reference value (CDC). US Centers for Disease Control and Prevention. 2024 (fechas internas incoherentes). <https://www.cdc.gov/lead-prevention/php/news-features/updates-blood-lead-reference-value.html> (en). Página oficial de agencia federal de EE. UU.; valor vigente 3,5 µg/dL desde 2021-10-28.
+- [305] Eurostat - Batteries and accumulators (env_waspb_esms): metadatos de referencia del conjunto env_wasbat. Eurostat (Comisión Europea). s. f. <https://ec.europa.eu/eurostat/cache/metadata/en/env_waspb_esms.htm> (en). Metadatos oficiales de base de datos.
+- [306] Updated Residential Soil Lead Guidance for CERCLA Sites and RCRA Corrective Action Facilities (memorando de 17 de enero de 2024). US EPA, OLEM. 2024-01-17. <https://semspub.epa.gov/work/HQ/100003435.pdf> (en). Documento oficial de agencia federal de EE. UU., PDF; sustituido por la «Residential Lead Directive» de 2025 (no revisada).
+- [307] Life cycle environmental and economic assessment of lead refining in China (Hong et al.; DOI 10.1007/s11367-016-1209-3). Springer Nature (springerprofessional.de); Int J Life Cycle Assess 22(6):909-918. 2016-10-17. <https://www.springerprofessional.de/en/life-cycle-environmental-and-economic-assessment-of-lead-refinin/10889890> (en). Artículo científico revisado por pares con DOI; se leyó el resumen en springerprofessional.de y se comprobaron los metadatos en Crossref.
+- [308] Children's Lead Levels Fall 35% Following Cleanup in Kathgora, Bangladesh (el texto dice 42 %). Pure Earth. 2019-09-05. <https://www.pureearth.org/childrens-lead-levels-fall-in-kathgora-bangladesh/> (en). Página de ONG.
+- [309] Soil contamination from lead battery manufacturing and recycling in seven African countries (Gottesfeld et al.; DOI 10.1016/j.envres.2017.11.055): registro de Europe PMC con resumen. Environmental Research 161:609-614 (vía Europe PMC). 2018. <https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:29248873%20AND%20SRC:MED&format=json&resultType=core> (en). Registro de Europe PMC de un artículo revisado por pares; se leyó el resumen.
+- [310] Battery recycling underlies elevated lead in African soils. EARTH Magazine (American Geosciences Institute). 2018-04-10. <https://www.earthmagazine.org/article/battery-recycling-underlies-elevated-lead-african-soils/> (en). Artículo de divulgación sobre el estudio de Gottesfeld et al..
+- [311] Changes — Flask Documentation (3.1.x). Pallets. 2026-02-18 (lanzamiento de la 3.1.3). <https://flask.palletsprojects.com/en/stable/changes/> (en). documentación oficial.
+- [312] BSD-3-Clause License — Flask Documentation (3.1.x). Pallets. s. f. (© 2010 Pallets). <https://flask.palletsprojects.com/en/stable/license/> (en). documentación oficial (texto de licencia).
+- [313] Flask 3.1.3 — PyPI JSON API. Python Package Index (PyPI), Python Software Foundation. 2026-02-19 (subida de la 3.1.3 a PyPI, UTC). <https://pypi.org/pypi/flask/json> (en). registro oficial de paquetes (API JSON).
+- [314] Pallets. Pallets. s. f. <https://palletsprojects.com/> (en). sitio oficial de la organización.
+- [315] Installation — Flask Documentation (3.1.x). Pallets. s. f. <https://flask.palletsprojects.com/en/stable/installation/> (en). documentación oficial.
+- [316] Deploying to Production — Flask Documentation (3.1.x). Pallets. s. f. <https://flask.palletsprojects.com/en/stable/deploying/> (en). documentación oficial.
+- [317] SQLite Home Page. SQLite (Hwaci). 2026-10-16 (versión 3.54.1). <https://sqlite.org/index.html> (en). sitio oficial del producto.
+- [318] Release History Of SQLite. SQLite (Hwaci). 2026-10-16 (entrada 3.54.1). <https://sqlite.org/changes.html> (en). documentación oficial (historial de versiones).
+- [319] SQLite Copyright (SQLite Is Public Domain). SQLite (Hwaci). s. f. <https://sqlite.org/copyright.html> (en). documentación oficial (condición legal).
+- [320] chart.js (versión latest) — registro npm. npm registry. 2025-10-13 (publicación de la 4.5.1). <https://registry.npmjs.org/chart.js/latest> (en). registro oficial de paquetes (API JSON).
+- [321] Chart.js v4.5.1 — última release en GitHub (API). Chart.js / GitHub (chartjs/Chart.js). 2025-10-13. <https://api.github.com/repos/chartjs/Chart.js/releases/latest> (en). repositorio oficial (API).
+- [322] LICENSE.md — Chart.js. Chart.js Contributors. s. f. (© 2014-2024). <https://raw.githubusercontent.com/chartjs/Chart.js/master/LICENSE.md> (en). texto de licencia.
+- [323] Chart.js | Open source HTML5 Charts for your website. Chart.js. s. f. <https://www.chartjs.org/> (en). sitio oficial del producto.
+- [324] segno 1.6.6 — PyPI JSON API. Python Package Index (PyPI), Python Software Foundation. 2025-03-12 (subida de la 1.6.6). <https://pypi.org/pypi/segno/json> (en). registro oficial de paquetes (API JSON).
+- [325] Segno documentation. Lars Heuer (Segno). s. f. <https://segno.readthedocs.io/en/stable/> (en). documentación oficial.
+- [326] LICENSE — Segno. Lars Heuer. s. f. (© 2016-2025). <https://raw.githubusercontent.com/heuer/segno/master/LICENSE> (en). texto de licencia.
+- [327] qrcode 8.2 — PyPI JSON API. Python Package Index (PyPI), Python Software Foundation. 2025-05-01 (subida de la 8.2). <https://pypi.org/pypi/qrcode/json> (en). registro oficial de paquetes (API JSON).
+- [328] LICENSE — python-qrcode. Lincoln Loop. s. f. (© 2011). <https://raw.githubusercontent.com/lincolnloop/python-qrcode/main/LICENSE> (en). texto de licencia.
+- [329] README — Pure python QR Code generator (python-qrcode). Lincoln Loop. s. f. <https://raw.githubusercontent.com/lincolnloop/python-qrcode/main/README.rst> (en). documentación del proyecto.
+- [330] Plans and pricing : PythonAnywhere (sistema de EE. UU.). PythonAnywhere LLP. s. f. (© 2011-2026). <https://www.pythonanywhere.com/pricing/> (en). página oficial de precios.
+- [331] Plans and pricing : PythonAnywhere (sistema de la UE). PythonAnywhere LLP. s. f. (© 2011-2026). <https://eu.pythonanywhere.com/pricing/> (en). página oficial de precios.
+- [332] New PythonAnywhere Plans: Updated Features and Pricing. PythonAnywhere LLP (blog oficial). 2025-12-15. <https://blog.pythonanywhere.com/222/> (en). entrada de blog oficial del proveedor.
+- [333] Changes on PythonAnywhere Free Accounts. PythonAnywhere LLP (blog oficial). 2025-12-15. <https://blog.pythonanywhere.com/221/> (en). entrada de blog oficial del proveedor.
+- [334] ECB reference exchange rate, US dollar/Euro (serie EXR.D.USD.EUR.SP00.A) — ECB Data Portal API. Banco Central Europeo (BCE). 2026-10-21 (última observación). <https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?lastNObservations=10&format=csvdata> (en). datos oficiales (API SDMX del BCE).
+- [335] Euro foreign exchange reference rates. Banco Central Europeo (BCE). 2026-10-21 (tabla del día). <https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html> (en). sitio oficial (estadísticas del BCE).
+- [336] eurofxref-daily.xml — Reference rates. Banco Central Europeo (BCE). 2026-10-21. <https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml> (en). datos oficiales (XML diario del BCE).
+- [337] Pricing | Render. Render. s. f. (© Render 2026). <https://render.com/pricing> (en). página oficial de precios.
+- [338] Deploy for Free – Render Docs. Render. s. f. (© Render 2026). <https://render.com/docs/free> (en). documentación oficial.
+- [339] Persistent Disks – Render Docs. Render. s. f. (© Render 2026). <https://render.com/docs/disks> (en). documentación oficial.
+- [340] Free Accounts Features — PythonAnywhere Help. PythonAnywhere LLP. s. f. (© 2011-2026). <https://help.pythonanywhere.com/pages/FreeAccountsFeatures/> (en). documentación oficial.
+- [341] Kinds of databases — PythonAnywhere Help. PythonAnywhere LLP. s. f. (© 2011-2026). <https://help.pythonanywhere.com/pages/KindsOfDatabases/> (en). documentación oficial.
+- [342] Setting up Flask applications on PythonAnywhere — PythonAnywhere Help. PythonAnywhere LLP. s. f. (© 2011-2026). <https://help.pythonanywhere.com/pages/Flask/> (en). documentación oficial.
+- [343] Supported Python versions on PythonAnywhere — PythonAnywhere Help. PythonAnywhere LLP. s. f. (© 2011-2026). <https://help.pythonanywhere.com/pages/PythonVersions/> (en). documentación oficial.
+- [344] Pricing | Railway. Railway. s. f. <https://railway.com/pricing> (en). página oficial de precios.
+- [345] Pricing Plans | Railway Docs. Railway. s. f. <https://docs.railway.com/pricing/plans> (en). documentación oficial.
+- [346] Fly.io Resource Pricing - Fly.io. Fly.io. s. f. <https://docs.fly.io/about/pricing> (en). documentación oficial de precios.
+- [347] Pricing · Fly. Fly.io. s. f. (© 2026). <https://fly.io/pricing/> (en). página oficial de precios.
+- [348] Appropriate Uses For SQLite. SQLite (Hwaci). s. f. (contiene cifras de 2015). <https://sqlite.org/whentouse.html> (en). documentación oficial.
+- [349] HTML Standard (HTML Living Standard). WHATWG. 2026-10-20 (última actualización). <https://html.spec.whatwg.org/multipage/> (en). norma o estándar abierto.
+- [350] Web Hypertext Application Technology Working Group (WHATWG). WHATWG. s. f. <https://whatwg.org/> (en). sitio oficial de la organización.
+- [351] FAQ — WHATWG. WHATWG. s. f. <https://whatwg.org/faq> (en). sitio oficial de la organización.
+- [352] Memorandum of Understanding Between W3C and WHATWG. W3C. 2019-05-28. <https://www.w3.org/2019/04/WHATWG-W3C-MOU.html> (en). acuerdo institucional.
+- [353] ECMA-262 — ECMAScript® 2026 language specification (17th edition). Ecma International. 2026-06 (17.ª edición). <https://ecma-international.org/publications-and-standards/standards/ecma-262/> (en). norma o estándar internacional.
+- [354] ECMAScript® 2027 Language Specification (borrador de trabajo). Ecma TC39. 2026-10-16 (borrador). <https://tc39.es/ecma262/> (en). borrador de norma.
+- [355] Java Downloads | Oracle. Oracle. s. f. <https://www.oracle.com/java/technologies/downloads/> (en). sitio oficial del producto.
+- [356] OpenJDK. OpenJDK (Oracle y comunidad). s. f. (© 2026). <https://openjdk.org/> (en). sitio oficial del proyecto.
+- [357] OpenJDK: GPLv2 + Classpath Exception. OpenJDK (Oracle y comunidad). s. f. <https://openjdk.org/legal/gplv2+ce.html> (en). texto de licencia.
+- [358] JDK Builds from Oracle. Oracle. s. f. (© 2026). <https://jdk.java.net/> (en). sitio oficial del producto.
+- [359] PHP. The PHP Group. 2026-10-21 (anuncio de la 8.5.12). <https://www.php.net/> (en). sitio oficial del producto.
+- [360] PHP: License Information. The PHP Group. s. f. <https://www.php.net/license/> (en). documentación oficial (licencia).
+- [361] PHP: Supported Versions. The PHP Group. s. f. (tabla con fechas relativas a 2026-10-21). <https://www.php.net/supported-versions.php> (en). documentación oficial.
+- [362] Licensing Information User Manual — MySQL 26.10.0 Community (fichero LICENSE del repositorio mysql/mysql-server). Oracle (MySQL). 2026-09 (última actualización). <https://raw.githubusercontent.com/mysql/mysql-server/trunk/LICENSE> (en). texto de licencia (repositorio oficial).
+- [363] MySQL 8.4 Reference Manual :: 1.2.1 What is MySQL?. Oracle (MySQL). s. f. (© 2026 Oracle). <https://dev.mysql.com/doc/refman/8.4/en/what-is-mysql.html> (en). documentación oficial.
+- [364] MySQL Community Server — Downloads. Oracle (MySQL). s. f. (© 2026 Oracle). <https://dev.mysql.com/downloads/mysql/> (en). sitio oficial del producto.
+- [365] Download Python | Python.org. Python Software Foundation. s. f. <https://www.python.org/downloads/> (en). sitio oficial del producto.
+- [366] History and License — Python 3.15.1 documentation. Python Software Foundation. s. f. <https://docs.python.org/3/license.html> (en). documentación oficial (licencia).
+- [367] Fly.io pricing (versión markdown de fly.io/pricing). Fly.io. s. f. <https://fly.io/pricing.md> (en). página oficial de precios (markdown).
+- [368] ISO/IEC 18004:2015 - QR Code bar code symbology specification (estado: Withdrawn). ISO / IEC. 2015-02 (retirada 2024-08-15). <https://www.iso.org/standard/62021.html> (en). catálogo oficial de normas.
+- [369] ISO/IEC 18004:2024 - QR code bar code symbology specification (4.ª edición). ISO / IEC. 2024-08. <https://www.iso.org/standard/83389.html> (en). catálogo oficial de normas.
+- [370] HTML Standard — Acknowledgements (pie de licencia del estándar). WHATWG. s. f. <https://html.spec.whatwg.org/multipage/acknowledgements.html> (en). norma o estándar abierto.
+- [371] Ecma IPR policies. Ecma International. s. f. <https://ecma-international.org/policies/by-ipr/> (en). sitio oficial (políticas).
+- [372] Changes — Flask Documentation (3.2.x, latest). Pallets. s. f. <https://flask.palletsprojects.com/en/latest/changes/> (en). documentación oficial.
+- [373] Releases de pallets/flask (API de GitHub). Pallets / GitHub. 2026-02-19 (versión 3.1.3). <https://api.github.com/repos/pallets/flask/releases?per_page=5> (en). repositorio oficial (API).
+- [374] PHP active releases (API JSON oficial de php.net). The PHP Group. 2026-10-21 (versión 8.5.12). <https://www.php.net/releases/active.php> (en). datos oficiales (API JSON).
+- [375] Python Release Python 3.15.1. Python Software Foundation. 2026-10-21. <https://www.python.org/downloads/release/python-3151/> (en). sitio oficial del producto.
+- [376] chart.js — registro npm completo (dist-tags y fechas de publicación). npm registry. 2025-10-13 (versión 4.5.1). <https://registry.npmjs.org/chart.js> (en). registro oficial de paquetes (API JSON).
+- [377] Etiquetas en poliéster blanco permanente | L4773-8 | Avery. Avery España (Avery Tico S.r.l.). s. f. <https://www.avery.es/producto/etiquetas-en-poliester-blanco-permanente-l4773-8> (es). tienda oficial del fabricante.
+- [378] Impresora de Etiquetas QL-800, Brother. Brother España (tienda oficial). s. f. <https://store.brother.es/devices/label-printer/ql/ql800> (es). tienda oficial del fabricante.
+- [379] Brother QL-800 Impresora Etiquetas Térmica | PcComponentes.com. PcComponentes. s. f. (oferta válida hasta 2026-10-23). <https://www.pccomponentes.com/brother-ql-800-impresora-etiquetas-termica> (es). tienda minorista.
+- [380] DK11221 Etiquetas precortadas cuadradas (papel térmico), Brother. Brother España (tienda oficial). s. f. <https://store.brother.es/supplies/labelprinters/labels/dk/dk11221> (es). tienda oficial del fabricante.
+- [381] Precios - Copistería Alfambra. Copistería Alfambra (Barcelona). s. f. <https://www.alfambra.cat/precios/> (es). tarifa de copistería.
+- [382] Impresiones láser color | Copistería Alfambra. Copistería Alfambra (Barcelona). s. f. <https://www.alfambra.cat/servicios/impresiones-laser-color/> (es). tarifa de copistería.
+- [383] Brother QL-800 Impresora de Etiquetas Profesional | PcComponentes.com. PcComponentes (oferta de vendedor externo). s. f. (oferta válida hasta 2026-10-23). <https://www.pccomponentes.com/brother-ql-800-impresora-de-etiquetas-profesional> (es). tienda minorista.
+- [384] Precios públicos 2025-2026. Servicio de Publicaciones (actualización 20 de marzo). Universidad de Zaragoza (Vicegerencia Económica). 2026-03-20. <https://vgeconomica.unizar.es/sites/vgeconomica/files/archivos/PCC/precios_publicos/2025-2026/511publicaciones_25-26_actualizacion_20_marzo.pdf> (es). documento oficial de precios públicos.
+- [385] Pósters | Copistería Alfambra. Copistería Alfambra (Barcelona). s. f. <https://www.alfambra.cat/servicios/posters/> (es). tarifa de copistería.
+- [386] Plastificaciones | Copistería Alfambra. Copistería Alfambra (Barcelona). s. f. <https://www.alfambra.cat/servicios/plastificaciones/> (es). tarifa de copistería.
+- [387] Etiquetas en poliéster blanco permanente | L4716-20 | Avery. Avery España (Avery Tico S.r.l.). s. f. <https://www.avery.es/producto/etiquetas-en-poliester-blanco-permanente-l4716-20> (es). tienda oficial del fabricante.
+- [388] DK11209 Etiquetas Precortadas de Dirección Pequeñas, Brother. Brother España (tienda oficial). s. f. <https://store.brother.es/supplies/labelprinters/labels/dk/dk11209> (es). tienda oficial del fabricante.
+- [389] DK22211 Cinta Continua de Película Plástica, Brother. Brother España (tienda oficial). s. f. <https://store.brother.es/supplies/labelprinters/labels/dk/dk22211> (es). tienda oficial del fabricante.
+- [390] Technical data for DK Rolls (DK Roll Test Leaflet 2023_ENG_web). Brother (brother.eu). 2023-02-24. <https://www.brother.eu/-/media/product-downloads/devices/nordics/eu_en/labelling-machines/dk-roll-test-leaflet.pdf?rev=17be880cc7ad42bca9afb6ea78e4ced1&hash=1849F5C8C682338A73D8A0C88DA96DF2AB3D20E3> (en). documento técnico del fabricante.
+- [391] Fotocopias en Madrid (Argüelles): rápido y barato | 1001FA. 1001FA (Madrid). 2026-09-28. <https://1001fa.es/fotocopiasmadrid> (es). tarifa de copistería.
+- [392] Copistería online desde 0,017 € | Iris Copy. Iris Copy (Sevilla). 2026-10-15. <https://iriscopyshop.com/> (es). tarifa de copistería.
+- [393] Encuadernar apuntes online desde 1,50€ | Iris Copy. Iris Copy (Sevilla). 2026-10-15. <https://iriscopyshop.com/encuadernar/> (es). tarifa de copistería.
+- [394] Etiquetas adhesivas cuadradas Avery 60 x 60mm | Avery. Avery España (Avery Tico S.r.l.). s. f. <https://www.avery.es/etiquetas-para-imprimir/cuadradas/cuadradas-60x60mm?mat=fpl> (es). tienda oficial del fabricante.
+- [395] Etiquetas adhesivas Poliéster Impermeable | Avery. Avery España (Avery Tico S.r.l.). s. f. <https://www.avery.es/etiquetas-para-imprimir/etiquetas-adhesivas-poliester-impermeable> (es). tienda oficial del fabricante.
+- [396] Brother QL-700 Impresora de Etiquetas Profesional | PcComponentes.com. PcComponentes. s. f. (oferta válida hasta 2026-10-23). <https://www.pccomponentes.com/brother-ql-700-impresora-de-etiquetas-profesional> (es). tienda minorista.
+- [397] Componentes Tpv Impresoras Etiquetas | PcComponentes.com. PcComponentes. s. f. <https://www.pccomponentes.com/categorias/componentes-tpv/impresoras-etiquetas> (es). tienda minorista (listado de categoría).
+- [398] Impresora de Etiquetas Profesional QL-600B, Brother. Brother España (tienda oficial). s. f. <https://store.brother.es/devices/label-printer/ql/ql600b> (es). tienda oficial del fabricante.
+- [399] LOKLIK Papel adhesivo imprimible de vinilo mate. Filament2Print. s. f. <https://filament2print.com/es/consumibles-diy/2824-loklik-papel-adhesivo-imprimible-de-vinilo-mate-.html> (es). tienda minorista.
+- [400] Pegatinas Personalizadas: Vinilo con Corte en Forma · Precio Online | SR DTF. SR DTF. s. f. <https://srdtf.com/pegatinas-personalizadas/> (es). servicio de impresión.
+- [401] Impresión personalizada en póster | Optimalprint. Optimalprint. s. f. <https://www.optimalprint.es/posters> (es). servicio de impresión.
+- [402] Muestra gratuita etiquetas adhesivas Avery | Avery. Avery España (Avery Tico S.r.l.). s. f. <https://www.avery.es/muestra-gratuita> (es). tienda oficial del fabricante.
+- [403] Etiqueta para impresora autoadhesiva Avery L4773-8 A4 Poliéster Laser Permanente | PcComponentes.com. PcComponentes. s. f. (oferta válida hasta 2026-10-23). <https://www.pccomponentes.com/etiqueta-para-impresora-autoadhesiva-avery-l4773-8-a4-poliester-laser-permanente> (es). tienda minorista.
+- [404] Impresión de planos | Copistería Alfambra. Copistería Alfambra (Barcelona). s. f. <https://www.alfambra.cat/servicios/impresion-planos/> (es). tarifa de copistería.
+- [405] Impresora de etiquetas | BROTHER QL-800, Impresión térmica, 300 x 600 dpi | MediaMarkt. MediaMarkt España (oferta de vendedor externo). s. f. (entrega estimada 28–30/10/2026). <https://www.mediamarkt.es/es/product/_impresora-de-etiquetas-brother-ql-800-impresion-termica-negro-gris-151104874.html> (es). tienda minorista.
+- [406] Commission Implementing Decision (EU) 2016/1032 of 13 June 2016 establishing best available techniques (BAT) conclusions, under Directive 2010/75/EU, for the non-ferrous metals industries (DO L 174, 30.6.2016, p. 32). Comisión Europea, publicado por la Oficina de Publicaciones de la UE. 2016-06-13. <http://publications.europa.eu/resource/cellar/174bd664-3e84-11e6-af30-01aa75ed71a1.0006.03/DOC_1> (en). texto legal (DOUE).
+- [407] 020. Sangrado de hornos de fundición rotatorios para la recuperación secundaria de plomo: exposición a plomo (BASEQUIM). Instituto Nacional de Seguridad y Salud en el Trabajo (INSST). 2016. <https://www.insst.es/stp/basequim/020-sangrado-de-hornos-de-fundicion-rotatorios-para-la-recuperacion-secundaria-de-plomo-exposicion-a-plomo-2016> (es). organismo oficial (ficha técnica).
+- [408] Recycling of batteries and accumulators (env_wasbat), datos de España y comparación 2023. Eurostat. 2025-11-27 (última actualización de datos). <https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wasbat?format=JSON&lang=EN&geo=ES> (en). estadística oficial (API de Eurostat).
+- [409] Commission Regulation (EU) No 493/2012 of 11 June 2012 laying down detailed rules regarding the calculation of recycling efficiencies of the recycling processes of waste batteries and accumulators (DO L 151, 12.6.2012, p. 9). Comisión Europea, publicado por la Oficina de Publicaciones de la UE. 2012-06-11. <http://publications.europa.eu/resource/cellar/08ca1263-685e-41b4-a33a-ac09731d785f.0006.03/DOC_1> (en). texto legal (DOUE).
+- [410] RESOLUCIÓN de 19 de abril de 2022, del Instituto Aragonés de Gestión Ambiental, por la que se modifica puntualmente la Resolución de 26 de agosto de 2013 (AAI de la planta de reciclado parcial de baterías y compuestos de plomo, Pina de Ebro), BOA núm. 91. Boletín Oficial de Aragón / Instituto Aragonés de Gestión Ambiental. 2022-05-13. <https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ&MLKOB=1220397623939> (es). boletín oficial autonómico.
+- [411] Albalate del Arzobispo – Plomo (Derichebourg España, antes Recobat). Derichebourg España (web de la empresa). s. f. <https://www.derichebourgespana.com/derichebourg-espana/albalate-plomo/> (es). empresa (web propia).
+- [412] Inventario de complejos industriales, descarga completa (PRTR_Espana_MITECO_Complejos.zip). Registro Estatal de Emisiones y Fuentes Contaminantes PRTR-España, MITECO. 2026-10-21. <https://prtr-es.miteco.gob.es/informes/descargas/PRTR_Espana_MITECO_Complejos.zip> (es). registro oficial.
+- [413] Emisiones 2024 por complejo industrial (PRTR_Espana_MITECO_emisiones2024.zip). Registro Estatal de Emisiones y Fuentes Contaminantes PRTR-España, MITECO. 2026-10-21. <https://prtr-es.miteco.gob.es/informes/descargas/PRTR_Espana_MITECO_emisiones2024.zip> (es). registro oficial.
+- [414] Producción de plomo (emisiones de proceso), SNAP 04.03.09, ficha metodológica del Sistema Español de Inventario. Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO). 2019-10. <https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/temas/sistema-espanol-de-inventario-sei-/040309-producc-plomo_tcm30-502320.pdf> (es). organismo oficial (inventario).
+- [415] El plomo en España. UNIPLOM (Unión de Industrias del Plomo). s. f. (© 2026). <https://uniplom.es/el-plomo-hechos-y-realidades/el-plomo-en-espana/> (es). asociación sectorial.
+- [416] Empresas asociadas a Uniplom. UNIPLOM (Unión de Industrias del Plomo). s. f. (© 2026). <https://uniplom.es/empresas-asociadas-a-uniplom/> (es). asociación sectorial.
+- [417] Azor Ambiental, reciclaje de baterías de plomo y filtros de aceite. Azor Ambiental (Grupo Griñó), web de la empresa. s. f. <https://www.azorambiental.com/> (es). empresa (web propia).
+- [418] Empresa: autorizaciones y certificaciones (Plomos Industriales de Madrid S.A.). PLOINMASA, web de la empresa. s. f. <https://www.ploinmasa.com/empresa> (es). empresa (web propia).
+- [419] Lead Recycling CX: Through Engitec Equipment and Technology. Engitec Technologies S.p.A., web de la empresa. s. f. <https://engitec.com/lead-recycling-cx/> (en). proveedor de tecnología (web propia).
+- [420] Polypropylene (Seculene y Reprolene). Ecobat, web de la empresa. s. f. <https://ecobat.com/our-business/ecobat-resources/polypropylene/> (en). empresa (web propia).
+- [421] Guías Tecnológicas, Directiva 96/61: Epígrafe 2.5 Metalurgia del plomo. Fundación Entorno, Empresa y Medio Ambiente (con UNIPLOM y CONFEMETAL), alojada en PRTR-España del MITECO. 2000-03 (fecha de creación del PDF). <https://prtr-es.miteco.gob.es/Data/images/Gu%C3%ADa%20Tecnol%C3%B3gica%20Metalurgia%20del%20plomo-009479ECD5B9A4D7.pdf> (es). documento técnico oficial.
+- [422] Commission Staff Working Document on the evaluation of the Directive 2006/66/EC on batteries and accumulators, SWD(2019) 1300 final (documento del Consejo 8484/19). Comisión Europea, registro del Consejo de la UE. 2019-04-09. <https://data.consilium.europa.eu/doc/document/ST-8484-2019-INIT/en/pdf> (en). organismo oficial (evaluación).
+- [423] Waste batteries: Decisions (BC-15/11, BC-16/6 y BC-17/5 sobre las directrices técnicas de baterías de plomo-ácido). Secretaría del Convenio de Basilea (PNUMA). s. f. <https://www.basel.int/Implementation/Wastebatteries/Decisions/tabid/9416/Default.aspx> (en). organismo internacional (decisiones de la COP).
+- [424] Pannenzahlen steigen weiter: ADAC musste 2025 fast 3,7 Mio. Mal helfen. ADAC e.V. (ADAC Presse). 2026-03-10. <https://presse.adac.de/meldungen/adac-ev/clubleistungen/pannenzahlen-steigen-weiter.html> (de). nota de prensa del club de automovilistas (primaria).
+- [425] Barómetro RACE: los neumáticos, en el punto de mira. RACE (Real Automóvil Club de España), Revista Autoclub septiembre-octubre 2026. 2026-09-28. <https://www.race.es/revista-autoclub/race/barometro-race-los-neumaticos-en-el-punto-de-mira/> (es). publicación del club de automovilistas (primaria).
+- [426] ¿Por qué los neumáticos han sido los protagonistas de las averías en carretera en verano?. El Periódico de la Energía. 2026-09-17. <https://elperiodicodelaenergia.com/averias-neumaticos-verano-2026-race> (es). prensa (secundaria; solo para la comparación con 2025).
+- [427] Más del 40% de las asistencias en carretera en invierno son por averías de batería, según Autoclub Mutua. Diario Siglo XXI (texto de agencia). 2026-02-16. <https://www.diariosigloxxi.com/texto-ep/mostrar/20260216173421/40-asistencias-carretera-invierno-averias-bateria-segun-autoclub-mutua> (es). prensa/agencia (secundaria; reproduce la nota de Autoclub Mutua).
+- [428] Autoclub Mutua supera las 380.000 asistencias durante los meses de invierno. Seguros TV Blog. 2026-02-16. <https://blog.segurostv.es/autoclub-mutua-supera-las-380-000-asistencias-durante-los-meses-de-invierno/> (es). prensa sectorial (secundaria).
+- [429] ADAC Pannenstatistik 2025: Elektroautos zuverlässiger als Verbrenner. ADAC e.V. (ADAC Presse). 2025-04-10. <https://presse.adac.de/meldungen/adac-ev/technik/adac-pannenstatistik-2025.html> (de). nota de prensa del club de automovilistas (primaria).
+- [430] MDX-650P Battery Conductance and Electrical System Analyzer: Instruction Manual. Midtronics Inc.. s. f. (fichero subido en 2019-06). <https://www.midtronics.com/wp-content/uploads/2019/06/MDX-650-EN-Instruction-Manual.pdf> (en). documentación del fabricante de comprobadores.
+- [431] What Causes Car Batteries to Fail?. Battery University (Cadex Electronics). 2010-03-08 (revisada 2025-10-29). <https://www.batteryuniversity.com/article/what-causes-car-batteries-to-fail/> (en). divulgación técnica de fabricante de analizadores (secundaria, sin cita del origen del dato).
+- [432] BU-905: Testing Lead Acid Batteries. Battery University (Cadex Electronics). 2010-06-03 (revisada 2026-03-15). <https://www.batteryuniversity.com/article/bu-905-testing-lead-acid-batteries> (en). divulgación técnica de fabricante de analizadores (secundaria, sin cita del origen del dato).
+- [433] Returning a Faulty Yuasa Battery Under Warranty. MDS Battery Limited (distribuidor, Reino Unido). 2021-03-25. <https://www.mdsbattery.co.uk/blog/returning-a-faulty-yuasa-battery-under-warranty.html> (en). blog de distribuidor (secundaria; observación comercial).
+- [434] Recycling of batteries and accumulators (conjunto env_wasbat), datos de España. Eurostat. 2025-11-27 (actualizado). <https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/env_wasbat?format=JSON&lang=EN&geo=ES&geo=EU27_2020&lastTimePeriod=4> (en). base de datos estadística oficial de la UE (primaria).
+- [435] Wegenwacht helpt 1,3 miljoen mensen met pech in 2025. ANWB. 2026-01-22. <https://www.anwb.nl/over-anwb/anwb-actueel/persinformatie/persberichten/2026/wegenwacht-helpt-13-miljoen-mensen-met-pech-in-2025> (nl). nota de prensa del club de automovilistas (primaria).
+- [436] AAA Urges Drivers to Stay Proactive on Auto Repair and Maintenance. AAA (sala de prensa nacional). 2025-04-01. <https://newsroom.aaa.com/2025/04/aaa-urges-drivers-to-stay-proactive-on-auto-repair-and-maintenance/> (en). nota de prensa nacional de AAA (primaria). Variantes del mismo documento fusionadas: <https://newsroom.acg.aaa.com/aaa-urges-drivers-to-stay-proactive-on-auto-repair-and-maintenance/>.
+- [437] Keep the spark alive: RAC warns against the 'flat battery blues' on 'back to reality day'. RAC (RAC Drive). 2025-12-31. <https://www.rac.co.uk/drive/news/motoring-news/RAC-warns-against-flat-battery-blues/> (en). comunicado del club de automovilistas (primaria).
+- [438] RAC warns drivers against starting the new year with the flat battery blues. RAC (Media Centre). 2024-12-30. <https://media.rac.co.uk/rac-warns-drivers-against-starting-the-new-year-with-the-flat-battery-blues-3362124> (en). nota de prensa del club de automovilistas (primaria).
+- [439] Warranty handling guide for GS Yuasa, Yuasa and GS vehicle batteries. GS Yuasa (Yuasa Battery Europe, Reino Unido). 2024-10-21 (actualizada 2026-02-16). <https://www.yuasa.com/uk/info-hub/warranty-handling-guide-for-gs-yuasa-yuasa-and-gs-vehicle-batteries> (en). documentación del fabricante de baterías.
+- [440] PRESS RELEASE: Generational analysis finds 1 in 85 used EVs has hidden battery-cell imbalance that could affect performance. Generational Technologies Ltd. 2026-08-24. <https://generational.ac/press-release-generational-analysis-finds-1-in-85-used-evs-has-hidden-battery-cell-imbalance-that-could-affect-performance/> (en). nota de prensa de empresa de diagnóstico (datos propios).
+- [441] 2025 Battery Performance Index. Generational Technologies Ltd. 2026-02-18. <https://generational.ac/2025-battery-performance-index/> (en). informe de empresa de diagnóstico (datos propios).
+- [442] Greater battery health variation among used PHEVs than BEVs, Generational analysis shows. Generational Technologies Ltd. 2026-05-11. <https://generational.ac/greater-battery-health-variation-among-used-phevs-than-bevs-generational-analysis-shows/> (en). nota de prensa de empresa de diagnóstico (datos propios).
+- [443] Buying a used electric car: why the odometer reading alone says nothing about the battery. AVILOO. 2026-09-03. <https://aviloo.com/en/blog/buying-a-used-electric-car-why-the-odometer-reading-alone-says-nothing-about-the-battery> (en). informe de empresa de diagnóstico (datos propios).
+- [444] EUROBAT proposal for a notification, verification and validation system of batteries that become waste. EUROBAT (asociación europea de fabricantes de baterías). 2020-05-05 (fecha de la ficha de EUROBAT; el PDF no lleva fecha). <https://eurobat.org/wp-content/uploads/2021/09/EUROBAT_proposal_for_a_notification_verification_and_validation_system_of_batteries_that_become_waste-1.pdf> (en). documento de posición de asociación sectorial. Variantes del mismo documento fusionadas: <https://eurobat.org/resource/eurobat-proposal-for-a-notification-verification-and-validation-system-of-batteries-that-become-waste/>.
+- [445] ÖAMTC-Pannenhilfe war 2025 mehr als 700.000-mal österreichweit im Einsatz. ÖAMTC. 2026-01-15. <https://www.oeamtc.at/presse/oeamtc-pannenhilfe-war-2025-mehr-als-700-000-mal-oesterreichweit-im-einsatz-84455155> (de). nota de prensa del club de automovilistas (primaria).
+- [446] The battery in first place for breakdowns in 2024. ACL (Automobile Club du Luxembourg). 2025-01-29. <https://www.acl.lu/en/magazine/press-release/battery-first-place-breakdowns-2024/> (en). nota de prensa del club de automovilistas (primaria).
+- [447] New Data: How Long Do Electric Car Batteries Last?. Recurrent Motors, Inc.. 2025-11-11. <https://www.recurrentauto.com/research/how-long-do-ev-batteries-last> (en). informe de empresa de datos de vehículos (datos propios).
+- [448] Free Battery Check, Book a Free Battery Check Online. National (cadena de neumáticos y mantenimiento, Reino Unido). s. f. <https://www.national.co.uk/batteries/free-battery-check> (en). web comercial de empresa de servicios (secundaria; sin fecha ni tamaño de muestra).
+- [449] Pannenursache Nr. 1 ist die billigste Batterie im Auto. Elektronik-Zeit. 2026-05-19 (actualizada 2026-10-04). <https://elektronik-zeit.de/grafik/12v-batterie-pannenursache/> (de). infografía de prensa (secundaria, CC BY 4.0) basada en la ADAC Pannenstatistik 2026: 35,7 % (2015), 44,9 % (2024), 45,4 % (2025).
+- [450] Reglamento de Ejecución (UE) 2025/2289 de la Comisión, de 13 de noviembre de 2025, por el que se establecen disposiciones de aplicación del Reglamento (UE) 2023/1542 en lo que respecta al formato para la comunicación de datos, así como a los métodos de evaluación y los requisitos operativos relativos a la recogida y tratamiento de los residuos de pilas o baterías. Comisión Europea (Oficina de Publicaciones de la UE, servidor Cellar). 2025-11-21 (DOUE L; adoptado 2025-11-13). <http://publications.europa.eu/resource/celex/32025R2289> (es). texto legal (UE); acto de ejecución del art. 76.5 del Reglamento (UE) 2023/1542.
+- [451] ¿Cuáles son las tres principales causas de asistencia en carretera?. Autofácil. 2026-02-23. <https://www.autofacil.es/frio-principales-causas-asistencia-carretera/> (es). prensa (secundaria); repite la nota de Autoclub Mutua: 43 % batería, 40 % mecánicas, 16 % neumáticos.
+- [452] El elemento clave de tu coche que es el que más sufre en invierno: protagoniza un 40% de las asistencias en carretera. Motor16. 2026-02-27. <https://www.motor16.com/las-ultimas-noticias/elemento-coche-sufre-invierno/> (es). prensa (secundaria); repite la nota de Autoclub Mutua con «Fuente: Grupo Mutua»: 43 / 40 / 16 % y 1 % otras incidencias.
+- [453] UN Regulation No 100 — Uniform provisions concerning the approval of vehicles with regard to specific requirements for the electric power train [2026/1695] (incluye la serie 05 de enmiendas). Oficina de Publicaciones de la UE (DOUE, reproducción del texto de la UNECE). 2026-08-17. <http://publications.europa.eu/resource/cellar/00a89d2d-99d5-11f1-9262-01aa75ed71a1.0006.03/DOC_1> (en). reglamento UNECE publicado en el DOUE.
+- [454] UN Regulation No 94 — Uniform provisions concerning the approval of vehicles with regard to the protection of the occupants in the event of a frontal collision [2026/1075] (serie 05, suplemento 1). Oficina de Publicaciones de la UE (DOUE, reproducción del texto de la UNECE). 2026-05-22. <http://publications.europa.eu/resource/cellar/da57b9a9-5576-11f1-b3e2-01aa75ed71a1.0006.03/DOC_1> (en). reglamento UNECE publicado en el DOUE.
+- [455] Real Decreto 614/2001, de 8 de junio, sobre disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico (texto consolidado). Agencia Estatal Boletín Oficial del Estado (BOE-A-2001-11881). 2001-06-21. <https://www.boe.es/buscar/act.php?id=BOE-A-2001-11881> (es). legislación española (BOE).
+- [456] Real Decreto 109/2022, de 8 de febrero, por el que se establece el curso de especialización en Mantenimiento y seguridad en sistemas de vehículos híbridos y eléctricos. Agencia Estatal Boletín Oficial del Estado (BOE-A-2022-2057). 2022-02-09. <https://www.boe.es/eli/es/rd/2022/02/08/109> (es). legislación española (BOE).
+- [457] Guía técnica para la evaluación y prevención del riesgo eléctrico. Instituto Nacional de Seguridad y Salud en el Trabajo (INSST). 2020-09. <https://www.insst.es/documents/94886/789467/Gu%C3%ADa+t%C3%A9cnica+para+la+evaluaci%C3%B3n+y+prevenci%C3%B3n+de+los+riesgos+relacionados+con+la+protecci%C3%B3n+frente+al+riesgo+el%C3%A9ctrico.pdf> (es). guía técnica oficial.
+- [458] Guía práctica de prevención. Trabajos de mantenimiento o reparación en vehículos eléctricos. Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid. 2023-10. <https://gestiona3.madrid.org/bvirtual/BVCM051104.pdf> (es). guía técnica oficial.
+- [459] Supuesto práctico de prevención. Consignación o puesta sin tensión de baterías durante trabajos de mantenimiento o reparación en vehículos eléctricos. Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid. 2023-10. <https://gestiona3.madrid.org/bvirtual/BVCM051080.pdf> (es). guía técnica oficial.
+- [460] Electric and hybrid vehicles (Motor vehicle repair: common topics). Health and Safety Executive (HSE), Reino Unido. 2025-05-08. <https://www.hse.gov.uk/mvr/topics/electric-hybrid.htm> (en). guía de organismo oficial.
+- [461] DGUV Information 209-093: Qualifizierung für Arbeiten an Fahrzeugen mit Hochvoltsystemen. Deutsche Gesetzliche Unfallversicherung e. V. (DGUV). 2021-08. <https://publikationen.dguv.de/widgets/pdf/download/article/3982> (de). guía de organismo oficial.
+- [462] Euro NCAP Car — Rescue & Extrication Test and Assessment Protocol, Post Crash, Version 1.1 (implementación enero de 2026). Euro NCAP. 2025-09. <https://cdn.euroncap.com/cars/assets/euro_ncap_protocol_post_crash_v11_83a7d345b4.pdf> (en). protocolo de ensayo (consumidores).
+- [463] Rescue Sheet & Associated document Guidelines for Cars, Technical Bulletin PC 101-1, Version 2.2. Euro NCAP. 2025-03. <https://cdn.euroncap.com/cars/assets/pc_101_1_rescue_sheet_guidelines_v22_7c8ac92f40.pdf> (en). protocolo de ensayo (consumidores).
+- [464] Minerals used in electric cars compared to conventional cars (gráfico de The Role of Critical Minerals in Clean Energy Transitions). Agencia Internacional de la Energía (AIE/IEA). 2021-05-05. <https://www.iea.org/data-and-statistics/charts/minerals-used-in-electric-cars-compared-to-conventional-cars> (en). informe de organismo internacional. Variantes del mismo documento fusionadas: <https://datawrapper.dwcdn.net/EK1BG/3/dataset.csv>; <https://datawrapper.dwcdn.net/EK1BG/3/>.
+- [465] Long range and rapid charging: the battery system is at the heart of the Volkswagen ID.3, ID.4 and ID.4 GTX (nota de prensa de Volkswagen Group Components, republicada). Automotive World (nota de prensa de Volkswagen Group Components). 2021-05-10. <https://www.automotiveworld.com/news/long-range-and-rapid-charging-the-battery-system-is-at-the-heart-of-the-volkswagen-id-3-id-4-and-id-4-gtx/> (en). nota de prensa de fabricante (republicada).
+- [466] The battery: Sophisticated thermal management, 800-volt system voltage (Porsche Taycan). Porsche Newsroom (Dr. Ing. h.c. F. Porsche AG). s. f. <https://newsroom.porsche.com/en_US/products/taycan/battery-18557.html> (en). documentación de fabricante.
+- [467] ISO 6469-3:2021 Electrically propelled road vehicles — Safety specifications — Part 3: Electrical safety (ficha de la norma). Eesti Standardimis- ja Akrediteerimiskeskus (EVS). 2021-10-28. <https://www.evs.ee/en/iso-6469-3-2021> (en). registro de organismo de normalización.
+- [468] Oficina de Publicaciones de la UE: punto de acceso SPARQL (versiones consolidadas y actos que citan el Reglamento (UE) 2023/1542). Oficina de Publicaciones de la Unión Europea. 2026-10-21. <https://publications.europa.eu/webapi/rdf/sparql> (en). base de datos oficial (SPARQL).
+- [469] Global EV Outlook 2026 (página principal del informe). Agencia Internacional de la Energía (AIE/IEA). 2026-05-20. <https://www.iea.org/reports/global-ev-outlook-2026> (en). informe de organismo internacional.

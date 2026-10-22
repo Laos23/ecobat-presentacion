@@ -390,7 +390,8 @@ function routeAtlas() {
     g.fillText('Capacidad', 16, 74);
     g.fillStyle = PAL.lime;
     g.textAlign = 'right';
-    g.fillText('100 %', SLOT - 16, 74);
+    // traza de ejemplo: sin un porcentaje de capacidad que no tiene fuente
+    g.fillText('Ejemplo', SLOT - 16, 74);
   });
   // monitores fijos del puesto de evaluación (barras de capacidad y tensión)
   slot(2, 1, () => {
@@ -402,7 +403,7 @@ function routeAtlas() {
     });
     g.fillStyle = PAL.dim;
     g.font = font(600, 16);
-    g.fillText('Capacidad · lote 04', 20, 74);
+    g.fillText('Capacidad · lote 04 · ejemplo', 20, 74);
   });
   slot(3, 1, () => {
     g.fillStyle = '#0f1112';
@@ -419,10 +420,11 @@ function routeAtlas() {
     g.fillStyle = PAL.ivory;
     g.textAlign = 'center';
     g.font = font(800, 34);
+    // lectura de ejemplo: 12,4 V en reposo es en torno al 75 % de carga en una batería inundada (pestaña Datos)
     g.fillText('12,4 V', 128, 168);
     g.fillStyle = PAL.dim;
     g.font = font(600, 15);
-    g.fillText('tensión en reposo', 128, 196);
+    g.fillText('tensión en reposo · ejemplo', 128, 196);
   });
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -1304,7 +1306,8 @@ function drawTrace(g, w, h, t, story) {
   g.fillStyle = PAL.ivory;
   g.font = '800 18px "Archivo Variable", sans-serif';
   g.textAlign = 'left';
-  g.fillText('Prueba de capacidad', 14, 24);
+  // el porcentaje es el avance de la prueba (como la barra inferior), no una capacidad medida
+  g.fillText('Avance de la prueba', 14, 24);
   g.textAlign = 'right';
   g.fillStyle = PAL.lime;
   g.fillText(PCT[Math.round(k * 100)], w - 14, 24);

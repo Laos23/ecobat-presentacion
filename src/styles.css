@@ -253,6 +253,9 @@ svg:not(.qr__code svg) {
   color: var(--ivory-dim);
   background: rgba(22, 24, 25, 0.7);
 }
+.tag--sim {
+  text-wrap: balance;
+}
 .tag--sim::before {
   content: '';
   width: 0.55em;
@@ -639,6 +642,11 @@ svg:not(.qr__code svg) {
 .annex.is-open {
   transform: none;
 }
+/* Cerrado ([hidden], tras la transición de salida): display: flex anula el display: none del atributo, así que
+   se oculta con visibility para que sus enlaces no reciban el foco fuera de la pantalla ni los lea un lector. */
+.annex[hidden] {
+  visibility: hidden;
+}
 .annex__head {
   display: flex;
   align-items: center;
@@ -726,13 +734,37 @@ th {
   color: var(--ivory-dim);
   font-size: 0.92rem;
 }
-tbody tr:last-child td {
+tbody tr:last-child > * {
   border-bottom: 0;
 }
-#panel-presupuesto tbody tr:last-child td {
+/* Cabeceras de fila (th scope="row"): mismo aspecto que una celda. */
+tbody th {
+  font-weight: inherit;
+  color: inherit;
+  font-size: inherit;
+}
+#panel-presupuesto tbody tr:last-child > * {
   font-weight: 800;
   color: var(--lime);
   border-top: 1px solid rgba(194, 242, 48, 0.4);
+}
+.table-wrap + .table-wrap,
+.table-wrap + .bullets,
+.bullets + .table-wrap {
+  margin-top: 1rem;
+}
+/* Citas [n] del anexo: enlazan a la fuente. */
+.cite {
+  font-variant-numeric: tabular-nums;
+  text-underline-offset: 0.15em;
+}
+.cites,
+.nw {
+  white-space: nowrap;
+}
+.sources {
+  font-size: 0.95rem;
+  gap: 0.6rem;
 }
 .weeks,
 .goals {
@@ -762,8 +794,9 @@ tbody tr:last-child td {
   color: var(--lime);
   font-variant-numeric: tabular-nums;
 }
-.weeks li span:last-child,
-.goals li span:last-child {
+/* Solo la descripción (hija directa): los tramos sin cortes del texto (.nw, .cites) conservan el color de su columna. */
+.weeks li > span:last-child,
+.goals li > span:last-child {
   color: var(--ivory-dim);
 }
 .example {
@@ -1048,6 +1081,57 @@ tbody tr:last-child td {
   .weeks li > *,
   .goals li > * {
     grid-column: 1 !important;
+  }
+  /* Ocho pestañas: en móvil, una sola fila que se desplaza en horizontal. */
+  .annex__tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-top: 0.4rem;
+    scrollbar-width: thin;
+  }
+  /* Tablas de tres columnas o más: cada fila se apila y cada dato lleva el nombre de su columna. */
+  .table-wrap--stack table,
+  .table-wrap--stack tbody,
+  .table-wrap--stack tr,
+  .table-wrap--stack th,
+  .table-wrap--stack td {
+    display: block;
+  }
+  .table-wrap--stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .table-wrap--stack tbody tr {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(241, 238, 230, 0.1);
+  }
+  .table-wrap--stack tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .table-wrap--stack th,
+  .table-wrap--stack td,
+  #panel-presupuesto .table-wrap--stack tbody tr:last-child > * {
+    padding: 0;
+    border: 0;
+  }
+  .table-wrap--stack tbody th {
+    font-weight: 700;
+  }
+  .table-wrap--stack td::before {
+    content: attr(data-label);
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--ivory-dim);
+  }
+  #panel-presupuesto .table-wrap--stack tbody tr:last-child {
+    border-top: 1px solid rgba(194, 242, 48, 0.4);
   }
 }
 
