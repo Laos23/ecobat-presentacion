@@ -1280,6 +1280,18 @@
   },
   {
     "n": 102,
+    "fuente": 142,
+    "titulo": "Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el Reglamento electrotécnico para baja tensión (ITC-BT-30, apartado 7: locales con baterías de acumuladores; texto consolidado)",
+    "editor": "Ministerio de Ciencia y Tecnología / Agencia Estatal Boletín Oficial del Estado",
+    "tipoOriginal": "texto legal (España)",
+    "grupo": "Normativa",
+    "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2002-18099",
+    "hechos": [
+      "vehiculo_electrico-f20"
+    ]
+  },
+  {
+    "n": 103,
     "fuente": 460,
     "titulo": "Electric and hybrid vehicles (Motor vehicle repair: common topics)",
     "editor": "Health and Safety Executive (HSE), Reino Unido",
@@ -1292,7 +1304,7 @@
     ]
   },
   {
-    "n": 103,
+    "n": 104,
     "fuente": 459,
     "titulo": "Supuesto práctico de prevención. Consignación o puesta sin tensión de baterías durante trabajos de mantenimiento o reparación en vehículos eléctricos",
     "editor": "Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid",
@@ -1305,7 +1317,7 @@
     ]
   },
   {
-    "n": 104,
+    "n": 105,
     "fuente": 458,
     "titulo": "Guía práctica de prevención. Trabajos de mantenimiento o reparación en vehículos eléctricos",
     "editor": "Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid",
@@ -1319,7 +1331,7 @@
     ]
   },
   {
-    "n": 105,
+    "n": 106,
     "fuente": 204,
     "titulo": "Electric vehicle batteries — Global EV Outlook 2026",
     "editor": "Agencia Internacional de la Energía (IEA)",
@@ -1331,7 +1343,7 @@
     ]
   },
   {
-    "n": 106,
+    "n": 107,
     "fuente": 100,
     "titulo": "Real Decreto 265/2021, de 13 de abril, sobre los vehículos al final de su vida útil (texto consolidado)",
     "editor": "Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio de la Presidencia",
@@ -1343,7 +1355,7 @@
     ]
   },
   {
-    "n": 107,
+    "n": 108,
     "fuente": 298,
     "titulo": "Lead Product Carbon Footprint - Technical Guidance on Product Carbon Footprint Calculation for Primary and Secondary Lead Production (v1.0)",
     "editor": "Sphera Solutions GmbH para la International Lead Association (ILA)",
@@ -1355,7 +1367,7 @@
     ]
   },
   {
-    "n": 108,
+    "n": 109,
     "fuente": 422,
     "titulo": "Commission Staff Working Document on the evaluation of the Directive 2006/66/EC on batteries and accumulators, SWD(2019) 1300 final (documento del Consejo 8484/19)",
     "editor": "Comisión Europea, registro del Consejo de la UE",
@@ -1367,7 +1379,7 @@
     ]
   },
   {
-    "n": 109,
+    "n": 110,
     "fuente": 407,
     "titulo": "020. Sangrado de hornos de fundición rotatorios para la recuperación secundaria de plomo: exposición a plomo (BASEQUIM)",
     "editor": "Instituto Nacional de Seguridad y Salud en el Trabajo (INSST)",
@@ -1379,7 +1391,7 @@
     ]
   },
   {
-    "n": 110,
+    "n": 111,
     "fuente": 22,
     "titulo": "AP-42, Section 12.11 Secondary Lead Processing",
     "editor": "U.S. Environmental Protection Agency (EPA)",
@@ -1391,7 +1403,7 @@
     ]
   },
   {
-    "n": 111,
+    "n": 112,
     "fuente": 406,
     "titulo": "Commission Implementing Decision (EU) 2016/1032 of 13 June 2016 establishing best available techniques (BAT) conclusions, under Directive 2010/75/EU, for the non-ferrous metals industries (DO L 174, 30.6.2016, p. 32)",
     "editor": "Comisión Europea, publicado por la Oficina de Publicaciones de la UE",
@@ -1405,7 +1417,7 @@
     ]
   },
   {
-    "n": 112,
+    "n": 113,
     "fuente": 410,
     "titulo": "RESOLUCIÓN de 19 de abril de 2022, del Instituto Aragonés de Gestión Ambiental, por la que se modifica puntualmente la Resolución de 26 de agosto de 2013 (AAI de la planta de reciclado parcial de baterías y compuestos de plomo, Pina de Ebro), BOA núm. 91",
     "editor": "Boletín Oficial de Aragón / Instituto Aragonés de Gestión Ambiental",
@@ -1417,7 +1429,7 @@
     ]
   },
   {
-    "n": 113,
+    "n": 114,
     "fuente": 83,
     "titulo": "Draft Commission Implementing Regulation laying down rules for the application of Regulation (EU) 2023/1542 as regards access to and use of certain information in the battery passport (Ares(2026)9814179)",
     "editor": "Comisión Europea (EUR-Lex, documentos preparatorios)",
@@ -1430,7 +1442,7 @@
     ]
   },
   {
-    "n": 114,
+    "n": 115,
     "fuente": 31,
     "titulo": "Decisión Delegada (UE) 2025/934 de la Comisión, de 5 de marzo de 2025, por la que se modifica la Decisión 2000/532/CE en lo referente a la actualización de la lista de residuos en relación con los residuos de pilas y baterías",
     "editor": "Comisión Europea (Diario Oficial de la Unión Europea)",
@@ -1442,7 +1454,7 @@
     ]
   },
   {
-    "n": 115,
+    "n": 116,
     "fuente": 32,
     "titulo": "Corrección de errores de la Decisión Delegada (UE) 2025/934 (DO L, 2025/90657): aplicable desde el 9 de diciembre de 2026",
     "editor": "Diario Oficial de la Unión Europea",
@@ -1455,7 +1467,7 @@
     ]
   },
   {
-    "n": 116,
+    "n": 117,
     "fuente": 103,
     "titulo": "Información pública del proyecto de real decreto sobre las pilas y baterías y la gestión de sus residuos (plazo del 30-06-2026 al 03-09-2026)",
     "editor": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
@@ -1467,7 +1479,7 @@
     ]
   },
   {
-    "n": 117,
+    "n": 118,
     "fuente": 99,
     "titulo": "Real Decreto 553/2020, de 2 de junio, por el que se regula el traslado de residuos en el interior del territorio del Estado",
     "editor": "Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio para la Transición Ecológica y el Reto Demográfico",
@@ -1480,7 +1492,7 @@
     ]
   },
   {
-    "n": 118,
+    "n": 119,
     "fuente": 145,
     "titulo": "UNEP/CHW.6/22 - Technical guidelines for the environmentally sound management of waste lead-acid batteries (Note by the secretariat; adoptadas por la decisión VI/22 de la COP-6)",
     "editor": "Secretaría del Convenio de Basilea (PNUMA)",
@@ -1492,7 +1504,7 @@
     ]
   },
   {
-    "n": 119,
+    "n": 120,
     "fuente": 455,
     "titulo": "Real Decreto 614/2001, de 8 de junio, sobre disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico (texto consolidado)",
     "editor": "Agencia Estatal Boletín Oficial del Estado (BOE-A-2001-11881)",
@@ -1504,7 +1516,7 @@
     ]
   },
   {
-    "n": 120,
+    "n": 121,
     "fuente": 192,
     "titulo": "BU-201: How does the Lead Acid Battery Work?",
     "editor": "Battery University (Cadex Electronics Inc.)",

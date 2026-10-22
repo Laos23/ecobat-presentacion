@@ -917,6 +917,15 @@ export const sources = [
   },
   {
     n: 102,
+    title: 'Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el Reglamento electrotécnico para baja tensión (ITC-BT-30, apartado 7: locales con baterías de acumuladores; texto consolidado)',
+    publisher: 'Ministerio de Ciencia y Tecnología / Agencia Estatal Boletín Oficial del Estado',
+    published: '2002-09-18 (BOE núm. 224); consolidado actualizado el 2025-09-03',
+    accessed: '2026-10-21',
+    url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2002-18099',
+    kind: 'Normativa',
+  },
+  {
+    n: 103,
     title: 'Electric and hybrid vehicles (Motor vehicle repair: common topics)',
     publisher: 'Health and Safety Executive (HSE), Reino Unido',
     published: '2025-05-08',
@@ -925,7 +934,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 103,
+    n: 104,
     title: 'Supuesto práctico de prevención. Consignación o puesta sin tensión de baterías durante trabajos de mantenimiento o reparación en vehículos eléctricos',
     publisher: 'Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid',
     published: '2023-10',
@@ -934,7 +943,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 104,
+    n: 105,
     title: 'Guía práctica de prevención. Trabajos de mantenimiento o reparación en vehículos eléctricos',
     publisher: 'Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid',
     published: '2023-10',
@@ -943,7 +952,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 105,
+    n: 106,
     title: 'Electric vehicle batteries — Global EV Outlook 2026',
     publisher: 'Agencia Internacional de la Energía (IEA)',
     published: '2026-05-20',
@@ -952,7 +961,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 106,
+    n: 107,
     title: 'Real Decreto 265/2021, de 13 de abril, sobre los vehículos al final de su vida útil (texto consolidado)',
     publisher: 'Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio de la Presidencia',
     published: '2021-04-14 (BOE núm. 89; última actualización del texto consolidado: 2024-09-18)',
@@ -961,7 +970,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 107,
+    n: 108,
     title: 'Lead Product Carbon Footprint - Technical Guidance on Product Carbon Footprint Calculation for Primary and Secondary Lead Production (v1.0)',
     publisher: 'Sphera Solutions GmbH para la International Lead Association (ILA)',
     published: '2026-01-29',
@@ -970,7 +979,7 @@ export const sources = [
     kind: 'Estudios y publicaciones técnicas',
   },
   {
-    n: 108,
+    n: 109,
     title: 'Commission Staff Working Document on the evaluation of the Directive 2006/66/EC on batteries and accumulators, SWD(2019) 1300 final (documento del Consejo 8484/19)',
     publisher: 'Comisión Europea, registro del Consejo de la UE',
     published: '2019-04-09',
@@ -979,7 +988,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 109,
+    n: 110,
     title: '020. Sangrado de hornos de fundición rotatorios para la recuperación secundaria de plomo: exposición a plomo (BASEQUIM)',
     publisher: 'Instituto Nacional de Seguridad y Salud en el Trabajo (INSST)',
     published: '2016',
@@ -988,7 +997,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 110,
+    n: 111,
     title: 'AP-42, Section 12.11 Secondary Lead Processing',
     publisher: 'U.S. Environmental Protection Agency (EPA)',
     published: '1986-10 (reformateado 1995-01; corrección de tabla en 2010-09)',
@@ -997,7 +1006,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 111,
+    n: 112,
     title: 'Commission Implementing Decision (EU) 2016/1032 of 13 June 2016 establishing best available techniques (BAT) conclusions, under Directive 2010/75/EU, for the non-ferrous metals industries (DO L 174, 30.6.2016, p. 32)',
     publisher: 'Comisión Europea, publicado por la Oficina de Publicaciones de la UE',
     published: '2016-06-13',
@@ -1006,7 +1015,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 112,
+    n: 113,
     title: 'RESOLUCIÓN de 19 de abril de 2022, del Instituto Aragonés de Gestión Ambiental, por la que se modifica puntualmente la Resolución de 26 de agosto de 2013 (AAI de la planta de reciclado parcial de baterías y compuestos de plomo, Pina de Ebro), BOA núm. 91',
     publisher: 'Boletín Oficial de Aragón / Instituto Aragonés de Gestión Ambiental',
     published: '2022-05-13',
@@ -1015,7 +1024,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 113,
+    n: 114,
     title: 'Draft Commission Implementing Regulation laying down rules for the application of Regulation (EU) 2023/1542 as regards access to and use of certain information in the battery passport (Ares(2026)9814179)',
     publisher: 'Comisión Europea (EUR-Lex, documentos preparatorios)',
     published: '2026-10-19 (fecha del documento según EUR-Lex)',
@@ -1024,7 +1033,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 114,
+    n: 115,
     title: 'Decisión Delegada (UE) 2025/934 de la Comisión, de 5 de marzo de 2025, por la que se modifica la Decisión 2000/532/CE en lo referente a la actualización de la lista de residuos en relación con los residuos de pilas y baterías',
     publisher: 'Comisión Europea (Diario Oficial de la Unión Europea)',
     published: '2025-05-20',
@@ -1033,7 +1042,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 115,
+    n: 116,
     title: 'Corrección de errores de la Decisión Delegada (UE) 2025/934 (DO L, 2025/90657): aplicable desde el 9 de diciembre de 2026',
     publisher: 'Diario Oficial de la Unión Europea',
     published: '2025-08-19',
@@ -1042,7 +1051,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 116,
+    n: 117,
     title: 'Información pública del proyecto de real decreto sobre las pilas y baterías y la gestión de sus residuos (plazo del 30-06-2026 al 03-09-2026)',
     publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)',
     published: '2026-06-30 (apertura del plazo de información pública)',
@@ -1051,7 +1060,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 117,
+    n: 118,
     title: 'Real Decreto 553/2020, de 2 de junio, por el que se regula el traslado de residuos en el interior del territorio del Estado',
     publisher: 'Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio para la Transición Ecológica y el Reto Demográfico',
     published: '2020-06-19 (BOE núm. 171; en vigor desde 2020-07-01)',
@@ -1060,7 +1069,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 118,
+    n: 119,
     title: 'UNEP/CHW.6/22 - Technical guidelines for the environmentally sound management of waste lead-acid batteries (Note by the secretariat; adoptadas por la decisión VI/22 de la COP-6)',
     publisher: 'Secretaría del Convenio de Basilea (PNUMA)',
     published: '2002-08-08 (documento); adoptada en diciembre de 2002',
@@ -1069,7 +1078,7 @@ export const sources = [
     kind: 'Organismos públicos e internacionales',
   },
   {
-    n: 119,
+    n: 120,
     title: 'Real Decreto 614/2001, de 8 de junio, sobre disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico (texto consolidado)',
     publisher: 'Agencia Estatal Boletín Oficial del Estado (BOE-A-2001-11881)',
     published: '2001-06-21',
@@ -1078,7 +1087,7 @@ export const sources = [
     kind: 'Normativa',
   },
   {
-    n: 120,
+    n: 121,
     title: 'BU-201: How does the Lead Acid Battery Work?',
     publisher: 'Battery University (Cadex Electronics Inc.)',
     published: '2021-10-21',
