@@ -179,7 +179,7 @@ export const annex = [
         list: [
           'Impresora de etiquetas térmica: QL-700 a 69,99 € en una tienda [34] o QL-800 a 130,30 €, precio de lista del fabricante [35], más un rollo de 1000 etiquetas de 23 × 23 mm por 22,66 € [36]: de 92,65 € a 152,96 €. El fabricante advierte de que esas etiquetas no están pensadas para un etiquetado duradero ni para estar en exterior más de un mes [37]',
           'Otras etiquetas: 20 hojas A4 de vinilo adhesivo para impresora de inyección por 7,20 €, sin envío verificado [38]',
-          'Otros alojamientos, con precios en dólares: Render Starter, 7 $ al mes (≈6,23 €) [39]; Railway Hobby, mínimo de 5 $ al mes (≈4,45 €) [40, 41]; Fly.io, 2,19 $ por 30 días (≈1,95 €) [42, 43]. Conversión con el tipo de referencia del BCE del 21-10-2026: 1 € = 1,1234 $ [44]',
+          'Otros alojamientos, con precios en dólares: Render Starter, 7 $ al mes (≈6,23 €) [39]; Railway Hobby, mínimo de 5 $ al mes (≈4,45 €) [40, 41]; Fly.io, desde 2,19 $ por 30 días en regiones de EE. UU. (≈1,95 €) [42, 43]. Conversión con el tipo de referencia del BCE del 21-10-2026: 1 € = 1,1234 $ [44]',
           'La cuenta gratuita de PythonAnywhere incluye una aplicación web que caduca al mes y 512 MiB de disco [45]; en el plan gratuito de Render, una base SQLite se pierde en cada redespliegue [46]',
         ],
       },
@@ -385,7 +385,7 @@ export const annex = [
             ['Tensión de tracción', 'Hasta 650 V en corriente continua según el HSE británico (2025); de 400 a 1000 V en un supuesto práctico del IRSST de Madrid (2023)', 'Guías de prevención; no hay estadística oficial del reparto por tensiones [103, 104]'],
             ['Contacto en seco', 'Más de 110 V en corriente continua puede ser mortal', 'HSE, Reino Unido, 2025 [103]'],
             ['Antes de intervenir', 'Esperar de 5 a 10 minutos y comprobar que no queda tensión', 'IRSST de Madrid, 2023; manda el procedimiento del fabricante [104, 105]'],
-            ['Peso de la batería', 'Cerca de 500 kg', 'IRSST de Madrid, 2023 [105]'],
+            ['Peso de la batería', 'Hasta cerca de 500 kg', 'IRSST de Madrid, 2023 [105]'],
             ['Capacidad media', 'Casi 70 kWh por turismo eléctrico', 'UE, 2025; Agencia Internacional de la Energía [106]'],
             ['Señalización', 'Cables naranja y símbolo de alta tensión sobre fondo amarillo', 'Reglamento n.º 100 de la ONU [101]'],
           ],
@@ -484,7 +484,7 @@ export const annex = [
       { h4: 'Qué es real y qué es ejemplo en las pantallas 3D' },
       {
         list: [
-          'Son ejemplos del prototipo, no mediciones, y las pantallas los rotulan como tales: el código ECB-0427 y sus fechas, los lotes 0147 y 04, las lecturas de prueba, las gráficas de capacidad y de historial, los contadores y los recuentos 2/1/7 del capítulo 4',
+          'Son ejemplos del prototipo, no mediciones, y las pantallas con cifras los rotulan como tales: el código ECB-0427 y sus fechas, los lotes 0147 y 04, las lecturas de prueba, los contadores y los recuentos 2/1/7 del capítulo 4; las curvas y gráficos sin cifras son ilustrativos',
           'Sus valores son coherentes con los de referencia de la pestaña Datos: el lote 0147 pesa 324 kg porque son 18 baterías de 18 kg, la batería europea de referencia [76]; 12,6 V tras 24 h de reposo corresponde a una batería inundada cargada [63–65], y la prueba de carga no se supera si la tensión cae por debajo de unos 9,6 V [64, 79]',
           'Son datos reales la tensión nominal de 12 V [77, 78], la composición típica en masa de las barras del reciclaje (plomo 60 %, electrolito 30 % y plástico 7 %, aproximados; el 3 % restante no se desglosa) [51, 62] y, en el depósito, el código de residuo 16 06 01* [96, 97] y la clasificación de transporte UN 2794 [98]',
           '«Pasaporte EcoBat» es el nombre de la ficha del prototipo; no es el pasaporte para baterías del Reglamento (UE) 2023/1542, y las baterías de arranque no están entre las categorías que deben llevarlo [26]',
