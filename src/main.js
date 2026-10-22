@@ -56,9 +56,7 @@ buildAnnex(annexEl);
 let annexReturn = null;
 const behind = () => document.querySelectorAll('#stage, #chrome, .skip, #static');
 function openAnnex() {
-  // al cerrar, el foco vuelve a quien abrió el anexo; con el atajo A no hay control enfocado: vuelve al botón visible
-  const active = document.activeElement;
-  annexReturn = active && active !== document.body && !annexEl.contains(active) ? active : $('#chrome [data-action=annex], #static [data-action=annex]');
+  annexReturn = document.activeElement;
   behind().forEach((el) => (el.inert = true));
   annexEl.hidden = false;
   requestAnimationFrame(() => {
