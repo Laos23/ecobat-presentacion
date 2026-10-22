@@ -664,6 +664,11 @@ async function start3D() {
       chunks() {
         return world.chunks.map((c) => ({ ...c }));
       },
+      // luces por fragmento (world.js): las luces locales que alcanzan la caja de una malla iluminada y no están
+      // en el conjunto de su fragmento (vacío si los conjuntos son correctos, y con &nobake)
+      checkLights() {
+        return world.checkLights();
+      },
     };
   }
 }

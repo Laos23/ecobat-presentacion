@@ -9,8 +9,8 @@ import { buildLab } from './stations/lab.js';
 import { buildJunction } from './stations/junction.js';
 import { buildRecycling } from './stations/recycling.js';
 import { buildHub } from './stations/hub.js';
-import { CHUNK_KEYS, chunkKeyFor } from './chunks.js';
-import { createMaterialFactory, isLit, drawKeys } from './chunkLights.js';
+import { CHUNK_KEYS, chunkKeyFor, findLightViolations } from './chunks.js';
+import { createMaterialFactory, createChunkLightState, isLit, drawKeys } from './chunkLights.js';
 
 export { STATIONS };
 
@@ -408,6 +408,7 @@ export function buildWorld(scene, { debug = false } = {}) {
     return chunkKeyFor(center.x, center.z);
   };
   let chunks = [];
+  let checkLights = () => [];
   if (baked) {
     K.bakeStatic(root, chunkOfMesh);
     // lo que no se ha fusionado (instanciadas, dinámicas, transparentes) también lleva su fragmento: las diez
@@ -438,11 +439,68 @@ export function buildWorld(scene, { debug = false } = {}) {
     const lit = [];
     root.traverse((o) => o.isMesh && isLit(o.material) && lit.push(o));
     const sortIds = drawKeys(lit, kindOf);
+    // Luces locales (focos y puntuales) en el orden en que three las recorre y suma sus aportes: el de recorrido
+    // de la escena (ninguna proyecta sombra ni lleva mapa, así que WebGLLights no las reordena; createChunkLightState
+    // lo exige). Las globales (hemisférica y direccionales, en main.js) siguen el camino normal de three.
+    const points = [];
+    const spots = [];
+    root.traverse((o) => {
+      if (o.isSpotLight) spots.push(o);
+      else if (o.isPointLight) points.push(o);
+    });
+    // Un estado de luces por fragmento (sus objetos de uniforme), compartido por todos sus clones. De momento cada
+    // fragmento lleva todas las luces locales: el clon recorre las mismas luces que three, en el mismo orden, pero
+    // desde sus propios arrays (chunkLights.js); así se valida el mecanismo sin quitar ninguna luz.
+    const states = new Map();
+    const stateOf = (key) => {
+      if (!states.has(key)) states.set(key, createChunkLightState(points, spots));
+      return states.get(key);
+    };
+    const cloned = [];
     for (const o of lit) {
-      const clone = factory.materialFor(o.material, o.userData.chunk, kindOf(o));
+      const chunk = o.userData.chunk;
+      const kind = kindOf(o);
+      const state = stateOf(chunk);
+      const clone = factory.materialFor(o.material, chunk, kind, state);
       clone.userData.sortId = sortIds.get(o);
-      o.material = clone;
+      // los uniformes del fragmento se calculan una vez por fotograma, antes de dibujar la primera de sus mallas
+      // (three llama a onBeforeRender antes de subir los uniformes del material, con la cámara del fotograma)
+      const before = Object.prototype.hasOwnProperty.call(o, 'onBeforeRender') ? o.onBeforeRender : null;
+      o.onBeforeRender = before
+        ? function onBeforeRender(renderer, drawnScene, camera, geometry, material, group) {
+          state.sync(camera, renderer.info.render.frame);
+          before.call(this, renderer, drawnScene, camera, geometry, material, group);
+        }
+        : (renderer, drawnScene, camera) => state.sync(camera, renderer.info.render.frame);
+      // Una estación puede cambiar en marcha el material de una malla (el piloto del comprobador del laboratorio
+      // alterna M.lime y M.amberGlow, lab.js): la malla recibe entonces el clon de ese material para su fragmento y
+      // su tipo, con las luces del fragmento. Sin esto dibujaría el original, cuyo programa ya no comparte ningún
+      // clon: three lo compilaría en mitad del recorrido, al entrar en el laboratorio.
+      let current = clone;
+      Object.defineProperty(o, 'material', {
+        configurable: true,
+        enumerable: true,
+        get: () => current,
+        set: (m) => {
+          current = factory.materialFor(m, chunk, kind, state);
+        },
+      });
+      cloned.push(o);
     }
+    // Comprobación (con ?debug, __ecobat.debug.checkLights()): para cada malla con clon, las luces locales cuya esfera
+    // corta su caja en mundo actual (la de su geometría o, en las instanciadas, la unión de las de sus instancias) y
+    // que no están en el conjunto de su fragmento. Vacía si los conjuntos son correctos. (Una malla que una estación
+    // haya pasado a un material sin luces no cuenta: su color no depende de ninguna.)
+    const locals = [...points, ...spots];
+    checkLights = () => {
+      root.updateMatrixWorld(true);
+      const entries = cloned.filter((o) => isLit(o.material)).map((o) => ({
+        name: `${o.userData.chunk}/${o.material.name || o.material.type}#${o.id}`,
+        box: worldBox(o, new THREE.Box3()),
+        lightIds: new Set(o.material.userData.chunkLights),
+      }));
+      return findLightViolations(entries, locals);
+    };
   }
   performance.mark('eb:bake');
 
@@ -456,5 +514,7 @@ export function buildWorld(scene, { debug = false } = {}) {
     colliders,
     // fragmentos: { key, meshes (mallas, instanciadas incluidas), instanced } (vacío con ?debug&nobake)
     chunks,
+    // luces locales que alcanzan una malla y faltan en su fragmento: Array<{ name, light (uuid) }> (vacío con &nobake)
+    checkLights,
   };
 }
