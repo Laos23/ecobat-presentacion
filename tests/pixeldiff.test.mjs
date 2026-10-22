@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { comparePixels } from '../.verify/perf/pixeldiff.mjs';
+import { comparePixels } from '../tools/pixeldiff-core.mjs';
 
 const W = 100, H = 100;
 const img = (fill = 128) => new Uint8Array(W * H * 4).fill(fill);

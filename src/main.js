@@ -529,8 +529,10 @@ async function start3D() {
   const WARMUP_POINTS = [0, ...tl.anchors.slice(1), tl.marks.sim, tl.marks.conn, 0.2525, 0.512, 0.668, 0.915];
   async function warmUp() {
     const fov = camera.fov;
-    // solo el compositor dibuja a 64×36; el lienzo no cambia de tamaño: encogerlo costaba unos 160 ms en la RTX 5090
-    // (13 ms en la integrada), y el pase de salida dibuja su cuadro a tamaño real por muy poco
+    // solo el compositor dibuja a 64×36 y el lienzo no cambia de tamaño. Encogerlo bloquea unos 160 ms en la RTX 5090
+    // (espera síncrona del búfer de dibujo), pero esa espera solo se desplaza al primer encuadre: en cargas alternas
+    // el calentamiento dura lo mismo con y sin el cambio (339 ms frente a 342 ms). Es neutro; el ahorro del
+    // calentamiento viene de compilar en paralelo las sombras y la salida (ver shadowDepthScene)
     composer.setSize(64, 36);
     bloom.resolution.set(64, 36);
     for (const p of WARMUP_POINTS) {

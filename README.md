@@ -89,15 +89,15 @@ public/                    Favicon e ilustración de referencia (vista estática
 
 ## Rendimiento
 
-La presentación va fluida también en una gráfica integrada **sin cambiar nada de lo que se ve**: ni geometría, ni materiales, ni luces, ni cámara, ni posprocesado. No hay ningún escalón automático de calidad (ni resolución menor, ni MSAA reducido, ni bloom apagado): en cualquier equipo se dibuja lo mismo.
+La presentación está pensada para ir con soltura también en una gráfica integrada, y se consigue **sin cambiar nada de lo que se ve**: ni geometría, ni materiales, ni luces, ni cámara, ni posprocesado. No hay ningún escalón automático de calidad (ni resolución menor, ni MSAA reducido, ni bloom apagado): en cualquier equipo se dibuja lo mismo.
 
-**Luces por fragmento.** El mundo se parte en 10 fragmentos (las ocho islas, el agua y las baterías de la simulación) y cada uno evalúa solo las luces locales cuya esfera de alcance (`distance`) toca alguna de sus piezas, entre 1 y 10 de las 16: una luz más allá de su `distance` aporta exactamente cero, así que dejarla fuera no cambia ningún píxel. Cada material iluminado se clona por fragmento y un sombreador inyectado recorre solo las luces de ese fragmento y se salta el cálculo donde la luz no llega, todo en un único pase de render.
+**Luces por fragmento.** El mundo se parte en 10 fragmentos (las ocho islas, el agua y las baterías de la simulación) y cada uno evalúa solo las luces locales cuya esfera de alcance (`distance`) toca alguna de sus piezas (entre 1 y 10 de las 16; en dos islas se añade una luz de relleno que no alcanza, para compartir programa de sombreado, lo cual tampoco cambia ningún píxel): una luz más allá de su `distance` aporta exactamente cero, así que dejarla fuera no cambia ningún píxel. Cada material iluminado se clona por fragmento y un sombreador inyectado recorre solo las luces de ese fragmento y se salta el cálculo donde la luz no llega, todo en un único pase de render.
 
 Tres piezas más completan el trabajo. La geometría fusionada por fragmento vuelve a poder descartarse fuera de cuadro (menos triángulos en los capítulos 2 a 6, a costa de más llamadas de dibujo). Los 104 programas de sombreado se compilan en paralelo y un calentamiento bajo el velo adelanta los primeros usos de programas, texturas y estados del driver, que antes daban tirones de hasta 600 ms al entrar por primera vez en cada capítulo. Y el bucle deja como mucho dos fotogramas en vuelo en la GPU, para que la cola no junte 100–200 ms de trabajo y la imagen se detenga mientras la vacía.
 
 ### Antes y después
 
-Medido el 22/10/2026 en un Ryzen 9 9950X3D con RTX 5090 y la Radeon integrada del propio procesador (RDNA2, 2 CU), que hace de **integrada de referencia**. Chrome 155 sin ventana (ANGLE D3D11) a 1920×1080, salvo las cargas, a 1440×810. «Antes» es el build del commit `69b0a0a`, anterior a este trabajo, y «después» el de esta rama; los dos se midieron en la misma sesión. La GPU es la mediana del tiempo por fotograma en la integrada; las llamadas de dibujo y los triángulos son por fotograma en la RTX 5090.
+Medido el 22/10/2026 en un Ryzen 9 9950X3D con RTX 5090 y la Radeon integrada del propio procesador (RDNA2, 2 CU), que hace de **integrada de referencia**. Chrome 155 sin ventana (ANGLE D3D11) a 1920×1080, salvo las cargas, a 1440×810. «Antes» es el build del commit `69b0a0a`, anterior a este trabajo, y «después» la versión actual; los dos se midieron en la misma sesión. La GPU es la mediana del tiempo por fotograma en la integrada; las llamadas de dibujo y los triángulos son por fotograma en la RTX 5090.
 
 | Encuadre | GPU antes | GPU después | Después / antes | Llamadas de dibujo | Triángulos |
 |----------|-----------|-------------|-----------------|--------------------|------------|
@@ -110,12 +110,12 @@ Medido el 22/10/2026 en un Ryzen 9 9950X3D con RTX 5090 y la Radeon integrada de
 | 6 · Centro | 57,5 ms | 27,8 ms | 48,3 % | 128 → 328 | 660 k → 492 k |
 | Cierre | 57,4 ms | 29,3 ms | 51,0 % | 237 → 594 | 880 k → 880 k |
 
-En los ocho encuadres la GPU de la integrada baja al 47–54 % (el objetivo era el 55 % o menos): de unos 13–19 a unos 25–40 fotogramas por segundo, limitados solo por la GPU. La Vega 7 de un Ryzen 5 5500G se estima unas tres veces más rápida que esta integrada; con esa estimación, que no se ha medido, la presentación alcanzaría los 60 fps.
+En los ocho encuadres la GPU de la integrada baja al 47–54 % (el objetivo era el 55 % o menos): de unos 13–19 a unos 25–40 fotogramas por segundo, limitados solo por la GPU. La Vega 7 de un Ryzen 5 5500G se estima unas tres veces más rápida que esta integrada; con esa estimación, que no se ha medido, la GPU de una Vega 7 daría para unos 60 fps. Falta medir la CPU de un 5500G: en la integrada de referencia el JavaScript por fotograma llega a unos 6 ms en los encuadres con más llamadas de dibujo (portada y cierre), y a 3,4 ms en la RTX 5090.
 
 | Métrica | Antes | Después |
 |---------|-------|---------|
-| Fotogramas de más de 120 ms tras el velo (integrada) | 140 | 0 |
-| Fotograma más largo tras el velo (integrada) | 473 ms | 92 ms |
+| Fotogramas de más de 120 ms tras el velo de carga (integrada) | 140 | 0 |
+| Intervalo más largo entre fotogramas (rAF) tras el velo (integrada) | 473 ms | 92 ms |
 | Carga hasta la presentación lista, integrada (mediana de 5) | 3 049 ms | 3 307 ms |
 | Carga hasta la presentación lista, RTX 5090 (mediana de 5) | 2 823 ms | 3 148 ms |
 | Programas de sombreado | 50 | 104 |
@@ -165,7 +165,7 @@ El workflow `.github/workflows/deploy.yml` compila y publica en cada push a `mai
 
 - Materiales PBR con mapas de color, rugosidad y relieve generados por código en `src/world/pbr.js`: hormigón con grano y juntas, roca con grietas, metal cepillado claro y oscuro, plástico satinado y caucho. Las UV se proyectan en coordenadas de mundo para que la escala sea coherente en todo el diorama.
 - La batería sigue `context/ref-bateria.png`, también en proporciones: carcasa grafito lisa y baja, zócalo con asideros, línea lima fina bajo la tapa, bornes de acero pulido, asa grafito con inserto lima y QR pequeño abajo a la derecha. Las baterías instanciadas tienen la misma silueta.
-- Cada estación tiene primer plano, plano medio y fondo con geometría de detalle: patio con jaulas, palés, carretilla y báscula; taller con coche eléctrico en el elevador, panel de herramientas y estanterías; laboratorio con comprobador, pinzas, lupa y pantallas; cruce con isletas plantadas y destinos; planta con cinta de rodillos, trituradora, transportador inclinado y contenedores; plaza con pasaporte y pantallas. Todo lo fijo se fusiona por material (`bakeStatic`), así que el detalle no multiplica las llamadas de dibujo.
+- Cada estación tiene primer plano, plano medio y fondo con geometría de detalle: patio con jaulas, palés, carretilla y báscula; taller con coche eléctrico en el elevador, panel de herramientas y estanterías; laboratorio con comprobador, pinzas, lupa y pantallas; cruce con isletas plantadas y destinos; planta con cinta de rodillos, trituradora, transportador inclinado y contenedores; plaza con pasaporte y pantallas. Todo lo fijo se fusiona por fragmento y material (`bakeStatic`), así que el detalle apenas multiplica las llamadas de dibujo (la portada pasa de 237 a 594 por la partición en fragmentos; ver «Rendimiento»).
 - El bloom solo alcanza las luces (umbral alto): no hay desenfoque de maqueta ni velos que oculten la geometría. Hay sombras de contacto, focos cálidos en los interiores, roca estratificada con luces de pie y reflejos cálidos en el agua.
 - Las trazas luminosas se apoyan en el suelo y en los tableros de los puentes, con puntas de flecha planas inclinadas con cada rampa.
 - Las referencias `context/ref-*.png` se generaron con IA mediante Codex. Se usaron como guía artística: no se aplican como texturas.

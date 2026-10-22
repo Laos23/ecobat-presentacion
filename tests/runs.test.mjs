@@ -75,7 +75,9 @@ test('mergedBoundingSphere coincide bit a bit con la esfera de la geometría fus
   const r = rng(7);
   const list = [];
   for (let k = 0; k < 9; k++) {
-    const g = (k % 3 === 0 ? new THREE.BoxGeometry(1 + r(), 2, 0.5) : k % 3 === 1 ? new THREE.CylinderGeometry(0.3, 0.6, 2, 7) : new THREE.IcosahedronGeometry(0.8, 1)).toNonIndexed();
+    const base = k % 3 === 0 ? new THREE.BoxGeometry(1 + r(), 2, 0.5) : k % 3 === 1 ? new THREE.CylinderGeometry(0.3, 0.6, 2, 7) : new THREE.IcosahedronGeometry(0.8, 1);
+    // la icosaedro de three ya no está indexada: toNonIndexed() avisa en consola si no hay índice
+    const g = base.index ? base.toNonIndexed() : base;
     g.deleteAttribute('uv');
     g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3((r() - 0.5) * 120, r() * 9, (r() - 0.5) * 90), new THREE.Quaternion().setFromEuler(new THREE.Euler(r(), r() * 6, r())), new THREE.Vector3(1, 1 + r(), 1)));
     list.push(g);
