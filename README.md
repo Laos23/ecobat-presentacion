@@ -22,7 +22,7 @@ La presentación es un **mundo 3D en tiempo real** (Three.js) que la cámara rec
 | 6 | Centro de trazabilidad con pasaporte y conexiones | Todo queda conectado. |
 | — | Cierre con QR a esta web | Conocer su estado. Documentar su destino. |
 
-Anexos (botón o tecla `A`): arquitectura propuesta, calendario de ocho semanas, presupuesto orientativo de 20–120 €, indicadores, ODS 9/12/13, normativa, seguridad, limitaciones y fuentes.
+Anexos (botón o tecla `A`): ocho pestañas con datos reales, citas y fuentes numeradas. Arquitectura propuesta con versiones y licencias, calendario (plan de ocho semanas del equipo y fechas del Reglamento (UE) 2023/1542), presupuesto con precios consultados, indicadores con referencias reales, ODS 9/12/13 con sus indicadores oficiales, datos de referencia (composición, pesos, tensiones, recogida y reciclaje, energía y CO2, peligros), normativa, seguridad y limitaciones, y las 121 fuentes. Los datos reales llevan una cita `[n]` que abre su fuente; lo que no tiene datos reales se rotula como ejemplo o como decisión del equipo.
 
 ## Recorrido de la cámara
 
@@ -82,7 +82,8 @@ src/world/stations/        Depósito, taller, laboratorio, cruce, reciclaje y ce
 src/world/kit.js           Materiales y piezas reutilizables: batería, edificio en sección, coche...
 src/world/pbr.js           Texturas PBR procedurales (hormigón, roca, metal cepillado, plástico)
 src/world/textures.js      Texturas dibujadas en canvas y pantallas vivas
-src/content.js             Textos de los capítulos y de los anexos
+src/content.js             Textos de los capítulos y de los anexos, con las citas [n]
+src/sources.js             Fuentes citadas, numeradas por orden de primera aparición
 src/ui.js                  Capas HTML, controles, anexos y vista estática
 public/                    Favicon e ilustración de referencia (vista estática)
 ```
@@ -99,12 +100,35 @@ El workflow `.github/workflows/deploy.yml` compila y publica en cada push a `mai
 
 - La clasificación la sugiere el software y la **valida personal técnico**.
 - La segunda vida está **condicionada a pruebas específicas**.
-- El ejemplo 2 / 1 / 7 sobre diez baterías y el 90 % de trazabilidad son **hipotéticos** y se etiquetan así.
-- No se afirma ninguna reducción de emisiones o contaminación.
+- El ejemplo 2 / 1 / 7 sobre diez baterías y el 90 % de trazabilidad son **hipotéticos** y se etiquetan así: no hay datos publicados de ese reparto.
+- No se afirma que EcoBat reduzca emisiones o contaminación. Las cifras de energía y CO2 del reciclaje del plomo son datos publicados sobre el proceso industrial (estudios de la industria), no resultados del proyecto.
 - Los QR de las baterías del mundo 3D son decorativos. El QR del cierre es funcional y abre esta web.
-- Las pantallas del mundo 3D muestran datos ilustrativos (pesos, lotes, tensiones y gráficos), no mediciones reales. La batería de ejemplo no supera la prueba de carga y por eso termina en el reciclaje, coherente con «Medir antes de decidir».
-- El monolito dice «Pasaporte EcoBat · Prototipo académico»: no es el pasaporte de baterías del Reglamento (UE) 2023/1542.
+- Los registros de las pantallas del mundo 3D son **ejemplos del prototipo**, no mediciones, y las pantallas los rotulan como «ejemplo»: el código ECB-0427, los lotes, las fechas, las lecturas de prueba, las gráficas y los contadores. Sus valores se mantienen dentro de rangos con fuente (por ejemplo, 12,6 V tras 24 h de reposo en una batería inundada cargada, o 324 kg para 18 baterías de 18 kg). Son datos reales la tensión nominal de 12 V, la composición típica en masa (plomo 60 %, electrolito 30 % y plástico 7 %, aproximados), el código de residuo 16 06 01* y la clasificación de transporte UN 2794.
+- La batería de ejemplo no supera la prueba de carga (por debajo de 9,6 V) y por eso termina en el reciclaje, coherente con «Medir antes de decidir».
+- El monolito dice «Pasaporte EcoBat» y «Ejemplo · prototipo académico»: no es el pasaporte de baterías del Reglamento (UE) 2023/1542, que no se exige a las baterías de arranque de plomo (llevan QR, no pasaporte).
 - La ilustración `public/referencia-ecobat.png` es conceptual: se generó con la herramienta de imágenes de Codex como dirección artística. El mundo 3D está modelado con geometría procedural, sin modelos externos.
+
+## Datos y fuentes
+
+La presentación separa lo que tiene datos reales de lo que es ejemplo:
+
+- **Dato real.** Todo número, fecha, nombre propio o afirmación factual que la web presenta como dato tiene detrás un hecho verificado de la investigación y sus fuentes. Los anexos citan cada dato real con un número `[n]` que abre la fuente (121 fuentes, consultadas el 21 y el 22 de octubre de 2026). Los textos del recorrido no llevan citas: sus fuentes están en la pestaña Datos.
+- **Ejemplo o hipótesis.** Lo que no tiene datos reales se rotula y no se presenta como dato: el reparto 2 / 1 / 7 de diez baterías y el ejemplo del 90 % de trazabilidad; los registros de ejemplo del prototipo (el código ECB-0427, las fechas, los lotes y los resultados de prueba); y las decisiones del equipo (arquitectura, calendario de ocho semanas y partidas del presupuesto). La pestaña Fuentes explica cada ejemplo («Qué es real y qué es ejemplo en las pantallas 3D») con su valor de referencia real y su cita.
+- **Formulación prudente.** «Sin datos personales» es un principio de diseño, no una garantía legal. Las baterías de arranque de plomo llevan QR, no pasaporte. Las cifras con definiciones distintas no se mezclan (por ejemplo, el índice oficial de recogida de España y el porcentaje autodeclarado por el Acuerdo Voluntario del sector). No hay absolutos como «100 %» o «siempre», ni nombres de empresas o marcas salvo como fuente citada o dato verificado, ni afiliación afirmada con ninguna entidad.
+
+La investigación está en [`docs/investigacion/`](docs/investigacion/): 298 hechos verificados de 15 temas, 469 fuentes numeradas, el informe consolidado y la correspondencia entre las fuentes de la web y las de la investigación. Su [README](docs/investigacion/README.md) explica cada archivo, cómo se verificó y qué límites tiene.
+
+Para comprobar el contenido:
+
+```bash
+node --test tests/content.test.mjs
+```
+
+La prueba funciona sin navegador y comprueba que cada cita `[n]` existe en `src/sources.js`, que cada fuente se cita y que los números van por orden de primera aparición, que cada fuente tiene título, editor, fecha, URL `https` y tipo y que no hay fuentes duplicadas, que los textos del recorrido no llevan citas y que el reparto 2 / 1 / 7 y el ejemplo del 90 % siguen rotulados como ejemplos.
+
+Enlaces de las fuentes: `node -e "import('./src/sources.js').then(({sources})=>console.log(sources.map(s=>s.url).join('\n')))"` lista las 121 URL para pasarlas por un comprobador de enlaces. El 22-10-2026 ninguna estaba rota. EUR-Lex, tres páginas de comercios y, a veces, el registro de npm no responden con normalidad a las herramientas automáticas, y abren bien en un navegador.
+
+Las capturas PNG de [`docs/evidencia/`](docs/evidencia/) se regeneraron el 22-10-2026 con estos textos. La grabación `recorrido-tramos.webm` es del 21-10-2026, anterior a los datos reales: las pantallas del mundo 3D que muestra tienen los valores y los rótulos de entonces.
 
 ## Materiales e iluminación
 
