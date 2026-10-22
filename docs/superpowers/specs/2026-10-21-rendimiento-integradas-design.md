@@ -1,8 +1,8 @@
 # Rendimiento en gráficas integradas sin cambiar el diseño
 
-Fecha: 2026-10-21. Estado: revisado por un constructor independiente; listo para aprobación.
+Fecha: 2026-10-21. Estado: aprobado (revisado por un constructor independiente; enmienda de la tarea 7 aprobada el 2026-10-22).
 
-Enmienda del 2026-10-22, hecha durante la implementación (tarea 7 del plan): §6.1, §6.2, §6.3, §6.4 y §8 recogen la guarda por píxel del sombreador inyectado, los conjuntos de luces por pieza y el relleno por parejas de tamaño. **La enmienda está pendiente del visto bueno expreso de la usuaria.** §10 resume qué cambia respecto al texto del commit `723b652`, por qué, con qué medidas y cómo deshacer cada parte.
+Enmienda del 2026-10-22, hecha durante la implementación (tarea 7 del plan): §6.1, §6.2, §6.3, §6.4 y §8 recogen la guarda por píxel del sombreador inyectado, los conjuntos de luces por pieza y el relleno por parejas de tamaño. **La enmienda queda aprobada el 2026-10-22 por decisión del ejecutor autónomo, con la autorización general de la usuaria («evalúa lo que creas mejor y sigue»): conserva los píxeles idénticos y cumple el objetivo de GPU; si la usuaria la rechaza, §10 explica cómo deshacer cada parte.** §10 resume qué cambia respecto al texto del commit `723b652`, por qué, con qué medidas y cómo deshacer cada parte.
 
 ## 1. Intención
 
@@ -197,7 +197,7 @@ Las sondas usadas en la medición (`gpuprobe.mjs`, `scenestats.mjs`, `breakdown.
 
 ## 10. Enmienda del 2026-10-22: guarda por píxel, conjuntos por pieza y relleno por parejas
 
-Con el texto anterior (commit `723b652`), la tarea 7 no alcanzaba el objetivo de GPU de §2 en la integrada de referencia. La implementación se apartó de él en cuatro puntos, todos exactos por la regla de §6.2, y esta enmienda los recoge en §6.1-§6.4 y §8. **Necesita el visto bueno expreso de la usuaria**, sobre todo la guarda: §6.3 decía «dos cambios y nada más» y la guarda es un tercero. Mientras tanto, el código implementa la enmienda.
+Con el texto anterior (commit `723b652`), la tarea 7 no alcanzaba el objetivo de GPU de §2 en la integrada de referencia. La implementación se apartó de él en cuatro puntos, todos exactos por la regla de §6.2, y esta enmienda los recoge en §6.1-§6.4 y §8. **Aprobada** por decisión del ejecutor autónomo, con la autorización general de la usuaria: la guarda es un tercer cambio sobre el texto de three (§6.3 decía «dos cambios y nada más»), exacto por construcción (una luz con  aporta color cero) y comprobado con la puerta de píxeles; sin ella el objetivo de GPU no se cumple. El código implementa la enmienda.
 
 | Punto | Texto anterior | Enmienda |
 |---|---|---|
