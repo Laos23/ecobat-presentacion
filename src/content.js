@@ -55,7 +55,7 @@ export const chapters = [
     id: 'trazabilidad',
     label: 'Trazabilidad',
     title: 'Todo queda conectado.',
-    body: 'La informática guarda cada paso. Desde el 18-2-2027, toda batería nueva de vehículo eléctrico tendrá pasaporte digital.',
+    body: 'Se guarda cada paso. En la UE, desde el 18-2-2027, toda batería nueva de vehículo eléctrico tendrá pasaporte digital.',
     passport: ['Registro y QR', 'Diagnóstico', 'Ruta validada', 'Destino documentado'],
   },
 ];
