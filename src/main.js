@@ -498,17 +498,79 @@ async function start3D() {
     requestAnimationFrame(frame);
   }
 
+  // ---------- Calentamiento bajo el velo ----------
+  // Lo que el driver hace la primera vez que un programa, un estado o una textura entran en cuadro (variantes de
+  // sombreador por formato de vértices y de destino, materiales de sombra y de salida, mapa de sombras, primeros
+  // redibujos de las pantallas vivas) se adelanta a la carga: se dibujan a tamaño mínimo los encuadres del recorrido,
+  // con el estado narrativo de cada uno para que las pantallas vivas se dibujen también. Sin tocar el DOM; después se
+  // restaura el tamaño real.
+  function renderAt(p) {
+    const shot = sample(tl, p, camera.aspect, camPos, camTgt);
+    camera.position.copy(camPos);
+    camera.lookAt(camTgt);
+    if (Math.abs(camera.fov - shot.fov) > 1e-3) {
+      camera.fov = shot.fov;
+      camera.updateProjectionMatrix();
+    }
+    // mismas fórmulas que frame() sin movimiento reducido
+    const cs = chapterState(tl, p);
+    const sim = THREE.MathUtils.clamp((p - tl.marks.sim) / (ch4.anchor - tl.marks.sim), 0, 1);
+    const arrived = world.setSimulation(sim);
+    const conn = THREE.MathUtils.clamp((p - tl.marks.conn) / (ch6.anchor - tl.marks.conn), 0, 1);
+    world.setConnections(conn);
+    world.update(0, 1 / 60, { index: cs.index, vis: cs.vis, local: cs.local, p, sim, route: arrived.near, conn, reduced: false });
+    composer.render(1 / 60);
+  }
+  // portada, anclajes, arranque de la simulación y de las conexiones, y los tramos de vuelo largos
+  const WARMUP_POINTS = [0, ...tl.anchors.slice(1), tl.marks.sim, tl.marks.conn, 0.2525, 0.512, 0.668, 0.915];
+  async function warmUp() {
+    renderer.setSize(64, 36, false);
+    composer.setSize(64, 36);
+    bloom.resolution.set(64, 36);
+    for (const p of WARMUP_POINTS) {
+      renderAt(p);
+      // un fotograma entre encuadres: el hilo principal respira y la barra del velo sigue avanzando
+      await new Promise(requestAnimationFrame);
+    }
+    world.setSimulation(0);
+    world.setConnections(0);
+    layout();
+  }
+
   // Sombreadores compilados en paralelo antes del primer fotograma (KHR_parallel_shader_compile cuando
   // existe): la primera carga no bloquea el hilo principal y el velo de carga sigue animándose.
   // (con el destino del compositor activo: los programas salen con las mismas opciones de tono y color)
   try {
     renderer.setRenderTarget(composer.readBuffer);
-    await renderer.compileAsync(scene, camera);
+    // los materiales del bloom (que dibuja siempre en sus propios destinos) se compilan a la vez que los del mundo:
+    // si no, el primer fotograma del calentamiento los compila uno a uno con el hilo principal parado
+    const quad = new THREE.BufferGeometry();
+    quad.setAttribute('position', new THREE.Float32BufferAttribute([-1, 3, 0, -1, -1, 0, 3, -1, 0], 3));
+    quad.setAttribute('uv', new THREE.Float32BufferAttribute([0, 2, 0, 0, 2, 0], 2));
+    const post = new THREE.Scene();
+    [bloom.materialHighPassFilter, ...bloom.separableBlurMaterials, bloom.compositeMaterial, bloom.blendMaterial].forEach((m) => post.add(new THREE.Mesh(quad, m)));
+    const compiling = Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(post, camera)]);
+    // mientras la GPU compila, el hilo principal solo espera: se suben ya las texturas de los materiales, que el
+    // primer fotograma subiría todas de golpe (mismo camino de subida que al dibujar)
+    const textures = new Set();
+    scene.traverse((o) => {
+      for (const m of Array.isArray(o.material) ? o.material : o.material ? [o.material] : []) {
+        for (const v of Object.values(m)) if (v?.isTexture) textures.add(v);
+      }
+    });
+    try {
+      textures.forEach((tex) => renderer.initTexture(tex));
+    } catch {
+      /* las que falten se suben al dibujar */
+    }
+    await compiling;
   } catch {
     /* el primer fotograma compilará lo que falte */
   }
   renderer.setRenderTarget(null);
   performance.mark('eb:compiled');
+  await warmUp();
+  performance.mark('eb:warm');
   requestAnimationFrame(() => {
     frame();
     performance.mark('eb:first');
