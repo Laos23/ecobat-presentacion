@@ -87,6 +87,61 @@ src/ui.js                  Capas HTML, controles, anexos y vista estática
 public/                    Favicon e ilustración de referencia (vista estática)
 ```
 
+## Rendimiento
+
+La presentación va fluida también en una gráfica integrada **sin cambiar nada de lo que se ve**: ni geometría, ni materiales, ni luces, ni cámara, ni posprocesado. No hay ningún escalón automático de calidad (ni resolución menor, ni MSAA reducido, ni bloom apagado): en cualquier equipo se dibuja lo mismo.
+
+**Luces por fragmento.** El mundo se parte en 10 fragmentos (las ocho islas, el agua y las baterías de la simulación) y cada uno evalúa solo las luces locales cuya esfera de alcance (`distance`) toca alguna de sus piezas, entre 1 y 10 de las 16: una luz más allá de su `distance` aporta exactamente cero, así que dejarla fuera no cambia ningún píxel. Cada material iluminado se clona por fragmento y un sombreador inyectado recorre solo las luces de ese fragmento y se salta el cálculo donde la luz no llega, todo en un único pase de render.
+
+Tres piezas más completan el trabajo. La geometría fusionada por fragmento vuelve a poder descartarse fuera de cuadro (menos triángulos en los capítulos 2 a 6, a costa de más llamadas de dibujo). Los 104 programas de sombreado se compilan en paralelo y un calentamiento bajo el velo adelanta los primeros usos de programas, texturas y estados del driver, que antes daban tirones de hasta 600 ms al entrar por primera vez en cada capítulo. Y el bucle deja como mucho dos fotogramas en vuelo en la GPU, para que la cola no junte 100–200 ms de trabajo y la imagen se detenga mientras la vacía.
+
+### Antes y después
+
+Medido el 22/10/2026 en un Ryzen 9 9950X3D con RTX 5090 y la Radeon integrada del propio procesador (RDNA2, 2 CU), que hace de **integrada de referencia**. Chrome 155 sin ventana (ANGLE D3D11) a 1920×1080, salvo las cargas, a 1440×810. «Antes» es el build del commit `69b0a0a`, anterior a este trabajo, y «después» el de esta rama; los dos se midieron en la misma sesión. La GPU es la mediana del tiempo por fotograma en la integrada; las llamadas de dibujo y los triángulos son por fotograma en la RTX 5090.
+
+| Encuadre | GPU antes | GPU después | Después / antes | Llamadas de dibujo | Triángulos |
+|----------|-----------|-------------|-----------------|--------------------|------------|
+| Portada | 54,9 ms | 27,3 ms | 49,7 % | 237 → 594 | 872 k → 872 k |
+| 1 · Depósito | 78,7 ms | 37,3 ms | 47,4 % | 226 → 577 | 854 k → 854 k |
+| 2 · Taller | 71,4 ms | 38,3 ms | 53,6 % | 88 → 174 | 625 k → 276 k |
+| 3 · Laboratorio | 74,7 ms | 39,2 ms | 52,5 % | 84 → 142 | 612 k → 181 k |
+| 4 · Cruce | 63,2 ms | 30,7 ms | 48,6 % | 186 → 398 | 756 k → 543 k |
+| 5 · Reciclaje | 52,1 ms | 24,7 ms | 47,4 % | 80 → 79 | 664 k → 172 k |
+| 6 · Centro | 57,5 ms | 27,8 ms | 48,3 % | 128 → 328 | 660 k → 492 k |
+| Cierre | 57,4 ms | 29,3 ms | 51,0 % | 237 → 594 | 880 k → 880 k |
+
+En los ocho encuadres la GPU de la integrada baja al 47–54 % (el objetivo era el 55 % o menos): de unos 13–19 a unos 25–40 fotogramas por segundo, limitados solo por la GPU. La Vega 7 de un Ryzen 5 5500G se estima unas tres veces más rápida que esta integrada; con esa estimación, que no se ha medido, la presentación alcanzaría los 60 fps.
+
+| Métrica | Antes | Después |
+|---------|-------|---------|
+| Fotogramas de más de 120 ms tras el velo (integrada) | 140 | 0 |
+| Fotograma más largo tras el velo (integrada) | 473 ms | 92 ms |
+| Carga hasta la presentación lista, integrada (mediana de 5) | 3 049 ms | 3 307 ms |
+| Carga hasta la presentación lista, RTX 5090 (mediana de 5) | 2 823 ms | 3 148 ms |
+| Programas de sombreado | 50 | 104 |
+| JS del hilo principal por fotograma (RTX 5090) | 1,2 ms | 3,4 ms |
+
+Los tirones son los de un recorrido completo: rueda rápida, lenta y hacia atrás y saltos con teclas. Las cargas son en frío y alternan los dos builds. La carga sube unos 0,3 s, el precio de compilar 104 programas en vez de 50 y de calentar bajo el velo. Las cifras de «Comprobaciones realizadas (21/10/2026)», más abajo, son las del build anterior a este trabajo.
+
+### Cómo se comprueba que no cambia nada
+
+Se capturan 14 encuadres a 1440×810, 1280×720 y 390×844 (y tres más con movimiento reducido) del build anterior y del actual, con tiempo virtual para que sean repetibles, y se comparan píxel a píxel: ningún píxel puede diferir más de 1/255, salvo píxeles aislados de hasta 8/255 que sumen como mucho el 0,001 % de la imagen. El arnés es local y no se versiona: `.verify/perf/shots-all.mjs` captura, `.verify/perf/pixeldiff.mjs` compara y `.verify/brief.md` describe cada sonda. El 22/10/2026 pasan las 45 capturas: 37 son idénticas bit a bit y las otras 8 difieren como mucho 1/255.
+
+Con `?debug`, `window.__ecobat.debug.chunks()` lista los fragmentos (cajas, mallas y luces) y `window.__ecobat.debug.checkLights()` comprueba que ninguna luz que alcanza una malla falta en el conjunto de su fragmento (0 violaciones en los 14 encuadres).
+
+### three queda fijado en 0.186.1
+
+La inyección copia el texto de `THREE.ShaderChunk.lights_fragment_begin` de three 0.186.1 y falla con un error a la vista si ese texto cambia, así que `package.json` fija `"three": "0.186.1"` sin `^`. Las pruebas (`npm test`) comprueban la inyección contra el texto de esa versión. Subir three exige pasar las pruebas y repetir la verificación de píxeles.
+
+### Dónde está
+
+```
+src/world/chunks.js        Fragmentos: asignación de piezas, cajas y conjuntos de luces locales
+src/world/chunkLights.js   Clones de material por fragmento e inyección de sus luces en el sombreador
+src/world/water.js         Agua en celdas: probada, pero sin uso (el agua va entera)
+tests/                     Pruebas unitarias (npm test)
+```
+
 ## Publicación en GitHub Pages
 
 El workflow `.github/workflows/deploy.yml` compila y publica en cada push a `main`.
@@ -138,6 +193,6 @@ Hechas con Playwright sobre el build de producción, en el Chrome del sistema si
 **Limitaciones conocidas**
 
 - La grabación se genera fotograma a fotograma (posición y reloj fijados en cada imagen) y Chrome sin ventana llega a unos 240 fps en este equipo: muestran la coreografía y el encuadre, pero no prueban la fluidez en tiempo real en otro hardware. El navegador de pruebas con ventana (Playwright MCP) quedaba limitado a ~1,5 fps por estar oculto, así que no se usó para medir.
-- Hay que probarlo antes en el portátil y el proyector de clase: con gráficos integrados débiles se activa la calidad reducida, pero no se ha medido en ese equipo.
+- Hay que probarlo antes en el portátil y el proyector de clase: la fluidez se midió en una gráfica integrada de referencia (ver «Rendimiento»), no en ese equipo. No hay calidad reducida automática: en cualquier equipo se dibuja lo mismo.
 - El mundo 3D es una interpretación de las referencias, no una réplica de cada detalle.
 - La primera carga necesita conexión; conviene abrir la web una vez antes de la exposición.
