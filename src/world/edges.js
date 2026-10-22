@@ -1039,7 +1039,8 @@ export function buildTerrain(ctx) {
   // El agua va entera, en una sola malla. Partirla en celdas (src/world/water.js) cambia los triángulos del
   // plano y, con ellos, la profundidad que se interpola a subpíxel: donde pilares, rocas y bases de acantilado
   // atraviesan el agua salta alguna muestra y la verificación de píxeles falla. `waterWhole` la marca para el
-  // reparto por fragmentos, que la trata aparte (con todas las luces locales).
+  // reparto por fragmentos, que la pone en un fragmento propio ('agua', world.js) con las luces locales que
+  // alcanzan la caja del disco (las demás no llegan a su plano).
   const water = new THREE.Mesh(new THREE.CircleGeometry(1600, 96), E.water);
   water.rotation.x = -Math.PI / 2;
   water.position.y = WATER_Y;
