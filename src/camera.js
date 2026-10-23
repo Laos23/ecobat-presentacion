@@ -13,75 +13,103 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 //   fov     focal vertical para 16:9
 //   v       velocidad relativa del tramo (bajo = más scroll por metro: pausas y pasos cerca de objetos)
 //   hold    scroll extra sin desplazamiento (zonas para hablar)
-//   ch/role capítulo y papel: 'in' / 'anchor' / 'out' delimitan la ventana de lectura del capítulo
+//   ch/role capítulo y papel: 'in' / 'anchor' / 'out' delimitan la ventana de lectura del capítulo (índices de
+//           world/chapters.js · CH: 0 portada, 1-8 capítulos, 9 cierre)
+//   mark    marcas del recorrido: 'sim' y 'simEnd' (principio y final de la simulación de la clasificación: los tres
+//           tractores salen del cruce y la cámara acompaña al de reutilización hasta la nave, layout.js · SIM) y
+//           'conn' (principio de las conexiones de la trazabilidad)
 // El scroll se reparte por esfuerzo visual (metros recorridos + giro de la mirada) dividido por v,
 // de modo que la velocidad cambia de forma continua: sin frenadas repetidas entre capítulos.
 // ---------------------------------------------------------------------------------------------
 
 export const KEYS = [
-  // 0 · Apertura: el conjunto entero; al empezar a bajar, la cámara gira despacio a la izquierda
-  { p: V(-14, 80, 104), s: V(-8, 0, -12), sx: 0.12, sy: -0.1, syP: -0.3, fov: 38, v: 0.6, hold: 6, ch: 0, role: 'anchor' },
-  { p: V(-21, 75, 97), s: V(-12, 0, -10), sx: 0.1, sy: -0.08, syP: -0.3, fov: 38, v: 0.8, hold: 3, ch: 0, role: 'out' },
-  // descenso en espiral hacia el depósito: primero el depósito, después los palés y la batería
-  { p: V(-44, 46, 70), s: V(-50, 0, 12), fov: 38, v: 3.2 },
-  { p: V(-70, 20, 40), s: V(-58, 1.5, 13), fov: 40, v: 2.0 },
-  { p: V(-64.5, 7.2, 29), s: V(-54, 1.6, 19), fov: 42, v: 0.85 },
-  // 1 · Recogida: dentro del patio, aproximación a la carcasa y a la etiqueta QR (el taller, al fondo)
-  { p: V(-60.5, 3.9, 25.4), s: V(-51.8, 1.6, 21.9), sx: 0.3, fov: 42, v: 0.45, hold: 3, ch: 1, role: 'in' },
-  { p: V(-57.6, 3.4, 24.9), s: V(-51.6, 1.5, 22.0), sx: 0.34, fov: 42, v: 0.3, hold: 5, ch: 1, role: 'anchor' },
-  { p: V(-55.6, 2.85, 25.3), s: V(-51.04, 1.45, 22.65), sx: 0.5, sy: 0.0, fov: 42, v: 0.45, hold: 3, ch: 1, role: 'out' },
-  // planeo bajo hacia el taller: rodea la carcasa por el sur, cruza el agua y entra por el frente abierto
-  { p: V(-49.6, 3.8, 27.0), s: V(-43.5, 2.8, 17.5), fov: 43, v: 0.45 },
-  { p: V(-42.6, 3.8, 21.5), s: V(-36.5, 3.0, 12.5), fov: 44, v: 0.6 },
-  { p: V(-36.8, 3.85, 11.0), s: V(-31.0, 3.0, 3.5), fov: 46, v: 0.55 },
-  { p: V(-33.3, 3.0, 5.0), s: V(-31.2, 2.8, 0.6), fov: 47, v: 0.45 },
-  // 2 · Identificación: a la altura del banco, junto al lector QR
-  { p: V(-29.6, 3.0, 8.9), s: V(-27.6, 2.7, 6.25), sx: 0.28, fov: 46, v: 0.4, hold: 3, ch: 2, role: 'in' },
-  { p: V(-28.6, 2.98, 9.4), s: V(-27.1, 2.7, 6.2), sx: 0.3, fov: 46, v: 0.3, hold: 5, ch: 2, role: 'anchor' },
-  { p: V(-27.8, 2.98, 9.6), s: V(-26.6, 3.0, 6.3), sx: 0.28, fov: 46, v: 0.4, hold: 3, ch: 2, role: 'out' },
-  // salida lateral al laboratorio: estanterías y ficha a la izquierda, el pilar del frente pasa en primer plano
-  { p: V(-22.0, 3.6, 11.8), s: V(-17, 3.1, 1.0), fov: 46, v: 0.7 },
-  { p: V(-17.0, 3.8, 8.4), s: V(-8.5, 3.2, -1.5), fov: 46, v: 0.8 },
-  { p: V(-11.6, 3.75, 5.4), s: V(-6.0, 2.9, -0.8), fov: 46, v: 0.6 },
-  // 3 · Diagnóstico: a la altura del banco, desplazamiento lateral (bornes → sondas → pantalla)
-  { p: V(-8.0, 3.25, 1.7), s: V(-6.6, 3.03, -1.42), sx: 0.26, sy: 0.02, fov: 42, v: 0.4, hold: 3, ch: 3, role: 'in' },
-  { p: V(-6.9, 3.1, 1.5), s: V(-5.95, 2.8, -1.35), sx: 0.3, sy: -0.04, fov: 41, v: 0.3, hold: 5, ch: 3, role: 'anchor' },
-  { p: V(-4.7, 3.1, 1.4), s: V(-5.41, 2.6, -1.27), sx: 0.26, fov: 38, v: 0.4, hold: 3, ch: 3, role: 'out' },
-  // ascenso que revela las tres rutas: sube junto al laboratorio y se retira hacia el suroeste mirando al cruce
-  { p: V(-3.0, 7.0, 7.5), s: V(10, 3.4, -4.5), fov: 46, v: 0.7 },
-  { p: V(-5.0, 12.5, 5.5), s: V(17, 3.3, -6.5), fov: 44, v: 1.1, mark: 'sim' },
-  { p: V(-8.0, 22.0, 7.0), s: V(20, 3, -5), sy: 0.15, fov: 43, v: 1.3 },
-  // 4 · Clasificación: el cruce desde el suroeste (A al fondo, B a la derecha, C hacia la planta)
-  { p: V(-9.5, 30.0, 7.5), s: V(22, 2, -4), sx: 0.05, sy: 0.28, syP: 0.5, fov: 44, v: 0.5, hold: 3, ch: 4, role: 'in' },
-  { p: V(-10, 36, 8), s: V(23, 2, -4), sx: 0.05, sy: 0.3, syP: 0.5, fov: 44, v: 0.3, hold: 5, ch: 4, role: 'anchor' },
-  { p: V(-8, 35, 10), s: V(24, 2, -2), sx: 0.05, sy: 0.3, syP: 0.5, fov: 44, v: 0.5, hold: 3, ch: 4, role: 'out' },
-  // descenso siguiendo la ruta C: su salida de la rotonda, el puente y la llegada a la planta
-  { p: V(4, 23, 8), s: V(26, 2, 4), fov: 43, v: 0.75 },
-  { p: V(14.5, 10.5, 5.0), s: V(27, 2.2, 7.5), fov: 44, v: 0.75 },
-  { p: V(21.4, 5.2, 5.0), s: V(30, 2.0, 8.5), fov: 46, v: 0.8 },
-  { p: V(25.6, 4.4, 9.4), s: V(35, 2.4, 14.0), fov: 46, v: 0.75 },
-  { p: V(30.4, 4.4, 9.4), s: V(41.5, 2.4, 15.8), fov: 47, v: 0.7 },
-  { p: V(34.2, 3.9, 14.4), s: V(43.8, 2.4, 18.4), sx: 0.05, fov: 48, v: 0.55 },
-  { p: V(37.0, 4.5, 16.0), s: V(45.0, 2.3, 19.4), sx: 0.1, sy: 0.1, fov: 48, v: 0.5 },
-  // 5 · Reciclaje: entre la cinta y los contenedores de materiales separados
-  { p: V(38.4, 3.6, 21.3), s: V(43.8, 2.1, 22.6), sx: 0.22, sy: 0.1, fov: 48, v: 0.45, hold: 3, ch: 5, role: 'in' },
-  { p: V(39.6, 3.6, 21.9), s: V(45.6, 2.0, 24.6), sx: 0.28, sy: 0.04, fov: 48, v: 0.3, hold: 5, ch: 5, role: 'anchor' },
-  { p: V(41.8, 3.9, 22.0), s: V(47.4, 2.4, 22.8), sx: 0.26, fov: 48, v: 0.45, hold: 3, ch: 5, role: 'out' },
-  // subida por el puente largo, rozando el andamio y siguiendo el tablero hasta la plaza
-  { p: V(49.6, 4.8, 21.0), s: V(54.5, 3.0, 16.5), fov: 46, v: 0.5 },
-  { p: V(55.0, 4.6, 13.8), s: V(57.6, 4.2, 5.0), fov: 46, v: 0.7 },
-  { p: V(57.6, 6.7, 3.6), s: V(59.6, 7.4, -6.5), fov: 44, v: 0.95 },
-  { p: V(61.2, 12.6, -8.2), s: V(59.0, 12.0, -21.3), sy: 0.12, fov: 44, v: 0.45, mark: 'conn' },
-  // 6 · Trazabilidad: acercamiento al pasaporte con la plaza, las pantallas y la batería en cuadro
-  { p: V(68.5, 13.5, -10.7), s: V(59.0, 12.2, -21.3), sx: 0.32, sy: 0.04, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'in' },
-  { p: V(67.3, 13.3, -12.7), s: V(58.9, 12.1, -21.3), sx: 0.32, sy: 0.06, fov: 44, v: 0.3, hold: 5, ch: 6, role: 'anchor' },
-  { p: V(66.3, 13.7, -13.9), s: V(58.9, 13.0, -21.3), sx: 0.3, sy: -0.02, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'out' },
-  // retirada amplia: las conexiones aparecen sobre todo el mundo
-  { p: V(69.5, 17.0, -8.5), s: V(52, 8, -14), fov: 42, v: 1.2 },
-  { p: V(72, 34, 18), s: V(36, 3, -10), fov: 40, v: 2.6 },
-  // 7 · Cierre: el centro y su emisor en cuadro, con las conexiones hacia todas las estaciones
-  { p: V(54, 70, 70), s: V(6, 0, -4), sx: 0, sy: 0.4, syP: 0.55, fov: 42, v: 0.8, hold: 3, ch: 7, role: 'in' },
-  { p: V(48.6, 80.3, 75.2), s: V(4, 0, -2), sx: 0, sy: 0.45, syP: 0.6, fov: 42, v: 0.5, hold: 5, ch: 7, role: 'anchor' },
+  // 0 · Portada: el polígono entero con la ciudad iluminada al fondo (de ahí vienen las baterías); al bajar, la
+  // cámara gira despacio a la izquierda, hacia el depósito
+  { p: V(8, 55, 108), s: V(-24, 0, -48), sx: 0.12, sy: -0.06, syP: -0.3, fov: 38, v: 0.6, hold: 6, ch: 0, role: 'anchor' },
+  { p: V(-2, 52, 102), s: V(-30, 0, -42), sx: 0.1, sy: -0.05, syP: -0.3, fov: 38, v: 0.8, hold: 3, ch: 0, role: 'out' },
+  // descenso en espiral hacia el depósito: el camión de recogida entra por la calzada oeste
+  { p: V(-30, 38, 72), s: V(-62, 0, 10), fov: 38, v: 3.0 },
+  { p: V(-52, 19, 46), s: V(-66, 1.5, 12), fov: 40, v: 2.0 },
+  { p: V(-54, 8.5, 32), s: V(-66, 1.6, 13.5), fov: 42, v: 0.9 },
+  // 1 · Recogida: el camión con las puertas abiertas, la carretilla descargando el palé y el embalaje de la batería de
+  // coche eléctrico; la ventana termina junto a la batería protagonista
+  { p: V(-55.2, 5.3, 26.6), s: V(-65.6, 1.6, 13.6), sx: 0.24, fov: 42, v: 0.45, hold: 3, ch: 1, role: 'in' },
+  { p: V(-52.6, 5.6, 28.4), s: V(-60.0, 1.5, 16.0), sx: 0.24, fov: 42, v: 0.3, hold: 5, ch: 1, role: 'anchor' },
+  { p: V(-50.4, 4.6, 28.6), s: V(-55.0, 1.4, 18.6), sx: 0.26, fov: 42, v: 0.45, hold: 3, ch: 1, role: 'out' },
+  // vuelo bajo hacia el laboratorio por fuera de la nave de reutilización: se ve su frente abierto al pasar
+  { p: V(-45.5, 5.5, 28.0), s: V(-46, 2.5, 13), fov: 43, v: 0.45 },
+  { p: V(-36, 7.0, 21.5), s: V(-28, 3.0, 6), fov: 44, v: 0.8 },
+  { p: V(-24, 6.8, 16.5), s: V(-14, 2.6, 2), fov: 45, v: 0.8 },
+  { p: V(-15.5, 5.2, 10.5), s: V(-10.5, 2.4, -1), fov: 44, v: 0.6 },
+  // 2 · Identificación y diagnóstico: el puesto de etiquetado (QR y ficha), el banco del comprobador y la ficha digital
+  // junto a la esfera de 12,6 V, en un desplazamiento lateral a la altura de los ojos
+  { p: V(-9.6, 3.4, 2.7), s: V(-10.5, 2.3, -1.3), sx: 0.24, fov: 42, v: 0.4, hold: 3, ch: 2, role: 'in' },
+  { p: V(-6.9, 3.1, 1.6), s: V(-5.95, 2.8, -1.35), sx: 0.3, sy: -0.04, fov: 41, v: 0.3, hold: 5, ch: 2, role: 'anchor' },
+  { p: V(-4.0, 3.8, -0.1), s: V(-2.6, 3.7, -8.3), sx: 0.24, fov: 46, v: 0.4, hold: 3, ch: 2, role: 'out' },
+  // salida por el frente del laboratorio y ascenso que revela el cruce y sus tres tractores
+  { p: V(-2.0, 4.6, 5.0), s: V(6, 3.0, -4), fov: 46, v: 0.6 },
+  { p: V(-3.5, 10.5, 9.5), s: V(14, 3.3, -6), fov: 45, v: 1.0 },
+  { p: V(-4, 18, 11), s: V(16, 3.3, -6.5), fov: 44, v: 1.0 },
+  // 3 · Clasificación: el cruce desde el suroeste con los tres tractores en sus salidas; salen escalonados y la cámara
+  // acompaña al de reutilización, que vuelve al oeste por el laboratorio hasta la nave de reutilización
+  { p: V(-3, 23, 11), s: V(16.5, 3.3, -6.5), sx: 0.06, sy: 0.16, syP: 0.45, fov: 44, v: 0.5, hold: 3, ch: 3, role: 'in', mark: 'sim' },
+  { p: V(-1.5, 21, 10.5), s: V(15.5, 3.3, -6.5), sx: 0.08, sy: 0.14, syP: 0.45, fov: 44, v: 0.3, hold: 5, ch: 3, role: 'anchor' },
+  { p: V(-2.5, 17.5, 13), s: V(1.0, 1.5, 0.5), sx: 0.1, sy: 0.08, syP: 0.4, fov: 44, v: 0.5, hold: 1.5 },
+  { p: V(-10, 16.5, 15.5), s: V(-17.5, 1.5, 2.0), sx: 0.1, sy: 0.08, syP: 0.4, fov: 44, v: 0.5, hold: 1.5 },
+  { p: V(-22.5, 16, 18), s: V(-30.5, 1.4, 6.5), sx: 0.1, sy: 0.1, syP: 0.4, fov: 44, v: 0.5, hold: 3, ch: 3, role: 'out', mark: 'simEnd' },
+  // subida que enseña la nave entera, con el tractor ante el palé de entrada, y descenso hasta su frente
+  { p: V(-27, 21, 25), s: V(-30, 1.5, 4), fov: 44, v: 0.9 },
+  { p: V(-36, 10.5, 21), s: V(-30, 1.8, 3), fov: 45, v: 0.7 },
+  // 4 · Reutilización: el tractor deja el palé en la entrada; detrás, la línea de bancos (limpieza, reparación, carga y
+  // nueva comprobación) y, a la derecha, el muelle de expedición con su camión
+  { p: V(-39.5, 5.6, 17.0), s: V(-29.5, 1.6, 2.0), sx: 0.06, fov: 46, v: 0.45, hold: 3, ch: 4, role: 'in' },
+  { p: V(-37.5, 4.6, 15.0), s: V(-29.0, 1.6, 1.5), sx: 0.06, fov: 46, v: 0.3, hold: 5, ch: 4, role: 'anchor' },
+  { p: V(-35.0, 4.3, 14.2), s: V(-26.5, 1.8, 2.5), sx: 0.06, fov: 46, v: 0.45, hold: 3, ch: 4, role: 'out' },
+  // vuelo alto hacia el este, sobre el laboratorio y el cruce, hasta el puesto de desmontaje
+  { p: V(-28, 13, 17.5), s: V(-12, 3, 0), fov: 45, v: 1.2 },
+  { p: V(-1, 25, 12), s: V(20, 3, -6), fov: 44, v: 2.2 },
+  { p: V(17, 24, 6), s: V(32, 3.5, -9), fov: 44, v: 1.8 },
+  { p: V(27, 13, 0.5), s: V(33, 4, -9.5), fov: 44, v: 1.0 },
+  // 5 · Desmontaje: el puesto de alta tensión a través del cristal; delante, el tractor con el embalaje
+  { p: V(29.8, 7.7, -1.4), s: V(33.0, 4.3, -10), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 5, role: 'in' },
+  { p: V(31.5, 6.8, -3.2), s: V(33.2, 4.3, -10), sx: 0.22, fov: 44, v: 0.3, hold: 5, ch: 5, role: 'anchor' },
+  { p: V(33.4, 6.6, -3.4), s: V(34.4, 4.3, -10), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 5, role: 'out' },
+  // breve subida hacia el noroeste, a la isla de segunda vida
+  { p: V(31, 10, -6), s: V(24, 6, -20), fov: 44, v: 0.8 },
+  { p: V(22, 12, -15), s: V(19.5, 7.5, -28), fov: 44, v: 0.8 },
+  // 6 · Segunda vida: el contenedor de almacenamiento bajo la marquesina solar, con su armario de conversión
+  { p: V(15.6, 10.2, -20.2), s: V(19.6, 7.6, -28.5), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'in' },
+  { p: V(17.0, 9.6, -21.0), s: V(20.5, 7.6, -28.5), sx: 0.22, fov: 44, v: 0.3, hold: 5, ch: 6, role: 'anchor' },
+  { p: V(18.6, 9.4, -21.4), s: V(21.5, 7.5, -28.6), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'out' },
+  // vuelta al sur sobre el cruce y descenso por el puente del sureste hasta la planta de reciclaje
+  { p: V(13.5, 12.5, -16), s: V(22, 5, -19), fov: 44, v: 0.6 },
+  { p: V(11.5, 14, -8), s: V(24, 3.3, -8), fov: 44, v: 0.6 },
+  { p: V(13.5, 12, -0.5), s: V(25, 2, 8), fov: 44, v: 0.6 },
+  { p: V(18.2, 7.6, 3.0), s: V(26, 1.5, 12), fov: 45, v: 0.75 },
+  { p: V(23.6, 6.4, 6.0), s: V(31, 1.5, 15), fov: 46, v: 0.7 },
+  { p: V(29.5, 9.0, 9.0), s: V(32, 1.5, 21.5), fov: 46, v: 0.6 },
+  // 7 · Reciclaje: el proceso de la planta (desulfuración, fundición, refino) hasta la colada y, al final, las pilas de
+  // lingotes y los big bags de granza que salen de ella
+  { p: V(32.5, 9.5, 12.5), s: V(31.0, 1.5, 24.0), sx: 0.18, fov: 46, v: 0.45, hold: 3, ch: 7, role: 'in' },
+  { p: V(33.0, 7.4, 15.0), s: V(33.5, 1.4, 24.0), sx: 0.2, fov: 46, v: 0.3, hold: 5, ch: 7, role: 'anchor' },
+  { p: V(34.0, 5.4, 17.2), s: V(37.8, 1.3, 23.8), sx: 0.2, fov: 46, v: 0.45, hold: 3, ch: 7, role: 'out' },
+  // subida girando hacia el este, por encima de la cinta y al norte de la torre, y el puente largo hasta la plaza
+  { p: V(39, 9, 14.5), s: V(50, 2, 22), fov: 46, v: 0.42 },
+  { p: V(45, 10.5, 10.5), s: V(60, 3, 12), fov: 46, v: 0.36 },
+  { p: V(51.5, 9.5, 7), s: V(62, 7, -6), fov: 45, v: 0.38 },
+  { p: V(57.5, 9.5, -1), s: V(60, 10.5, -17.5), fov: 44, v: 0.5 },
+  { p: V(61.2, 12.6, -8.2), s: V(59.0, 12.0, -21.3), sy: 0.12, fov: 44, v: 0.38, mark: 'conn' },
+  // 8 · Trazabilidad: acercamiento al pasaporte con la plaza, las pantallas y la batería en cuadro
+  { p: V(68.5, 13.5, -10.7), s: V(59.0, 12.2, -21.3), sx: 0.32, sy: 0.04, fov: 44, v: 0.45, hold: 3, ch: 8, role: 'in' },
+  { p: V(67.3, 13.3, -12.7), s: V(58.9, 12.1, -21.3), sx: 0.32, sy: 0.06, fov: 44, v: 0.3, hold: 5, ch: 8, role: 'anchor' },
+  { p: V(66.3, 13.7, -13.9), s: V(58.9, 13.0, -21.3), sx: 0.3, sy: -0.02, fov: 44, v: 0.45, hold: 3, ch: 8, role: 'out' },
+  // retirada amplia hacia el sureste: las conexiones sobre todo el polígono y, al este, la carretera de la fábrica
+  { p: V(70, 17.0, -8.5), s: V(52, 8, -14), fov: 42, v: 1.2 },
+  { p: V(80, 40, 30), s: V(40, 3, -20), fov: 44, v: 2.6 },
+  // 9 · Cierre: el mapa general; el camión de lingotes y granza sale por la calzada este hacia la fábrica de baterías
+  // nuevas y la ciudad queda al fondo
+  { p: V(68, 105, 160), s: V(46, 0, -36), sx: 0.04, sy: 0.6, syP: 0.62, fov: 46, v: 0.8, hold: 3, ch: 9, role: 'in' },
+  { p: V(72, 118, 178), s: V(46, 0, -38), sx: 0.04, sy: 0.64, syP: 0.66, fov: 48, v: 0.5, hold: 5, ch: 9, role: 'anchor' },
 ];
 
 const STEPS = 64; // muestras por tramo para repartir el scroll
@@ -91,8 +119,10 @@ export const UNITS_PER_SCREEN = 24; // unidades de scroll por pantalla
 
 // Pantallas de scroll de cada ventana de lectura y de cada transición (de la ventana i a la i + 1).
 // Dentro de cada tramo el reparte sigue el esfuerzo visual; entre tramos la escala se suaviza.
-const WINDOW_SCREENS = [1.0, 1.1, 1.1, 1.5, 1.1, 1.1, 1.1, 1.2];
-const TRANSIT_SCREENS = [2.8, 3.0, 2.2, 2.8, 3.4, 3.0, 2.6];
+// 10 ventanas (portada, 8 capítulos y cierre) y 9 transiciones. La de clasificación es larga: en ella los tractores
+// salen del cruce y la cámara acompaña al de reutilización hasta la nave (layout.js · SIM).
+const WINDOW_SCREENS = [1.0, 1.15, 1.2, 2.0, 1.1, 1.1, 1.1, 1.3, 1.15, 1.2];
+const TRANSIT_SCREENS = [2.8, 2.6, 2.2, 1.7, 3.0, 1.6, 3.2, 3.2, 3.0];
 
 // Dirección de mirada compuesta: el sujeto cae en (sx, sy) de la pantalla, horizonte siempre nivelado.
 function composeDir(pos, subject, sx, sy, vfov, aspect, out) {

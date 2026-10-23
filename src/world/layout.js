@@ -45,7 +45,9 @@ export const BRIDGES = [
 ];
 
 // Trazas luminosas: puntos de control a 1,2 cm sobre el suelo de cada isla. world.js las dibuja apoyadas en
-// suelos y tableros; el taller repinta su tramo interior sobre la losa y el cruce apoya en ellas sus flechas.
+// suelos y tableros y el cruce apoya en ellas sus flechas. Ramas del cruce en la v2: norte (service) a segunda vida
+// (sA), este (second) a desmontaje (sB) y sureste (recycle) a reciclaje (s5); la reutilización vuelve al oeste por
+// la traza principal.
 const fy = (k) => F[k] + 0.012;
 export const TRACES = {
   // de la báscula del depósito al cruce: rodea la peana por el norte, cruza el taller y pasa por el frente
@@ -64,20 +66,39 @@ export const TRACES = {
   hub: [V(36, fy('s5'), 16.4), V(44, fy('s5'), 14.5), V(50.5, fy('s5'), 12.6), V(54.2, fy('s5'), 11), V(60.7, fy('s6'), -10.74), V(60, fy('s6'), -15.0)],
 };
 
-// Simulación hipotética del capítulo 4 (2 / 1 / 7): orden de llegada, ritmo y separación entre baterías.
-// Las rutas comparten la entrada: la cola espera en la franja este del laboratorio y en la rampa.
+// v2 · Simulación hipotética del capítulo de clasificación (ejemplo 2 / 1 / 7): tres tractores de arrastre esperan
+// cargados en las bocas del cruce, cada uno mirando a su salida, y salen escalonados hacia su destino.
+// Cada ruta es una polilínea en el plano xz [[x, z], ...]: la cota la pone el suelo (tapa de la isla o tablero del
+// puente, world.js · surfaceY). El tractor espera con su origen sobre el punto `wait` (el remolque queda detrás, sobre
+// la misma ruta) y se detiene con el origen en el último punto. `go`: [salida, llegada] en fracción de la simulación;
+// `count`: baterías del lote, que suben al contador de su ruta en el panel al llegar.
+//   service · reutilización: palé con 2 baterías de plomo aptas o reparables; vuelve al oeste por el mismo camino por el
+//     que llegaron (carril de salida de la calzada oeste, puente s4-s3, franja este y zona de recepción del laboratorio,
+//     su explanada, franja oeste, puente s3-s2 y franja este de s2) y entra en la nave de reutilización hasta el palé de
+//     ENTRADA. En la franja oeste de s3 (1,7 m entre la fachada del laboratorio y la barandilla) el giro hacia el puente
+//     roza la fachada de cristal unos centímetros: no hay sitio para más.
+//   second · desmontaje: la batería de coche eléctrico en su embalaje; calzada este y puente hasta la puerta de sB.
+//   recycle · reciclaje: palé con 7 baterías de plomo; calzada y puente del sureste hasta la puerta de recepción de s5.
 export const SIM = {
-  plan: ['recycle', 'service', 'recycle', 'recycle', 'second', 'recycle', 'service', 'recycle', 'recycle', 'recycle'],
-  stagger: 0.055, // retraso entre salidas (fracción de la simulación)
-  span: 0.45, // duración de cada trayecto
-  gap: 1.45, // metros entre baterías en cola y en destino
-  head: 1.9, // metros entre la primera de la cola y el final de la entrada (detrás de la punta de entrada)
-  entry: [V(1.5, fy('s3'), 2.9), V(1.85, fy('s3'), 1.2), V(1.95, fy('s3'), -1.6), V(3.2, fy('s3'), -3.2), V(7.06, fy('s4'), -6.38), V(11.6, fy('s4'), -8)],
-  routes: {
-    service: [V(14.6, fy('s4'), -10.6), V(15.5, fy('s4'), -12), V(16.2, fy('s4'), -16), V(16.6, fy('s4'), -17.8), V(17.3, fy('s4') + 1.4, -21)],
-    second: [V(16, fy('s4'), -11.8), V(19.2, fy('s4'), -9.6), V(20, fy('s4'), -8.2), V(23.5, fy('s4'), -8), V(26.8, fy('s4'), -8)],
-    recycle: [V(13.5, fy('s4'), -5.2), V(17.2, fy('s4'), -4.2), V(18.4, fy('s4'), -0.6), V(19, fy('s4'), 1.6), V(20.4, fy('s4') - 0.5, 3.6)],
-  },
+  tractors: [
+    {
+      route: 'second', load: 'litio', count: 1, go: [0.04, 0.3], wait: 1,
+      path: [[19.0, -7.45], [24.3, -7.62], [25.9, -7.95], [27.3, -8.1], [28.3, -8.25]],
+    },
+    {
+      route: 'recycle', load: 'plomo', count: 7, go: [0.12, 0.5], wait: 2,
+      path: [[16.45, -4.5], [16.95, -2.6], [17.95, 0.34], [19.28, 2.02], [21.75, 5.78], [24.23, 9.53], [25.05, 10.65]],
+    },
+    {
+      route: 'service', load: 'plomo', count: 2, go: [0.24, 1], wait: 2,
+      path: [
+        [13.48, -8.07], [11.18, -7.2], [8.78, -6.29], [7.06, -6.38], [5.13, -4.79], [3.2, -3.2], [2.2, -2.0], [1.55, -0.4],
+        [1.05, 0.85], [-0.4, 1.4], [-4, 1.5], [-7.4, 1.55], [-9.2, 2.5], [-10.6, 3.9], [-12.5, 4.5], [-13.7, 4.1],
+        [-14.1, 3.0], [-14.12, 1.9], [-14.4, 0.9], [-15.3, 0.42], [-16.6, 0.8], [-19.2, 2.0], [-20.4, 3.3], [-20.6, 6.2], [-20.7, 9.0],
+        [-21.1, 10.8], [-22.8, 11.3], [-26.6, 10.9], [-29.6, 8.6], [-31.8, 7.3], [-34.0, 7.0],
+      ],
+    },
+  ],
 };
 
 // v2 · Accesos del polígono: contrato entre el entorno (orillas, calzadas, ciudad, fábrica) y las estaciones que

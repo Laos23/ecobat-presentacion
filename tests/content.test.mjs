@@ -4,13 +4,18 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { intro, chapters, closing, annex } from '../src/content.js';
 import { sources, SOURCE_GROUPS } from '../src/sources.js';
+import { CH } from '../src/world/chapters.js';
 
-// Longitud de cada cuerpo de capítulo antes de añadir los datos reales: puede crecer como mucho 40 caracteres.
-const BODY_BEFORE = { recogida: 110, taller: 112, diagnostico: 114, clasificacion: 60, reciclaje: 98, trazabilidad: 80 };
-const MAX_GROWTH = 40;
+// v2: ocho capítulos, en el orden de los índices del mundo (src/world/chapters.js)
+const CHAPTER_IDS = ['recogida', 'identificacion', 'clasificacion', 'reutilizacion', 'desmontaje', 'segunda-vida', 'reciclaje', 'trazabilidad'];
+const CH_KEYS = ['recogida', 'identificacion', 'clasificacion', 'reutilizacion', 'desmontaje', 'segundaVida', 'reciclaje', 'trazabilidad'];
+// El cuerpo de un capítulo se lee en pantalla sobre el 3D: como mucho 270 caracteres (unas siete líneas de 34ch).
+const MAX_BODY = 270;
+// Tarjeta de datos: título de 2 a 4 palabras, de 1 a 3 datos breves y cada uno con su cita.
+const MAX_CARD_ITEM = 220;
 const BLOCK_TYPES = new Set(['p', 'note', 'h4', 'list', 'table', 'timeline', 'example', 'goals', 'sources']);
 
-// Cadenas en el orden en que se pintan (portada, capítulos, cierre y pestañas del anexo).
+// Cadenas en el orden en que se pintan (portada, capítulos con sus tarjetas, cierre y pestañas del anexo).
 function* strings(v) {
   if (typeof v === 'string') yield v;
   else if (Array.isArray(v)) for (const x of v) yield* strings(x);
@@ -34,6 +39,15 @@ function citations(s) {
 const overlay = [...strings([intro, chapters, closing])];
 const annexText = [...strings(annex)];
 const cited = [...overlay, ...annexText].flatMap(citations);
+const cards = [...chapters.map((c) => c.card), closing.card].filter(Boolean);
+
+test('ocho capítulos en el orden de CH (portada 0, cierre 9)', () => {
+  assert.deepEqual(chapters.map((c) => c.id), CHAPTER_IDS);
+  CH_KEYS.forEach((k, i) => assert.equal(CH[k], i + 1, `CH.${k}`));
+  assert.equal(CH.portada, 0);
+  assert.equal(CH.cierre, chapters.length + 1);
+  assert.deepEqual(chapters.map((c) => c.label), ['Recogida', 'Identificación', 'Clasificación', 'Reutilización', 'Desmontaje', 'Segunda vida', 'Reciclaje', 'Trazabilidad']);
+});
 
 test('toda cita [n] del contenido existe en sources.js', () => {
   const known = new Set(sources.map((s) => s.n));
@@ -46,7 +60,7 @@ test('toda fuente de sources.js se cita al menos una vez', () => {
   assert.deepEqual(sources.filter((s) => !used.has(s.n)).map((s) => s.n), []);
 });
 
-test('números contiguos 1..N, en orden de primera aparición', () => {
+test('números contiguos 1..N, en orden de primera aparición (tarjetas de los capítulos y después anexos)', () => {
   assert.deepEqual(sources.map((s) => s.n), sources.map((_, i) => i + 1));
   const firsts = [...new Set(cited)];
   assert.deepEqual(firsts, sources.map((s) => s.n));
@@ -75,6 +89,14 @@ test('sin fuentes duplicadas (número, URL, mismo documento ni título)', () => 
   }
 });
 
+test('el mapa de fuentes de docs/investigacion cubre las mismas fuentes con los mismos números', () => {
+  const mapa = JSON.parse(fs.readFileSync(new URL('../docs/investigacion/mapa-fuentes.json', import.meta.url), 'utf8'));
+  assert.deepEqual(mapa.map((e) => e.n), sources.map((s) => s.n));
+  for (const e of mapa) assert.equal(e.url, sources[e.n - 1].url, `mapa ${e.n}: otra URL`);
+  const hechos = new Set(JSON.parse(fs.readFileSync(new URL('../docs/investigacion/hechos-verificados.json', import.meta.url), 'utf8')).map((h) => h.id));
+  for (const e of mapa) for (const id of e.hechos) assert.ok(hechos.has(id), `mapa ${e.n}: hecho desconocido ${id}`);
+});
+
 test('sin marcadores pendientes ni restos del borrador', () => {
   const files = ['../src/content.js', '../src/sources.js'].map((f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8'));
   for (const text of files) {
@@ -100,27 +122,62 @@ test('ids de pestañas y de capítulos únicos; bloques del anexo conocidos', ()
 });
 
 test('el cuerpo de cada capítulo no supera la longitud acordada', () => {
-  for (const c of chapters) {
-    assert.ok(c.id in BODY_BEFORE, `capítulo sin longitud de referencia: ${c.id}`);
-    assert.ok(c.body.length <= BODY_BEFORE[c.id] + MAX_GROWTH, `${c.id}: ${c.body.length} caracteres (máximo ${BODY_BEFORE[c.id] + MAX_GROWTH})`);
+  for (const c of chapters) assert.ok(c.body.length <= MAX_BODY, `${c.id}: ${c.body.length} caracteres (máximo ${MAX_BODY})`);
+});
+
+test('títulos y cuerpos del recorrido sin citas; cada dato de una tarjeta, con la suya', () => {
+  for (const s of [intro, ...chapters.map(({ title, body, label, routes, simulation, passport }) => ({ title, body, label, routes, simulation, passport })), { title: closing.title, body: closing.body }]) {
+    assert.deepEqual([...strings(s)].flatMap(citations), []);
+  }
+  assert.equal(cards.length, chapters.length + 1, 'una tarjeta por capítulo y la del cierre');
+  for (const card of cards) {
+    const words = card.title.split(/\s+/).length;
+    assert.ok(words >= 2 && words <= 4, `tarjeta «${card.title}»: ${words} palabras`);
+    assert.deepEqual(citations(card.title), []);
+    assert.ok(card.items.length >= 1 && card.items.length <= 3, `tarjeta «${card.title}»: ${card.items.length} datos`);
+    for (const t of card.items) {
+      assert.ok(citations(t).length > 0, `dato sin cita en «${card.title}»: ${t}`);
+      assert.ok(t.length <= MAX_CARD_ITEM, `dato largo en «${card.title}» (${t.length})`);
+    }
+    if (card.example) assert.deepEqual(citations(card.example), [], 'el ejemplo no lleva cita');
   }
 });
 
-test('los textos del recorrido no llevan citas: sus fuentes están en la pestaña Datos', () => {
-  assert.deepEqual(overlay.flatMap(citations), []);
+test('la pestaña Datos tiene una fila con fuente por capítulo, en el mismo orden', () => {
   const datos = annex.find((a) => a.id === 'datos');
   const firstTable = datos.blocks.find((b) => b.table).table;
-  assert.equal(firstTable.rows.length, chapters.length, 'una fila de datos por capítulo');
+  chapters.forEach((c, i) => assert.ok(firstTable.rows[i][0].startsWith(`${i + 1} · ${c.label}`), `fila ${i + 1}: ${firstTable.rows[i][0]}`));
   for (const row of firstTable.rows) assert.ok(citations(row.join(' ')).length > 0, `fila sin fuente: ${row[0]}`);
 });
 
-test('la simulación y el ejemplo del 90 % siguen rotulados como ejemplos', () => {
+test('la simulación 2/1/7 y el ejemplo del 90 % siguen rotulados como ejemplos', () => {
   const ch = chapters.find((c) => c.routes);
-  assert.equal(ch.routes.reduce((n, r) => n + r.count, 0), 10);
+  assert.equal(ch.id, 'clasificacion');
+  assert.deepEqual(ch.routes.map((r) => [r.key, r.count]), [['service', 2], ['second', 1], ['recycle', 7]]);
+  assert.deepEqual(ch.routes.map((r) => r.name), ['Vuelven a servicio', 'Batería de coche eléctrico', 'Reciclaje autorizado']);
   assert.match(ch.simulation, /ejemplo/i);
   assert.match(ch.simulation, /no son datos reales/i);
   const ind = annex.find((a) => a.id === 'indicadores');
   const ex = ind.blocks.find((b) => b.example).example;
   assert.match(ex.label, /ejemplo/i);
   assert.match(ex.text, /no un dato real/i);
+});
+
+test('reglas de fidelidad de la v2', () => {
+  const all = [...overlay, ...annexText].join('\n');
+  // en el reciclaje de plomo-ácido no hay cobre
+  assert.doesNotMatch(all, /\bcobre\b/i);
+  // la ruta del 1 del ejemplo no se confunde con el reciclaje de plomo del 7
+  const second = chapters.find((c) => c.routes).routes.find((r) => r.key === 'second');
+  assert.match(second.detail, /reciclador de litio/);
+  // la segunda vida es del litio: la batería de arranque no sirve para ella
+  const sv = chapters.find((c) => c.id === 'segunda-vida');
+  assert.match(sv.body, /arranque no sirve/);
+  // remanufacturar vuelve a un coche (mismo uso), no es segunda vida
+  assert.match(chapters.find((c) => c.id === 'desmontaje').card.items.join(' '), /no es segunda vida/);
+  // el 90 % de la remanufacturación es un umbral legal con cita, no un ejemplo
+  const reman = chapters.find((c) => c.id === 'desmontaje').card.items.find((t) => /90 %/.test(t));
+  assert.ok(reman && citations(reman).length > 0);
+  // la ruta del taller con coche ya no existe en el recorrido
+  assert.doesNotMatch([...strings(chapters)].join('\n'), /\btaller\b/i);
 });

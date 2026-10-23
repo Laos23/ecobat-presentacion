@@ -2357,7 +2357,8 @@
     ],
     "factIds": [
       "seguridad-f2",
-      "seguridad-f3"
+      "seguridad-f3",
+      "v2-ev-transporte"
     ]
   },
   {
@@ -3371,7 +3372,8 @@
     "factIds": [
       "diagnostico-f13",
       "diagnostico-f15",
-      "diagnostico-f16"
+      "diagnostico-f16",
+      "v2-sli-fallos"
     ]
   },
   {
@@ -3455,7 +3457,8 @@
     "factIds": [
       "segunda_vida-f1",
       "segunda_vida-f4",
-      "segunda_vida-f15"
+      "segunda_vida-f15",
+      "v2-umbral-retirada"
     ]
   },
   {
@@ -3503,7 +3506,8 @@
       "segunda_vida"
     ],
     "factIds": [
-      "segunda_vida-f3"
+      "segunda_vida-f3",
+      "v2-fabricantes-ciclo"
     ]
   },
   {
@@ -3519,7 +3523,8 @@
       "segunda_vida"
     ],
     "factIds": [
-      "segunda_vida-f3"
+      "segunda_vida-f3",
+      "v2-fabricantes-ciclo"
     ]
   },
   {
@@ -3535,7 +3540,8 @@
       "segunda_vida"
     ],
     "factIds": [
-      "segunda_vida-f4"
+      "segunda_vida-f4",
+      "v2-caso-arena"
     ]
   },
   {
@@ -3604,7 +3610,8 @@
       "segunda_vida"
     ],
     "factIds": [
-      "segunda_vida-f9"
+      "segunda_vida-f9",
+      "v2-caso-renault"
     ]
   },
   {
@@ -3620,7 +3627,8 @@
       "segunda_vida"
     ],
     "factIds": [
-      "segunda_vida-f9"
+      "segunda_vida-f9",
+      "v2-caso-renault"
     ]
   },
   {
@@ -3636,7 +3644,8 @@
       "segunda_vida"
     ],
     "factIds": [
-      "segunda_vida-f10"
+      "segunda_vida-f10",
+      "v2-caso-endesa"
     ]
   },
   {
@@ -8041,6 +8050,22 @@
     ],
     "factIds": [
       "vehiculo_electrico-f8"
+    ]
+  },
+  {
+    "n": 470,
+    "title": "Commission seeks views on draft delegated regulation establishing battery recycled content methodology",
+    "publisher": "LexisNexis UK (LNB News)",
+    "url": "https://www.lexisnexis.co.uk/legal/news/commission-seeks-views-on-draft-delegated-regulation-establishing-battery-recycled-content-methodology",
+    "published": "2026-08-12",
+    "accessed": "2026-10-23",
+    "kind": "fuente secundaria (prensa jurídica)",
+    "language": "en",
+    "topics": [
+      "v2"
+    ],
+    "factIds": [
+      "v2-art8-plomo"
     ]
   }
 ]

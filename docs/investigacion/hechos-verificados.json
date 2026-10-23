@@ -6461,5 +6461,631 @@
     "conflicts": [
       "C14"
     ]
+  },
+  {
+    "id": "v2-reutil-def",
+    "topic": "v2",
+    "claim": "La Directiva 2008/98/CE (art. 3, punto 16) define la «preparación para la reutilización» como la operación de valorización consistente en la comprobación, limpieza o reparación mediante la cual productos o componentes que se han convertido en residuos se preparan para reutilizarse sin otra transformación previa. La Ley 7/2022 (art. 2, letra y) recoge la misma definición y añade que dejan de ser residuos si cumplen las normas de producto aplicables. El Reglamento (UE) 2023/1542 (art. 3.1, punto 29) remite a la Directiva.",
+    "value": "comprobación, limpieza o reparación",
+    "scope": "UE y España; residuos (una batería usada entregada a un gestor es residuo 16 06 01*); textos oficiales en español.",
+    "sources": [
+      66,
+      78,
+      26
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 4 · tarjeta «Preparar para reutilizar»; anexo Datos y Límites",
+    "confidence": "alta",
+    "evidence": "«la operación de valorización consistente en la comprobación, limpieza o reparación»",
+    "verdict": "confirmado",
+    "caveat": "Literal en los tres textos. Ley 7/2022, art. 2.y: «y dejen de ser considerados residuos si cumplen las normas de producto aplicables de tipo técnico y de consumo». Reutilización (Directiva, art. 3.13): volver a usar productos que no son residuos «con la misma finalidad para la que fueron concebidos». Hechos v1: segunda_vida-f17, reglamento-f14.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-reutil-fabricante",
+    "topic": "v2",
+    "claim": "Quien realiza la preparación para la reutilización, la preparación para la adaptación, la adaptación o la remanufacturación e introduce en el mercado o pone en servicio la batería resultante se considera fabricante a efectos del Reglamento (UE) 2023/1542.",
+    "value": null,
+    "scope": "UE; art. 38, apartado 11, del Reglamento (UE) 2023/1542; con evaluación de la conformidad adicional (art. 17.3).",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Anexo Límites (normativa de las rutas nuevas)",
+    "confidence": "alta",
+    "evidence": "«Se considerarán fabricantes a efectos del presente Reglamento los operadores económicos»",
+    "verdict": "confirmado",
+    "caveat": "Hecho v1: segunda_vida-f6. Útil para dejar claro que reutilizar o remanufacturar no es un trámite menor.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-sli-fallos",
+    "topic": "v2",
+    "claim": "En un estudio de Johnson Controls sobre más de 800 baterías de arranque AGM retiradas en Europa, citado por Battery University, el 23 % solo tenía baja carga y el 14,6 % no mostraba ningún fallo; el 47,8 % falló por desgaste normal.",
+    "value": "23 % baja carga; 14,6 % sin fallo; 47,8 % desgaste",
+    "scope": "Europa; más de 800 baterías AGM de arranque al final de su vida; estudio presentado en AABC Europe 2017 y conocido solo a través de BU-806a (actualizado el 2-11-2021).",
+    "sources": [
+      185
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 4 · frase opcional de la tarjeta (por qué merece la pena comprobar antes de reciclar)",
+    "confidence": "alta",
+    "evidence": "\"No fault found\" — \"Better test methods puts these batteries back in service\"",
+    "verdict": "confirmado",
+    "caveat": "Confianza media: fuente de segunda mano (la presentación original no se localizó en la v1) y solo baterías AGM. Si se usa, citar «según un estudio citado por Battery University». Hecho v1: diagnostico-f15.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-sli-sin-pasaporte",
+    "topic": "v2",
+    "claim": "Las baterías de arranque (SLI) no están entre las categorías que el Reglamento (UE) 2023/1542 obliga a tener pasaporte (art. 77.1): llevan código QR desde el 18-2-2027, pero no pasaporte.",
+    "value": "SLI: QR sí, pasaporte no",
+    "scope": "UE; art. 77.1 (transporte ligero, industriales de más de 2 kWh y vehículos eléctricos) y art. 13.6.",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 4 (la frase «con su historial» se refiere a la ficha de EcoBat, no a un pasaporte legal); capítulo 8",
+    "confidence": "alta",
+    "evidence": "«todas las baterías para vehículos eléctricos introducidas en el mercado»",
+    "verdict": "confirmado",
+    "caveat": "Hechos v1: segunda_vida-f13, pasaporte_qr-f2. El texto del capítulo 4 no debe insinuar que la batería de plomo reutilizada tiene pasaporte oficial.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-remanufacturacion",
+    "topic": "v2",
+    "claim": "El Reglamento (UE) 2023/1542 (art. 3.1, punto 32) define la remanufacturación como la operación técnica con una batería usada que incluye el desmontaje y la evaluación de todas sus celdas y módulos y el uso de celdas y módulos nuevos, usados o valorizados para restablecer al menos el 90 % de la capacidad asignada original, con un estado de salud de las celdas que no difiera entre sí más del 3 %, y que da lugar a que la batería se use para la misma finalidad para la que se diseñó.",
+    "value": "≥ 90 % de la capacidad asignada original; diferencia de estado de salud entre celdas ≤ 3 %; mismo uso",
+    "scope": "UE; definición legal (art. 3, apartado 1, punto 32); texto original y consolidado a 13-8-2026 idénticos.",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 5 · tarjeta «Remanufacturar: mismo uso»; anexo Datos",
+    "confidence": "alta",
+    "evidence": "«restablecer la capacidad de la batería en un 90 % como mínimo»",
+    "verdict": "confirmado",
+    "caveat": "Segunda cita literal: «el estado de salud individual de las celdas no difiere entre sí más del 3 %». Corrección menor a la frase del capítulo 5 de las ideas («si basta con cambiar módulos»): la definición exige desmontar y evaluar todas las celdas y módulos y alcanzar el 90 %. Este 90 % es un umbral legal real; no confundirlo con el ejemplo del 90 % de trazabilidad del prototipo (que sigue siendo ejemplo). Hechos v1: segunda_vida-f5, reglamento-f15.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-alta-tension-cualificacion",
+    "topic": "v2",
+    "claim": "Los trabajos en tensión deben hacerlos trabajadores cualificados (RD 614/2001, anexo III.A.1), y las guías de prevención (DGUV en Alemania, IRSST en Madrid) reservan las intervenciones en sistemas de alta tensión de vehículos a personal cualificado o bajo su supervisión.",
+    "value": null,
+    "scope": "España (RD 614/2001) y guías de Alemania (DGUV 209-093, 2021) y Madrid (IRSST, 2023); por analogía con el desmontaje en una planta de gestión.",
+    "sources": [
+      455,
+      458
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 5 («técnicos formados en alta tensión»)",
+    "confidence": "alta",
+    "evidence": "«Los trabajos en tensión deberán ser realizados por trabajadores cualificados»",
+    "verdict": "confirmado",
+    "caveat": "Hechos v1: vehiculo_electrico-f6, vehiculo_electrico-f17. El RD no dice literalmente «alta tensión» para trabajos sin tensión; la exigencia de cualificación en esos casos viene de las guías.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-epi-alta-tension",
+    "topic": "v2",
+    "claim": "La guía del IRSST de Madrid para trabajos en vehículos eléctricos indica como equipos de protección individual guantes dieléctricos UNE-EN 60903 (como mínimo de clase 00 o 0), guantes de protección mecánica encima, pantalla facial EN 166 con marcado «8» frente al arco eléctrico, ropa de protección EN 50286 y calzado EN 50321, con herramientas aisladas IEC 60900.",
+    "value": "Guantes dieléctricos EN 60903 clase 0; pantalla facial EN 166 «8»; ropa EN 50286; calzado EN 50321 clase 0",
+    "scope": "España (Comunidad de Madrid), guía de 2023 para mantenimiento o reparación de vehículos eléctricos en talleres; se aplica por analogía al desmontaje de paquetes.",
+    "sources": [
+      458
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulos 5 y 6 · ropa y protección de los técnicos (guantes aislantes, gafas o pantalla, ropa de trabajo)",
+    "confidence": "alta",
+    "evidence": "«Guantes de protección dieléctricos EN60903 clase 0.»",
+    "verdict": "confirmado",
+    "caveat": "La guía atribuye a las clases 00 y 0 un aislamiento de 750 V y 1000 V en continua; esas cifras no se usan porque no se contrastaron con la norma. Para el modelo 3D basta con «guantes aislantes y protección ocular o facial»; no hace falta rotular la norma.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-ev-transporte",
+    "topic": "v2",
+    "claim": "En el ADR 2025, un paquete de baterías de ion-litio desmontado de un coche se transporta como UN 3480 «LITHIUM ION BATTERIES», clase 9, código M4, con la etiqueta modelo 9A; UN 3171 solo se aplica a vehículos y equipos con baterías de electrolito líquido o de sodio, y los vehículos con baterías de ion-litio instaladas van como UN 3556.",
+    "value": "UN 3480 · clase 9 · M4 · etiqueta 9A",
+    "scope": "Transporte por carretera (ADR 2025, aplicable desde el 1-1-2025; Estados parte, incluida España); tabla A del capítulo 3.2 y disposición especial 388.",
+    "sources": [
+      123,
+      124
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulos 1 y 5 · rombo del embalaje del paquete de coche eléctrico (makeEVCrate)",
+    "confidence": "alta",
+    "evidence": "\"UN 3171 only applies to vehicles and equipment powered by wet batteries\"",
+    "verdict": "confirmado-con-correccion",
+    "caveat": "Corrige el encargo («UN 3480/UN 3171»): para el paquete suelto solo cabe UN 3480; UN 3171 no aplica a litio. Para reciclaje, la DE 377 permite el embalaje P909 y exige rotular «LITHIUM BATTERIES FOR RECYCLING»; si la batería está dañada o es defectuosa, la DE 376 obliga a P908/LP904 o, si puede reaccionar peligrosamente, P911/LP906. Para el modelo 3D: la etiqueta 9A lleva en la mitad superior las siete franjas verticales negras y en la inferior el grupo de baterías y el «9»; la placa del vehículo de transporte es la 9 normal (5.3.1: la 9A no se usa como placa). Sin marcas ni textos de empresa. Vigencia: ADR 2027 desde el 1-1-2027 (no revisado).",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-adaptacion",
+    "topic": "v2",
+    "claim": "El Reglamento (UE) 2023/1542 llama «adaptación» a la operación que hace que una batería que no es residuo se utilice para una finalidad o aplicación distinta de aquella para la que se diseñó (art. 3.1, punto 31), y «preparación para la adaptación» a la misma operación con un residuo de baterías (punto 30). Una batería de coche adaptada para usos industriales pasa a ser «batería industrial» (punto 13).",
+    "value": null,
+    "scope": "UE; art. 3, apartado 1, puntos 13, 30 y 31; la versión española no usa «reconversión».",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · tarjeta (segunda vida = adaptación, distinta de la remanufacturación)",
+    "confidence": "alta",
+    "evidence": "«finalidad o aplicación distinta de aquella para la que se diseñó originalmente»",
+    "verdict": "confirmado",
+    "caveat": "Hechos v1: segunda_vida-f5, reglamento-f15.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-aie-reuso",
+    "topic": "v2",
+    "claim": "La Agencia Internacional de la Energía (Global EV Outlook 2026) señala que reutilizar baterías de coche eléctrico, por ejemplo para almacenar energía, sigue siendo difícil por los requisitos de seguridad y garantía, la incertidumbre sobre su vida restante, la bajada de precio de las baterías nuevas, el coste de desmontar y adaptar de forma segura los paquetes usados y el traspaso de responsabilidades a quien los adapta.",
+    "value": null,
+    "scope": "Mundo; capítulo «Electric vehicle batteries» del Global EV Outlook 2026 (20-5-2026); valoración cualitativa, sin cifras de coste.",
+    "sources": [
+      204
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · tarjeta (aviso de la AIE); no en el capítulo 5",
+    "confidence": "alta",
+    "evidence": "\"EV battery reuse, for example for energy storage applications, remains challenging\"",
+    "verdict": "confirmado-con-correccion",
+    "caveat": "Texto literal del coste: \"costs of dismantling and repurposing safely used EV battery packs\". Corrige las ideas (§8, capítulo 5): la AIE no habla de «reacondicionamiento» (refurbishment) sino de desmontar y adaptar (repurposing) con seguridad, y lo cita como barrera de la segunda vida, no de la remanufacturación. Por eso la cita pasa a la tarjeta del capítulo 6. No da ninguna cifra de coste. Hecho v1: segunda_vida-f14.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-art73-estado-salud",
+    "topic": "v2",
+    "claim": "Para acreditar que un residuo de batería de transporte ligero, industrial o de vehículo eléctrico preparado para la reutilización o para la adaptación ya no es residuo, su propietario debe demostrar, si la autoridad lo pide, una evaluación o ensayos del estado de salud, el uso posterior documentado con factura o contrato y una protección adecuada durante el transporte.",
+    "value": null,
+    "scope": "UE; art. 73, apartados 1 y 2, del Reglamento (UE) 2023/1542; no se aplica a las baterías de arranque; acto de ejecución del apartado 4 no comprobado.",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 («solo con pruebas»); anexo Límites",
+    "confidence": "alta",
+    "evidence": "«prueba de una evaluación del estado de salud o de ensayos»",
+    "verdict": "confirmado",
+    "caveat": "Respalda la regla de fidelidad 2 (la segunda vida depende de pruebas específicas). Hechos v1: segunda_vida-f18, reglamento-f17.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-caso-endesa",
+    "topic": "v2",
+    "claim": "El 18 de marzo de 2022 Enel (Endesa) puso en marcha en su central de Melilla el proyecto Second Life, con 78 baterías de coches eléctricos Nissan, 48 de ellas en desuso y 30 nuevas para comparar su rendimiento, con 4 MW de potencia y hasta 1,7 MWh.",
+    "value": "78 baterías (48 usadas y 30 nuevas); 4 MW; 1,7 MWh; 2022",
+    "scope": "España (Melilla, sistema eléctrico aislado); nota de prensa de la empresa.",
+    "sources": [
+      201
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · tarjeta «Casos reales»",
+    "confidence": "alta",
+    "evidence": "«de las cuales 48 están en desuso y 30 son completamente nuevas»",
+    "verdict": "confirmado",
+    "caveat": "Fuente de la empresa. Hecho v1: segunda_vida-f10.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-caso-renault",
+    "topic": "v2",
+    "claim": "Renault Group informó en octubre de 2020 de su primera instalación Advanced Battery Storage, en la fábrica de Douai (Francia), con 4,7 MWh instalados entre baterías de segunda vida y baterías nuevas guardadas para posventa; en 2022 la empresa la cifró en 4,9 MWh.",
+    "value": "Douai: 4,7 MWh (2020); 4,9 MWh (2022)",
+    "scope": "Francia; notas de Renault Group de 21-10-2020 y 27-01-2022; combina baterías usadas y nuevas.",
+    "sources": [
+      199,
+      200
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · tarjeta «Casos reales»",
+    "confidence": "alta",
+    "evidence": "\"total installed capacity of 4.7 MWh using second life batteries\"",
+    "verdict": "confirmado",
+    "caveat": "Si se da una sola cifra, usar 4,7 MWh (2020) y decir que mezcla baterías usadas y nuevas. Fuente de la empresa. Hecho v1: segunda_vida-f9.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-caso-arena",
+    "topic": "v2",
+    "claim": "El 29 de junio de 2018 se puso en marcha en el estadio Johan Cruijff ArenA (Ámsterdam) un sistema de almacenamiento de 3 MW con baterías de coche eléctrico de segunda vida y nuevas, equivalentes a 148 baterías de Nissan LEAF.",
+    "value": "3 MW; equivalente a 148 baterías LEAF; 2018",
+    "scope": "Países Bajos; nota de prensa de Nissan de 29-06-2018; solo parte de las baterías es de segunda vida y no se publica el reparto.",
+    "sources": [
+      195
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · tarjeta «Casos reales»",
+    "confidence": "alta",
+    "evidence": "\"the equivalent of 148 Nissan LEAF batteries\"",
+    "verdict": "confirmado",
+    "caveat": "Literal también: \"using second-life and new electric vehicle batteries\". No dar MWh (el comunicado no lo trae). Hecho v1: segunda_vida-f4.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-ciclos-arranque",
+    "topic": "v2",
+    "claim": "Una batería de arranque no está hecha para descargas profundas: con descarga total aguanta de 12 a 15 ciclos, frente a 150-200 de una de ciclo profundo (Battery University, BU-201, tabla 3).",
+    "value": "12–15 frente a 150–200 ciclos (descarga del 100 %)",
+    "scope": "Plomo-ácido de arranque frente a ciclo profundo; valores típicos de divulgación técnica (Cadex), no de un modelo concreto.",
+    "sources": [
+      192
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · tarjeta; anexo Límites (ya citado como [121])",
+    "confidence": "alta",
+    "evidence": "\"The starter battery does not allow deep cycling.\"",
+    "verdict": "confirmado",
+    "caveat": "La tabla 3 da la cifra a profundidad de descarga del 100 %; al 50 %, 100–120 frente a 400–500. Hecho v1: segunda_vida-f2.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-fabricantes-ciclo",
+    "topic": "v2",
+    "claim": "Trojan Battery advierte de que una batería de arranque no soporta más que unas pocas descargas profundas antes de fallar y de que en aplicaciones de energías renovables solo deben usarse baterías de ciclo profundo; Victron Energy califica la batería de automoción de placa plana de no apta para descargas profundas frecuentes.",
+    "value": null,
+    "scope": "Documentación de fabricantes (Trojan, FAQ sin fecha; Victron, libro de 2011); ambos venden baterías de ciclo profundo.",
+    "sources": [
+      193,
+      194
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 (frase sobre la batería de arranque); anexo Límites",
+    "confidence": "alta",
+    "evidence": "\"Only deep cycle batteries should be used in renewable energy applications.\"",
+    "verdict": "confirmado-con-correccion",
+    "caveat": "Matiz: solo Trojan habla de energías renovables. Victron (2.3.3) dice \"Not suitable for frequent deep discharging\" y añade que las de camión se usan a menudo como baterías de servicio en barcos pequeños; no «desaconseja el uso renovable» de forma literal. Redacción segura: «los fabricantes de baterías de ciclo profundo las desaconsejan para descargas profundas frecuentes». Hecho v1: segunda_vida-f3.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-umbral-retirada",
+    "topic": "v2",
+    "claim": "Se suele asumir que una batería de coche eléctrico deja de servir para el coche cuando conserva en torno al 70-80 % de su capacidad original.",
+    "value": "70–80 % de la capacidad original",
+    "scope": "UE y mundo; convención citada por un informe para el JRC (2019), no una medición.",
+    "sources": [
+      190
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 6 · frase opcional de la tarjeta",
+    "confidence": "alta",
+    "evidence": "\"a 70-80% of the original capacity\"",
+    "verdict": "confirmado",
+    "caveat": "Usar como «se suele asumir», nunca como dato de una batería concreta. Hecho v1: segunda_vida-f1.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-pasaporte-vinculado",
+    "topic": "v2",
+    "claim": "Una batería que ha sido objeto de preparación para la reutilización, preparación para la adaptación, adaptación o remanufacturación tendrá un nuevo pasaporte vinculado al del original o de los originales, y la responsabilidad recae en quien la introduce en el mercado o la pone en servicio; además lleva etiquetas nuevas con información sobre el cambio de estado, accesible mediante un código QR.",
+    "value": null,
+    "scope": "UE; art. 77, apartado 7, y art. 13, apartado 9, del Reglamento (UE) 2023/1542; el pasaporte solo existe para las categorías del art. 77.1 (vehículo eléctrico, transporte ligero, industriales de más de 2 kWh) desde el 18-2-2027.",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 8 · tarjeta «Un pasaporte nuevo»",
+    "confidence": "alta",
+    "evidence": "«Dicha batería tendrá un nuevo pasaporte para baterías vinculado»",
+    "verdict": "confirmado",
+    "caveat": "No se aplica a la batería de arranque de plomo reutilizada (no tiene pasaporte). Art. 77.8: «El pasaporte para baterías dejará de existir una vez reciclada la batería». Hecho v1: segunda_vida-f12.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-pasaporte-2027",
+    "topic": "v2",
+    "claim": "Desde el 18-2-2027 las baterías de vehículos eléctricos, de transporte ligero y las industriales de más de 2 kWh introducidas en el mercado o puestas en servicio en la UE tendrán pasaporte digital.",
+    "value": "18-02-2027",
+    "scope": "UE; art. 77.1.",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 8 (texto de la v1, sin cambios)",
+    "confidence": "alta",
+    "evidence": "«dispondrán de un registro electrónico (en lo sucesivo, «pasaporte para baterías»)»",
+    "verdict": "confirmado",
+    "caveat": "Hecho v1: reglamento-f1. Evidencia de 9 palabras más paréntesis.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-art8-plomo",
+    "topic": "v2",
+    "claim": "El artículo 8 del Reglamento (UE) 2023/1542 obliga a acompañar las baterías industriales de más de 2 kWh, de vehículo eléctrico y de arranque que contengan plomo de documentación sobre el porcentaje de plomo valorizado de residuos (desde el 18-8-2028 o 24 meses después del acto delegado de método, si es posterior) y, desde el 18-8-2031, a demostrar en su documentación técnica un mínimo del 85 % de plomo valorizado de residuos, por modelo, año y planta; el 85 % se mantiene desde el 18-8-2036.",
+    "value": "Plomo valorizado de residuos: mínimo 85 % desde el 18-8-2031 (y desde 2036); documentación desde el 18-8-2028 como pronto",
+    "scope": "UE; art. 8, apartados 1 a 4; excluye industriales con almacenamiento exclusivamente externo y baterías ya comercializadas antes de reutilizarlas o remanufacturarlas (8.4); transporte ligero desde 2033 (documentación) y 2036 (mínimo).",
+    "sources": [
+      26,
+      30,
+      470
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Cierre · camión hacia la fábrica de baterías nuevas; anexo Datos (ya figura: «85 % desde el 18-8-2031» [25])",
+    "confidence": "alta",
+    "evidence": "«A partir del 18 de agosto de 2031» … «85 % para el plomo»",
+    "verdict": "confirmado",
+    "caveat": "Precisión a las ideas (§7): el 85 % es un mínimo que se demuestra en la documentación técnica desde 2031; la simple documentación del porcentaje empieza en 2028 o más tarde. A 12-8-2026 el acto delegado del método de cálculo era un borrador en consulta (LexisNexis, fuente secundaria); no consta adoptado, de modo que la fecha de 2028 puede retrasarse. Texto original y consolidado a 13-8-2026 iguales. Hechos v1: tasas-f6, reglamento-f19, composicion-f18, clima_energia-f11.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-pp-carcasas",
+    "topic": "v2",
+    "claim": "La carcasa de plástico (polipropileno, cerca del 7 % del peso) se separa antes de fundir, como recogen las mejores técnicas disponibles de la UE, y el polipropileno recuperado se reprocesa para fabricar carcasas nuevas u otras piezas de automoción.",
+    "value": "plástico ≈7 % del peso",
+    "scope": "UE; Decisión de Ejecución (UE) 2016/1032 (MTD 105) y estudios sectoriales; la reutilización en carcasas nuevas la afirman empresas del sector.",
+    "sources": [
+      8,
+      406
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Cierre · camión con lingotes y granza hacia la fábrica de baterías nuevas",
+    "confidence": "alta",
+    "evidence": "«BAT is to separate it from the batteries prior to smelting»",
+    "verdict": "confirmado",
+    "caveat": "Respalda que la granza puede volver a una fábrica de baterías, pero «carcasas nuevas» lo afirma la industria; en pantalla basta con «el polipropileno se recupera» [51, 112]. Hecho v1: proceso_reciclaje-f8.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-adr-598",
+    "topic": "v2",
+    "claim": "Según la disposición especial 598 del ADR 2025, las baterías usadas que se transportan para reciclaje al final de su vida no están sujetas al ADR si su carcasa está intacta, van sujetas de forma que no puedan fugar, deslizarse, caer ni dañarse (por ejemplo, apiladas en palés), no tienen restos peligrosos de ácido por fuera y están protegidas contra cortocircuitos.",
+    "value": "4 condiciones simultáneas",
+    "scope": "Transporte por carretera (ADR 2025, aplicable desde el 1-1-2025; Estados parte, incluida España); baterías de acumuladores usadas con destino a reciclaje.",
+    "sources": [
+      123
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulos 1 y 3 · tarjeta «Bornes protegidos»; tractores de arrastre con palés sujetos y tapas en los bornes",
+    "confidence": "alta",
+    "evidence": "\"secured in such a way that they cannot leak, slip, fall\"",
+    "verdict": "confirmado",
+    "caveat": "Literal también: \"They are protected against short circuits.\" y la definición \"storage batteries carried for recycling at the end of their normal service life\". Solo se refiere a las que van a reciclaje; las que van a reutilización no entran en la DE 598(b). Los movimientos dentro del polígono no son transporte por carretera: en la escena es buena práctica, no obligación del ADR (no rotularlo como obligación). Hecho v1: seguridad-f2.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-adr-2794",
+    "topic": "v2",
+    "claim": "Por carretera, las baterías de plomo-ácido con electrolito líquido son UN 2794 («BATTERIES, WET, FILLED WITH ACID, electric storage»), clase 8 (corrosivas), código C11, etiqueta 8.",
+    "value": "UN 2794 · clase 8 · C11 · etiqueta 8",
+    "scope": "ADR 2025, tabla A del capítulo 3.2; nuevas o usadas.",
+    "sources": [
+      123
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulos 1 y 3; anexo Datos (ya figura [98])",
+    "confidence": "alta",
+    "evidence": "\"2794 BATTERIES, WET, FILLED WITH ACID, electric storage 8 C11\"",
+    "verdict": "confirmado",
+    "caveat": "Hecho v1: seguridad-f1.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-peso",
+    "topic": "v2",
+    "claim": "Las fichas técnicas de dos fabricantes para el mercado europeo dan pesos de 9,3 kg (36 Ah) a 21,8 kg (90 Ah) para baterías de arranque de 12 V de turismo.",
+    "value": "9,3–21,8 kg (36–95 Ah)",
+    "scope": "Mercado europeo; fichas de VARTA Dynamic SLI y Yuasa YBX3000 consultadas en 2026.",
+    "sources": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 1 · tarjeta (por qué carretilla y palés)",
+    "confidence": "alta",
+    "evidence": "«Weight filled: 16,82 kg»; «Weight 21.8 kg»",
+    "verdict": "confirmado",
+    "caveat": "«De 9 a 22 kg» es un redondeo aceptable; mejor «de unos 9 a 22 kg» o el rango exacto con [70–75]. Hecho v1: composicion-f1.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-plomo-60",
+    "topic": "v2",
+    "claim": "Los componentes de plomo representan aproximadamente el 60 % de la masa de una batería de plomo de automoción (el electrolito, cerca del 30 %, y la carcasa de plástico, cerca del 7 %).",
+    "value": "plomo ≈60 %; electrolito ≈30 %; plástico ≈7 %",
+    "scope": "UE; estudios sectoriales de 2014 y 2020.",
+    "sources": [
+      8,
+      7
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 1 (texto de la v1)",
+    "confidence": "alta",
+    "evidence": "\"representing approximately 60% of the weight\"",
+    "verdict": "confirmado",
+    "caveat": "Hecho v1: composicion-f2.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-tension-reposo",
+    "topic": "v2",
+    "claim": "Cargada y en reposo, una batería de arranque de 12 V marca unos 12,6–12,65 V si es inundada y unos 12,8 V si es AGM.",
+    "value": "12,6–12,8 V",
+    "scope": "Tensión en circuito abierto tras 24 h de reposo; tabla del BCI y fabricantes de EE. UU.",
+    "sources": [
+      14,
+      157,
+      158
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 2 (texto y esfera de 12,6 V, rotulada como ejemplo)",
+    "confidence": "alta",
+    "evidence": "\"100% 1.265 2.10 6.32 8.43 12.65\"",
+    "verdict": "confirmado",
+    "caveat": "Hechos v1: composicion-f5, diagnostico-f2. La esfera ECB-0427 con 12,6 V es un ejemplo del prototipo.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-qr-2027",
+    "topic": "v2",
+    "claim": "Desde el 18-2-2027 todas las pilas y baterías llevarán un código QR; en las de arranque da acceso a la información de etiquetado, la declaración UE de conformidad y la gestión de residuos, no a un pasaporte.",
+    "value": "18-02-2027",
+    "scope": "UE; art. 13.6 y anexo VI parte C.",
+    "sources": [
+      26,
+      30
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 2 · ficha (dato de la UE)",
+    "confidence": "alta",
+    "evidence": "«todas las pilas o baterías llevarán marcado un código QR»",
+    "verdict": "confirmado",
+    "caveat": "Hecho v1: pasaporte_qr-f2.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-ahorro-energia",
+    "topic": "v2",
+    "claim": "Reciclar plomo ahorra entre el 55 % y el 65 % de la energía que exige producirlo a partir de mineral.",
+    "value": "55–65 %",
+    "scope": "Mundo; síntesis bibliográfica del PNUMA (2013), citada por la OMS en 2017.",
+    "sources": [
+      286,
+      287
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 7 (texto de la v1)",
+    "confidence": "alta",
+    "evidence": "\"energy savings ranging from 55% (lead) to 98% (palladium)\"",
+    "verdict": "confirmado",
+    "caveat": "Hecho v1: clima_energia-f2.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-epi-acido",
+    "topic": "v2",
+    "claim": "La ficha de datos de seguridad de una batería de plomo-ácido indica, en caso de fuga de electrolito, gafas de protección (EN 166), guantes de nitrilo (EN ISO 374), ropa y botas resistentes al ácido.",
+    "value": "Gafas EN 166; guantes de nitrilo EN ISO 374; ropa y botas resistentes al ácido",
+    "scope": "Producto concreto (Bosch, SDS 00377-0089, revisión de 2021), apartado 8.2.2; medidas para fuga de electrolito.",
+    "sources": [
+      9
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulos 2 y 4 · bata, gafas y guantes resistentes al ácido",
+    "confidence": "alta",
+    "evidence": "\"In case of electrolyte leakage: Protective goggles (EN 166)\"",
+    "verdict": "confirmado",
+    "caveat": "Respaldo para mostrar gafas y guantes en el laboratorio y en los bancos; no hace falta rotularlo como dato. La bata y el delantal no salen literalmente: son ropa de protección genérica.",
+    "verifiedOn": "2026-10-23"
+  },
+  {
+    "id": "v2-epi-horno",
+    "topic": "v2",
+    "claim": "El INSST recoge, para el sangrado de hornos rotativos de recuperación secundaria de plomo, protección respiratoria de alta eficacia (FFP3 o filtros P3), pantalla facial, guantes contra productos químicos y ropa de protección, que además debe proteger frente a proyecciones de metal fundido y radiación infrarroja.",
+    "value": "FFP3/P3; pantalla facial; guantes químicos categoría III; ropa tipo 5 con protección frente a metal fundido e infrarrojos",
+    "scope": "España; ficha Basequim 020 del INSST (2016); situación de trabajo concreta.",
+    "sources": [
+      407
+    ],
+    "usableIn": [
+      "capitulo",
+      "anexo-datos"
+    ],
+    "usedFor": "Capítulo 7 · operario junto al horno",
+    "confidence": "alta",
+    "evidence": "«Pantalla facial para la protección de ojos y cara frente a salpicaduras»",
+    "verdict": "confirmado-con-correccion",
+    "caveat": "Corrige las ideas (§5): la fuente no habla de «traje aluminizado» sino de ropa contra proyecciones de metal fundido y radiación infrarroja (un traje aluminizado es una forma habitual, pero no literal), y añade protección respiratoria. Si el modelo 3D lo permite, el operario del horno debería llevar mascarilla o equipo respiratorio. No presentarlo como dato en pantalla.",
+    "verifiedOn": "2026-10-23"
   }
 ]

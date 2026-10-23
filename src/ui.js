@@ -50,6 +50,7 @@ const ICON = {
   exit: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>',
   annex: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10l4 4v12H5zM14 4v5h5M8 13h8M8 17h6"/></svg>',
   close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  data: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19v-8M12 19V5M19 19v-5"/></svg>',
   link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M17 14v5H5V7h5"/></svg>',
 };
 
@@ -66,6 +67,18 @@ function routesHTML(c) {
         .join('')}
     </ol>
     <p class="tag tag--sim">${rich(c.simulation)}</p>`;
+}
+
+// Tarjeta de datos de un capítulo: dos o tres datos breves, cada uno con su cita [n] (enlace a la fuente), y aparte,
+// con su rótulo, lo que es ejemplo del prototipo. En pantallas estrechas o bajas la tarjeta se queda en un botón
+// compacto que abre la pestaña Datos del anexo, donde están los mismos datos con sus fuentes.
+function cardHTML(card, mode = 'scene') {
+  const body = `<p class="factcard__title">${rich(card.title)}</p>
+      ${card.example ? `<p class="factcard__example"><span class="tag tag--sim">Ejemplo</span> ${rich(card.example)}</p>` : ''}
+      <ul class="factcard__list">${card.items.map((t) => `<li>${rich(t)}</li>`).join('')}</ul>`;
+  if (mode === 'static') return `<aside class="factcard factcard--static" aria-label="Datos: ${esc(card.title)}">${body}</aside>`;
+  return `<aside class="factcard" aria-label="Datos: ${esc(card.title)}">${body}</aside>
+    <button type="button" class="factcard__chip" data-action="annex" data-tab="datos">${ICON.data}<span>${esc(card.title)}</span><span class="factcard__chip-more">· datos y fuentes</span></button>`;
 }
 
 function passportHTML(c) {
@@ -92,7 +105,7 @@ export function buildOverlay(root) {
           <p class="scene__body">${rich(c.body)}</p>
           ${c.passport ? passportHTML(c) : ''}
         </div>
-        ${c.routes ? `<div class="scene__aside">${routesHTML(c)}</div>` : ''}
+        ${c.card || c.routes ? `<div class="scene__aside">${c.card ? cardHTML(c.card) : ''}${c.routes ? routesHTML(c) : ''}</div>` : ''}
       </section>`);
   });
   scenes.push(`
@@ -106,6 +119,7 @@ export function buildOverlay(root) {
         </figure>
         <button class="btn btn--primary" type="button" data-action="annex">${ICON.annex}<span>Ver anexos</span></button>
       </div>
+      ${closing.card ? `<div class="scene__aside">${cardHTML(closing.card)}</div>` : ''}
     </section>`);
   root.innerHTML = scenes.join('');
   return [...root.querySelectorAll('.scene')];
@@ -227,14 +241,14 @@ export function buildAnnex(root) {
     <p class="annex__foot"><a href="?estatica=1">Ver la versión estática de la presentación</a></p>`;
 
   const tabs = [...root.querySelectorAll('[role=tab]')];
-  const select = (i) => {
+  const select = (i, focus = true) => {
     tabs.forEach((t, k) => {
       const on = k === i;
       t.setAttribute('aria-selected', on);
       t.tabIndex = on ? 0 : -1;
       root.querySelector(`#${t.getAttribute('aria-controls')}`).hidden = !on;
     });
-    tabs[i].focus();
+    if (focus) tabs[i].focus();
   };
   tabs.forEach((t, i) => {
     t.addEventListener('click', () => select(i));
@@ -248,6 +262,13 @@ export function buildAnnex(root) {
       }
     });
   });
+  // Abre una pestaña por su id (las tarjetas de datos abren «Datos»); el foco lo pone quien abre el anexo.
+  return {
+    show(id) {
+      const i = annex.findIndex((a) => a.id === id);
+      if (i >= 0) select(i, false);
+    },
+  };
 }
 
 // Vista estática: para movimiento reducido elegido o sin WebGL.
@@ -260,8 +281,8 @@ export function buildStatic(root, reason, posterUrl) {
       <p class="static__reason">${esc(reason)}</p>
     </div>
     <figure class="static__poster">
-      <img src="${posterUrl}" alt="Ilustración del mundo EcoBat: depósito, taller, laboratorio, cruce de tres rutas, planta de reciclaje y centro de trazabilidad conectados por una línea lima." width="1983" height="793" loading="eager">
-      <figcaption>Ilustración conceptual de referencia; no muestra instalaciones reales.</figcaption>
+      <img src="${posterUrl}" alt="Ilustración de la primera versión del mundo EcoBat: depósito, taller, laboratorio, cruce de tres rutas, planta de reciclaje y centro de trazabilidad conectados por una línea lima." width="1983" height="793" loading="eager">
+      <figcaption>Ilustración conceptual de referencia de la primera versión; no muestra instalaciones reales ni la distribución actual del polígono.</figcaption>
     </figure>
     <ol class="static__steps">
       ${chapters
@@ -271,6 +292,7 @@ export function buildStatic(root, reason, posterUrl) {
             <div><h2>${rich(c.title)}</h2><p>${rich(c.body)}</p>
             ${c.routes ? `<ul class="static__routes">${c.routes.map((r) => `<li class="route--${r.key}"><strong>${r.count} · ${rich(r.name)}</strong> ${rich(r.detail)}</li>`).join('')}</ul><p class="tag tag--sim">${rich(c.simulation)}</p>` : ''}
             ${c.passport ? `<p class="muted">${c.passport.map(rich).join(' → ')}</p>` : ''}
+            ${c.card ? cardHTML(c.card, 'static') : ''}
             </div>
           </li>`,
         )
@@ -279,6 +301,7 @@ export function buildStatic(root, reason, posterUrl) {
     <section class="static__closing">
       <h2>${rich(closing.title)}</h2>
       <p>${rich(closing.body)}</p>
+      ${closing.card ? cardHTML(closing.card, 'static') : ''}
       <button class="btn btn--primary" type="button" data-action="annex">${ICON.annex}<span>Ver anexos</span></button>
       <p><a href="./">Volver a la versión 3D</a></p>
     </section>`;

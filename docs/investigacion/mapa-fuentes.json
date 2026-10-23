@@ -1,298 +1,158 @@
 [
   {
     "n": 1,
-    "fuente": 349,
-    "titulo": "HTML Standard (HTML Living Standard)",
-    "editor": "WHATWG",
-    "tipoOriginal": "norma o estándar abierto",
-    "grupo": "Software y estándares",
-    "url": "https://html.spec.whatwg.org/multipage/",
+    "fuente": 1,
+    "titulo": "VARTA Dynamic SLI 544402044K262 (B18, 44 Ah) – Technical data sheet",
+    "editor": "VARTA Automotive (Clarios)",
+    "tipoOriginal": "ficha técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/544402044K262.pdf",
     "hechos": [
-      "tecnologias-f15"
+      "composicion-f1",
+      "v2-peso"
     ]
   },
   {
     "n": 2,
-    "fuente": 370,
-    "titulo": "HTML Standard — Acknowledgements (pie de licencia del estándar)",
-    "editor": "WHATWG",
-    "tipoOriginal": "norma o estándar abierto",
-    "grupo": "Software y estándares",
-    "url": "https://html.spec.whatwg.org/multipage/acknowledgements.html",
+    "fuente": 2,
+    "titulo": "VARTA Dynamic SLI 574012068K262 (E11, 74 Ah) – Technical data sheet",
+    "editor": "VARTA Automotive (Clarios)",
+    "tipoOriginal": "ficha técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/574012068K262.pdf",
     "hechos": [
-      "tecnologias-f15"
+      "composicion-f1",
+      "v2-peso"
     ]
   },
   {
     "n": 3,
-    "fuente": 353,
-    "titulo": "ECMA-262 — ECMAScript® 2026 language specification (17th edition)",
-    "editor": "Ecma International",
-    "tipoOriginal": "norma o estándar internacional",
-    "grupo": "Software y estándares",
-    "url": "https://ecma-international.org/publications-and-standards/standards/ecma-262/",
+    "fuente": 3,
+    "titulo": "VARTA Dynamic SLI 595402080K262 (G3, 95 Ah) – Technical data sheet",
+    "editor": "VARTA Automotive (Clarios)",
+    "tipoOriginal": "ficha técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/595402080K262.pdf",
     "hechos": [
-      "tecnologias-f16"
+      "composicion-f1",
+      "v2-peso"
     ]
   },
   {
     "n": 4,
-    "fuente": 375,
-    "titulo": "Python Release Python 3.15.1",
-    "editor": "Python Software Foundation",
-    "tipoOriginal": "sitio oficial del producto",
-    "grupo": "Software y estándares",
-    "url": "https://www.python.org/downloads/release/python-3151/",
+    "fuente": 4,
+    "titulo": "Yuasa Technical Data Sheet – YBX3056 (YBX 3000 SMF, 12 V 36 Ah)",
+    "editor": "Yuasa (yuasa.com/uk)",
+    "tipoOriginal": "ficha técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3056-036",
     "hechos": [
-      "tecnologias-f20"
+      "composicion-f1",
+      "v2-peso"
     ]
   },
   {
     "n": 5,
-    "fuente": 366,
-    "titulo": "History and License — Python 3.15.1 documentation",
-    "editor": "Python Software Foundation",
-    "tipoOriginal": "documentación oficial (licencia)",
-    "grupo": "Software y estándares",
-    "url": "https://docs.python.org/3/license.html",
+    "fuente": 5,
+    "titulo": "Yuasa Technical Data Sheet – YBX3075 (YBX 3000 SMF, 12 V 60 Ah)",
+    "editor": "Yuasa (yuasa.com/uk)",
+    "tipoOriginal": "ficha técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3075-060",
     "hechos": [
-      "tecnologias-f20"
+      "composicion-f1",
+      "v2-peso"
     ]
   },
   {
     "n": 6,
-    "fuente": 311,
-    "titulo": "Changes — Flask Documentation (3.1.x)",
-    "editor": "Pallets",
-    "tipoOriginal": "documentación oficial",
-    "grupo": "Software y estándares",
-    "url": "https://flask.palletsprojects.com/en/stable/changes/",
+    "fuente": 6,
+    "titulo": "Yuasa Technical Data Sheet – YBX3017 (YBX 3000 SMF, 12 V 90 Ah)",
+    "editor": "Yuasa (yuasa.com/uk)",
+    "tipoOriginal": "ficha técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3017-090",
     "hechos": [
-      "tecnologias-f1"
+      "composicion-f1",
+      "v2-peso"
     ]
   },
   {
     "n": 7,
-    "fuente": 312,
-    "titulo": "BSD-3-Clause License — Flask Documentation (3.1.x)",
-    "editor": "Pallets",
-    "tipoOriginal": "documentación oficial (texto de licencia)",
-    "grupo": "Software y estándares",
-    "url": "https://flask.palletsprojects.com/en/stable/license/",
+    "fuente": 123,
+    "titulo": "ADR 2025 - Agreement concerning the International Carriage of Dangerous Goods by Road, Volume I (ECE/TRANS/352 Vol.I), applicable as from 1 January 2025",
+    "editor": "Naciones Unidas, Comisión Económica para Europa (UNECE); copia del PDF alojada en lerem.org",
+    "tipoOriginal": "acuerdo internacional (texto oficial de la ONU, copia alojada por un tercero)",
+    "grupo": "Organismos públicos e internacionales",
+    "url": "https://lerem.org/wp-content/uploads/2025/01/ADR2025_Vol1e.pdf",
     "hechos": [
-      "tecnologias-f1"
+      "seguridad-f1",
+      "v2-ev-transporte",
+      "v2-adr-598",
+      "v2-adr-2794"
     ]
   },
   {
     "n": 8,
-    "fuente": 317,
-    "titulo": "SQLite Home Page",
-    "editor": "SQLite (Hwaci)",
-    "tipoOriginal": "sitio oficial del producto",
-    "grupo": "Software y estándares",
-    "url": "https://sqlite.org/index.html",
+    "fuente": 124,
+    "titulo": "ADR 2025 - Agreement concerning the International Carriage of Dangerous Goods by Road, Volume II (ECE/TRANS/352 Vol.II): instrucción de embalaje P909 y etiqueta modelo n.º 9A",
+    "editor": "Naciones Unidas, Comisión Económica para Europa (UNECE); copia del PDF alojada en lerem.org",
+    "tipoOriginal": "acuerdo internacional (texto oficial de la ONU, copia alojada por un tercero)",
+    "grupo": "Normativa",
+    "url": "https://lerem.org/wp-content/uploads/2025/01/ADR2025_Vol2e.pdf",
     "hechos": [
-      "tecnologias-f2",
-      "tecnologias-f3"
+      "v2-ev-transporte"
     ]
   },
   {
     "n": 9,
-    "fuente": 319,
-    "titulo": "SQLite Copyright (SQLite Is Public Domain)",
-    "editor": "SQLite (Hwaci)",
-    "tipoOriginal": "documentación oficial (condición legal)",
-    "grupo": "Software y estándares",
-    "url": "https://sqlite.org/copyright.html",
+    "fuente": 14,
+    "titulo": "BU-903: How to Measure State-of-charge",
+    "editor": "Battery University (Cadex Electronics)",
+    "tipoOriginal": "web técnica (reproduce la tabla del BCI)",
+    "grupo": "Estudios y publicaciones técnicas",
+    "url": "https://www.batteryuniversity.com/article/bu-903-how-to-measure-state-of-charge",
     "hechos": [
-      "tecnologias-f2",
-      "tecnologias-f3"
+      "composicion-f16",
+      "diagnostico-f1",
+      "diagnostico-f2",
+      "diagnostico-f3",
+      "v2-tension-reposo"
     ]
   },
   {
     "n": 10,
-    "fuente": 324,
-    "titulo": "segno 1.6.6 — PyPI JSON API",
-    "editor": "Python Package Index (PyPI), Python Software Foundation",
-    "tipoOriginal": "registro oficial de paquetes (API JSON)",
-    "grupo": "Software y estándares",
-    "url": "https://pypi.org/pypi/segno/json",
+    "fuente": 157,
+    "titulo": "Safety First. Starter Batteries: Battery Handling, Maintenance & Test Procedures (S.F. STARTER-PSD-D0126)",
+    "editor": "Crown Battery Manufacturing Company",
+    "tipoOriginal": "documentación de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.crownbattery.com/hubfs/Downloads/Safety.First.Starter-Batteries.pdf",
     "hechos": [
-      "tecnologias-f5"
+      "diagnostico-f1",
+      "diagnostico-f19",
+      "diagnostico-f2",
+      "diagnostico-f9",
+      "v2-tension-reposo"
     ]
   },
   {
     "n": 11,
-    "fuente": 326,
-    "titulo": "LICENSE — Segno",
-    "editor": "Lars Heuer",
-    "tipoOriginal": "texto de licencia",
-    "grupo": "Software y estándares",
-    "url": "https://raw.githubusercontent.com/heuer/segno/master/LICENSE",
+    "fuente": 158,
+    "titulo": "How can you tell if a battery is fully charged? (Table 5 - State of Charge vs. OCV)",
+    "editor": "Discover Battery",
+    "tipoOriginal": "documentación de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://discoverbattery.com/support/learning-center/battery-101/how-can-you-tell-if-a-battery-is-fully-charged",
     "hechos": [
-      "tecnologias-f5"
+      "diagnostico-f1",
+      "diagnostico-f2",
+      "diagnostico-f3",
+      "v2-tension-reposo"
     ]
   },
   {
     "n": 12,
-    "fuente": 327,
-    "titulo": "qrcode 8.2 — PyPI JSON API",
-    "editor": "Python Package Index (PyPI), Python Software Foundation",
-    "tipoOriginal": "registro oficial de paquetes (API JSON)",
-    "grupo": "Software y estándares",
-    "url": "https://pypi.org/pypi/qrcode/json",
-    "hechos": [
-      "tecnologias-f6"
-    ]
-  },
-  {
-    "n": 13,
-    "fuente": 328,
-    "titulo": "LICENSE — python-qrcode",
-    "editor": "Lincoln Loop",
-    "tipoOriginal": "texto de licencia",
-    "grupo": "Software y estándares",
-    "url": "https://raw.githubusercontent.com/lincolnloop/python-qrcode/main/LICENSE",
-    "hechos": [
-      "tecnologias-f6"
-    ]
-  },
-  {
-    "n": 14,
-    "fuente": 320,
-    "titulo": "chart.js (versión latest) — registro npm",
-    "editor": "npm registry",
-    "tipoOriginal": "registro oficial de paquetes (API JSON)",
-    "grupo": "Software y estándares",
-    "url": "https://registry.npmjs.org/chart.js/latest",
-    "hechos": [
-      "tecnologias-f4"
-    ]
-  },
-  {
-    "n": 15,
-    "fuente": 322,
-    "titulo": "LICENSE.md — Chart.js",
-    "editor": "Chart.js Contributors",
-    "tipoOriginal": "texto de licencia",
-    "grupo": "Software y estándares",
-    "url": "https://raw.githubusercontent.com/chartjs/Chart.js/master/LICENSE.md",
-    "hechos": [
-      "tecnologias-f4"
-    ]
-  },
-  {
-    "n": 16,
-    "fuente": 228,
-    "titulo": "Battery Passport Technical Guidance (PDF)",
-    "editor": "Consorcio Battery Pass",
-    "tipoOriginal": "documentación de consorcio/proyecto",
-    "grupo": "Estudios y publicaciones técnicas",
-    "url": "https://raw.githubusercontent.com/batterypass/BatteryPassDataModel/main/docs/1.1/2024_BatteryPassport_Technical_Guidance.pdf",
-    "hechos": [
-      "pasaporte_qr-f14"
-    ]
-  },
-  {
-    "n": 17,
-    "fuente": 215,
-    "titulo": "Reglamento (UE) 2016/679 (Reglamento general de protección de datos), DOUE L 119, 4.5.2016, versión española",
-    "editor": "Parlamento Europeo y Consejo de la UE; Oficina de Publicaciones de la UE (Cellar)",
-    "tipoOriginal": "texto legal UE (DOUE)",
-    "grupo": "Normativa",
-    "url": "https://publications.europa.eu/resource/cellar/3e485e15-11bd-11e6-ba9a-01aa75ed71a1.0023.03/DOC_1",
-    "urlOriginal": "http://publications.europa.eu/resource/cellar/3e485e15-11bd-11e6-ba9a-01aa75ed71a1.0023.03/DOC_1",
-    "hechos": [
-      "pasaporte_qr-f6"
-    ]
-  },
-  {
-    "n": 18,
-    "fuente": 218,
-    "titulo": "Sentencia del Tribunal de Justicia (Sala Tercera) de 9 de noviembre de 2023, Gesamtverband Autoteile-Handel eV / Scania CV AB, asunto C-319/22 (ECLI:EU:C:2023:837)",
-    "editor": "Tribunal de Justicia de la Unión Europea; texto servido por la Oficina de Publicaciones de la UE (Cellar)",
-    "tipoOriginal": "sentencia TJUE",
-    "grupo": "Normativa",
-    "url": "https://publications.europa.eu/resource/cellar/0cf58274-7ee9-11ee-99ba-01aa75ed71a1.0007.05/DOC_1",
-    "urlOriginal": "http://publications.europa.eu/resource/cellar/0cf58274-7ee9-11ee-99ba-01aa75ed71a1.0007.05/DOC_1",
-    "hechos": [
-      "pasaporte_qr-f8"
-    ]
-  },
-  {
-    "n": 19,
-    "fuente": 348,
-    "titulo": "Appropriate Uses For SQLite",
-    "editor": "SQLite (Hwaci)",
-    "tipoOriginal": "documentación oficial",
-    "grupo": "Software y estándares",
-    "url": "https://sqlite.org/whentouse.html",
-    "hechos": [
-      "tecnologias-f14"
-    ]
-  },
-  {
-    "n": 20,
-    "fuente": 355,
-    "titulo": "Java Downloads | Oracle",
-    "editor": "Oracle",
-    "tipoOriginal": "sitio oficial del producto",
-    "grupo": "Software y estándares",
-    "url": "https://www.oracle.com/java/technologies/downloads/",
-    "hechos": [
-      "tecnologias-f17"
-    ]
-  },
-  {
-    "n": 21,
-    "fuente": 357,
-    "titulo": "OpenJDK: GPLv2 + Classpath Exception",
-    "editor": "OpenJDK (Oracle y comunidad)",
-    "tipoOriginal": "texto de licencia",
-    "grupo": "Software y estándares",
-    "url": "https://openjdk.org/legal/gplv2+ce.html",
-    "hechos": [
-      "tecnologias-f17"
-    ]
-  },
-  {
-    "n": 22,
-    "fuente": 359,
-    "titulo": "PHP",
-    "editor": "The PHP Group",
-    "tipoOriginal": "sitio oficial del producto",
-    "grupo": "Software y estándares",
-    "url": "https://www.php.net/",
-    "hechos": [
-      "tecnologias-f18"
-    ]
-  },
-  {
-    "n": 23,
-    "fuente": 360,
-    "titulo": "PHP: License Information",
-    "editor": "The PHP Group",
-    "tipoOriginal": "documentación oficial (licencia)",
-    "grupo": "Software y estándares",
-    "url": "https://www.php.net/license/",
-    "hechos": [
-      "tecnologias-f18"
-    ]
-  },
-  {
-    "n": 24,
-    "fuente": 362,
-    "titulo": "Licensing Information User Manual — MySQL 26.10.0 Community (fichero LICENSE del repositorio mysql/mysql-server)",
-    "editor": "Oracle (MySQL)",
-    "tipoOriginal": "texto de licencia (repositorio oficial)",
-    "grupo": "Software y estándares",
-    "url": "https://raw.githubusercontent.com/mysql/mysql-server/trunk/LICENSE",
-    "hechos": [
-      "tecnologias-f19"
-    ]
-  },
-  {
-    "n": 25,
     "fuente": 26,
     "titulo": "Reglamento (UE) 2023/1542 del Parlamento Europeo y del Consejo, de 12 de julio de 2023, relativo a las pilas y baterías y sus residuos (texto original en español, DOUE L 191, 28.7.2023, p. 1; CELEX 32023R1542)",
     "editor": "Parlamento Europeo y Consejo de la Unión Europea (EUR-Lex, Oficina de Publicaciones de la UE)",
@@ -309,11 +169,21 @@
       "tasas-f19",
       "tasas-f4",
       "tasas-f5",
-      "tasas-f6"
+      "tasas-f6",
+      "v2-reutil-def",
+      "v2-reutil-fabricante",
+      "v2-sli-sin-pasaporte",
+      "v2-remanufacturacion",
+      "v2-adaptacion",
+      "v2-art73-estado-salud",
+      "v2-pasaporte-vinculado",
+      "v2-pasaporte-2027",
+      "v2-art8-plomo",
+      "v2-qr-2027"
     ]
   },
   {
-    "n": 26,
+    "n": 13,
     "fuente": 30,
     "titulo": "Texto consolidado del Reglamento (UE) 2023/1542, versión de 13.08.2026 (003.001)",
     "editor": "Oficina de Publicaciones de la Unión Europea (EUR-Lex)",
@@ -330,11 +200,505 @@
       "reglamento-f19",
       "reglamento-f2",
       "reglamento-f5",
-      "vehiculo_electrico-f20"
+      "vehiculo_electrico-f20",
+      "v2-reutil-fabricante",
+      "v2-sli-sin-pasaporte",
+      "v2-remanufacturacion",
+      "v2-adaptacion",
+      "v2-art73-estado-salud",
+      "v2-pasaporte-vinculado",
+      "v2-pasaporte-2027",
+      "v2-art8-plomo",
+      "v2-qr-2027"
+    ]
+  },
+  {
+    "n": 14,
+    "fuente": 66,
+    "titulo": "Texto consolidado de la Directiva 2008/98/CE sobre los residuos, versión de 16.10.2025",
+    "editor": "Oficina de Publicaciones de la Unión Europea (EUR-Lex)",
+    "tipoOriginal": "texto legal consolidado (UE)",
+    "grupo": "Normativa",
+    "url": "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:02008L0098-20251016",
+    "hechos": [
+      "reglamento-f14",
+      "reglamento-f15",
+      "v2-reutil-def"
+    ]
+  },
+  {
+    "n": 15,
+    "fuente": 78,
+    "titulo": "Ley 7/2022, de 8 de abril, de residuos y suelos contaminados para una economía circular (texto consolidado)",
+    "editor": "Agencia Estatal Boletín Oficial del Estado (BOE)",
+    "tipoOriginal": "legislación española (BOE)",
+    "grupo": "Normativa",
+    "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2022-5809",
+    "hechos": [
+      "normativa_es-f10",
+      "normativa_es-f15",
+      "normativa_es-f17",
+      "normativa_es-f2",
+      "v2-reutil-def"
+    ]
+  },
+  {
+    "n": 16,
+    "fuente": 458,
+    "titulo": "Guía práctica de prevención. Trabajos de mantenimiento o reparación en vehículos eléctricos",
+    "editor": "Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid",
+    "tipoOriginal": "guía técnica oficial",
+    "grupo": "Organismos públicos e internacionales",
+    "url": "https://gestiona3.madrid.org/bvirtual/BVCM051104.pdf",
+    "hechos": [
+      "vehiculo_electrico-f4",
+      "vehiculo_electrico-f5",
+      "vehiculo_electrico-f9",
+      "v2-alta-tension-cualificacion",
+      "v2-epi-alta-tension"
+    ]
+  },
+  {
+    "n": 17,
+    "fuente": 455,
+    "titulo": "Real Decreto 614/2001, de 8 de junio, sobre disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico (texto consolidado)",
+    "editor": "Agencia Estatal Boletín Oficial del Estado (BOE-A-2001-11881)",
+    "tipoOriginal": "legislación española (BOE)",
+    "grupo": "Normativa",
+    "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2001-11881",
+    "hechos": [
+      "vehiculo_electrico-f17",
+      "v2-alta-tension-cualificacion"
+    ]
+  },
+  {
+    "n": 18,
+    "fuente": 201,
+    "titulo": "Se pone en marcha en la central de Endesa en Melilla un innovador sistema de almacenamiento para dar una «segunda vida» a las baterías usadas de los coches eléctricos",
+    "editor": "Endesa (sala de prensa)",
+    "tipoOriginal": "nota de prensa de empresa",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.endesa.com/es/prensa/sala-de-prensa/noticias/eficiencia-energetica/economia-circular/puesta-en-marcha-central-almacenamiento-baterias-coches-electricos-melilla",
+    "hechos": [
+      "v2-caso-endesa"
+    ]
+  },
+  {
+    "n": 19,
+    "fuente": 199,
+    "titulo": "Renault eWays: The Group presents two major new energy storage projects",
+    "editor": "Renault Group",
+    "tipoOriginal": "nota de prensa de empresa",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://media.renaultgroup.com/renault-eways-the-group-presents-two-major-new-energy-storage-projects/?lang=fra",
+    "hechos": [
+      "v2-caso-renault"
+    ]
+  },
+  {
+    "n": 20,
+    "fuente": 195,
+    "titulo": "Europe's largest energy storage system now live at the Johan Cruijff Arena",
+    "editor": "Nissan Motor Corporation (Nissan Global Newsroom)",
+    "tipoOriginal": "nota de prensa de empresa",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://global.nissannews.com/en/releases/europes-largest-energy-storage-system-now-live-at-the-johan-cruijff-arena",
+    "hechos": [
+      "v2-caso-arena"
+    ]
+  },
+  {
+    "n": 21,
+    "fuente": 204,
+    "titulo": "Electric vehicle batteries — Global EV Outlook 2026",
+    "editor": "Agencia Internacional de la Energía (IEA)",
+    "tipoOriginal": "informe de organismo internacional",
+    "grupo": "Organismos públicos e internacionales",
+    "url": "https://www.iea.org/reports/global-ev-outlook-2026/electric-vehicle-batteries",
+    "hechos": [
+      "vehiculo_electrico-f8",
+      "v2-aie-reuso"
+    ]
+  },
+  {
+    "n": 22,
+    "fuente": 192,
+    "titulo": "BU-201: How does the Lead Acid Battery Work?",
+    "editor": "Battery University (Cadex Electronics Inc.)",
+    "tipoOriginal": "sitio técnico de referencia (no normativo)",
+    "grupo": "Estudios y publicaciones técnicas",
+    "url": "https://www.batteryuniversity.com/article/bu-201-how-does-the-lead-acid-battery-work",
+    "hechos": [
+      "segunda_vida-f2",
+      "v2-ciclos-arranque"
+    ]
+  },
+  {
+    "n": 23,
+    "fuente": 11,
+    "titulo": "Technical Guidelines for the Environmentally Sound Management of Waste Lead-acid Batteries (Basel Convention series/SBC No. 2003/9)",
+    "editor": "Secretariado del Convenio de Basilea / PNUMA",
+    "tipoOriginal": "directrices técnicas de organismo internacional (ONU)",
+    "grupo": "Organismos públicos e internacionales",
+    "url": "https://www.basel.int/Portals/4/download.aspx?d=UNEP-CHW-WAST-GUID-WasteLeadAcidBatteries.English.pdf",
+    "hechos": [
+      "composicion-f12",
+      "composicion-f4",
+      "proceso_reciclaje-f15",
+      "proceso_reciclaje-f2"
+    ]
+  },
+  {
+    "n": 24,
+    "fuente": 407,
+    "titulo": "020. Sangrado de hornos de fundición rotatorios para la recuperación secundaria de plomo: exposición a plomo (BASEQUIM)",
+    "editor": "Instituto Nacional de Seguridad y Salud en el Trabajo (INSST)",
+    "tipoOriginal": "organismo oficial (ficha técnica)",
+    "grupo": "Organismos públicos e internacionales",
+    "url": "https://www.insst.es/stp/basequim/020-sangrado-de-hornos-de-fundicion-rotatorios-para-la-recuperacion-secundaria-de-plomo-exposicion-a-plomo-2016",
+    "hechos": [
+      "proceso_reciclaje-f5",
+      "v2-epi-horno"
+    ]
+  },
+  {
+    "n": 25,
+    "fuente": 22,
+    "titulo": "AP-42, Section 12.11 Secondary Lead Processing",
+    "editor": "U.S. Environmental Protection Agency (EPA)",
+    "tipoOriginal": "documento oficial de la EPA (factores de emisión)",
+    "grupo": "Organismos públicos e internacionales",
+    "url": "https://www.epa.gov/sites/default/files/2020-11/documents/c12s11_2010.pdf",
+    "hechos": [
+      "proceso_reciclaje-f6"
+    ]
+  },
+  {
+    "n": 26,
+    "fuente": 8,
+    "titulo": "An Analysis of EU Collection and Recycling of Lead-based Automotive Batteries During the Period 2015-2017",
+    "editor": "IHS Markit para ACEA, JAMA, KAMA, EUROBAT e ILA (copia alojada en eurobat.org)",
+    "tipoOriginal": "estudio de asociaciones sectoriales (informe de consultora)",
+    "grupo": "Estudios y publicaciones técnicas",
+    "url": "https://www.eurobat.org/wp-content/uploads/2021/09/RECYCLING-Dec20.pdf",
+    "hechos": [
+      "clima_energia-f10",
+      "composicion-f2",
+      "proceso_reciclaje-f8",
+      "tasas-f7",
+      "v2-pp-carcasas",
+      "v2-plomo-60"
     ]
   },
   {
     "n": 27,
+    "fuente": 406,
+    "titulo": "Commission Implementing Decision (EU) 2016/1032 of 13 June 2016 establishing best available techniques (BAT) conclusions, under Directive 2010/75/EU, for the non-ferrous metals industries (DO L 174, 30.6.2016, p. 32)",
+    "editor": "Comisión Europea, publicado por la Oficina de Publicaciones de la UE",
+    "tipoOriginal": "texto legal (DOUE)",
+    "grupo": "Normativa",
+    "url": "https://publications.europa.eu/resource/cellar/174bd664-3e84-11e6-af30-01aa75ed71a1.0006.03/DOC_1",
+    "urlOriginal": "http://publications.europa.eu/resource/cellar/174bd664-3e84-11e6-af30-01aa75ed71a1.0006.03/DOC_1",
+    "hechos": [
+      "proceso_reciclaje-f7",
+      "proceso_reciclaje-f8",
+      "v2-pp-carcasas"
+    ]
+  },
+  {
+    "n": 28,
+    "fuente": 349,
+    "titulo": "HTML Standard (HTML Living Standard)",
+    "editor": "WHATWG",
+    "tipoOriginal": "norma o estándar abierto",
+    "grupo": "Software y estándares",
+    "url": "https://html.spec.whatwg.org/multipage/",
+    "hechos": [
+      "tecnologias-f15"
+    ]
+  },
+  {
+    "n": 29,
+    "fuente": 370,
+    "titulo": "HTML Standard — Acknowledgements (pie de licencia del estándar)",
+    "editor": "WHATWG",
+    "tipoOriginal": "norma o estándar abierto",
+    "grupo": "Software y estándares",
+    "url": "https://html.spec.whatwg.org/multipage/acknowledgements.html",
+    "hechos": [
+      "tecnologias-f15"
+    ]
+  },
+  {
+    "n": 30,
+    "fuente": 353,
+    "titulo": "ECMA-262 — ECMAScript® 2026 language specification (17th edition)",
+    "editor": "Ecma International",
+    "tipoOriginal": "norma o estándar internacional",
+    "grupo": "Software y estándares",
+    "url": "https://ecma-international.org/publications-and-standards/standards/ecma-262/",
+    "hechos": [
+      "tecnologias-f16"
+    ]
+  },
+  {
+    "n": 31,
+    "fuente": 375,
+    "titulo": "Python Release Python 3.15.1",
+    "editor": "Python Software Foundation",
+    "tipoOriginal": "sitio oficial del producto",
+    "grupo": "Software y estándares",
+    "url": "https://www.python.org/downloads/release/python-3151/",
+    "hechos": [
+      "tecnologias-f20"
+    ]
+  },
+  {
+    "n": 32,
+    "fuente": 366,
+    "titulo": "History and License — Python 3.15.1 documentation",
+    "editor": "Python Software Foundation",
+    "tipoOriginal": "documentación oficial (licencia)",
+    "grupo": "Software y estándares",
+    "url": "https://docs.python.org/3/license.html",
+    "hechos": [
+      "tecnologias-f20"
+    ]
+  },
+  {
+    "n": 33,
+    "fuente": 311,
+    "titulo": "Changes — Flask Documentation (3.1.x)",
+    "editor": "Pallets",
+    "tipoOriginal": "documentación oficial",
+    "grupo": "Software y estándares",
+    "url": "https://flask.palletsprojects.com/en/stable/changes/",
+    "hechos": [
+      "tecnologias-f1"
+    ]
+  },
+  {
+    "n": 34,
+    "fuente": 312,
+    "titulo": "BSD-3-Clause License — Flask Documentation (3.1.x)",
+    "editor": "Pallets",
+    "tipoOriginal": "documentación oficial (texto de licencia)",
+    "grupo": "Software y estándares",
+    "url": "https://flask.palletsprojects.com/en/stable/license/",
+    "hechos": [
+      "tecnologias-f1"
+    ]
+  },
+  {
+    "n": 35,
+    "fuente": 317,
+    "titulo": "SQLite Home Page",
+    "editor": "SQLite (Hwaci)",
+    "tipoOriginal": "sitio oficial del producto",
+    "grupo": "Software y estándares",
+    "url": "https://sqlite.org/index.html",
+    "hechos": [
+      "tecnologias-f2",
+      "tecnologias-f3"
+    ]
+  },
+  {
+    "n": 36,
+    "fuente": 319,
+    "titulo": "SQLite Copyright (SQLite Is Public Domain)",
+    "editor": "SQLite (Hwaci)",
+    "tipoOriginal": "documentación oficial (condición legal)",
+    "grupo": "Software y estándares",
+    "url": "https://sqlite.org/copyright.html",
+    "hechos": [
+      "tecnologias-f2",
+      "tecnologias-f3"
+    ]
+  },
+  {
+    "n": 37,
+    "fuente": 324,
+    "titulo": "segno 1.6.6 — PyPI JSON API",
+    "editor": "Python Package Index (PyPI), Python Software Foundation",
+    "tipoOriginal": "registro oficial de paquetes (API JSON)",
+    "grupo": "Software y estándares",
+    "url": "https://pypi.org/pypi/segno/json",
+    "hechos": [
+      "tecnologias-f5"
+    ]
+  },
+  {
+    "n": 38,
+    "fuente": 326,
+    "titulo": "LICENSE — Segno",
+    "editor": "Lars Heuer",
+    "tipoOriginal": "texto de licencia",
+    "grupo": "Software y estándares",
+    "url": "https://raw.githubusercontent.com/heuer/segno/master/LICENSE",
+    "hechos": [
+      "tecnologias-f5"
+    ]
+  },
+  {
+    "n": 39,
+    "fuente": 327,
+    "titulo": "qrcode 8.2 — PyPI JSON API",
+    "editor": "Python Package Index (PyPI), Python Software Foundation",
+    "tipoOriginal": "registro oficial de paquetes (API JSON)",
+    "grupo": "Software y estándares",
+    "url": "https://pypi.org/pypi/qrcode/json",
+    "hechos": [
+      "tecnologias-f6"
+    ]
+  },
+  {
+    "n": 40,
+    "fuente": 328,
+    "titulo": "LICENSE — python-qrcode",
+    "editor": "Lincoln Loop",
+    "tipoOriginal": "texto de licencia",
+    "grupo": "Software y estándares",
+    "url": "https://raw.githubusercontent.com/lincolnloop/python-qrcode/main/LICENSE",
+    "hechos": [
+      "tecnologias-f6"
+    ]
+  },
+  {
+    "n": 41,
+    "fuente": 320,
+    "titulo": "chart.js (versión latest) — registro npm",
+    "editor": "npm registry",
+    "tipoOriginal": "registro oficial de paquetes (API JSON)",
+    "grupo": "Software y estándares",
+    "url": "https://registry.npmjs.org/chart.js/latest",
+    "hechos": [
+      "tecnologias-f4"
+    ]
+  },
+  {
+    "n": 42,
+    "fuente": 322,
+    "titulo": "LICENSE.md — Chart.js",
+    "editor": "Chart.js Contributors",
+    "tipoOriginal": "texto de licencia",
+    "grupo": "Software y estándares",
+    "url": "https://raw.githubusercontent.com/chartjs/Chart.js/master/LICENSE.md",
+    "hechos": [
+      "tecnologias-f4"
+    ]
+  },
+  {
+    "n": 43,
+    "fuente": 228,
+    "titulo": "Battery Passport Technical Guidance (PDF)",
+    "editor": "Consorcio Battery Pass",
+    "tipoOriginal": "documentación de consorcio/proyecto",
+    "grupo": "Estudios y publicaciones técnicas",
+    "url": "https://raw.githubusercontent.com/batterypass/BatteryPassDataModel/main/docs/1.1/2024_BatteryPassport_Technical_Guidance.pdf",
+    "hechos": [
+      "pasaporte_qr-f14"
+    ]
+  },
+  {
+    "n": 44,
+    "fuente": 215,
+    "titulo": "Reglamento (UE) 2016/679 (Reglamento general de protección de datos), DOUE L 119, 4.5.2016, versión española",
+    "editor": "Parlamento Europeo y Consejo de la UE; Oficina de Publicaciones de la UE (Cellar)",
+    "tipoOriginal": "texto legal UE (DOUE)",
+    "grupo": "Normativa",
+    "url": "https://publications.europa.eu/resource/cellar/3e485e15-11bd-11e6-ba9a-01aa75ed71a1.0023.03/DOC_1",
+    "urlOriginal": "http://publications.europa.eu/resource/cellar/3e485e15-11bd-11e6-ba9a-01aa75ed71a1.0023.03/DOC_1",
+    "hechos": [
+      "pasaporte_qr-f6"
+    ]
+  },
+  {
+    "n": 45,
+    "fuente": 218,
+    "titulo": "Sentencia del Tribunal de Justicia (Sala Tercera) de 9 de noviembre de 2023, Gesamtverband Autoteile-Handel eV / Scania CV AB, asunto C-319/22 (ECLI:EU:C:2023:837)",
+    "editor": "Tribunal de Justicia de la Unión Europea; texto servido por la Oficina de Publicaciones de la UE (Cellar)",
+    "tipoOriginal": "sentencia TJUE",
+    "grupo": "Normativa",
+    "url": "https://publications.europa.eu/resource/cellar/0cf58274-7ee9-11ee-99ba-01aa75ed71a1.0007.05/DOC_1",
+    "urlOriginal": "http://publications.europa.eu/resource/cellar/0cf58274-7ee9-11ee-99ba-01aa75ed71a1.0007.05/DOC_1",
+    "hechos": [
+      "pasaporte_qr-f8"
+    ]
+  },
+  {
+    "n": 46,
+    "fuente": 348,
+    "titulo": "Appropriate Uses For SQLite",
+    "editor": "SQLite (Hwaci)",
+    "tipoOriginal": "documentación oficial",
+    "grupo": "Software y estándares",
+    "url": "https://sqlite.org/whentouse.html",
+    "hechos": [
+      "tecnologias-f14"
+    ]
+  },
+  {
+    "n": 47,
+    "fuente": 355,
+    "titulo": "Java Downloads | Oracle",
+    "editor": "Oracle",
+    "tipoOriginal": "sitio oficial del producto",
+    "grupo": "Software y estándares",
+    "url": "https://www.oracle.com/java/technologies/downloads/",
+    "hechos": [
+      "tecnologias-f17"
+    ]
+  },
+  {
+    "n": 48,
+    "fuente": 357,
+    "titulo": "OpenJDK: GPLv2 + Classpath Exception",
+    "editor": "OpenJDK (Oracle y comunidad)",
+    "tipoOriginal": "texto de licencia",
+    "grupo": "Software y estándares",
+    "url": "https://openjdk.org/legal/gplv2+ce.html",
+    "hechos": [
+      "tecnologias-f17"
+    ]
+  },
+  {
+    "n": 49,
+    "fuente": 359,
+    "titulo": "PHP",
+    "editor": "The PHP Group",
+    "tipoOriginal": "sitio oficial del producto",
+    "grupo": "Software y estándares",
+    "url": "https://www.php.net/",
+    "hechos": [
+      "tecnologias-f18"
+    ]
+  },
+  {
+    "n": 50,
+    "fuente": 360,
+    "titulo": "PHP: License Information",
+    "editor": "The PHP Group",
+    "tipoOriginal": "documentación oficial (licencia)",
+    "grupo": "Software y estándares",
+    "url": "https://www.php.net/license/",
+    "hechos": [
+      "tecnologias-f18"
+    ]
+  },
+  {
+    "n": 51,
+    "fuente": 362,
+    "titulo": "Licensing Information User Manual — MySQL 26.10.0 Community (fichero LICENSE del repositorio mysql/mysql-server)",
+    "editor": "Oracle (MySQL)",
+    "tipoOriginal": "texto de licencia (repositorio oficial)",
+    "grupo": "Software y estándares",
+    "url": "https://raw.githubusercontent.com/mysql/mysql-server/trunk/LICENSE",
+    "hechos": [
+      "tecnologias-f19"
+    ]
+  },
+  {
+    "n": 52,
     "fuente": 64,
     "titulo": "Reglamento (UE) 2025/1561 del Parlamento Europeo y del Consejo, de 18 de julio de 2025, por el que se modifica el Reglamento (UE) 2023/1542 en lo que respecta a las obligaciones de los operadores económicos en relación con las políticas de diligencia debida en materia de pilas o baterías",
     "editor": "Parlamento Europeo y Consejo de la Unión Europea (Diario Oficial de la Unión Europea)",
@@ -346,7 +710,7 @@
     ]
   },
   {
-    "n": 28,
+    "n": 53,
     "fuente": 70,
     "titulo": "Notification Detail G/TBT/N/EU/1181: Draft Commission Implementing Regulation laying down rules for the application of Regulation (EU) 2023/1542 as regards format and harmonised specifications for certain labelling requirements",
     "editor": "Comisión Europea, portal de Obstáculos Técnicos al Comercio (TBT)",
@@ -358,7 +722,7 @@
     ]
   },
   {
-    "n": 29,
+    "n": 54,
     "fuente": 377,
     "titulo": "Etiquetas en poliéster blanco permanente | L4773-8 | Avery",
     "editor": "Avery España (Avery Tico S.r.l.)",
@@ -371,7 +735,7 @@
     ]
   },
   {
-    "n": 30,
+    "n": 55,
     "fuente": 402,
     "titulo": "Muestra gratuita etiquetas adhesivas Avery | Avery",
     "editor": "Avery España (Avery Tico S.r.l.)",
@@ -383,7 +747,7 @@
     ]
   },
   {
-    "n": 31,
+    "n": 56,
     "fuente": 331,
     "titulo": "Plans and pricing : PythonAnywhere (sistema de la UE)",
     "editor": "PythonAnywhere LLP",
@@ -396,7 +760,7 @@
     ]
   },
   {
-    "n": 32,
+    "n": 57,
     "fuente": 381,
     "titulo": "Precios - Copistería Alfambra",
     "editor": "Copistería Alfambra (Barcelona)",
@@ -409,7 +773,7 @@
     ]
   },
   {
-    "n": 33,
+    "n": 58,
     "fuente": 382,
     "titulo": "Impresiones láser color | Copistería Alfambra",
     "editor": "Copistería Alfambra (Barcelona)",
@@ -422,7 +786,7 @@
     ]
   },
   {
-    "n": 34,
+    "n": 59,
     "fuente": 396,
     "titulo": "Brother QL-700 Impresora de Etiquetas Profesional | PcComponentes.com",
     "editor": "PcComponentes",
@@ -434,7 +798,7 @@
     ]
   },
   {
-    "n": 35,
+    "n": 60,
     "fuente": 378,
     "titulo": "Impresora de Etiquetas QL-800, Brother",
     "editor": "Brother España (tienda oficial)",
@@ -446,7 +810,7 @@
     ]
   },
   {
-    "n": 36,
+    "n": 61,
     "fuente": 380,
     "titulo": "DK11221 Etiquetas precortadas cuadradas (papel térmico), Brother",
     "editor": "Brother España (tienda oficial)",
@@ -458,7 +822,7 @@
     ]
   },
   {
-    "n": 37,
+    "n": 62,
     "fuente": 390,
     "titulo": "Technical data for DK Rolls (DK Roll Test Leaflet 2023_ENG_web)",
     "editor": "Brother (brother.eu)",
@@ -470,7 +834,7 @@
     ]
   },
   {
-    "n": 38,
+    "n": 63,
     "fuente": 399,
     "titulo": "LOKLIK Papel adhesivo imprimible de vinilo mate",
     "editor": "Filament2Print",
@@ -482,7 +846,7 @@
     ]
   },
   {
-    "n": 39,
+    "n": 64,
     "fuente": 337,
     "titulo": "Pricing | Render",
     "editor": "Render",
@@ -494,7 +858,7 @@
     ]
   },
   {
-    "n": 40,
+    "n": 65,
     "fuente": 344,
     "titulo": "Pricing | Railway",
     "editor": "Railway",
@@ -506,7 +870,7 @@
     ]
   },
   {
-    "n": 41,
+    "n": 66,
     "fuente": 345,
     "titulo": "Pricing Plans | Railway Docs",
     "editor": "Railway",
@@ -518,7 +882,7 @@
     ]
   },
   {
-    "n": 42,
+    "n": 67,
     "fuente": 346,
     "titulo": "Fly.io Resource Pricing - Fly.io",
     "editor": "Fly.io",
@@ -530,7 +894,7 @@
     ]
   },
   {
-    "n": 43,
+    "n": 68,
     "fuente": 367,
     "titulo": "Fly.io pricing (versión markdown de fly.io/pricing)",
     "editor": "Fly.io",
@@ -543,7 +907,7 @@
     ]
   },
   {
-    "n": 44,
+    "n": 69,
     "fuente": 335,
     "titulo": "Euro foreign exchange reference rates",
     "editor": "Banco Central Europeo (BCE)",
@@ -555,7 +919,7 @@
     ]
   },
   {
-    "n": 45,
+    "n": 70,
     "fuente": 340,
     "titulo": "Free Accounts Features — PythonAnywhere Help",
     "editor": "PythonAnywhere LLP",
@@ -567,7 +931,7 @@
     ]
   },
   {
-    "n": 46,
+    "n": 71,
     "fuente": 338,
     "titulo": "Deploy for Free – Render Docs",
     "editor": "Render",
@@ -579,7 +943,7 @@
     ]
   },
   {
-    "n": 47,
+    "n": 72,
     "fuente": 49,
     "titulo": "Plan Estatal Marco de Gestión de Residuos (PEMAR) 2025-2035, capítulo 12 «Pilas y acumuladores» (pp. 135-139 de 251)",
     "editor": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
@@ -592,7 +956,7 @@
     ]
   },
   {
-    "n": 48,
+    "n": 73,
     "fuente": 52,
     "titulo": "Real Decreto 106/2008, de 1 de febrero, sobre pilas y acumuladores y la gestión ambiental de sus residuos (texto consolidado, BOE-A-2008-2387)",
     "editor": "Agencia Estatal Boletín Oficial del Estado (BOE)",
@@ -605,7 +969,7 @@
     ]
   },
   {
-    "n": 49,
+    "n": 74,
     "fuente": 48,
     "titulo": "Recycling of batteries and accumulators (env_wasbat; DOI 10.2908/ENV_WASBAT), descarga JSON-stat completa",
     "editor": "Eurostat",
@@ -619,7 +983,7 @@
     ]
   },
   {
-    "n": 50,
+    "n": 75,
     "fuente": 62,
     "titulo": "Informe de la Comisión sobre la evaluación de la conveniencia de revisar los objetivos de eficiencia de reciclado y de valorización de materiales del anexo XII, partes B y C, del Reglamento (UE) 2023/1542 (COM(2026) 470 final; doc. Consejo 13060/26)",
     "editor": "Comisión Europea; Consejo de la UE",
@@ -631,22 +995,7 @@
     ]
   },
   {
-    "n": 51,
-    "fuente": 8,
-    "titulo": "An Analysis of EU Collection and Recycling of Lead-based Automotive Batteries During the Period 2015-2017",
-    "editor": "IHS Markit para ACEA, JAMA, KAMA, EUROBAT e ILA (copia alojada en eurobat.org)",
-    "tipoOriginal": "estudio de asociaciones sectoriales (informe de consultora)",
-    "grupo": "Estudios y publicaciones técnicas",
-    "url": "https://www.eurobat.org/wp-content/uploads/2021/09/RECYCLING-Dec20.pdf",
-    "hechos": [
-      "clima_energia-f10",
-      "composicion-f2",
-      "proceso_reciclaje-f8",
-      "tasas-f7"
-    ]
-  },
-  {
-    "n": 52,
+    "n": 76,
     "fuente": 38,
     "titulo": "U.S. Recycling Rate Study. Study Years 2020-2024 (Maximizing Lead Battery Recycling for Critical-Mineral Recovery & Supply Chain Security)",
     "editor": "Battery Council International (BCI); resultados preparados por Vault Consulting",
@@ -658,7 +1007,7 @@
     ]
   },
   {
-    "n": 53,
+    "n": 77,
     "fuente": 47,
     "titulo": "Waste statistics - recycling of batteries and accumulators",
     "editor": "Eurostat, Statistics Explained",
@@ -670,7 +1019,7 @@
     ]
   },
   {
-    "n": 54,
+    "n": 78,
     "fuente": 247,
     "titulo": "Resolución A/RES/70/1. Transformar nuestro mundo: la Agenda 2030 para el Desarrollo Sostenible (versión en español)",
     "editor": "Naciones Unidas, Asamblea General",
@@ -687,7 +1036,7 @@
     ]
   },
   {
-    "n": 55,
+    "n": 79,
     "fuente": 248,
     "titulo": "Marco de indicadores mundiales para los Objetivos de Desarrollo Sostenible y metas de la Agenda 2030 (versión tras el refinamiento de 2026)",
     "editor": "Naciones Unidas, División de Estadística (UNSD)",
@@ -703,7 +1052,7 @@
     ]
   },
   {
-    "n": 56,
+    "n": 80,
     "fuente": 261,
     "titulo": "Indicadores de la Agenda 2030 - Objetivo 12 - Indicador 12.5.1. Tasa Nacional de reciclado, en toneladas de material reciclado",
     "editor": "Instituto Nacional de Estadística (INE), España",
@@ -715,7 +1064,7 @@
     ]
   },
   {
-    "n": 57,
+    "n": 81,
     "fuente": 262,
     "titulo": "Indicadores de la Agenda 2030 - Objetivo 12 - Indicador 12.4.2. Desechos peligrosos generados per cápita y proporción tratada",
     "editor": "Instituto Nacional de Estadística (INE), España",
@@ -727,7 +1076,7 @@
     ]
   },
   {
-    "n": 58,
+    "n": 82,
     "fuente": 263,
     "titulo": "Indicadores de la Agenda 2030 - Objetivo 9 - Indicador 9.4.1. Emisiones de CO2 por unidad de valor añadido",
     "editor": "Instituto Nacional de Estadística (INE), España",
@@ -739,7 +1088,7 @@
     ]
   },
   {
-    "n": 59,
+    "n": 83,
     "fuente": 264,
     "titulo": "Indicadores de la Agenda 2030 - Objetivo 13 - Indicador 13.2.2. Emisiones totales de gases de efecto invernadero por año",
     "editor": "Instituto Nacional de Estadística (INE), España",
@@ -751,7 +1100,7 @@
     ]
   },
   {
-    "n": 60,
+    "n": 84,
     "fuente": 250,
     "titulo": "SDG Indicators: Global indicator framework (official list of SDG indicators)",
     "editor": "Naciones Unidas, División de Estadística (UNSD)",
@@ -763,7 +1112,7 @@
     ]
   },
   {
-    "n": 61,
+    "n": 85,
     "fuente": 273,
     "titulo": "Key Messages: The Sustainable Development Goals Report 2026",
     "editor": "Naciones Unidas, División de Estadística (UNSD)",
@@ -775,7 +1124,7 @@
     ]
   },
   {
-    "n": 62,
+    "n": 86,
     "fuente": 7,
     "titulo": "The Availability of Automotive Lead-Based Batteries for Recycling in the EU – A joint industry analysis of EU collection and recycling rates 2010-2012",
     "editor": "IHS (IHS Markit) para EUROBAT, ILA, ACEA, JAMA y KAMA (copia alojada en eurobat.org)",
@@ -783,68 +1132,12 @@
     "grupo": "Estudios y publicaciones técnicas",
     "url": "https://www.eurobat.org/wp-content/uploads/2021/09/ihs_eurobat_report_lead_lores_final_2.pdf",
     "hechos": [
-      "composicion-f2"
+      "composicion-f2",
+      "v2-plomo-60"
     ]
   },
   {
-    "n": 63,
-    "fuente": 14,
-    "titulo": "BU-903: How to Measure State-of-charge",
-    "editor": "Battery University (Cadex Electronics)",
-    "tipoOriginal": "web técnica (reproduce la tabla del BCI)",
-    "grupo": "Estudios y publicaciones técnicas",
-    "url": "https://www.batteryuniversity.com/article/bu-903-how-to-measure-state-of-charge",
-    "hechos": [
-      "composicion-f16",
-      "diagnostico-f1",
-      "diagnostico-f2",
-      "diagnostico-f3"
-    ]
-  },
-  {
-    "n": 64,
-    "fuente": 157,
-    "titulo": "Safety First. Starter Batteries: Battery Handling, Maintenance & Test Procedures (S.F. STARTER-PSD-D0126)",
-    "editor": "Crown Battery Manufacturing Company",
-    "tipoOriginal": "documentación de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://www.crownbattery.com/hubfs/Downloads/Safety.First.Starter-Batteries.pdf",
-    "hechos": [
-      "diagnostico-f1",
-      "diagnostico-f19",
-      "diagnostico-f2",
-      "diagnostico-f9"
-    ]
-  },
-  {
-    "n": 65,
-    "fuente": 158,
-    "titulo": "How can you tell if a battery is fully charged? (Table 5 - State of Charge vs. OCV)",
-    "editor": "Discover Battery",
-    "tipoOriginal": "documentación de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://discoverbattery.com/support/learning-center/battery-101/how-can-you-tell-if-a-battery-is-fully-charged",
-    "hechos": [
-      "diagnostico-f1",
-      "diagnostico-f2",
-      "diagnostico-f3"
-    ]
-  },
-  {
-    "n": 66,
-    "fuente": 66,
-    "titulo": "Texto consolidado de la Directiva 2008/98/CE sobre los residuos, versión de 16.10.2025",
-    "editor": "Oficina de Publicaciones de la Unión Europea (EUR-Lex)",
-    "tipoOriginal": "texto legal consolidado (UE)",
-    "grupo": "Normativa",
-    "url": "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:02008L0098-20251016",
-    "hechos": [
-      "reglamento-f14",
-      "reglamento-f15"
-    ]
-  },
-  {
-    "n": 67,
+    "n": 87,
     "fuente": 286,
     "titulo": "Environmental Risks and Challenges of Anthropogenic Metals Flows and Cycles (informe completo; apartado 4.5.2 y tabla 4.4)",
     "editor": "PNUMA, Panel Internacional de Recursos (grupo de trabajo sobre flujos mundiales de metales)",
@@ -852,11 +1145,12 @@
     "grupo": "Organismos públicos e internacionales",
     "url": "https://www.resourcepanel.org/reports/environmental-risks-and-challenges-anthropogenic-metals-flows-and-cycles",
     "hechos": [
-      "clima_energia-f2"
+      "clima_energia-f2",
+      "v2-ahorro-energia"
     ]
   },
   {
-    "n": 68,
+    "n": 88,
     "fuente": 287,
     "titulo": "Recycling used lead-acid batteries: health considerations",
     "editor": "Organización Mundial de la Salud (OMS)",
@@ -864,11 +1158,12 @@
     "grupo": "Organismos públicos e internacionales",
     "url": "https://iris.who.int/server/api/core/bitstreams/9340a481-befc-4263-a965-e32ce66b11c4/content",
     "hechos": [
-      "clima_energia-f2"
+      "clima_energia-f2",
+      "v2-ahorro-energia"
     ]
   },
   {
-    "n": 69,
+    "n": 89,
     "fuente": 9,
     "titulo": "Safety Data Sheet – Lead-acid battery filled with diluted sulphuric acid (SDS No. 00377-0089, versión 2.0)",
     "editor": "Robert Bosch GmbH, Automotive Aftermarket (copia alojada por Tayna)",
@@ -878,83 +1173,12 @@
     "hechos": [
       "composicion-f3",
       "composicion-f7",
-      "composicion-f8"
+      "composicion-f8",
+      "v2-epi-acido"
     ]
   },
   {
-    "n": 70,
-    "fuente": 1,
-    "titulo": "VARTA Dynamic SLI 544402044K262 (B18, 44 Ah) – Technical data sheet",
-    "editor": "VARTA Automotive (Clarios)",
-    "tipoOriginal": "ficha técnica de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/544402044K262.pdf",
-    "hechos": [
-      "composicion-f1"
-    ]
-  },
-  {
-    "n": 71,
-    "fuente": 2,
-    "titulo": "VARTA Dynamic SLI 574012068K262 (E11, 74 Ah) – Technical data sheet",
-    "editor": "VARTA Automotive (Clarios)",
-    "tipoOriginal": "ficha técnica de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/574012068K262.pdf",
-    "hechos": [
-      "composicion-f1"
-    ]
-  },
-  {
-    "n": 72,
-    "fuente": 3,
-    "titulo": "VARTA Dynamic SLI 595402080K262 (G3, 95 Ah) – Technical data sheet",
-    "editor": "VARTA Automotive (Clarios)",
-    "tipoOriginal": "ficha técnica de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://api.data-varta-automotive.com/v2/en-GB/datasheet/fc41bc000f09fe2fee5adfef8ea415ad/595402080K262.pdf",
-    "hechos": [
-      "composicion-f1"
-    ]
-  },
-  {
-    "n": 73,
-    "fuente": 4,
-    "titulo": "Yuasa Technical Data Sheet – YBX3056 (YBX 3000 SMF, 12 V 36 Ah)",
-    "editor": "Yuasa (yuasa.com/uk)",
-    "tipoOriginal": "ficha técnica de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3056-036",
-    "hechos": [
-      "composicion-f1"
-    ]
-  },
-  {
-    "n": 74,
-    "fuente": 5,
-    "titulo": "Yuasa Technical Data Sheet – YBX3075 (YBX 3000 SMF, 12 V 60 Ah)",
-    "editor": "Yuasa (yuasa.com/uk)",
-    "tipoOriginal": "ficha técnica de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3075-060",
-    "hechos": [
-      "composicion-f1"
-    ]
-  },
-  {
-    "n": 75,
-    "fuente": 6,
-    "titulo": "Yuasa Technical Data Sheet – YBX3017 (YBX 3000 SMF, 12 V 90 Ah)",
-    "editor": "Yuasa (yuasa.com/uk)",
-    "tipoOriginal": "ficha técnica de fabricante",
-    "grupo": "Documentación de fabricantes",
-    "url": "https://www.yuasa.com/uk/datasheet/index/download/?sku=YBX3017-090",
-    "hechos": [
-      "composicion-f1"
-    ]
-  },
-  {
-    "n": 76,
+    "n": 90,
     "fuente": 19,
     "titulo": "Life Cycle Assessment of Automotive Lead Batteries – Europe (informe V6.0)",
     "editor": "Sphera Solutions para EUROBAT e ILA",
@@ -968,22 +1192,7 @@
     ]
   },
   {
-    "n": 77,
-    "fuente": 11,
-    "titulo": "Technical Guidelines for the Environmentally Sound Management of Waste Lead-acid Batteries (Basel Convention series/SBC No. 2003/9)",
-    "editor": "Secretariado del Convenio de Basilea / PNUMA",
-    "tipoOriginal": "directrices técnicas de organismo internacional (ONU)",
-    "grupo": "Organismos públicos e internacionales",
-    "url": "https://www.basel.int/Portals/4/download.aspx?d=UNEP-CHW-WAST-GUID-WasteLeadAcidBatteries.English.pdf",
-    "hechos": [
-      "composicion-f12",
-      "composicion-f4",
-      "proceso_reciclaje-f15",
-      "proceso_reciclaje-f2"
-    ]
-  },
-  {
-    "n": 78,
+    "n": 91,
     "fuente": 10,
     "titulo": "DOE-HDBK-1084-95 – Primer on Lead-Acid Storage Batteries",
     "editor": "U.S. Department of Energy (copia alojada en EverySpec)",
@@ -996,7 +1205,7 @@
     ]
   },
   {
-    "n": 79,
+    "n": 92,
     "fuente": 164,
     "titulo": "BU-902a: How to Measure CCA",
     "editor": "Battery University (Cadex Electronics; autor: Isidor Buchmann)",
@@ -1008,7 +1217,7 @@
     ]
   },
   {
-    "n": 80,
+    "n": 93,
     "fuente": 163,
     "titulo": "J537_202309 Storage Batteries (SAE Standard, ficha oficial)",
     "editor": "SAE International",
@@ -1020,7 +1229,7 @@
     ]
   },
   {
-    "n": 81,
+    "n": 94,
     "fuente": 165,
     "titulo": "Auf dem TCS-Prüfstand: Starterbatterien",
     "editor": "TCS Touring Club Schweiz (Mobilitätsberatung, Emmen)",
@@ -1032,7 +1241,7 @@
     ]
   },
   {
-    "n": 82,
+    "n": 95,
     "fuente": 166,
     "titulo": "I.S. EN 50342-1:2015&A1:2018&A2:2021 Lead-acid starter batteries - Part 1: General requirements and methods of test (extracto gratuito)",
     "editor": "NSAI (Irlanda) / CENELEC, extracto distribuido por Intertek Inform",
@@ -1044,7 +1253,7 @@
     ]
   },
   {
-    "n": 83,
+    "n": 96,
     "fuente": 168,
     "titulo": "Guide to understanding battery specifications",
     "editor": "Yuasa (GS Yuasa), sitio del Reino Unido",
@@ -1056,7 +1265,7 @@
     ]
   },
   {
-    "n": 84,
+    "n": 97,
     "fuente": 159,
     "titulo": "Preguntas frecuentes (Conocimientos)",
     "editor": "VARTA Automotive (Clarios)",
@@ -1068,7 +1277,7 @@
     ]
   },
   {
-    "n": 85,
+    "n": 98,
     "fuente": 161,
     "titulo": "BU-901: Fundamentals in Battery Testing",
     "editor": "Battery University (Cadex Electronics; autor: Isidor Buchmann)",
@@ -1080,7 +1289,7 @@
     ]
   },
   {
-    "n": 86,
+    "n": 99,
     "fuente": 189,
     "titulo": "Todo lo que debes saber sobre la duración de la batería de un coche (etiqueta title: Duración y carga de la batería de un coche | RACE)",
     "editor": "RACE (Real Automóvil Club de España)",
@@ -1092,7 +1301,7 @@
     ]
   },
   {
-    "n": 87,
+    "n": 100,
     "fuente": 183,
     "titulo": "ADAC Pannenstatistik 2026: Die Gewinner und Verlierer",
     "editor": "ADAC e. V. (autor: Wolfgang Rudschies)",
@@ -1104,7 +1313,7 @@
     ]
   },
   {
-    "n": 88,
+    "n": 101,
     "fuente": 284,
     "titulo": "Life Cycle Assessment of Secondary Lead Production Mix - Europe (informe v4.0)",
     "editor": "thinkstep AG para la International Lead Association (ILA)",
@@ -1116,7 +1325,7 @@
     ]
   },
   {
-    "n": 89,
+    "n": 102,
     "fuente": 285,
     "titulo": "Life Cycle Assessment of Primary Lead Production Mix - Europe and North America (informe v4.0)",
     "editor": "thinkstep AG para la International Lead Association (ILA)",
@@ -1128,7 +1337,7 @@
     ]
   },
   {
-    "n": 90,
+    "n": 103,
     "fuente": 288,
     "titulo": "Press release: Review of trends in 2025 - Lead",
     "editor": "International Lead and Zinc Study Group (ILZSG)",
@@ -1140,7 +1349,7 @@
     ]
   },
   {
-    "n": 91,
+    "n": 104,
     "fuente": 290,
     "titulo": "Study on the EU's list of Critical Raw Materials (2020) - Factsheets on Non-critical Raw Materials (ficha 15, Lead)",
     "editor": "Comisión Europea (DG GROW y Centro Común de Investigación); Oficina de Publicaciones de la UE",
@@ -1152,7 +1361,7 @@
     ]
   },
   {
-    "n": 92,
+    "n": 105,
     "fuente": 18,
     "titulo": "ICSC 0052 – PLOMO (plomo metálico)",
     "editor": "OIT/OMS (versión española: INSST)",
@@ -1164,7 +1373,7 @@
     ]
   },
   {
-    "n": 93,
+    "n": 106,
     "fuente": 16,
     "titulo": "Lead poisoning (fact sheet)",
     "editor": "Organización Mundial de la Salud (OMS)",
@@ -1176,7 +1385,7 @@
     ]
   },
   {
-    "n": 94,
+    "n": 107,
     "fuente": 17,
     "titulo": "ICSC 0362 – ÁCIDO SULFÚRICO, concentrado (> 51% y < 100%)",
     "editor": "OIT/OMS (versión española: INSST)",
@@ -1188,7 +1397,7 @@
     ]
   },
   {
-    "n": 95,
+    "n": 108,
     "fuente": 134,
     "titulo": "ICSC 0001 - Hidrógeno (Ficha Internacional de Seguridad Química, abril de 2014; versión española INSST)",
     "editor": "OIT / OMS / Comisión Europea (versión en español: INSST)",
@@ -1200,7 +1409,7 @@
     ]
   },
   {
-    "n": 96,
+    "n": 109,
     "fuente": 27,
     "titulo": "Decisión 2014/955/UE de la Comisión, de 18 de diciembre de 2014, por la que se modifica la Decisión 2000/532/CE sobre la lista de residuos",
     "editor": "Comisión Europea (Diario Oficial de la UE, L 370)",
@@ -1213,34 +1422,7 @@
     ]
   },
   {
-    "n": 97,
-    "fuente": 78,
-    "titulo": "Ley 7/2022, de 8 de abril, de residuos y suelos contaminados para una economía circular (texto consolidado)",
-    "editor": "Agencia Estatal Boletín Oficial del Estado (BOE)",
-    "tipoOriginal": "legislación española (BOE)",
-    "grupo": "Normativa",
-    "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2022-5809",
-    "hechos": [
-      "normativa_es-f10",
-      "normativa_es-f15",
-      "normativa_es-f17",
-      "normativa_es-f2"
-    ]
-  },
-  {
-    "n": 98,
-    "fuente": 123,
-    "titulo": "ADR 2025 - Agreement concerning the International Carriage of Dangerous Goods by Road, Volume I (ECE/TRANS/352 Vol.I), applicable as from 1 January 2025",
-    "editor": "Naciones Unidas, Comisión Económica para Europa (UNECE); copia del PDF alojada en lerem.org",
-    "tipoOriginal": "acuerdo internacional (texto oficial de la ONU, copia alojada por un tercero)",
-    "grupo": "Organismos públicos e internacionales",
-    "url": "https://lerem.org/wp-content/uploads/2025/01/ADR2025_Vol1e.pdf",
-    "hechos": [
-      "seguridad-f1"
-    ]
-  },
-  {
-    "n": 99,
+    "n": 110,
     "fuente": 25,
     "titulo": "Directiva (UE) 2024/869 del Parlamento Europeo y del Consejo, de 13 de marzo de 2024, por la que se modifican la Directiva 2004/37/CE y la Directiva 98/24/CE en lo que respecta a los valores límite para el plomo y sus compuestos inorgánicos y para los diisocianatos",
     "editor": "Parlamento Europeo y Consejo de la Unión Europea (Diario Oficial de la UE)",
@@ -1253,7 +1435,7 @@
     ]
   },
   {
-    "n": 100,
+    "n": 111,
     "fuente": 152,
     "titulo": "La Moncloa. Referencia del Consejo de Ministros del 20/10/2026 (Real Decreto por el que se modifican el RD 665/1997 y el RD 374/2001: valores límite de plomo y diisocianatos)",
     "editor": "Gobierno de España, Presidencia (La Moncloa)",
@@ -1265,7 +1447,7 @@
     ]
   },
   {
-    "n": 101,
+    "n": 112,
     "fuente": 453,
     "titulo": "UN Regulation No 100 — Uniform provisions concerning the approval of vehicles with regard to specific requirements for the electric power train [2026/1695] (incluye la serie 05 de enmiendas)",
     "editor": "Oficina de Publicaciones de la UE (DOUE, reproducción del texto de la UNECE)",
@@ -1279,7 +1461,7 @@
     ]
   },
   {
-    "n": 102,
+    "n": 113,
     "fuente": 142,
     "titulo": "Real Decreto 842/2002, de 2 de agosto, por el que se aprueba el Reglamento electrotécnico para baja tensión (ITC-BT-30, apartado 7: locales con baterías de acumuladores; texto consolidado)",
     "editor": "Ministerio de Ciencia y Tecnología / Agencia Estatal Boletín Oficial del Estado",
@@ -1291,7 +1473,7 @@
     ]
   },
   {
-    "n": 103,
+    "n": 114,
     "fuente": 460,
     "titulo": "Electric and hybrid vehicles (Motor vehicle repair: common topics)",
     "editor": "Health and Safety Executive (HSE), Reino Unido",
@@ -1304,7 +1486,7 @@
     ]
   },
   {
-    "n": 104,
+    "n": 115,
     "fuente": 459,
     "titulo": "Supuesto práctico de prevención. Consignación o puesta sin tensión de baterías durante trabajos de mantenimiento o reparación en vehículos eléctricos",
     "editor": "Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid",
@@ -1317,33 +1499,7 @@
     ]
   },
   {
-    "n": 105,
-    "fuente": 458,
-    "titulo": "Guía práctica de prevención. Trabajos de mantenimiento o reparación en vehículos eléctricos",
-    "editor": "Instituto Regional de Seguridad y Salud en el Trabajo (IRSST), Comunidad de Madrid",
-    "tipoOriginal": "guía técnica oficial",
-    "grupo": "Organismos públicos e internacionales",
-    "url": "https://gestiona3.madrid.org/bvirtual/BVCM051104.pdf",
-    "hechos": [
-      "vehiculo_electrico-f4",
-      "vehiculo_electrico-f5",
-      "vehiculo_electrico-f9"
-    ]
-  },
-  {
-    "n": 106,
-    "fuente": 204,
-    "titulo": "Electric vehicle batteries — Global EV Outlook 2026",
-    "editor": "Agencia Internacional de la Energía (IEA)",
-    "tipoOriginal": "informe de organismo internacional",
-    "grupo": "Organismos públicos e internacionales",
-    "url": "https://www.iea.org/reports/global-ev-outlook-2026/electric-vehicle-batteries",
-    "hechos": [
-      "vehiculo_electrico-f8"
-    ]
-  },
-  {
-    "n": 107,
+    "n": 116,
     "fuente": 100,
     "titulo": "Real Decreto 265/2021, de 13 de abril, sobre los vehículos al final de su vida útil (texto consolidado)",
     "editor": "Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio de la Presidencia",
@@ -1355,7 +1511,31 @@
     ]
   },
   {
-    "n": 108,
+    "n": 117,
+    "fuente": 193,
+    "titulo": "Lead Acid FAQs (pregunta «What are the differences between a deep cycle battery, a starting battery, and a dual-purpose battery?»)",
+    "editor": "Trojan Battery Company",
+    "tipoOriginal": "documentación técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.trojanbattery.com/resources/faqs",
+    "hechos": [
+      "v2-fabricantes-ciclo"
+    ]
+  },
+  {
+    "n": 118,
+    "fuente": 194,
+    "titulo": "Energy Unlimited — Electricity on Board (Reinout Vader), revisión 9, apartado 2.3.3",
+    "editor": "Victron Energy",
+    "tipoOriginal": "documentación técnica de fabricante",
+    "grupo": "Documentación de fabricantes",
+    "url": "https://www.victronenergy.com/upload/documents/Book-Energy-Unlimited-EN.pdf",
+    "hechos": [
+      "v2-fabricantes-ciclo"
+    ]
+  },
+  {
+    "n": 119,
     "fuente": 298,
     "titulo": "Lead Product Carbon Footprint - Technical Guidance on Product Carbon Footprint Calculation for Primary and Secondary Lead Production (v1.0)",
     "editor": "Sphera Solutions GmbH para la International Lead Association (ILA)",
@@ -1367,7 +1547,7 @@
     ]
   },
   {
-    "n": 109,
+    "n": 120,
     "fuente": 422,
     "titulo": "Commission Staff Working Document on the evaluation of the Directive 2006/66/EC on batteries and accumulators, SWD(2019) 1300 final (documento del Consejo 8484/19)",
     "editor": "Comisión Europea, registro del Consejo de la UE",
@@ -1379,45 +1559,7 @@
     ]
   },
   {
-    "n": 110,
-    "fuente": 407,
-    "titulo": "020. Sangrado de hornos de fundición rotatorios para la recuperación secundaria de plomo: exposición a plomo (BASEQUIM)",
-    "editor": "Instituto Nacional de Seguridad y Salud en el Trabajo (INSST)",
-    "tipoOriginal": "organismo oficial (ficha técnica)",
-    "grupo": "Organismos públicos e internacionales",
-    "url": "https://www.insst.es/stp/basequim/020-sangrado-de-hornos-de-fundicion-rotatorios-para-la-recuperacion-secundaria-de-plomo-exposicion-a-plomo-2016",
-    "hechos": [
-      "proceso_reciclaje-f5"
-    ]
-  },
-  {
-    "n": 111,
-    "fuente": 22,
-    "titulo": "AP-42, Section 12.11 Secondary Lead Processing",
-    "editor": "U.S. Environmental Protection Agency (EPA)",
-    "tipoOriginal": "documento oficial de la EPA (factores de emisión)",
-    "grupo": "Organismos públicos e internacionales",
-    "url": "https://www.epa.gov/sites/default/files/2020-11/documents/c12s11_2010.pdf",
-    "hechos": [
-      "proceso_reciclaje-f6"
-    ]
-  },
-  {
-    "n": 112,
-    "fuente": 406,
-    "titulo": "Commission Implementing Decision (EU) 2016/1032 of 13 June 2016 establishing best available techniques (BAT) conclusions, under Directive 2010/75/EU, for the non-ferrous metals industries (DO L 174, 30.6.2016, p. 32)",
-    "editor": "Comisión Europea, publicado por la Oficina de Publicaciones de la UE",
-    "tipoOriginal": "texto legal (DOUE)",
-    "grupo": "Normativa",
-    "url": "https://publications.europa.eu/resource/cellar/174bd664-3e84-11e6-af30-01aa75ed71a1.0006.03/DOC_1",
-    "urlOriginal": "http://publications.europa.eu/resource/cellar/174bd664-3e84-11e6-af30-01aa75ed71a1.0006.03/DOC_1",
-    "hechos": [
-      "proceso_reciclaje-f7",
-      "proceso_reciclaje-f8"
-    ]
-  },
-  {
-    "n": 113,
+    "n": 121,
     "fuente": 410,
     "titulo": "RESOLUCIÓN de 19 de abril de 2022, del Instituto Aragonés de Gestión Ambiental, por la que se modifica puntualmente la Resolución de 26 de agosto de 2013 (AAI de la planta de reciclado parcial de baterías y compuestos de plomo, Pina de Ebro), BOA núm. 91",
     "editor": "Boletín Oficial de Aragón / Instituto Aragonés de Gestión Ambiental",
@@ -1429,7 +1571,7 @@
     ]
   },
   {
-    "n": 114,
+    "n": 122,
     "fuente": 83,
     "titulo": "Draft Commission Implementing Regulation laying down rules for the application of Regulation (EU) 2023/1542 as regards access to and use of certain information in the battery passport (Ares(2026)9814179)",
     "editor": "Comisión Europea (EUR-Lex, documentos preparatorios)",
@@ -1442,7 +1584,7 @@
     ]
   },
   {
-    "n": 115,
+    "n": 123,
     "fuente": 31,
     "titulo": "Decisión Delegada (UE) 2025/934 de la Comisión, de 5 de marzo de 2025, por la que se modifica la Decisión 2000/532/CE en lo referente a la actualización de la lista de residuos en relación con los residuos de pilas y baterías",
     "editor": "Comisión Europea (Diario Oficial de la Unión Europea)",
@@ -1454,7 +1596,7 @@
     ]
   },
   {
-    "n": 116,
+    "n": 124,
     "fuente": 32,
     "titulo": "Corrección de errores de la Decisión Delegada (UE) 2025/934 (DO L, 2025/90657): aplicable desde el 9 de diciembre de 2026",
     "editor": "Diario Oficial de la Unión Europea",
@@ -1467,7 +1609,7 @@
     ]
   },
   {
-    "n": 117,
+    "n": 125,
     "fuente": 103,
     "titulo": "Información pública del proyecto de real decreto sobre las pilas y baterías y la gestión de sus residuos (plazo del 30-06-2026 al 03-09-2026)",
     "editor": "Ministerio para la Transición Ecológica y el Reto Demográfico (MITECO)",
@@ -1479,7 +1621,7 @@
     ]
   },
   {
-    "n": 118,
+    "n": 126,
     "fuente": 99,
     "titulo": "Real Decreto 553/2020, de 2 de junio, por el que se regula el traslado de residuos en el interior del territorio del Estado",
     "editor": "Agencia Estatal Boletín Oficial del Estado (BOE), Ministerio para la Transición Ecológica y el Reto Demográfico",
@@ -1492,7 +1634,7 @@
     ]
   },
   {
-    "n": 119,
+    "n": 127,
     "fuente": 145,
     "titulo": "UNEP/CHW.6/22 - Technical guidelines for the environmentally sound management of waste lead-acid batteries (Note by the secretariat; adoptadas por la decisión VI/22 de la COP-6)",
     "editor": "Secretaría del Convenio de Basilea (PNUMA)",
@@ -1501,30 +1643,6 @@
     "url": "https://www.basel.int/Portals/4/download.aspx?d=UNEP-CHW.6-22.English.pdf",
     "hechos": [
       "seguridad-f15"
-    ]
-  },
-  {
-    "n": 120,
-    "fuente": 455,
-    "titulo": "Real Decreto 614/2001, de 8 de junio, sobre disposiciones mínimas para la protección de la salud y seguridad de los trabajadores frente al riesgo eléctrico (texto consolidado)",
-    "editor": "Agencia Estatal Boletín Oficial del Estado (BOE-A-2001-11881)",
-    "tipoOriginal": "legislación española (BOE)",
-    "grupo": "Normativa",
-    "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2001-11881",
-    "hechos": [
-      "vehiculo_electrico-f17"
-    ]
-  },
-  {
-    "n": 121,
-    "fuente": 192,
-    "titulo": "BU-201: How does the Lead Acid Battery Work?",
-    "editor": "Battery University (Cadex Electronics Inc.)",
-    "tipoOriginal": "sitio técnico de referencia (no normativo)",
-    "grupo": "Estudios y publicaciones técnicas",
-    "url": "https://www.batteryuniversity.com/article/bu-201-how-does-the-lead-acid-battery-work",
-    "hechos": [
-      "segunda_vida-f2"
     ]
   }
 ]
