@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as CAM from '../camera.js';
-import { V, TOP, F, STATIONS, PLATFORMS, BRIDGES } from './layout.js';
+import { V, TOP, F, STATIONS, PLATFORMS, BRIDGES, ACCESS } from './layout.js';
 
 // Terreno común: agua, islas con acantilado estratificado, puentes y mobiliario de borde (bordillo por
 // piezas, pasamanos tubular con pies embridados, balizas, vegetación, rocas y focos en la roca).
@@ -740,6 +740,36 @@ function registerOpenings(islands, frames) {
   });
 }
 
+// v2 · Aberturas de las calzadas del polígono (layout.js · ACCESS): la oeste entra en s1 y la este sale de s5. El
+// bordillo se corta justo fuera del firme de 7 m y la barandilla termina en sus pies de remate un poco más afuera,
+// junto al quitamiedos de la calzada (stations/environment.js). Las balizas quedan a ambos lados de la entrada.
+const ACCESS_ENDS = [['s1', 'west'], ['s5', 'east']];
+function registerAccessOpenings(islands) {
+  ACCESS_ENDS.forEach(([key, side]) => {
+    const a = ACCESS[side];
+    const isl = islands[key];
+    if (!a || !isl) return;
+    const out = Math.sign(a.shore.x - a.rim.x); // sentido de la calzada hacia la orilla
+    const hw = a.width / 2;
+    const cut = (l) => crossing(isl, a.rim.x - out * 4, a.rim.z + l, out, 0);
+    const rails = [cut(-(hw + 0.15)), cut(hw + 0.15)];
+    const kerbs = [cut(-(hw + 0.05)), cut(hw + 0.05)];
+    if (rails.some((c) => !c) || kerbs.some((c) => !c)) return;
+    isl.openings.push({ bridge: `acceso-${side}`, end: 0, notched: false, rail: rails.map((c) => c.s), kerb: kerbs.map((c) => c.s) });
+  });
+}
+
+// ¿Cae (x, z), con holgura r, bajo una calzada del polígono o junto a su arranque? Ni vegetación ni rocas ni focos.
+function nearAccess(x, z, r) {
+  return ACCESS_ENDS.some(([, side]) => {
+    const a = ACCESS[side];
+    if (!a) return false;
+    const x0 = Math.min(a.rim.x, a.shore.x) - 1.5;
+    const x1 = Math.max(a.rim.x, a.shore.x) + 1.5;
+    return x > x0 - r && x < x1 + r && Math.abs(z - a.rim.z) < a.width / 2 + 1 + r;
+  });
+}
+
 // Intervalo [s0, s1] (con s1 > s0, puede pasar de L) más corto que une dos posiciones del contorno.
 function arc(L, s0, s1) {
   let a = s0;
@@ -1069,6 +1099,7 @@ export function buildTerrain(ctx) {
   const mats = { kerb: E.stone, stone: E.stone, boulder: E.boulder, streaks: [] };
 
   registerOpenings(islands, frames);
+  registerAccessOpenings(islands);
   const glass = [];
   frames.forEach((fr) => buildBridge(ctx, fr, islands, mats, glass));
   if (glass.length) {
@@ -1331,8 +1362,8 @@ export function buildEdges(ctx) {
   const rnd = rng(20261021);
   const out = { trees: [], rocks: [], fixtures: [] };
 
-  // nada bajo los tableros ni junto a las pilas
-  const nearBridge = (x, z, r) => frames.some((fr) => {
+  // nada bajo los tableros ni junto a las pilas (tampoco bajo las calzadas del polígono)
+  const nearBridge = (x, z, r) => nearAccess(x, z, r) || frames.some((fr) => {
     const dx = x - fr.a.x;
     const dz = z - fr.a.z;
     const t = dx * fr.u.x + dz * fr.u.z;

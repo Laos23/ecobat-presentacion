@@ -1,16 +1,20 @@
 import * as THREE from 'three';
 import { BRIDGES, TRACES } from '../layout.js';
+import { CH } from '../chapters.js';
+import * as A from '../actors.js';
 
-// 4 · Cruce con tres rutas: rotonda con isla ajardinada, calzadas con bordillo y marcas lima, parterres
-// con vegetación y balizas, aparcamiento de servicio (A) y módulo de evaluación de segunda vida (B).
+// Cruce (s4, clasificación) y sus dos islas: rotonda con isla ajardinada, calzadas con bordillo y marcas lima,
+// parterres con vegetación y balizas. Las baterías de plomo aptas vuelven al oeste, hacia la nave de reutilización
+// (s2), por el mismo camino por el que llegaron; la de coche eléctrico sigue al este, al desmontaje (sB); las demás,
+// al sureste, al reciclaje (s5). El ramal norte lleva a segunda vida (sA) los módulos que salen del desmontaje.
 // Referencia: context/ref-cruce-rutas.png (estilo general: context/EcoBat-scroll-world-referencia.png).
 
-// Ejes de las cuatro calzadas: siguen las trazas y las rutas simuladas de world.js.
+// Ejes de las cuatro calzadas: siguen las trazas de layout.js.
 const AXES = [
-  [5.0, -5.4, 12.4, -8.2], // entrada desde el laboratorio
-  [15.3, -11.0, 16.9, -19.5], // A · sigue en servicio
-  [19.5, -8.2, 27.5, -8.0], // B · evaluación de segunda vida
-  [16.9, -5.0, 19.6, 3.6], // C · reciclaje autorizado
+  [5.0, -5.4, 12.4, -8.2], // oeste: entrada desde el laboratorio y salida de reutilización (doble sentido)
+  [15.3, -11.0, 16.9, -19.5], // norte: módulos de segunda vida (sA)
+  [19.5, -8.2, 27.5, -8.0], // este: desmontaje de baterías de coche eléctrico (sB)
+  [16.9, -5.0, 19.6, 3.6], // sureste: reciclaje de plomo-ácido (s5)
 ];
 const RING = 5.6; // borde exterior del anillo de circulación
 const HALF = 1.6; // medio ancho de calzada hasta la cara del bordillo (los puentes miden 3 m)
@@ -186,8 +190,13 @@ const shapeOf = (pts) => new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x
 
 // ---------- Trazas y rutas de world.js ----------
 // Mismos puntos de control que las trazas luminosas de world.js (layout.js): las puntas de flecha se apoyan
-// sobre ellas. La rosa sabe qué ruta toma cada batería que llega a la rotonda por story.route.
-const ROUTES = ['service', 'second', 'recycle'];
+// sobre ellas. La rosa sabe qué ruta toma cada batería que llega a la rotonda por story.route; se aceptan los
+// nombres de la v1 y los de la v2 (0 reutilización, 1 desmontaje, 2 reciclaje).
+const ROUTE_INDEX = {
+  reuse: 0, reutilizacion: 0, service: 0,
+  ev: 1, desmontaje: 1, disassembly: 1, second: 1, litio: 1,
+  recycle: 2, reciclaje: 2,
+};
 
 function worldCurves() {
   const cr = (pts) => new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.5);
@@ -243,48 +252,66 @@ function valueNoise(x, z) {
 const PAL = { bg: '#1b1e20', ivory: '#F1EEE6', lime: '#C2F230', amber: '#E5AE50', dim: 'rgba(241,238,230,0.55)' };
 const SLOT = 256;
 
-function iconCar(g, cx, cy, s, col) {
+function iconReuse(g, cx, cy, s, col) {
+  // batería de arranque con una flecha circular: vuelve a servicio
   g.strokeStyle = col;
   g.fillStyle = col;
   g.lineWidth = 10 * s;
   g.lineJoin = 'round';
   g.lineCap = 'round';
+  g.strokeRect(cx - 62 * s, cy - 26 * s, 124 * s, 66 * s);
+  [-38, 38].forEach((dx) => g.fillRect(cx + (dx - 9) * s, cy - 40 * s, 18 * s, 12 * s));
   g.beginPath();
-  g.moveTo(cx - 66 * s, cy + 18 * s);
-  g.lineTo(cx - 66 * s, cy - 2 * s);
-  g.lineTo(cx - 40 * s, cy - 8 * s);
-  g.lineTo(cx - 22 * s, cy - 34 * s);
-  g.lineTo(cx + 28 * s, cy - 34 * s);
-  g.lineTo(cx + 46 * s, cy - 8 * s);
-  g.lineTo(cx + 66 * s, cy - 2 * s);
-  g.lineTo(cx + 66 * s, cy + 18 * s);
-  g.closePath();
+  g.arc(cx, cy + 7 * s, 19 * s, -Math.PI * 0.15, Math.PI * 1.45);
   g.stroke();
-  [-36, 38].forEach((dx) => {
-    g.beginPath();
-    g.arc(cx + dx * s, cy + 22 * s, 13 * s, 0, Math.PI * 2);
-    g.fill();
-  });
+  g.beginPath();
+  g.moveTo(cx + 26 * s, cy - 6 * s);
+  g.lineTo(cx + 10 * s, cy - 14 * s);
+  g.lineTo(cx + 25 * s, cy + 9 * s);
+  g.closePath();
+  g.fill();
 }
 
-function iconScan(g, cx, cy, s, col) {
-  // lupa sobre un módulo de batería
+function iconPack(g, cx, cy, s, col) {
+  // paquete plano de coche eléctrico abierto por módulos: uno sale hacia arriba
   g.strokeStyle = col;
-  g.lineWidth = 10 * s;
-  g.lineCap = 'round';
+  g.fillStyle = col;
+  g.lineWidth = 9 * s;
   g.lineJoin = 'round';
-  g.strokeRect(cx - 68 * s, cy - 26 * s, 84 * s, 60 * s);
+  g.lineCap = 'round';
+  g.strokeRect(cx - 70 * s, cy - 4 * s, 140 * s, 44 * s);
+  [-35, 0, 35].forEach((dx) => {
+    g.beginPath();
+    g.moveTo(cx + dx * s, cy - 4 * s);
+    g.lineTo(cx + dx * s, cy + 40 * s);
+    g.stroke();
+  });
+  g.fillRect(cx + 4 * s, cy - 46 * s, 27 * s, 30 * s);
   g.beginPath();
-  g.moveTo(cx - 50 * s, cy - 38 * s);
-  g.lineTo(cx - 30 * s, cy - 38 * s);
+  g.moveTo(cx + 17 * s, cy - 54 * s);
+  g.lineTo(cx + 17 * s, cy - 62 * s);
   g.stroke();
+}
+
+function iconStore(g, cx, cy, s, col) {
+  // armario de almacenamiento con módulos apilados y un sol: otro uso, guardar energía
+  g.strokeStyle = col;
+  g.fillStyle = col;
+  g.lineWidth = 9 * s;
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  g.strokeRect(cx - 62 * s, cy - 30 * s, 84 * s, 74 * s);
+  [-12, 8, 28].forEach((dy) => g.fillRect(cx - 50 * s, cy + (dy - 6) * s, 60 * s, 12 * s));
   g.beginPath();
-  g.arc(cx + 22 * s, cy - 6 * s, 30 * s, 0, Math.PI * 2);
-  g.stroke();
-  g.beginPath();
-  g.moveTo(cx + 44 * s, cy + 16 * s);
-  g.lineTo(cx + 68 * s, cy + 42 * s);
-  g.stroke();
+  g.arc(cx + 50 * s, cy - 38 * s, 13 * s, 0, Math.PI * 2);
+  g.fill();
+  for (let k = 0; k < 8; k++) {
+    const a = (k / 8) * Math.PI * 2;
+    g.beginPath();
+    g.moveTo(cx + 50 * s + Math.cos(a) * 21 * s, cy - 38 * s + Math.sin(a) * 21 * s);
+    g.lineTo(cx + 50 * s + Math.cos(a) * 28 * s, cy - 38 * s + Math.sin(a) * 28 * s);
+    g.stroke();
+  }
 }
 
 function iconRecycle(g, cx, cy, s, col) {
@@ -313,6 +340,8 @@ function iconRecycle(g, cx, cy, s, col) {
   g.restore();
 }
 
+// Casillas del atlas (4 × 2 de 256 px). Fila 0: señales de las cuatro ramas. Fila 1: rótulos de fachada
+// (mitades de 256 × 128), rótulos de ejemplo de sB y los dos monitores fijos del puesto de desmontaje.
 function routeAtlas() {
   const c = document.createElement('canvas');
   c.width = SLOT * 4;
@@ -328,6 +357,12 @@ function routeAtlas() {
     g.restore();
   };
   const font = (w, px) => `${w} ${px}px "Archivo Variable", "Archivo", sans-serif`;
+  // ajusta el cuerpo de letra para que el texto quepa en `max` píxeles
+  const fit = (text, w, px, max) => {
+    let p = px;
+    g.font = font(w, p);
+    while (g.measureText(text).width > max && p > 10) g.font = font(w, --p);
+  };
   const sign = (col, color, icon, label) => slot(col, 0, () => {
     g.fillStyle = PAL.bg;
     g.fillRect(0, 0, SLOT, SLOT);
@@ -336,95 +371,91 @@ function routeAtlas() {
     g.strokeRect(12, 12, SLOT - 24, SLOT - 24);
     icon(g, 128, 104, 1.05, color);
     g.fillStyle = PAL.ivory;
-    g.font = font(800, label.length > 9 ? 27 : 31);
     g.textAlign = 'center';
+    fit(label, 800, 31, SLOT - 44);
     g.fillText(label, 128, 212);
   });
-  sign(0, PAL.lime, iconCar, 'SERVICIO');
-  sign(1, PAL.amber, iconScan, 'EVALUACIÓN');
+  sign(0, PAL.lime, iconReuse, 'REUTILIZACIÓN');
+  sign(1, PAL.amber, iconPack, 'DESMONTAJE');
   sign(2, PAL.ivory, iconRecycle, 'RECICLAJE');
-  // rótulo de fachada del módulo B
-  slot(3, 0, () => {
+  sign(3, PAL.lime, iconStore, 'SEGUNDA VIDA');
+  // rótulos apaisados (256 × 128): barra de color, icono, título y subtítulo
+  const banner = (col, y0, color, icon, title, sub, note) => slot(col, 1, () => {
+    g.translate(0, y0);
     g.fillStyle = PAL.bg;
-    g.fillRect(0, 0, SLOT, SLOT);
-    g.fillStyle = PAL.amber;
-    g.fillRect(0, 0, SLOT, 10);
-    iconScan(g, 128, 88, 0.95, PAL.amber);
+    g.fillRect(0, 0, SLOT, 128);
+    g.fillStyle = color;
+    g.fillRect(0, 0, SLOT, 7);
+    if (icon) icon(g, 40, 66, 0.42, color);
+    const x = icon ? 78 : 16;
+    g.textAlign = 'left';
     g.fillStyle = PAL.ivory;
-    g.textAlign = 'center';
-    g.font = font(800, 28);
-    g.fillText('EVALUACIÓN', 128, 178);
+    fit(title, 800, 25, SLOT - x - 10);
+    g.fillText(title, x, note ? 52 : 62);
     g.fillStyle = PAL.dim;
-    g.font = font(600, 22);
-    g.fillText('segunda vida', 128, 212);
+    fit(sub, 600, 17, SLOT - x - 10);
+    g.fillText(sub, x, note ? 78 : 90);
+    if (note) {
+      g.fillStyle = color;
+      fit(note, 700, 16, SLOT - x - 10);
+      g.fillText(note, x, 104);
+    }
   });
-  // monitor del banco de pruebas: la traza de capacidad ya completa (la que avanza está en la fachada)
-  slot(0, 1, () => {
-    g.fillStyle = '#0f1112';
-    g.fillRect(0, 48, SLOT, 160);
-    g.strokeStyle = 'rgba(229,174,80,0.16)';
-    g.lineWidth = 1;
-    g.beginPath();
-    for (let x = 16; x < SLOT; x += 28) {
-      g.moveTo(x, 86);
-      g.lineTo(x, 196);
-    }
-    for (let y = 86; y < 200; y += 22) {
-      g.moveTo(16, y);
-      g.lineTo(SLOT - 16, y);
-    }
-    g.stroke();
-    g.strokeStyle = PAL.amber;
-    g.lineWidth = 4;
-    g.beginPath();
-    for (let i = 0; i <= 48; i++) {
-      const u = i / 48;
-      const x = 16 + u * (SLOT - 32);
-      const y = 96 + (1 - Math.exp(-u * 3.2)) * 70;
-      if (i) g.lineTo(x, y);
-      else g.moveTo(x, y);
-    }
-    g.stroke();
-    g.fillStyle = PAL.ivory;
-    g.font = font(700, 18);
-    g.fillText('Capacidad', 16, 74);
-    g.fillStyle = PAL.lime;
-    g.textAlign = 'right';
-    // traza de ejemplo: sin un porcentaje de capacidad que no tiene fuente
-    g.fillText('Ejemplo', SLOT - 16, 74);
-  });
-  // monitores fijos del puesto de evaluación (barras de capacidad y tensión)
+  banner(0, 0, PAL.amber, iconPack, 'DESMONTAJE', 'baterías de coche eléctrico');
+  banner(0, 128, PAL.lime, iconStore, 'SEGUNDA VIDA', 'almacenamiento estacionario');
+  banner(1, 0, PAL.lime, null, 'Remanufacturada', 'vuelve a un coche', 'ejemplo');
+  banner(1, 128, PAL.ivory, null, 'Reciclador de litio', 'fuera del polígono', 'módulos que no sirven');
+  // monitor del puesto de desmontaje: módulos del paquete y su destino (rotulado como ejemplo)
   slot(2, 1, () => {
     g.fillStyle = '#0f1112';
     g.fillRect(0, 48, SLOT, 160);
-    [0.42, 0.58, 0.51, 0.77, 0.69, 0.86, 0.74].forEach((v, i) => {
-      g.fillStyle = i === 5 ? PAL.lime : 'rgba(194,242,48,0.42)';
-      g.fillRect(22 + i * 32, 192 - v * 120, 20, v * 120);
+    g.fillStyle = PAL.ivory;
+    g.textAlign = 'left';
+    g.font = font(700, 16);
+    g.fillText('Módulos del paquete', 14, 72);
+    g.fillStyle = PAL.lime;
+    g.textAlign = 'right';
+    g.font = font(700, 14);
+    g.fillText('ejemplo', SLOT - 14, 72);
+    const kind = [0, 0, 1, 0, 0, 0, 2, 0, 0, 1, 0, 0];
+    const cols = [PAL.lime, PAL.amber, 'rgba(241,238,230,0.5)'];
+    kind.forEach((k, i) => {
+      g.fillStyle = cols[k];
+      g.fillRect(16 + (i % 6) * 38, 84 + Math.floor(i / 6) * 34, 32, 26);
     });
-    g.fillStyle = PAL.dim;
-    g.font = font(600, 16);
-    g.fillText('Capacidad · lote 04 · ejemplo', 20, 74);
+    g.textAlign = 'left';
+    g.font = font(600, 12);
+    [['sigue en el paquete', 0], ['segunda vida', 1], ['reciclador', 2]].forEach(([t, k], i) => {
+      const x = 16 + i * 80;
+      g.fillStyle = cols[k];
+      g.fillRect(x, 166, 10, 10);
+      g.fillStyle = PAL.dim;
+      g.fillText(t, x + 14, 175, 64);
+    });
   });
+  // monitor fijo: pasos del trabajo en alta tensión
   slot(3, 1, () => {
     g.fillStyle = '#0f1112';
     g.fillRect(0, 48, SLOT, 160);
-    g.lineWidth = 16;
-    g.strokeStyle = 'rgba(229,174,80,0.22)';
-    g.beginPath();
-    g.arc(128, 168, 86, Math.PI, 0);
-    g.stroke();
-    g.strokeStyle = PAL.amber;
-    g.beginPath();
-    g.arc(128, 168, 86, Math.PI, Math.PI * 1.68);
-    g.stroke();
+    g.fillStyle = PAL.amber;
+    g.fillRect(0, 48, SLOT, 6);
     g.fillStyle = PAL.ivory;
-    g.textAlign = 'center';
-    g.font = font(800, 34);
-    // lectura de ejemplo: 12,4 V en reposo es en torno al 75 % de carga en una batería inundada (pestaña Datos)
-    g.fillText('12,4 V', 128, 168);
-    g.fillStyle = PAL.dim;
+    g.textAlign = 'left';
+    g.font = font(800, 17);
+    g.fillText('Trabajo en alta tensión', 14, 80);
     g.font = font(600, 15);
-    g.fillText('tensión en reposo · ejemplo', 128, 196);
+    ['Desconectado y sin tensión', 'Ausencia de tensión comprobada', 'Apertura por módulos'].forEach((t, i) => {
+      const y = 112 + i * 30;
+      g.strokeStyle = PAL.lime;
+      g.lineWidth = 3;
+      g.beginPath();
+      g.moveTo(16, y - 5);
+      g.lineTo(21, y);
+      g.lineTo(30, y - 11);
+      g.stroke();
+      g.fillStyle = i < 2 ? PAL.ivory : PAL.lime;
+      g.fillText(t, 40, y, SLOT - 52);
+    });
   });
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -436,8 +467,8 @@ function routeAtlas() {
 // Mitad izquierda: tapa del marcador central (arriba del lienzo = norte del mundo). Mitad derecha: el
 // puesto donde el técnico valida la ruta que propone el software. Se ilumina la misma ruta en ambas.
 const ROUTE_STYLE = [
-  { color: PAL.lime, rgb: '194,242,48', label: 'Servicio', icon: iconCar },
-  { color: PAL.amber, rgb: '229,174,80', label: 'Evaluación', icon: iconScan },
+  { color: PAL.lime, rgb: '194,242,48', label: 'Reutilización', icon: iconReuse },
+  { color: PAL.amber, rgb: '229,174,80', label: 'Desmontaje', icon: iconPack },
   { color: PAL.ivory, rgb: '241,238,230', label: 'Reciclaje', icon: iconRecycle },
 ];
 // intensidades en 16 pasos con sus colores ya compuestos: redibujar no crea cadenas nuevas
@@ -453,8 +484,9 @@ const FONT_ROW_ON = ROSE_FONT(700, 12);
 const FONT_SMALL = ROSE_FONT(600, 11);
 
 function makeDrawRoutes(dirs) {
-  const exits = [dirs.service, dirs.second, dirs.recycle];
-  const entryA = Math.atan2(dirs.entry[1], dirs.entry[0]);
+  // reutilización sale por donde entró (oeste); desmontaje al este; reciclaje al sureste
+  const exits = [dirs.entry, dirs.second, dirs.recycle];
+  const northA = Math.atan2(dirs.service[1], dirs.service[0]);
   // st.w: intensidad de cada ruta (0..1); sin estado, las tres encendidas
   return (g, w, h, t, st) => {
     const wOf = (i) => (st ? Math.round(st.w[i] * STEPS) / STEPS : 1);
@@ -467,10 +499,18 @@ function makeDrawRoutes(dirs) {
     g.beginPath();
     g.arc(0, 0, 57, 0, Math.PI * 2);
     g.stroke();
+    // ramal norte: módulos de segunda vida que salen del desmontaje (no es una ruta de la clasificación)
     g.save();
-    g.rotate(entryA);
-    g.fillStyle = 'rgba(241,238,230,0.4)';
-    g.fillRect(35, -4, 18, 8);
+    g.rotate(northA);
+    g.strokeStyle = 'rgba(194,242,48,0.6)';
+    g.lineWidth = 2.5;
+    g.strokeRect(15, -3, 20, 6);
+    g.beginPath();
+    g.moveTo(52, 0);
+    g.lineTo(37, -10);
+    g.lineTo(37, 10);
+    g.closePath();
+    g.stroke();
     g.restore();
     exits.forEach(([dx, dz], i) => {
       const k = wOf(i);
@@ -609,7 +649,6 @@ export function buildJunction(ctx) {
   const field = planterField(s4.x, s4.z);
   const trees = [];
   const rocks = [];
-  const modules = [];
   const occupied = [];
   const free = (x, z, d) => occupied.every(([ox, oz, od]) => Math.hypot(x - ox, z - oz) > d + od);
   const claim = (x, z, d) => occupied.push([x, z, d]);
@@ -730,20 +769,29 @@ export function buildJunction(ctx) {
   const side = new THREE.Vector3();
   const nrm = new THREE.Vector3();
   const basis = new THREE.Matrix4();
+  // reutilización: punta de salida hacia el oeste en el carril derecho de la calzada de entrada (doble sentido)
+  const [ex, ez] = dirs.entry;
+  const reuseAt = { p: new THREE.Vector3(8.7 - ez * 0.8, y4, -6.8 + ex * 0.8), hx: ex, hz: ez };
   [
     [curves.trace.entry, 2.93, M.lime],
+    [null, reuseAt, M.lime],
     [curves.trace.service, 0.6, M.lime],
     [curves.trace.service, 2.78, M.lime],
     [curves.trace.second, 0.86, M.amberGlow],
     [curves.trace.second, 3.35, M.amberGlow],
     [curves.trace.recycle, 2.5, M.warmGlow],
   ].forEach(([curve, k, mat]) => {
-    const u = k / (curve.points.length - 1);
-    const p = curve.getPoint(u);
-    curve.getTangent(u, tan);
-    const hl = Math.hypot(tan.x, tan.z);
-    const hx = tan.x / hl;
-    const hz = tan.z / hl;
+    let p;
+    let hx;
+    let hz;
+    if (curve) {
+      const u = k / (curve.points.length - 1);
+      p = curve.getPoint(u);
+      curve.getTangent(u, tan);
+      const hl = Math.hypot(tan.x, tan.z);
+      hx = tan.x / hl;
+      hz = tan.z / hl;
+    } else ({ p, hx, hz } = k);
     const br = bridgeUnder(p.x, p.z);
     let y = y4 + 0.045;
     let grade = 0;
@@ -785,7 +833,7 @@ export function buildJunction(ctx) {
   band.position.y = 0.7;
   isl.add(band);
   // pilotos de ruta en el costado del tambor, orientados hacia cada salida
-  [[dirs.service, M.lime], [dirs.second, M.amberGlow], [dirs.recycle, M.warmGlow]].forEach(([[dx, dz], mat]) => {
+  [[dirs.entry, M.lime], [dirs.second, M.amberGlow], [dirs.recycle, M.warmGlow], [dirs.service, M.limeLine]].forEach(([[dx, dz], mat]) => {
     const chip = K.box(0.24, 0.06, 0.03, mat, dx * 0.95, 0.5, dz * 0.95);
     chip.rotation.y = Math.atan2(dx, dz);
     isl.add(chip);
@@ -798,7 +846,7 @@ export function buildJunction(ctx) {
   claim(s4.x, s4.z, 2.3);
 
   // ---------- Señales de las tres rutas: icono y nombre, poste grafito con zapata ----------
-  const signGeo = [0, 1, 2].map((col) => toSlot(new THREE.PlaneGeometry(1.22, 1.22), col, 0));
+  const signGeo = [0, 1, 2, 3].map((col) => toSlot(new THREE.PlaneGeometry(1.22, 1.22), col, 0));
   const sign = (col, x, z, ry) => {
     const g = new THREE.Group();
     g.add(K.cyl(0.15, 0.18, 0.1, M.graphite, 12).translateY(0.05));
@@ -812,8 +860,11 @@ export function buildJunction(ctx) {
     ctx.add(g);
     claim(x, z, 0.45);
   };
-  sign(0, s4.x - 2.6, s4.z - 6.6, 0.3);
-  // EVALUACIÓN a 2,5 m del eje de B; RECICLAJE en la boca de C, tras su bordillo, de cara a la entrada
+  // SEGUNDA VIDA en el ramal norte (módulos que salen del desmontaje hacia sA)
+  sign(3, s4.x - 2.6, s4.z - 6.6, 0.3);
+  // REUTILIZACIÓN junto a la calzada oeste, por la que las aptas vuelven hacia la nave de reutilización (s2)
+  sign(0, 10.6, -4.5, -0.3);
+  // DESMONTAJE a 2,5 m del eje este; RECICLAJE en la boca sureste, tras su bordillo, de cara a la entrada
   sign(1, 22.2, -10.6, -0.5);
   sign(2, 20.3, -2.6, -0.7);
 
@@ -837,6 +888,12 @@ export function buildJunction(ctx) {
   ctx.add(kiosk);
   claim(BAY[0], BAY[1], 0.5);
   ctx.shadows.push({ x: BAY[0], y: y4, z: BAY[1], w: 0.9, d: 0.7, r: -0.5 });
+  // técnico que valida la ruta propuesta: de espaldas a la cámara, inclinado sobre la pantalla del puesto
+  const validator = A.makePerson(M, { role: 'conductor', pose: 'work' });
+  validator.position.set(BAY[0] + Math.sin(-0.5) * 0.62, y4, BAY[1] + Math.cos(-0.5) * 0.62);
+  validator.rotation.y = -0.5 + Math.PI;
+  ctx.add(validator);
+  ctx.shadows.push({ x: validator.position.x, y: y4, z: validator.position.z, w: 0.6, d: 0.45, r: -0.5 });
 
   // ---------- Balizas sobre el bordillo, como en la referencia; su charco de luz cae en la calzada ----------
   lampRuns.forEach((run) => {
@@ -971,7 +1028,9 @@ export function buildJunction(ctx) {
     }
   });
 
-  // ---------- A · sigue en servicio: plaza cubierta con punto de carga y carro de batería ----------
+  // ---------- sA · Segunda vida: almacenamiento estacionario bajo la marquesina solar ----------
+  // Los módulos que ya no rinden para mover un coche, pero guardan energía, se montan en un contenedor de
+  // almacenamiento conectado a un armario de conversión. Ningún coche ni batería de arranque aquí.
   const sA = STATIONS.sA;
   const yA = sA.y;
   const canopy = new THREE.Group();
@@ -988,65 +1047,61 @@ export function buildJunction(ctx) {
     pv.rotation.x = 0.17;
     canopy.add(pv);
   }));
+  // rótulo de la zona sobre el canto delantero de la marquesina, de cara al puente
+  const signA = new THREE.Group();
+  [-0.7, 0.7].forEach((x) => signA.add(K.box(0.06, 0.2, 0.06, M.darkSteel, x, 0, 0)));
+  signA.add(K.rbox(2.12, 1.1, 0.06, M.darkSteel, 0, 0.18, -0.035, 0.02));
+  const signAFace = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(2.0, 1.0), 0, 1, [0, 128, SLOT, 256]), signMat);
+  signAFace.position.set(0, 0.73, 0);
+  signA.add(signAFace);
+  signA.position.set(0, 3.65, 3.0);
+  canopy.add(signA);
   canopy.position.set(sA.x, yA, sA.z - 0.5);
   ctx.add(canopy);
-  const carA = K.makeCar(M, { paint: new THREE.MeshPhysicalMaterial({ color: '#5c6166', metalness: 0.55, roughness: 0.35, clearcoat: 1, clearcoatRoughness: 0.1 }) });
-  carA.position.set(sA.x - 1.2, sA.y, sA.z - 0.5);
-  carA.rotation.y = 0.15;
-  ctx.add(carA);
-  ctx.shadows.push({ x: sA.x - 1.2, y: sA.y, z: sA.z - 0.5, w: 5, d: 2.6, r: 0.15 });
-  // plaza pintada, tope de rueda, punto de carga y carro con la batería lista para montar
-  const bay = new THREE.Group();
-  bay.position.set(sA.x - 1.2, yA, sA.z - 0.5);
-  bay.rotation.y = 0.15;
-  [-1.42, 1.42].forEach((z) => bay.add(K.box(5.3, 0.012, 0.1, M.ivoryPanel, -0.05, 0, z)));
-  bay.add(K.box(0.1, 0.012, 2.94, M.ivoryPanel, 2.6, 0, 0));
-  bay.add(K.rbox(0.18, 0.12, 1.5, M.rubber, 2.12, 0, 0, 0.04));
-  [-0.45, 0.45].forEach((z) => bay.add(K.box(0.19, 0.03, 0.22, M.amberMatte, 2.12, 0.1, z)));
-  const charger = new THREE.Group();
-  charger.add(K.box(0.5, 0.04, 0.4, M.darkSteel, 0, 0, 0));
-  charger.add(K.rbox(0.34, 1.4, 0.28, M.ivoryPanel, 0, 0.04, 0, 0.05));
-  charger.add(K.box(0.22, 0.3, 0.012, M.darkGlass, 0, 0.92, 0.146));
-  charger.add(K.box(0.16, 0.035, 0.014, M.lime, 0, 1.2, 0.146));
-  charger.add(K.box(0.035, 0.035, 0.014, M.amberGlow, 0.1, 0.8, 0.146));
-  charger.position.set(2.95, 0, -1.3);
-  charger.rotation.y = -Math.PI / 2;
-  bay.add(charger);
-  bay.add(K.pipe([new THREE.Vector3(2.8, 0.9, -1.22), new THREE.Vector3(2.72, 0.3, -1.12), new THREE.Vector3(2.4, 0.05, -1.0), new THREE.Vector3(2.0, 0.28, -0.98), new THREE.Vector3(1.86, 0.8, -0.95)], 0.02, M.rubber, 32));
-  const cart = new THREE.Group();
-  cart.add(K.rbox(0.62, 0.05, 0.95, M.darkSteel, 0, 0.7, 0, 0.02));
-  cart.add(K.rbox(0.62, 0.04, 0.95, M.darkSteel, 0, 0.2, 0, 0.02));
-  [[-0.27, -0.42], [0.27, -0.42], [-0.27, 0.42], [0.27, 0.42]].forEach(([x, z]) => {
-    const leg = K.cyl(0.018, 0.018, 0.62, M.steel, 6);
-    leg.position.set(x, 0.44, z);
-    cart.add(leg);
-    const wheel = K.cyl(0.055, 0.055, 0.04, M.rubber, 12);
-    wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(x, 0.055, z);
-    cart.add(wheel);
-  });
-  cart.add(K.pipe([new THREE.Vector3(-0.26, 0.74, -0.47), new THREE.Vector3(-0.26, 1.02, -0.52), new THREE.Vector3(0.26, 1.02, -0.52), new THREE.Vector3(0.26, 0.74, -0.47)], 0.016, M.steel, 16));
-  const cartBat = K.makeBattery(M, { scale: 0.38 });
-  cartBat.position.set(0, 0.75, 0.05);
-  cartBat.rotation.y = Math.PI / 2;
-  cart.add(cartBat);
-  cart.position.set(2.6, 0, 1.45);
-  bay.add(cart);
-  ctx.add(bay);
-  // segunda plaza: otro vehículo ya en servicio, de morro hacia el norte; el punto de carga queda entre ambos
-  const carB = K.makeCar(M, { paint: new THREE.MeshPhysicalMaterial({ color: '#d9d3c5', metalness: 0.4, roughness: 0.4, clearcoat: 1, clearcoatRoughness: 0.12 }) });
-  carB.position.set(sA.x + 3.05, yA, sA.z - 0.5);
-  carB.rotation.y = Math.PI / 2;
-  ctx.add(carB);
-  ctx.shadows.push({ x: sA.x + 3.05, y: yA, z: sA.z - 0.5, w: 2.6, d: 5 });
-  ctx.add(K.box(0.1, 0.012, 4.9, M.ivoryPanel, sA.x + 4.33, yA, sA.z - 0.5));
-  ctx.add(K.box(2.5, 0.012, 0.1, M.ivoryPanel, sA.x + 3.1, yA, sA.z - 2.92));
-  ctx.add(K.rbox(1.5, 0.12, 0.18, M.rubber, sA.x + 3.05, yA, sA.z - 2.43, 0.04));
-  [-0.45, 0.45].forEach((x) => ctx.add(K.box(0.22, 0.03, 0.19, M.amberMatte, sA.x + 3.05 + x, yA + 0.1, sA.z - 2.43)));
-  const tools = K.cabinet(M, { w: 1.1, h: 0.95, d: 0.55, drawers: 5, mat: M.graphite, top: M.stoneTop });
-  tools.position.set(18.6, yA, -31.05);
-  ctx.add(tools);
-  ctx.shadows.push({ x: 18.6, y: yA, z: -31.05, w: 1.3, d: 0.7 });
+  // contenedor de almacenamiento con la puerta abierta y los racks de módulos a la vista
+  const bess = A.makeBESS(M, { length: 6, doorOpen: true });
+  bess.position.set(18.3, yA, -29.75);
+  ctx.add(bess);
+  ctx.shadows.push({ x: 18.3, y: yA, z: -29.75, w: 6.3, d: 2.7 });
+  // armario de conversión (inversor) entre el contenedor y la red
+  const pcs = new THREE.Group();
+  pcs.add(K.box(1.3, 0.08, 0.85, M.concreteLight, 0, 0, 0));
+  pcs.add(K.rbox(1.2, 2.05, 0.75, M.ivoryPanel, 0, 0.08, 0, 0.03));
+  for (let i = 0; i < 5; i++) pcs.add(K.box(0.9, 0.03, 0.02, M.darkSteel, 0, 0.3 + i * 0.09, 0.38));
+  pcs.add(K.box(0.36, 0.22, 0.012, M.darkGlass, 0, 1.45, 0.38));
+  pcs.add(K.box(0.05, 0.05, 0.02, M.amberGlow, 0.42, 1.95, 0.38));
+  pcs.add(K.box(0.05, 0.05, 0.02, M.lime, 0.32, 1.95, 0.38));
+  pcs.position.set(23.55, yA, -29.4);
+  ctx.add(pcs);
+  ctx.shadows.push({ x: 23.55, y: yA, z: -29.4, w: 1.4, d: 0.95 });
+  // cableado: bandeja con dos cables del contenedor al armario, bajante de las placas y acometida a la red
+  ctx.add(K.box(1.7, 0.07, 0.3, M.darkSteel, 22.1, yA, -29.4));
+  [-29.48, -29.32].forEach((z) => ctx.add(K.box(1.7, 0.045, 0.06, M.rubber, 22.1, yA + 0.07, z)));
+  ctx.add(K.box(0.08, 1.27, 0.08, M.darkSteel, 23.3, yA + 2.13, -29.55));
+  ctx.add(K.box(0.12, 0.5, 0.12, M.darkSteel, 24.25, yA, -29.4));
+  // pantalla del ejemplo en un pedestal, de cara al puente
+  const storeLive = T.liveScreen(256, 128, drawStore, 6);
+  const storeStand = new THREE.Group();
+  storeStand.add(K.box(0.5, 0.05, 0.36, M.darkSteel, 0, 0, 0));
+  storeStand.add(K.box(0.1, 1.2, 0.1, M.darkSteel, 0, 0.05, -0.05));
+  const storeScreen = K.framedScreen(M, storeLive.texture, 1.5, 0.75, 0.9);
+  storeScreen.position.set(0, 1.62, 0);
+  storeStand.add(storeScreen);
+  storeStand.position.set(22.0, yA, -26.55);
+  storeStand.rotation.y = -0.35;
+  ctx.add(storeStand);
+  // técnico especialista con guantes aislantes, de espaldas, revisando los racks por la puerta abierta
+  const specialist = A.makePerson(M, { role: 'especialista', pose: 'work' });
+  specialist.position.set(19.2, yA, -27.85);
+  specialist.rotation.y = Math.PI;
+  ctx.add(specialist);
+  ctx.shadows.push({ x: 19.2, y: yA, z: -27.85, w: 0.6, d: 0.5 });
+  // palé de módulos recién llegados del desmontaje, junto a la llegada del puente
+  const palA = A.makePallet(M, { kind: 'modulos' });
+  palA.position.set(15.7, yA, -26.95);
+  palA.rotation.y = 0.12;
+  ctx.add(palA);
+  ctx.shadows.push({ x: 15.7, y: yA, z: -26.95, w: 1.4, d: 1.2, r: 0.12 });
   // jardineras a ambos lados de la llegada del puente
   [[15.0, 2.1], [22.0, 3.6]].forEach(([x, w]) => {
     ctx.add(K.rbox(w, 0.42, 0.7, M.concreteLight, x, yA, -24.85, 0.05));
@@ -1054,202 +1109,284 @@ export function buildJunction(ctx) {
     const n = Math.round(w / 0.72);
     for (let i = 0; i < n; i++) trees.push({ x: x - w / 2 + 0.38 + i * ((w - 0.76) / Math.max(1, n - 1)), y: yA + 0.4, z: -24.85, s: 0.58 + (i % 3) * 0.08, kind: i % 2 ? 'low' : 'shrub', r: i * 1.7 });
   });
-  const canopySpot = new THREE.SpotLight('#ffcf96', 26, 9, 0.95, 0.6, 1.5);
+  const canopySpot = new THREE.SpotLight('#ffcf96', 26, 8, 0.95, 0.6, 1.5);
   canopySpot.position.set(sA.x + 0.9, yA + 3.2, sA.z - 0.5);
   canopySpot.target.position.set(sA.x + 0.9, yA, sA.z - 0.5);
   ctx.add(canopySpot);
   ctx.add(canopySpot.target);
 
-  // ---------- B · evaluación de segunda vida: módulo acristalado con banco de pruebas ----------
+  // ---------- sB · Desmontaje de baterías de coche eléctrico ----------
+  // El edificio de cristal es el puesto de alta tensión: mesa elevadora con el paquete abierto, polipasto que saca
+  // los módulos, estante de módulos, herramientas aisladas y dos técnicos. Fuera, un paquete remanufacturado que
+  // vuelve a un coche y el camión ligero que lleva los módulos que no sirven al reciclador de litio.
   const sB = STATIONS.sB;
   const yB = sB.y;
-  const yF = yB + 0.06; // suelo interior del módulo
-  const evalLab = K.makeCutaway(M, { w: 8, d: 6.5, h: 4.2, roofDepth: 0.6, light: 10, glassFront: true });
-  evalLab.position.set(sB.x + 0.5, yB, sB.z - 0.8);
-  ctx.add(evalLab);
-  // estantería del fondo con módulos en espera
-  const rackE = K.shelf(M, { w: 3.4, h: 3.2, d: 0.8, levels: 3 });
-  rackE.position.set(sB.x + 2.2, yB, sB.z - 3.4);
-  ctx.add(rackE);
-  for (let l = 0; l < 3; l++) for (let i = 0; i < 3; i++) modules.push({ x: sB.x + 1.1 + i * 1.1, y: yB + 0.2 + l * 1.07, z: sB.z - 3.4, s: 0.5 });
-  // estantería lateral contra el muro este
-  const rackS = K.shelf(M, { w: 3.0, h: 2.3, d: 0.7, levels: 2 });
-  rackS.position.set(37.95, yF, -11.25);
-  rackS.rotation.y = Math.PI / 2;
-  ctx.add(rackS);
-  for (let l = 0; l < 2; l++) for (let i = 0; i < 3; i++) modules.push({ x: 37.95, y: yF + 0.2 + l * 1.15, z: -12.25 + i * 1.0, s: 0.45, r: -Math.PI / 2 });
-  // banco de pruebas: batería conectada al analizador con sus sondas y monitor con la traza
-  const evalBench = K.cabinet(M, { w: 2.4, h: 0.9, d: 1.1, drawers: 3, mat: M.ivoryPanel, top: M.stoneTop });
-  evalBench.position.set(35.0, yF, -8.35);
-  ctx.add(evalBench);
-  ctx.shadows.push({ x: 35.0, y: yF, z: -8.35, w: 2.7, d: 1.4 });
-  const benchTop = yF + 1.06;
-  const testBat = K.makeBattery(M, { scale: 0.42 });
-  testBat.position.set(34.45, benchTop, -8.3);
-  ctx.add(testBat);
-  ctx.add(K.rbox(0.5, 0.3, 0.34, M.graphite, 35.65, benchTop, -8.42, 0.03));
-  ctx.add(K.box(0.3, 0.12, 0.012, M.darkGlass, 35.68, benchTop + 0.14, -8.245));
-  ctx.add(K.box(0.18, 0.025, 0.014, M.lime, 35.66, benchTop + 0.19, -8.24));
-  [[35.47, M.amberMatte], [35.55, M.rubber]].forEach(([x, mat]) => {
-    const jack = K.cyl(0.02, 0.02, 0.03, mat, 10);
-    jack.rotation.x = Math.PI / 2;
-    jack.position.set(x, benchTop + 0.08, -8.24);
-    ctx.add(jack);
+  const yF = yB + 0.06; // suelo interior
+  const BX = 32.9;
+  const BZ = -10.1;
+  const BW = 5.8;
+  const BD = 5.0;
+  const BH = 4.0;
+  const lab = K.makeCutaway(M, { w: BW, d: BD, h: BH, roofDepth: 0.6, light: 10, glassFront: true });
+  lab.position.set(BX, yB, BZ);
+  ctx.add(lab);
+  const wallX = BX - BW / 2 - 0.175; // cara exterior del muro oeste (mira al cruce)
+  // zona de trabajo: alfombra aislante con su cinta ámbar
+  const MX = 32.8;
+  const MZ = -9.9;
+  ctx.add(K.box(4.2, 0.012, 2.8, M.rubber, MX, yF, MZ));
+  [[MX, MZ - 1.42, 4.3, 0.05], [MX, MZ + 1.42, 4.3, 0.05], [MX - 2.12, MZ, 0.05, 2.8], [MX + 2.12, MZ, 0.05, 2.8]].forEach(([x, z, w, d]) => ctx.add(K.box(w, 0.008, d, M.amberMatte, x, yF, z)));
+  // mesa elevadora de tijera
+  const TX = 33.0;
+  const TZ = -10.15;
+  const tableTop = yF + 0.86;
+  ctx.add(K.box(2.1, 0.1, 1.3, M.darkSteel, TX, yF, TZ));
+  [-0.55, 0.55].forEach((dz) => [0.351, -0.351].forEach((a) => {
+    const arm = K.box(1.92, 0.07, 0.05, M.amberMatte, TX, yF + 0.41, TZ + dz);
+    arm.rotation.z = a;
+    ctx.add(arm);
+  }));
+  ctx.add(K.rbox(2.5, 0.08, 1.75, M.darkSteel, TX, yF + 0.78, TZ, 0.02));
+  ctx.add(K.box(2.52, 0.03, 0.04, M.amberMatte, TX, yF + 0.8, TZ + 0.88));
+  ctx.shadows.push({ x: TX, y: yF, z: TZ, w: 2.6, d: 1.9 });
+  // el paquete mide 2,2 m en su z local: girado, queda a lo largo de la mesa con el frente (conector) al este;
+  // los dos módulos que faltan son los de la primera fila, bajo el polipasto
+  const pack = A.makeEVPack(M, { open: true, modulesOut: 2 });
+  pack.position.set(TX, tableTop, TZ);
+  pack.rotation.y = Math.PI / 2;
+  ctx.add(pack);
+  // técnicos de alta tensión: uno de espaldas al cristal y otro de perfil en el extremo oeste de la mesa
+  [[32.3, -8.72, Math.PI], [31.15, -10.2, Math.PI / 2]].forEach(([x, z, r]) => {
+    const p = A.makePerson(M, { role: 'altaTension', pose: 'work' });
+    p.position.set(x, yF, z);
+    p.rotation.y = r;
+    ctx.add(p);
+    ctx.shadows.push({ x, y: yF, z, w: 0.6, d: 0.5, r });
   });
-  const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
-  ctx.add(K.pipe([V3(34.7, benchTop + 0.375, -8.39), V3(34.86, benchTop + 0.5, -8.36), V3(35.2, benchTop + 0.42, -8.28), V3(35.45, benchTop + 0.12, -8.23)], 0.013, M.amberMatte, 32));
-  ctx.add(K.pipe([V3(34.2, benchTop + 0.375, -8.39), V3(34.3, benchTop + 0.56, -8.5), V3(34.9, benchTop + 0.6, -8.55), V3(35.3, benchTop + 0.4, -8.4), V3(35.53, benchTop + 0.12, -8.23)], 0.013, M.rubber, 40));
-  [[34.7, M.amberMatte], [34.2, M.graphite]].forEach(([x, mat]) => ctx.add(K.rbox(0.07, 0.05, 0.05, mat, x, benchTop + 0.343, -8.39, 0.012)));
-  // monitor del banco con la traza ya completa (casilla fija del atlas); la que avanza va en la fachada
-  const monitor = new THREE.Group();
-  monitor.add(K.rbox(1.06, 0.72, 0.08, M.darkSteel, 0, -0.36, 0, 0.02));
-  const monitorFace = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(0.9, 0.56), 0, 1, [0, 48, SLOT, 208]), signMat);
-  monitorFace.position.z = 0.042;
-  monitor.add(monitorFace);
-  monitor.position.set(35.1, benchTop + 0.86, -8.72);
-  monitor.rotation.y = -0.3;
-  ctx.add(monitor);
-  ctx.add(K.cyl(0.025, 0.03, 0.5, M.darkSteel, 8).translateX(35.1).translateY(benchTop + 0.25).translateZ(-8.78));
-  ctx.add(K.box(0.3, 0.02, 0.22, M.darkSteel, 35.1, benchTop, -8.78));
-  // taburete del técnico y zona de pruebas marcada en ámbar
-  const stool = (x, z) => {
-    ctx.add(K.cyl(0.22, 0.24, 0.03, M.darkSteel, 16).translateX(x).translateY(yF + 0.015).translateZ(z));
-    ctx.add(K.cyl(0.025, 0.025, 0.55, M.steel, 8).translateX(x).translateY(yF + 0.3).translateZ(z));
-    ctx.add(K.cyl(0.19, 0.19, 0.06, M.graphite, 20).translateX(x).translateY(yF + 0.6).translateZ(z));
+  // vallado de la zona de alta tensión (postes y barra ámbar) con su placa
+  [31.0, 33.0, 35.0].forEach((x) => {
+    ctx.add(K.cyl(0.12, 0.14, 0.04, M.rubber, 12).translateX(x).translateY(yF + 0.02).translateZ(-8.25));
+    ctx.add(K.cyl(0.025, 0.025, 0.95, M.amberMatte, 8).translateX(x).translateY(yF + 0.5).translateZ(-8.25));
+  });
+  [32.0, 34.0].forEach((x) => ctx.add(K.box(1.95, 0.035, 0.03, M.amberMatte, x, yF + 0.85, -8.25)));
+  const hvA = A.makeHVSign(M, { text: 'ALTA TENSIÓN' });
+  hvA.position.set(33.0, yF + 0.42, -8.22);
+  ctx.add(hvA);
+  // estante de módulos contra el muro del fondo
+  const modules = [];
+  const shelfB = K.shelf(M, { w: 2.6, h: 2.1, d: 0.55, levels: 3 });
+  shelfB.position.set(33.95, yF, -12.05);
+  ctx.add(shelfB);
+  for (let l = 0; l < 3; l++) for (let i = 0; i < 3; i++) for (let k = 0; k < (l === 2 && i === 2 ? 1 : 2); k++) modules.push({ x: 33.15 + i * 0.8, y: yF + 0.2 + l * 0.7 + k * 0.155, z: -12.05 });
+  // carro donde el polipasto deja el módulo
+  const cartX = 35.0;
+  const cartZ = TZ + 0.33;
+  ctx.add(K.rbox(0.55, 0.04, 0.74, M.darkSteel, cartX, yF + 0.78, cartZ, 0.012));
+  ctx.add(K.rbox(0.55, 0.04, 0.74, M.darkSteel, cartX, yF + 0.22, cartZ, 0.012));
+  [[-0.24, -0.33], [0.24, -0.33], [-0.24, 0.33], [0.24, 0.33]].forEach(([dx, dz]) => {
+    ctx.add(K.box(0.03, 0.74, 0.03, M.steel, cartX + dx, yF + 0.08, cartZ + dz));
+    const wheel = K.cyl(0.045, 0.045, 0.035, M.rubber, 10);
+    wheel.rotation.z = Math.PI / 2;
+    wheel.position.set(cartX + dx, yF + 0.045, cartZ + dz);
+    ctx.add(wheel);
+  });
+  modules.push({ x: cartX, y: yF + 0.26, z: cartZ, r: Math.PI / 2 });
+  // polipasto: viga colgada del canto del techo; el carro y el módulo se mueven en el capítulo de desmontaje
+  const beamY = yB + BH - 0.75;
+  ctx.add(K.box(4.0, 0.14, 0.12, M.darkSteel, 33.55, beamY, cartZ));
+  [31.9, 35.2].forEach((x) => ctx.add(K.box(0.06, yB + BH - beamY - 0.14 + 0.02, 0.06, M.darkSteel, x, beamY + 0.14, cartZ)));
+  const trolley = new THREE.Group();
+  trolley.add(K.rbox(0.36, 0.22, 0.3, M.amberMatte, 0, -0.22, 0, 0.03));
+  trolley.add(K.box(0.12, 0.08, 0.12, M.darkSteel, 0, -0.3, 0));
+  const trolleyMesh = ctx.dyn(K.compact(trolley));
+  ctx.add(trolleyMesh);
+  const load = new THREE.Group();
+  const loadModule = A.makeModule(M);
+  loadModule.rotation.y = Math.PI / 2;
+  load.add(loadModule);
+  load.add(K.box(0.05, 0.03, 0.52, M.darkSteel, 0, 0.27, 0));
+  [-0.22, 0.22].forEach((z) => load.add(K.box(0.02, 0.12, 0.02, M.steel, 0, 0.15, z)));
+  load.add(K.box(0.1, 0.08, 0.06, M.darkSteel, 0, 0.3, 0));
+  const loadMesh = ctx.dyn(K.compact(load));
+  ctx.add(loadMesh);
+  const cable = ctx.dyn(new THREE.Mesh(K.geo('jCable', () => new THREE.BoxGeometry(0.018, 1, 0.018).translate(0, 0.5, 0)), M.darkSteel));
+  ctx.add(cable);
+  [trolleyMesh, loadMesh, cable].forEach((o) => (o.userData.noCollide = true));
+  const hoist = {
+    x0: TX + 0.9, x1: cartX, z: cartZ,
+    y0: tableTop + 0.34, // justo sobre el paquete
+    up: tableTop + 0.95,
+    y1: yF + 0.82, // sobre el carro
+    top: beamY - 0.3,
   };
-  stool(34.2, -7.4);
-  [[35.0, -9.25, 3.0, 0.06], [35.0, -7.0, 3.0, 0.06], [33.5, -8.125, 0.06, 2.25], [36.5, -8.125, 0.06, 2.25]].forEach(([x, z, w, d]) => ctx.add(K.box(w, 0.008, d, M.amberMatte, x, yF, z)));
-  // puesto de lectura tras el cristal: dos monitores con capacidad y tensión
+  const setHoist = (x, y) => {
+    trolleyMesh.position.set(x, beamY, hoist.z);
+    loadMesh.position.set(x, y, hoist.z);
+    cable.position.set(x, y + 0.34, hoist.z);
+    cable.scale.y = Math.max(0.01, hoist.top - (y + 0.34));
+  };
+  setHoist(hoist.x1, hoist.y1);
+  // puesto de lectura en la esquina del fondo: estado de los módulos y pasos del trabajo en alta tensión
   const desk = new THREE.Group();
-  desk.add(K.box(1.6, 0.04, 0.7, M.stoneTop, 0, 0.72, 0));
-  [[-0.75, -0.3], [0.75, -0.3], [-0.75, 0.3], [0.75, 0.3]].forEach(([x, z]) => desk.add(K.box(0.04, 0.72, 0.04, M.darkSteel, x, 0, z)));
-  desk.add(K.rbox(0.45, 0.6, 0.6, M.graphite, 0.5, 0.06, 0, 0.02));
+  desk.add(K.box(1.5, 0.04, 0.6, M.stoneTop, 0, 0.92, 0));
+  [[-0.7, -0.25], [0.7, -0.25], [-0.7, 0.25], [0.7, 0.25]].forEach(([x, z]) => desk.add(K.box(0.04, 0.92, 0.04, M.darkSteel, x, 0, z)));
   [[-0.36, 2], [0.38, 3]].forEach(([x, col]) => {
-    desk.add(K.box(0.04, 0.2, 0.04, M.darkSteel, x, 0.76, -0.2));
-    desk.add(K.rbox(0.62, 0.4, 0.04, M.darkSteel, x, 0.92, -0.2, 0.012));
-    const s = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(0.56, 0.35), col, 1, [0, 48, SLOT, 208]), signMat);
-    s.position.set(x, 1.12, -0.176);
+    desk.add(K.box(0.04, 0.2, 0.04, M.darkSteel, x, 0.96, -0.18));
+    desk.add(K.rbox(0.66, 0.43, 0.04, M.darkSteel, x, 1.12, -0.18, 0.012));
+    const s = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(0.6, 0.375), col, 1, [0, 48, SLOT, 208]), signMat);
+    s.position.set(x, 1.335, -0.156);
     desk.add(s);
   });
-  desk.position.set(31.85, yF, -7.95);
+  desk.position.set(31.15, yF, -11.95);
   ctx.add(desk);
-  stool(31.7, -7.2);
-  // armarios de cajones en el lado abierto
-  [-8.65, -7.55].forEach((z) => {
-    const cab = K.cabinet(M, { w: 1.0, h: 0.95, d: 0.6, drawers: 4, mat: M.graphite, top: M.stoneTop });
-    cab.position.set(38.0, yF, z);
-    cab.rotation.y = -Math.PI / 2;
-    ctx.add(cab);
-  });
-  ctx.shadows.push({ x: 38.0, y: yF, z: -8.1, w: 0.8, d: 2.3 });
-  // cubierta: climatizador y placas solares
-  const roofY = yB + 4.2 + 0.35;
-  ctx.add(K.rbox(1.5, 0.62, 1.05, M.graphiteLight, 32.1, roofY, -11.7, 0.05));
-  ctx.add(K.cyl(0.38, 0.38, 0.04, M.darkSteel, 24).translateX(32.1).translateY(roofY + 0.64).translateZ(-11.7));
-  ctx.add(K.cyl(0.3, 0.3, 0.05, M.panel, 24).translateX(32.1).translateY(roofY + 0.66).translateZ(-11.7));
-  ctx.add(K.cyl(0.11, 0.11, 0.7, M.steel, 12).translateX(33.25).translateY(roofY + 0.35).translateZ(-12.7));
-  [-12.45, -10.75].forEach((z) => [34.7, 36.3, 37.9].forEach((x) => {
+  // herramientas aisladas en el muro oeste: tablero con mangos ámbar, guantes aislantes y pértiga de rescate
+  const tools = new THREE.Group();
+  tools.add(K.box(1.3, 0.85, 0.04, M.ivoryPanel, 0, 0, 0));
+  for (let i = 0; i < 6; i++) {
+    const x = -0.5 + i * 0.2;
+    const len = 0.2 + (i % 3) * 0.05;
+    tools.add(K.box(0.045, len, 0.03, M.amberMatte, x, 0.55 - len, 0.035));
+    tools.add(K.box(0.02, 0.12, 0.02, M.steel, x, 0.55 - len - 0.12, 0.035));
+  }
+  [-0.38, -0.16].forEach((x) => tools.add(K.rbox(0.13, 0.24, 0.05, M.amberMatte, x, 0.07, 0.04, 0.02)));
+  tools.position.set(30.2, yF + 1.0, -9.0);
+  tools.rotation.y = Math.PI / 2;
+  ctx.add(tools);
+  const hook = new THREE.Group();
+  hook.add(K.cyl(0.02, 0.02, 1.7, M.ivoryPanel, 8).translateY(0.85));
+  hook.add(K.box(0.035, 0.28, 0.035, M.amberMatte, 0.09, 1.62, 0));
+  hook.add(K.box(0.16, 0.035, 0.035, M.amberMatte, 0.05, 1.86, 0));
+  hook.position.set(30.28, yF, -8.0);
+  hook.rotation.y = Math.PI / 2;
+  ctx.add(hook);
+  // cubierta: climatizador y placas
+  const roofY = yB + BH + 0.35;
+  ctx.add(K.rbox(1.4, 0.6, 1.0, M.graphiteLight, 31.4, roofY, -11.9, 0.05));
+  ctx.add(K.cyl(0.36, 0.36, 0.04, M.darkSteel, 20).translateX(31.4).translateY(roofY + 0.62).translateZ(-11.9));
+  [33.2, 34.75].forEach((x) => {
     const pv = new THREE.Group();
-    pv.add(K.box(1.5, 0.04, 1.0, M.steel, 0, 0, 0));
-    pv.add(K.box(1.43, 0.045, 0.93, M.darkGlass, 0, 0.006, 0));
-    pv.position.set(x, roofY + 0.14, z);
-    pv.rotation.x = 0.2;
+    pv.add(K.box(1.45, 0.04, 2.0, M.steel, 0, 0, 0));
+    pv.add(K.box(1.38, 0.045, 1.93, M.darkGlass, 0, 0.006, 0));
+    pv.position.set(x, roofY + 0.14, -11.5);
+    pv.rotation.x = 0.12;
     ctx.add(pv);
-  }));
-  // fachada oeste (la que mira al cruce): puerta por la que entra la traza ámbar, rótulo, bandeja de cables
-  const wallX = sB.x + 0.5 - 4 - 0.175;
+  });
+  // fachada oeste (la que mira al cruce): puerta por la que entra la traza ámbar, placa de alta tensión y rótulo
   ctx.add(K.box(0.06, 2.2, 1.16, M.darkGlass, wallX - 0.03, yB, -8.4));
   [[-9.02, 0.1], [-7.78, 0.1]].forEach(([z, w]) => ctx.add(K.box(0.1, 2.3, w, M.darkSteel, wallX - 0.05, yB, z)));
   ctx.add(K.box(0.1, 0.1, 1.34, M.darkSteel, wallX - 0.05, yB + 2.25, -8.4));
-  ctx.add(K.box(0.04, 0.5, 0.04, M.steel, wallX - 0.08, yB + 0.85, -8.85));
-  ctx.add(K.rbox(0.9, 0.08, 1.8, M.panel, wallX - 0.45, yB + 2.45, -8.4, 0.02));
+  ctx.add(K.rbox(0.9, 0.08, 1.6, M.panel, wallX - 0.45, yB + 2.45, -8.4, 0.02));
   ctx.add(K.box(0.24, 0.03, 0.5, M.warmGlow, wallX - 0.4, yB + 2.42, -8.4));
+  const hvB = hvA.clone();
+  hvB.position.set(wallX - 0.07, yB + 1.3, -8.4);
+  hvB.rotation.y = -Math.PI / 2;
+  ctx.add(hvB);
   const plate = new THREE.Group();
-  plate.add(K.rbox(1.5, 1.5, 0.06, M.darkSteel, 0, -0.75, 0, 0.02));
-  const plateFace = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(1.38, 1.38), 3, 0), signMat);
+  plate.add(K.rbox(2.12, 1.12, 0.06, M.darkSteel, 0, -0.56, 0, 0.02));
+  const plateFace = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(2.0, 1.0), 0, 1, [0, 0, SLOT, 128]), signMat);
   plateFace.position.z = 0.032;
   plate.add(plateFace);
-  plate.position.set(wallX - 0.03, yB + 2.65, -10.9);
+  plate.position.set(wallX - 0.03, yB + 3.0, -10.9);
   plate.rotation.y = -Math.PI / 2;
   ctx.add(plate);
-  ctx.add(K.box(0.14, 0.08, 5.8, M.darkSteel, wallX - 0.08, yB + 3.55, -9.8));
-  for (let z = -12.5; z < -6.9; z += 1.2) ctx.add(K.box(0.18, 0.05, 0.04, M.darkSteel, wallX - 0.09, yB + 3.5, z));
-  [-12.32, -12.16, -12.0].forEach((z) => ctx.add(K.cyl(0.03, 0.03, 2.05, M.steel, 8).translateX(wallX - 0.12).translateY(yB + 1.5 + 1.025).translateZ(z)));
-  ctx.add(K.rbox(0.5, 1.5, 1.1, M.graphite, wallX - 0.27, yB, -11.9, 0.03));
-  ctx.add(K.box(0.02, 0.05, 0.05, M.amberGlow, wallX - 0.53, yB + 1.3, -11.6));
-  ctx.add(K.box(0.02, 0.16, 0.16, M.amberMatte, wallX - 0.53, yB + 1.0, -12.2));
-  for (let i = 0; i < 4; i++) ctx.add(K.box(0.02, 0.025, 0.5, M.darkSteel, wallX - 0.53, yB + 0.3 + i * 0.07, -11.95));
-  ctx.add(K.box(0.05, 0.6, 0.9, M.darkSteel, wallX - 0.03, yB + 2.7, -7.3));
-  for (let i = 0; i < 5; i++) ctx.add(K.box(0.06, 0.03, 0.82, M.panel, wallX - 0.05, yB + 2.78 + i * 0.1, -7.3));
-  // pantalla de estado sobre la marquesina de la puerta: la prueba de capacidad en curso se lee desde el cruce
-  const live = T.liveScreen(288, 128, drawTrace, 12);
-  const status = K.framedScreen(M, live.texture, 1.8, 0.8, 0.9);
-  status.position.set(wallX - 0.06, yB + 3.02, -8.95);
-  status.rotation.y = -Math.PI / 2;
-  ctx.add(status);
-  // tira cálida bajo el canto delantero de la cubierta: el frente abierto se ilumina desde arriba
-  ctx.add(K.box(7, 0.05, 0.12, M.warmGlow, sB.x + 0.5, yB + 4.15, -9.45));
-  // antepatio: banco y jardinera
-  const bench = new THREE.Group();
-  [-0.6, 0.6].forEach((z) => bench.add(K.box(0.42, 0.42, 0.06, M.graphite, 0, 0, z)));
-  [-0.13, 0, 0.13].forEach((x) => bench.add(K.box(0.11, 0.035, 1.5, M.wood, x, 0.42, 0)));
-  bench.position.set(29.45, yB, -10.3);
-  ctx.add(bench);
-  ctx.add(K.rbox(1.6, 0.45, 1.0, M.concreteLight, 29.2, yB, -13.0, 0.05));
-  ctx.add(K.box(1.44, 0.02, 0.84, M.trunk, 29.2, yB + 0.41, -13.0));
-  trees.push({ x: 29.0, y: yB + 0.43, z: -13.0, s: 0.7, kind: 'tree', r: 1.2 });
-  trees.push({ x: 29.75, y: yB + 0.43, z: -12.8, s: 0.6, kind: 'shrub', r: 0.4 });
-  // palé con módulos que esperan su turno y transpaleta
-  ctx.add(K.box(1.7, 0.13, 1.1, M.wood, 36.4, yB, -5.2));
-  [[36.03, -5.4], [36.77, -5.4], [36.03, -4.98], [36.77, -4.98]].forEach(([x, z]) => modules.push({ x, y: yB + 0.13, z, s: 0.42 }));
-  ctx.shadows.push({ x: 36.4, y: yB, z: -5.2, w: 2.0, d: 1.4 });
-  const jack = new THREE.Group();
-  [-0.2, 0.2].forEach((z) => jack.add(K.box(1.1, 0.06, 0.16, M.darkSteel, 0, 0.02, z)));
-  jack.add(K.rbox(0.28, 0.32, 0.56, M.amberMatte, 0.62, 0.02, 0, 0.04));
-  jack.add(K.pipe([V3(0.66, 0.34, 0), V3(0.8, 0.8, 0), V3(0.86, 1.08, 0)], 0.022, M.darkSteel, 12));
-  jack.add(K.box(0.05, 0.05, 0.36, M.rubber, 0.86, 1.06, 0));
-  jack.position.set(38.3, yB, -5.2);
-  ctx.add(jack);
-
-  // ---------- Una sola pasada para vegetación, rocas y módulos instanciados ----------
+  // armario eléctrico junto a la puerta
+  ctx.add(K.rbox(0.45, 1.4, 0.9, M.graphite, wallX - 0.25, yB, -11.6, 0.03));
+  ctx.add(K.box(0.02, 0.05, 0.05, M.amberGlow, wallX - 0.48, yB + 1.2, -11.35));
+  // tira cálida bajo el canto delantero de la cubierta
+  ctx.add(K.box(BW - 0.8, 0.05, 0.12, M.warmGlow, BX, yB + BH - 0.05, BZ + BD / 2 - 0.3));
+  // jardinera en la esquina noroeste
+  ctx.add(K.rbox(1.0, 0.45, 0.9, M.concreteLight, 29.25, yB, -12.75, 0.05));
+  ctx.add(K.box(0.86, 0.02, 0.76, M.trunk, 29.25, yB + 0.41, -12.75));
+  trees.push({ x: 29.25, y: yB + 0.43, z: -12.75, s: 0.62, kind: 'tree', r: 1.2 });
+  // fuera, al sur: paquete remanufacturado en su carro, listo para volver a un coche (rótulo de ejemplo)
+  const dolly = new THREE.Group();
+  dolly.add(K.rbox(2.3, 0.1, 1.6, M.darkSteel, 0, 0.12, 0, 0.02));
+  [[-1.0, -0.65], [1.0, -0.65], [-1.0, 0.65], [1.0, 0.65]].forEach(([x, z]) => {
+    const w = K.cyl(0.07, 0.07, 0.05, M.rubber, 12);
+    w.rotation.z = Math.PI / 2;
+    w.position.set(x, 0.07, z);
+    dolly.add(w);
+  });
+  const reman = A.makeEVPack(M, { open: false });
+  reman.position.y = 0.22;
+  reman.rotation.y = Math.PI / 2;
+  dolly.add(reman);
+  // fleje lima: revisada y lista para montar
+  dolly.add(K.box(0.06, 0.008, 1.56, M.limeLine, 0.55, 0.53, 0));
+  dolly.position.set(34.2, yB, -5.95);
+  ctx.add(dolly);
+  ctx.shadows.push({ x: 34.2, y: yB, z: -5.95, w: 2.4, d: 1.7 });
+  // placas de rótulo sobre poste (mitades apaisadas del atlas)
+  const placard = (row, x, z, ry, w) => {
+    const g = new THREE.Group();
+    g.add(K.cyl(0.035, 0.035, 1.1, M.darkSteel, 8).translateY(0.55));
+    g.add(K.rbox(w + 0.08, w / 2 + 0.08, 0.04, M.darkSteel, 0, 1.0, -0.025, 0.012));
+    const f = new THREE.Mesh(toSlot(new THREE.PlaneGeometry(w, w / 2), 1, 1, [0, row * 128, SLOT, row * 128 + 128]), signMat);
+    f.position.set(0, 1.04 + w / 4, 0);
+    g.add(f);
+    g.position.set(x, yB, z);
+    g.rotation.y = ry;
+    ctx.add(g);
+  };
+  placard(0, 34.2, -4.95, 0, 1.2);
+  // camión ligero con las cajas de módulos que no sirven: va al reciclador de litio, fuera del polígono
+  // (la trasera abierta mira al sur: se ven los palés de módulos que lleva el propio camión)
+  const truck = A.makeTruck(M, { kind: 'ligero', loaded: true, doorsOpen: true });
+  truck.position.set(37.75, yB, -9.2);
+  truck.rotation.y = Math.PI;
+  ctx.add(truck);
+  ctx.shadows.push({ x: 37.75, y: yB, z: -9.2, w: 2.4, d: 6.2 });
+  placard(1, 39.0, -5.55, -0.3, 0.9);
+  ctx.add(instanceGroup(K, A.makeModule(M), modules));
+  // ---------- Una sola pasada para vegetación y rocas instanciadas ----------
   ctx.add(K.scatterTrees(M, trees));
   if (rocks.length) ctx.add(K.scatterRocks(M, rocks));
-  ctx.add(K.batteryInstances(M, modules));
 
   // ---------- Rosa y puesto de validación: qué ruta propone el software a cada batería ----------
-  // La simulación de world.js indica en story.route la ruta de la batería que está a menos de 3 m del
-  // bordillo de la isla. Con las diez ya clasificadas, la rosa repasa A, B y C cada 3 s con fundidos de 0,4 s.
+  // La simulación de world.js indica en story.route la ruta de la batería que se acerca a la isla. Sin ruta
+  // y con la simulación terminada, la rosa repasa reutilización, desmontaje y reciclaje cada 3 s (fundidos de 0,4 s).
   const weights = [1, 1, 1];
   const routeState = { w: weights };
-  // solo con ?debug: acceso a los lienzos vivos para las pruebas automáticas
-  if (typeof location !== 'undefined' && location.search.includes('debug')) window.__cruce = { routeLive, live, weights };
   let clock = 0;
   let lastDraw = -1;
   let drawnKey = -1;
   let still = false;
+  // polipasto del desmontaje: saca un módulo del paquete, lo deja en el carro y lo devuelve (ida y vuelta de 10 s)
+  const ease = (u) => u * u * (3 - 2 * u);
+  const seg = (u, a, b) => ease(THREE.MathUtils.clamp((u - a) / (b - a), 0, 1));
+  const hoistAt = (u) => {
+    // 0–0,1 sube · 0,1–0,36 va al carro · 0,36–0,46 baja · espera · 0,56–0,66 sube · 0,66–0,92 vuelve · 0,92–1 baja
+    const out = seg(u, 0.1, 0.36) - seg(u, 0.66, 0.92);
+    const x = hoist.x0 + (hoist.x1 - hoist.x0) * out;
+    const y = hoist.y0 + (hoist.up - hoist.y0) * (seg(u, 0, 0.1) - seg(u, 0.92, 1)) + (hoist.y1 - hoist.up) * (seg(u, 0.36, 0.46) - seg(u, 0.56, 0.66));
+    setHoist(x, y);
+  };
+  // solo con ?debug: acceso a los lienzos vivos y al polipasto para las pruebas automáticas
+  if (typeof location !== 'undefined' && location.search.includes('debug')) window.__cruce = { routeLive, storeLive, weights, hoistAt };
   ctx.anim((t, dt, story) => {
     if (story.reduced) {
       // movimiento reducido: estado final representativo, sin bucles
       if (!still) {
-        live.update(t, story, true);
         weights.fill(1);
         routeLive.update(t, routeState, true);
+        storeLive.update(t, story, true);
+        setHoist(hoist.x1, hoist.y1);
         drawnKey = -1;
       }
       still = true;
       return;
     }
     still = false;
-    // la prueba de capacidad solo avanza mientras se lee el capítulo 4 (12 fps como máximo)
-    if (story.index === 4) live.update(t, story);
-    if (story.index < 3 || story.index > 5) return;
+    if (story.index === CH.segundaVida) storeLive.update(t, story);
+    if (story.index === CH.desmontaje) hoistAt((t % 10) / 10);
+    if (story.index !== CH.clasificacion) return;
     clock += dt;
-    const best = story.route ? ROUTES.indexOf(story.route) : -1;
+    const best = story.route && story.route in ROUTE_INDEX ? ROUTE_INDEX[story.route] : -1;
     const cycle = story.sim >= 0.999 ? Math.floor((t / 3) % 3) : -1;
     const step = dt / 0.4;
     let key = 0;
     for (let r = 0; r < 3; r++) {
-      const target = best >= 0 ? +(r === best) : +(r === cycle);
+      const target = best >= 0 ? +(r === best) : cycle >= 0 ? +(r === cycle) : 1;
       weights[r] += THREE.MathUtils.clamp(target - weights[r], -step, step);
       key = key * 9 + Math.round(weights[r] * 8);
     }
@@ -1262,57 +1399,93 @@ export function buildJunction(ctx) {
   });
 }
 
-// Traza de una prueba de capacidad que avanza: tensión bajo carga que cae y se estabiliza. Pantalla
-// exterior apaisada (1,8 × 0,8 m): trazo grueso y rótulos grandes para leerse desde el cruce.
-const PCT = Array.from({ length: 101 }, (_, i) => `${i} %`);
+// Piezas repetidas de un objeto del kit de actores (módulos de litio): una InstancedMesh por material.
+function instanceGroup(K, src, list) {
+  const parts = K.compact(src);
+  const out = new THREE.Group();
+  const o = new THREE.Object3D();
+  parts.children.forEach((m) => {
+    const im = new THREE.InstancedMesh(m.geometry, m.material, list.length);
+    list.forEach((t, i) => {
+      o.position.set(t.x, t.y, t.z);
+      o.rotation.set(0, t.r || 0, 0);
+      o.scale.setScalar(t.s || 1);
+      o.updateMatrix();
+      im.setMatrixAt(i, o.matrix);
+    });
+    im.castShadow = true;
+    im.receiveShadow = true;
+    im.computeBoundingSphere();
+    out.add(im);
+  });
+  return out;
+}
 
-function drawTrace(g, w, h, t, story) {
-  const k = !story || story.reduced ? 1 : (t % 7) / 7;
-  const top = 38;
-  const bottom = h - 24;
+// Pantalla de segunda vida (256 × 128, 6 fps solo en su capítulo): energía de las placas → almacenamiento con
+// módulos de segunda vida → red. Rotulada como ejemplo y sin cifras: la barra de carga sube y baja despacio.
+const SUN_RAYS = Array.from({ length: 8 }, (_, k) => [Math.cos((k / 8) * Math.PI * 2), Math.sin((k / 8) * Math.PI * 2)]);
+
+function drawStore(g, w, h, t, story) {
+  const k = !story || story.reduced ? 0.8 : 0.3 + 0.55 * (0.5 - 0.5 * Math.cos((t / 12) * Math.PI * 2));
   g.fillStyle = '#0f1112';
   g.fillRect(0, 0, w, h);
-  g.strokeStyle = 'rgba(229,174,80,0.18)';
-  g.lineWidth = 1;
-  g.beginPath();
-  for (let x = 14; x < w; x += 32) {
-    g.moveTo(x, top - 4);
-    g.lineTo(x, bottom);
-  }
-  for (let y = top - 4; y <= bottom; y += 20) {
-    g.moveTo(14, y);
-    g.lineTo(w - 14, y);
-  }
-  g.stroke();
-  const n = Math.max(1, Math.round(k * 72));
-  let px = 14;
-  let py = top;
-  g.strokeStyle = PAL.amber;
-  g.lineWidth = 4;
-  g.lineJoin = 'round';
-  g.beginPath();
-  for (let i = 0; i <= n; i++) {
-    const u = i / 72;
-    px = 14 + u * (w - 28);
-    py = top + (1 - Math.exp(-u * 3.2)) * (bottom - top - 8) + Math.sin(u * 40) * 1.5;
-    if (i) g.lineTo(px, py);
-    else g.moveTo(px, py);
-  }
-  g.stroke();
   g.fillStyle = PAL.lime;
-  g.beginPath();
-  g.arc(px, py, 5.5, 0, Math.PI * 2);
-  g.fill();
-  g.fillStyle = PAL.ivory;
-  g.font = '800 18px "Archivo Variable", sans-serif';
+  g.fillRect(0, 0, w, 4);
   g.textAlign = 'left';
-  // el porcentaje es el avance de la prueba (como la barra inferior), no una capacidad medida
-  g.fillText('Avance de la prueba', 14, 24);
-  g.textAlign = 'right';
+  g.fillStyle = PAL.ivory;
+  g.font = '700 15px "Archivo Variable", "Archivo", sans-serif';
+  g.fillText('Almacenamiento con módulos', 10, 24);
+  g.font = '600 13px "Archivo Variable", "Archivo", sans-serif';
   g.fillStyle = PAL.lime;
-  g.fillText(PCT[Math.round(k * 100)], w - 14, 24);
-  g.fillStyle = 'rgba(194,242,48,0.22)';
-  g.fillRect(14, h - 14, w - 28, 6);
+  g.fillText('de segunda vida · ejemplo', 10, 42);
+  // sol (placas de la marquesina)
+  g.fillStyle = PAL.amber;
+  g.strokeStyle = PAL.amber;
+  g.lineWidth = 2.5;
+  g.beginPath();
+  g.arc(30, 86, 9, 0, Math.PI * 2);
+  g.fill();
+  g.beginPath();
+  SUN_RAYS.forEach(([c, s]) => {
+    g.moveTo(30 + c * 13, 86 + s * 13);
+    g.lineTo(30 + c * 18, 86 + s * 18);
+  });
+  g.stroke();
+  // flechas
+  g.strokeStyle = 'rgba(241,238,230,0.55)';
+  g.lineWidth = 2;
+  g.beginPath();
+  [[54, 76], [184, 206]].forEach(([a, b]) => {
+    g.moveTo(a, 86);
+    g.lineTo(b, 86);
+    g.moveTo(b - 6, 81);
+    g.lineTo(b, 86);
+    g.lineTo(b - 6, 91);
+  });
+  g.stroke();
+  // almacenamiento: cuatro módulos y su carga
+  g.strokeStyle = PAL.ivory;
+  g.lineWidth = 2;
+  g.strokeRect(84, 68, 92, 36);
   g.fillStyle = PAL.lime;
-  g.fillRect(14, h - 14, (w - 28) * k, 6);
+  g.fillRect(87, 71, 86 * k, 30);
+  g.fillStyle = '#0f1112';
+  [107, 129, 151].forEach((x) => g.fillRect(x, 69, 2, 34));
+  g.fillStyle = PAL.dim;
+  g.font = '600 11px "Archivo Variable", "Archivo", sans-serif';
+  g.fillText('placas', 12, 118);
+  g.fillText('carga', 112, 118);
+  g.fillText('red', 214, 118);
+  // red: torre eléctrica sencilla
+  g.strokeStyle = PAL.ivory;
+  g.lineWidth = 2;
+  g.beginPath();
+  g.moveTo(214, 104);
+  g.lineTo(222, 70);
+  g.lineTo(230, 104);
+  g.moveTo(212, 80);
+  g.lineTo(232, 80);
+  g.moveTo(215, 92);
+  g.lineTo(229, 92);
+  g.stroke();
 }

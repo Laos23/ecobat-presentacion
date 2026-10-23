@@ -1,12 +1,24 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { CH } from '../chapters.js';
+import { ACCESS } from '../layout.js';
+import { makePerson, makeTruck, makeIngotStack, makePelletBag } from '../actors.js';
 
-// 5 · Gestor autorizado de reciclaje. Referencia: context/ref-reciclaje.png.
+// 7 · Gestor autorizado de reciclaje de plomo-ácido (isla s5). Referencia: context/ref-reciclaje.png.
+// Etapas rotuladas, en el orden del proceso (hechos proceso_reciclaje-f1, f4-f7 y f19):
+//   1 Drenaje del electrolito (tanque junto a la recepción) → 2 Trituración (torre) → 3 Separación (nave del
+//   sureste: rejillas, pasta y polipropileno a sus contenedores) → 4 Desulfuración de la pasta (reactor; el
+//   sulfato de sodio sale en sacos) → 5 Fundición (horno rotativo) → 6 Refino (calderos) → 7 Colada (lingoteras).
+// Salidas: pilas de lingotes de plomo y big bags de granza de polipropileno, que un camión lleva por la calzada
+// este a la fábrica de baterías nuevas (desde el tramo de trazabilidad hasta el cierre). Sin cobre: una batería
+// de plomo-ácido no lo contiene (§9.6 de las ideas).
 // Recepción con palés en espera y caseta de control, cinta con rodillos grandes a la vista que entra
 // en la trituradora por una boca a contraluz, torre de plataformas con barandillas ámbar, conductos de
-// acero con codos y bridas hacia el filtro de mangas, transportador inclinado abierto hasta la nave de
-// separación, tolva que vierte plástico triturado, contenedores galvanizados con los materiales
-// recuperados, silo de plástico y valla de barrotes que deja ver el borde iluminado de la isla.
+// acero con codos y bridas hacia el filtro de mangas, elevador y puente de cinta cerrado (por encima del paso
+// del camión) hasta la nave de separación, tolva que vierte plástico triturado, contenedores galvanizados y
+// valla de barrotes que deja ver el borde iluminado de la isla.
+// Rendimiento: solo materiales de M (y los clones que la estación ya tenía), sin luces nuevas, geometría
+// en caché, repeticiones instanciadas y lo que se mueve (camión, lingoteras) compactado o instanciado.
 
 // Tronco de pirámide abierto (contenedores y tolvas): caras planas, sin tapas.
 function frustumShell(wTop, dTop, taper, h, inward = false) {
@@ -40,8 +52,8 @@ function ingotGeometry() {
   return g;
 }
 
-// Pepita de cobre: caja con las esquinas desplazadas (la misma esquina se mueve igual en cada cara).
-// Tamaño real de recorte de conexiones: unos 11 cm, para que el montón no parezca de cajas.
+// Trozo de rejilla o borne de plomo (fracción metálica de la separación): caja con las esquinas desplazadas
+// (la misma esquina se mueve igual en cada cara), unos 11 cm, para que el montón no parezca de cajas.
 function nuggetGeometry() {
   const g = new THREE.BoxGeometry(0.11, 0.065, 0.09);
   const p = g.attributes.position;
@@ -56,48 +68,65 @@ function nuggetGeometry() {
   return g;
 }
 
-// Rótulos impresos en un solo atlas de 2 × 4 celdas (512 × 256): una textura para todas las placas.
+// Rótulos impresos en un solo atlas de 1024 × 2048: una textura para todas las placas.
+// Celdas de 512 × 256 (0-7: materiales, avisos, recepción, gestor y franjas; 8-9: salidas del proceso) y, en
+// la mitad inferior, carteles de etapa de 512 × 128 (1 Drenaje … 7 Colada).
+const ATLAS_W = 1024;
+const ATLAS_H = 2048;
+const STAGES = ['Drenaje', 'Trituración', 'Separación', 'Desulfuración', 'Fundición', 'Refino', 'Colada'];
+const cellRect = (cell) => [(cell % 2) * 512, Math.floor(cell / 2) * 256, 512, 256];
+const stageRect = (i) => [(i % 2) * 512, 1280 + Math.floor(i / 2) * 128, 512, 128];
+
 function labelAtlas() {
   const c = document.createElement('canvas');
-  c.width = 1024;
-  c.height = 1024;
+  c.width = ATLAS_W;
+  c.height = ATLAS_H;
   const g = c.getContext('2d');
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
   const font = (w, s) => `${w} ${s}px "Archivo Variable", sans-serif`;
   const ink = '#1f2224';
+  // texto que cabe en `max` px: reduce el cuerpo hasta que entra
+  const fit = (text, w, size, max) => {
+    let s = size;
+    g.font = font(w, s);
+    while (s > 12 && g.measureText(text).width > max) g.font = font(w, --s);
+  };
   const draw = () => {
-    // fracciones con base en la investigación: lingotes de plomo, metales no férreos (salida autorizada de una
-    // planta española), polipropileno de la carcasa y hierro (≈2 % de una batería usada); sin cobre ni latón,
-    // que no tienen fuente, y con nombres que caben en su placa
+    g.clearRect(0, 0, ATLAS_W, ATLAS_H);
+    // placas de material: solo lo que sale de una batería de plomo-ácido (plomo, polipropileno y los productos
+    // del electrolito; hechos proceso_reciclaje-f1, f7 y f14); sin cobre ni latón
     const mats = [
-      ['Pb', 'Plomo', 'Lingote recuperado'],
-      ['NF', 'Metales', 'No férreos'],
+      ['Pb', 'Lingotes', 'Plomo refinado'],
+      ['Pb', 'Rejillas', 'Fracción metálica'],
       ['PP', 'Plástico', 'Carcasa triturada'],
-      ['Fe', 'Hierro', 'Chatarra separada'],
+      ['Pb', 'Pasta', 'A desulfuración'],
     ];
-    mats.forEach(([sym, name, sub], i) => {
-      const x = (i % 2) * 512;
-      const y = Math.floor(i / 2) * 256;
+    const plate = (cell, [sym, name, sub]) => {
+      const [x, y] = cellRect(cell);
       g.fillStyle = '#e4dac6';
       g.fillRect(x, y, 512, 256);
       g.fillStyle = ink;
       g.fillRect(x + 22, y + 28, 172, 200);
       g.textAlign = 'center';
       g.fillStyle = '#F1EEE6';
-      g.font = font(800, 104);
+      fit(sym, 800, 104, 150);
       g.fillText(sym, x + 108, y + 166);
       g.textAlign = 'left';
       g.fillStyle = ink;
-      g.font = font(800, 64);
+      fit(name, 800, 64, 268);
       g.fillText(name, x + 220, y + 120);
-      g.font = font(500, 30);
       g.fillStyle = 'rgba(31,34,36,0.72)';
+      fit(sub, 500, 30, 268);
       g.fillText(sub, x + 222, y + 170);
       g.fillStyle = '#93b52a';
       g.fillRect(x + 222, y + 196, 250, 8);
-    });
+    };
+    mats.forEach((m, i) => plate(i, m));
+    // 8-9 · salidas: sulfato de sodio (del electrolito y de la desulfuración de la pasta) y granza de polipropileno
+    plate(8, ['Na₂SO₄', 'Sulfato de sodio', 'Producto del electrolito']);
+    plate(9, ['PP', 'Granza', 'Polipropileno']);
     // 4 · aviso de trituradora (ámbar de seguridad)
     g.fillStyle = '#E5AE50';
     g.fillRect(0, 512, 512, 256);
@@ -146,7 +175,11 @@ function labelAtlas() {
     g.fillText('Gestor autorizado', 36, 908);
     g.fillStyle = '#93b52a';
     g.fillRect(36, 934, 300, 8);
-    // 7 · franjas de seguridad ámbar y grafito
+    // 7 · franjas de seguridad ámbar y grafito (recortadas a su celda)
+    g.save();
+    g.beginPath();
+    g.rect(512, 768, 512, 256);
+    g.clip();
     g.fillStyle = ink;
     g.fillRect(512, 768, 512, 256);
     g.fillStyle = '#E5AE50';
@@ -159,6 +192,27 @@ function labelAtlas() {
       g.closePath();
       g.fill();
     }
+    g.restore();
+    // carteles de etapa: grafito, número en un círculo lima y nombre en marfil
+    STAGES.forEach((name, i) => {
+      const [x, y, w, h] = stageRect(i);
+      g.fillStyle = ink;
+      g.fillRect(x, y, w, h);
+      g.fillStyle = '#C2F230';
+      g.beginPath();
+      g.arc(x + 64, y + 64, 40, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = ink;
+      g.textAlign = 'center';
+      g.font = font(800, 50);
+      g.fillText(String(i + 1), x + 64, y + 82);
+      g.textAlign = 'left';
+      g.fillStyle = '#F1EEE6';
+      fit(name, 800, 58, 360);
+      g.fillText(name, x + 126, y + 84);
+      g.fillStyle = 'rgba(194,242,48,0.55)';
+      g.fillRect(x + 128, y + 100, 120, 5);
+    });
   };
   draw();
   if (document.fonts && document.fonts.ready) {
@@ -170,12 +224,11 @@ function labelAtlas() {
   return tex;
 }
 
-function labelGeometry(cell, w, h) {
+// Plano con las UV de un rectángulo del atlas ([x, y, ancho, alto] en píxeles, y hacia abajo).
+function labelGeometry([x, y, rw, rh], w, h) {
   const g = new THREE.PlaneGeometry(w, h);
   const uv = g.attributes.uv;
-  const col = cell % 2;
-  const row = Math.floor(cell / 2);
-  for (let i = 0; i < uv.count; i++) uv.setXY(i, (col + uv.getX(i)) / 2, 1 - (row + 1 - uv.getY(i)) / 4);
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, (x + uv.getX(i) * rw) / ATLAS_W, 1 - (y + (1 - uv.getY(i)) * rh) / ATLAS_H);
   return g;
 }
 
@@ -204,7 +257,44 @@ export function buildRecycling(ctx) {
   galv.color.set('#d2d6da');
   galv.envMapIntensity = 1.5;
   const labels = new THREE.MeshStandardMaterial({ map: labelAtlas(), roughness: 0.62, metalness: 0.05 });
-  const label = (cell, w, h) => new THREE.Mesh(K.geo(`lbl${cell}|${w}|${h}`, () => labelGeometry(cell, w, h)), labels);
+  const label = (cell, w, h) => new THREE.Mesh(K.geo(`lbl${cell}|${w}|${h}`, () => labelGeometry(cellRect(cell), w, h)), labels);
+  // cartel de etapa (1 Drenaje … 7 Colada) de 1,0 × 0,25 m
+  const stageLabel = (i, w = 1.0) => new THREE.Mesh(K.geo(`stage${i}|${w}`, () => labelGeometry(stageRect(i), w, w / 4)), labels);
+  // cartel de etapa en un poste corto, con el frente hacia `ry` (0 = +z)
+  // (impreso por las dos caras: se lee llegue la cámara por donde llegue)
+  const stagePost = (i, x, z, ry, h = 1.5) => {
+    const g = new THREE.Group();
+    g.add(K.box(0.07, h, 0.07, M.graphite, 0, 0, 0));
+    g.add(K.box(1.38, 0.41, 0.04, M.darkSteel, 0, h - 0.06, -0.025));
+    const s = stageLabel(i, 1.3);
+    s.position.set(0, h + 0.145, 0.0);
+    g.add(s);
+    const back = stageLabel(i, 1.3);
+    back.rotation.y = Math.PI;
+    back.position.set(0, h + 0.145, -0.05);
+    g.add(back);
+    g.position.set(x, Y, z);
+    g.rotation.y = ry;
+    ctx.add(g);
+    return g;
+  };
+  // placa de material o salida en un poste bajo
+  const platePost = (cell, x, z, ry) => {
+    const g = new THREE.Group();
+    g.add(K.box(0.06, 0.95, 0.06, M.graphite, 0, 0, 0));
+    g.add(K.box(0.92, 0.48, 0.035, M.darkSteel, 0, 0.92, -0.022));
+    const p = label(cell, 0.84, 0.42);
+    p.position.set(0, 1.16, 0);
+    g.add(p);
+    const back = label(cell, 0.84, 0.42);
+    back.rotation.y = Math.PI;
+    back.position.set(0, 1.16, -0.044);
+    g.add(back);
+    g.position.set(x, Y, z);
+    g.rotation.y = ry;
+    ctx.add(g);
+    return g;
+  };
 
   // barra cilíndrica entre dos puntos (tirantes, conductos finos)
   const bar = (a, b, r, mat, seg = 8) => {
@@ -329,13 +419,26 @@ export function buildRecycling(ctx) {
   fenceS.position.set(s5.x, Y, s5.z + 9.4);
   walls.add(fenceS);
   for (let x = s5.x - 12; x < s5.x + 15; x += 6) kerbLight(x, s5.z + 9.4 - 0.19, Math.PI);
-  walls.add(K.box(0.35, 0.3, 15.4, M.concrete, s5.x + 15.6, Y, s5.z + 1.3));
-  walls.add(K.box(0.42, 0.05, 15.5, M.concreteLight, s5.x + 15.6, Y + 0.3, s5.z + 1.3));
-  const fenceE = new THREE.Mesh(K.geo('fence15', () => fenceGeo(15.4)), M.graphite);
-  fenceE.position.set(s5.x + 15.6, Y, s5.z + 1.3);
-  fenceE.rotation.y = Math.PI / 2;
-  walls.add(fenceE);
-  for (let z = s5.z - 6; z < s5.z + 9; z += 6) kerbLight(s5.x + 15.6 - 0.19, z, -Math.PI / 2);
+  // murete este en dos tramos: el paso de la calzada este (ACCESS.east, z ∈ [19,5, 24,5]) queda abierto para el
+  // camión de lingotes y granza, con dos postes de entrada ámbar
+  const ex = s5.x + 15.6;
+  const gate0 = ACCESS.east.rim.z - 2.5;
+  const gate1 = ACCESS.east.rim.z + 2.5;
+  [[s5.z - 6.4, gate0], [gate1, s5.z + 9.0]].forEach(([z0, z1], k) => {
+    const len = z1 - z0;
+    const zc = (z0 + z1) / 2;
+    walls.add(K.box(0.35, 0.3, len, M.concrete, ex, Y, zc));
+    walls.add(K.box(0.42, 0.05, len + 0.1, M.concreteLight, ex, Y + 0.3, zc));
+    const fe = new THREE.Mesh(K.geo(`fenceE${k}`, () => fenceGeo(len)), M.graphite);
+    fe.position.set(ex, Y, zc);
+    fe.rotation.y = Math.PI / 2;
+    walls.add(fe);
+  });
+  [gate0, gate1].forEach((z) => {
+    walls.add(K.box(0.3, 1.25, 0.3, M.amberMatte, ex, Y, z + (z < ACCESS.east.rim.z ? -0.2 : 0.2)));
+    walls.add(K.box(0.32, 0.08, 0.32, M.graphite, ex, Y + 1.25, z + (z < ACCESS.east.rim.z ? -0.2 : 0.2)));
+  });
+  [s5.z - 6, s5.z + 6].forEach((z) => kerbLight(ex - 0.19, z, -Math.PI / 2));
   ctx.add(walls);
 
   // ---------- nave de recepción (posición fija) y su fachada norte ----------
@@ -471,23 +574,7 @@ export function buildRecycling(ctx) {
   kiosk.add(K.box(0.06, 0.03, 1.4, M.darkSteel, -(kw / 2) - 0.03, 1.19, 0));
   kiosk.add(K.box(0.04, 0.16, 0.1, M.graphite, -(kw / 2) - 0.02, 0.98, 0.8));
   kiosk.add(K.box(0.012, 0.03, 0.03, ind, -(kw / 2) - 0.045, 1.08, 0.8));
-  // cajas abiertas de transporte (nervadas, con canto ámbar y asas troqueladas) junto a la caseta
-  const crate = (x, y, z) => {
-    const w = 0.6;
-    const h = 0.38;
-    const d = 0.42;
-    const t = 0.025;
-    yard.add(K.box(w, 0.03, d, M.graphiteLight, x, y, z));
-    [-1, 1].forEach((s) => {
-      yard.add(K.box(w, h, t, M.graphiteLight, x, y, z + s * (d / 2 - t / 2)));
-      yard.add(K.box(t, h, d - 2 * t, M.graphiteLight, x + s * (w / 2 - t / 2), y, z));
-      yard.add(K.box(w + 0.02, 0.025, 0.04, M.amberMatte, x, y + h - 0.02, z + s * (d / 2 - 0.01)));
-      yard.add(K.box(0.04, 0.025, d, M.amberMatte, x + s * (w / 2 - 0.01), y + h - 0.025, z));
-      [-0.18, 0, 0.18].forEach((rx) => yard.add(K.box(0.03, h - 0.08, 0.012, M.graphiteLight, x + rx, y + 0.03, z + s * (d / 2 + 0.006))));
-      yard.add(K.box(0.012, 0.05, 0.16, M.panel, x + s * (w / 2 + 0.006), y + h - 0.11, z));
-    });
-  };
-  [[0, 0], [0, 1], [0.66, 0]].forEach(([ox, k]) => crate(s5.x - 3.0 + ox, Y + k * 0.39, s5.z - 6.3));
+  // (v2: las cajas de transporte junto a la caseta dejan sitio a los depósitos del drenaje)
   ctx.add(yard);
 
   // ---------- cinta transportadora (posición, orientación y baterías fijas) ----------
@@ -613,8 +700,8 @@ export function buildRecycling(ctx) {
   // plástico ≈7 %; el 3 % restante no se desglosa). Las barras se llenan durante la llegada y el registro
   // queda «documentado» justo en el encuadre de exposición (local ≈ 0,45), donde el visitante se detiene
   const regK = (story) => {
-    if (!story || story.reduced || story.index > 5) return 1;
-    if (story.index < 5) return 0;
+    if (!story || story.reduced || story.index > CH.reciclaje) return 1;
+    if (story.index < CH.reciclaje) return 0;
     return clamp((story.local + 1.0) / 1.45, 0, 1);
   };
   const recRows = [['Plomo 60 %', 0.6], ['Electrolito 30 %', 0.3], ['Plástico 7 %', 0.07], ['Otros 3 %', 0.03]];
@@ -669,7 +756,8 @@ export function buildRecycling(ctx) {
   scrKiosk.position.set(0, 1.62, -(kd / 2) - 0.03);
   kiosk.add(scrKiosk);
   kiosk.add(K.box(1.34, 0.8, 0.03, M.darkSteel, 0, 1.22, -(kd / 2) - 0.005));
-  // tercera pantalla, en un poste junto a la barandilla de la pasarela: queda en el encuadre de exposición
+  // tercera pantalla, en un poste junto a las salidas (lingotes y granza), mirando al noroeste: el registro
+  // del destino acompaña a lo que sale hacia la fábrica
   const regPost = new THREE.Group();
   regPost.add(K.box(0.36, 0.04, 0.3, M.darkSteel, 0, 0, 0));
   regPost.add(K.box(0.1, 1.5, 0.1, M.graphite, 0, 0.04, -0.02));
@@ -678,10 +766,10 @@ export function buildRecycling(ctx) {
   const scrWalk = new THREE.Mesh(scr.geometry, scr.material);
   scrWalk.position.set(0, 1.9, 0.012);
   regPost.add(scrWalk);
-  regPost.position.set(s5.x + 8.5, Y, s5.z + 3.45);
-  regPost.rotation.y = -1.77;
+  regPost.position.set(s5.x - 0.4, Y, s5.z + 0.9);
+  regPost.rotation.y = -2.45;
   ctx.add(regPost);
-  ctx.shadows.push({ x: s5.x + 8.5, y: Y, z: s5.z + 3.45, w: 0.7, d: 0.6 });
+  ctx.shadows.push({ x: s5.x - 0.4, y: Y, z: s5.z + 0.9, w: 0.7, d: 0.6 });
   const gestor = label(6, 0.9, 0.45);
   gestor.position.set(0, 0.6, kd / 2 + 0.004);
   kiosk.add(gestor);
@@ -771,6 +859,11 @@ export function buildRecycling(ctx) {
   warnT.rotation.y = -Math.PI / 2;
   warnT.position.set(hX - HW / 2 - 0.018, 2.85, -0.43);
   tower.add(warnT);
+  // 2 · Trituración: cartel de etapa en la misma fachada, sobre el motor
+  const stT = stageLabel(1, 1.1);
+  stT.rotation.y = -Math.PI / 2;
+  stT.position.set(hX - HW / 2 - 0.02, 2.55, 0.95);
+  tower.add(stT);
   // plataforma superior con barandilla ámbar
   const DY = HH + 0.12;
   tower.add(K.box(4.5, 0.07, 3.9, M.darkSteel, 0.25, DY, 0.35));
@@ -895,85 +988,61 @@ export function buildRecycling(ctx) {
   duct(ductG, [V(s5.x + 5.95, Y + 2.6, s5.z - 0.66), V(s5.x + 5.95, Y + 5.95, s5.z - 0.66), V(s5.x + 5.95, Y + 5.95, s5.z - 4.3), V(s5.x + 9.65, Y + 5.95, s5.z - 4.3)], 0.2, 0.45);
   ctx.add(ductG);
 
-  // ---------- transportador inclinado abierto: virutas de la trituradora hasta la nave de separación ----------
-  // artesa de bandejas de acero sobre rodillos (las virutas se ven subir), faldones en la zona de carga,
-  // celosía ligera apoyada en los dos pórticos y cordón de parada ámbar en el lado este.
-  // Perfil bajo: la cámara de salida pasa unos 2 m por encima del tramo central.
-  const galA = V(s5.x + 11.8, Y + 1.0, s5.z - 1.9);
-  const galB = V(s5.x + 13.9, Y + 3.3, s5.z + 3.4);
-  const galLen = galA.distanceTo(galB);
-  const gal = new THREE.Group();
-  gal.position.copy(galA);
-  gal.lookAt(galB);
-  gal.updateMatrix();
-  const TW = Math.PI / 6;
-  [-1, 1].forEach((s) => {
-    // larguero en C (cordón superior) y cordón inferior de la celosía
-    gal.add(K.box(0.05, 0.2, galLen, M.darkSteel, s * 0.57, -0.34, galLen / 2));
-    gal.add(K.box(0.1, 0.022, galLen, M.darkSteel, s * 0.545, -0.34, galLen / 2));
-    gal.add(K.box(0.1, 0.022, galLen, M.darkSteel, s * 0.545, -0.162, galLen / 2));
-    gal.add(K.box(0.05, 0.05, galLen - 0.2, M.darkSteel, s * 0.57, -0.7, galLen / 2));
-    // alas inclinadas de la artesa (bandejas de acero, como en ref-reciclaje: las virutas negras contrastan)
-    const wing = K.box(0.3, 0.012, galLen, M.darkSteel, s * 0.3345, 0.0332, galLen / 2);
-    wing.rotation.z = s * TW;
-    gal.add(wing);
-    // montantes y diagonales de la celosía
-    for (let z = 0.2, j = 0; z < galLen - 0.2; z += 1.1, j++) {
-      gal.add(bar(V(s * 0.57, -0.34, z), V(s * 0.57, -0.66, z), 0.018, M.darkSteel, 6));
-      const z2 = Math.min(z + 1.1, galLen - 0.2);
-      if (z2 - z > 0.3) gal.add(j % 2 ? bar(V(s * 0.57, -0.34, z), V(s * 0.57, -0.66, z2), 0.016, M.darkSteel, 6) : bar(V(s * 0.57, -0.66, z), V(s * 0.57, -0.34, z2), 0.016, M.darkSteel, 6));
-    }
-    // faldones de acero donde cae el material de la trituradora
-    gal.add(K.box(0.02, 0.24, 1.4, M.steel, s * 0.37, 0.05, 0.75));
-    gal.add(K.box(0.07, 0.02, 1.4, M.steel, s * 0.385, 0.29, 0.75));
-    [0.25, 0.75, 1.25].forEach((z) => gal.add(bar(V(s * 0.38, 0.2, z), V(s * 0.57, -0.14, z), 0.014, M.darkSteel, 6)));
-  });
-  gal.add(K.box(0.42, 0.012, galLen, M.darkSteel, 0, -0.035, galLen / 2));
-  // estaciones de rodillos en artesa: central y dos alas a 30°
-  for (let z = 0.3; z < galLen - 0.15; z += 0.55) {
-    gal.add(K.box(1.1, 0.03, 0.05, M.darkSteel, 0, -0.14, z));
-    gal.add(bar(V(-0.21, -0.08, z), V(0.21, -0.08, z), 0.045, M.graphite, 8));
+  // ---------- elevador de cangilones y puente de cinta cerrado: de la trituradora a la nave de separación ----------
+  // El material triturado sale por un tornillo bajo la torre, sube por el elevador y cruza por encima del paso
+  // del camión (gálibo de más de 5 m) dentro de un puente cerrado que baja a la nave por la cubierta.
+  const brX = s5.x + 13.5;
+  const brZ0 = s5.z - 1.25;
+  const brZ1 = s5.z + 5.3;
+  const brY = Y + 6.25;
+  const lift = new THREE.Group();
+  lift.add(K.box(0.9, 0.7, 0.8, M.darkSteel, brX, Y, brZ0));
+  lift.add(K.box(0.66, brY - Y - 0.3, 0.56, M.steel, brX, Y + 0.7, brZ0));
+  lift.add(K.rbox(1.0, 0.95, 0.95, M.steel, brX, brY - 0.45, brZ0, 0.05));
+  lift.add(K.rbox(0.42, 0.34, 0.4, M.graphiteLight, brX + 0.68, brY - 0.25, brZ0, 0.03));
+  for (let y = Y + 1.6; y < brY - 0.5; y += 1.2) lift.add(K.box(0.7, 0.04, 0.6, M.darkSteel, brX, y, brZ0));
+  // tornillo de alimentación desde la descarga de la trituradora
+  lift.add(bar(V(s5.x + 12.2, Y + 0.55, s5.z - 2.45), V(brX - 0.3, Y + 0.45, brZ0 - 0.1), 0.15, M.darkSteel, 10));
+  lift.add(K.rbox(0.34, 0.34, 0.34, M.graphiteLight, s5.x + 12.1, Y + 0.38, s5.z - 2.5, 0.03));
+  // puente: cajón de chapa con juntas, celosía inferior y bajante a la cubierta de la nave
+  const brLen = brZ1 - brZ0;
+  const brC = (brZ0 + brZ1) / 2;
+  lift.add(K.rbox(0.86, 0.8, brLen, M.steel, brX, brY, brC, 0.04));
+  lift.add(K.box(0.92, 0.05, brLen + 0.05, M.darkSteel, brX, brY + 0.8, brC));
+  for (let z = brZ0 + 0.9; z < brZ1 - 0.4; z += 1.1) {
+    [-1, 1].forEach((s) => lift.add(K.box(0.014, 0.74, 0.03, M.darkSteel, brX + s * 0.435, brY + 0.03, z)));
+  }
+  [-1, 1].forEach((s) => lift.add(K.box(0.08, 0.1, brLen, M.darkSteel, brX + s * 0.38, brY - 0.48, brC)));
+  for (let z = brZ0 + 0.45, j = 0; z < brZ1 - 0.2; z += 1.3, j++) {
+    const z2 = Math.min(z + 1.3, brZ1 - 0.2);
     [-1, 1].forEach((s) => {
-      gal.add(bar(V(s * 0.23, -0.08, z), V(s * 0.49, 0.07, z), 0.045, M.graphite, 8));
-      gal.add(K.box(0.03, 0.05, 0.04, M.darkSteel, s * 0.22, -0.13, z));
-      gal.add(K.box(0.03, 0.2, 0.04, M.darkSteel, s * 0.51, -0.13, z));
+      lift.add(K.box(0.05, 0.4, 0.05, M.darkSteel, brX + s * 0.38, brY - 0.42, z));
+      if (z2 - z > 0.4) lift.add(bar(V(brX + s * 0.38, brY - (j % 2 ? 0.02 : 0.4), z), V(brX + s * 0.38, brY - (j % 2 ? 0.4 : 0.02), z2), 0.018, M.darkSteel, 6));
     });
   }
-  // ramal de retorno con sus rodillos y tambores de cola y cabeza
-  gal.add(K.box(0.9, 0.01, galLen - 0.35, M.darkSteel, 0, -0.465, galLen / 2));
-  for (let z = 0.9; z < galLen - 0.5; z += 1.8) gal.add(bar(V(-0.5, -0.5, z), V(0.5, -0.5, z), 0.035, M.graphite, 8));
-  [0.12, galLen - 0.05].forEach((z) => gal.add(bar(V(-0.52, -0.245, z), V(0.52, -0.245, z), 0.21, M.darkSteel, 16)));
-  // cordón de parada de emergencia en el lado este
-  for (let z = 0.4; z < galLen - 0.3; z += 1.1) gal.add(K.box(0.03, 0.4, 0.03, M.darkSteel, 0.6, -0.14, z));
-  gal.add(K.box(0.014, 0.014, galLen - 0.6, M.amberMatte, 0.6, 0.22, galLen / 2 + 0.05));
-  ctx.add(gal);
-  // pórticos de apoyo: el travesaño recibe el cordón inferior de la celosía
-  const galDir = new THREE.Vector3().subVectors(galB, galA);
-  const perp = new THREE.Vector3(-galDir.z, 0, galDir.x).normalize().multiplyScalar(0.66);
-  [0.28, 0.64].forEach((s) => {
-    const c = new THREE.Vector3(0, -0.75, s * galLen).applyMatrix4(gal.matrix);
-    const top = c.y;
-    [-1, 1].forEach((k) => {
-      ctx.add(K.box(0.1, top - Y + 0.05, 0.1, M.darkSteel, c.x + perp.x * k, Y, c.z + perp.z * k));
-      ctx.add(K.box(0.24, 0.02, 0.24, M.darkSteel, c.x + perp.x * k, Y, c.z + perp.z * k));
-    });
-    ctx.add(bar(V(c.x - perp.x, top, c.z - perp.z), V(c.x + perp.x, top, c.z + perp.z), 0.05, M.darkSteel, 6));
-    ctx.add(bar(V(c.x - perp.x, Y + 0.25, c.z - perp.z), V(c.x + perp.x, top - 0.1, c.z + perp.z), 0.025, M.darkSteel, 6));
-  });
+  // gálibo: franja ámbar bajo el puente, sobre el paso del camión
+  lift.add(K.box(0.9, 0.12, 0.05, M.amberMatte, brX, brY - 0.62, ACCESS.east.rim.z - 2.4));
+  // bajante a la nave (la cubierta está a Y + 4,12)
+  lift.add(K.box(0.62, brY - (Y + 4.1), 0.62, M.steel, brX, Y + 4.1, brZ1 - 0.35));
+  lift.add(K.box(0.72, 0.06, 0.72, M.darkSteel, brX, Y + 4.12, brZ1 - 0.35));
+  lift.add(K.box(0.07, 0.07, 0.02, ind, brX + 0.51, brY - 0.1, brZ0 + 0.2));
+  ctx.add(lift);
+  ctx.shadows.push({ x: brX, y: Y, z: brZ0, w: 1.3, d: 1.2 });
 
   // ---------- nave de separación (esquina sureste): boca iluminada y tolva hacia el contenedor ----------
   const sep = new THREE.Group();
   const bx0 = s5.x + 12.85;
   const bx1 = s5.x + 15.42;
-  const bz0 = s5.z + 3.3;
-  const bz1 = s5.z + 8.9;
+  // (desde la v2 empieza en z = 24,65: deja libre el paso del camión, z ∈ [19,5, 24,5])
+  const bz0 = s5.z + 4.65;
+  const bz1 = s5.z + 9.15;
   const bw = bx1 - bx0;
   const bd = bz1 - bz0;
   const bh = 3.9;
   const bcx = (bx0 + bx1) / 2;
   const bcz = (bz0 + bz1) / 2;
-  const oz0 = s5.z + 4.55;
-  const oz1 = s5.z + 6.65;
+  const oz0 = s5.z + 5.25;
+  const oz1 = s5.z + 7.35;
   const ozc = (oz0 + oz1) / 2;
   const oy0 = 1.6;
   const oy1 = 3.2;
@@ -1043,7 +1112,8 @@ export function buildRecycling(ctx) {
   sill.rotation.y = -Math.PI / 2;
   sill.position.set(bx0 - 0.008, Y + oy0 - 0.16, ozc);
   sep.add(sill);
-  const sepSign = label(6, 1.0, 0.5);
+  // 3 · Separación: cartel de etapa sobre la marquesina
+  const sepSign = stageLabel(2, 1.3);
   sepSign.rotation.y = -Math.PI / 2;
   sepSign.position.set(bx0 - 0.01, Y + 3.62, ozc);
   sep.add(sepSign);
@@ -1061,9 +1131,6 @@ export function buildRecycling(ctx) {
   const capS = K.cyl(0.04, 0.34, 0.2, M.darkSteel, 16);
   capS.position.set(bcx + 0.3, Y + bh + 2.65, bz0 + 1.3);
   sep.add(capS);
-  // entrada del transportador en la fachada norte (marco y boca oscura)
-  sep.add(K.box(1.4, 1.2, 0.24, M.darkSteel, galB.x, galB.y - 0.85, bz0 - 0.1));
-  sep.add(K.box(1.1, 0.6, 0.02, M.panel, galB.x, galB.y - 0.4, bz0 - 0.225));
   ctx.add(sep);
   ctx.shadows.push({ x: bcx, y: Y, z: bcz, w: bw + 0.8, d: bd + 0.8 });
 
@@ -1097,18 +1164,16 @@ export function buildRecycling(ctx) {
   const chipDir = new THREE.Vector3().subVectors(chB, chA).normalize();
   let shardMesh = null;
   let chipBase = 0;
-  // virutas que suben por el transportador inclinado: salen de la descarga y entran en la nave
-  const GCHIPS = 80;
-  const galV = 0.4;
-  const galRun = galLen + 0.45;
-  const galCycle = galRun / galV;
 
-  // depósitos de electrolito (GRG) sobre cubeto, junto al muro este
+  // 1 · Drenaje: el electrolito se vacía antes de triturar y se guarda en depósitos (GRG) sobre cubeto, junto a
+  // la entrada de la cinta. Tanque de drenaje de polietileno sobre su propio cubeto y bajante desde el túnel.
+  const ibcX = s5.x - 3.4;
+  const ibcZ = s5.z - 5.0;
   const tanks = new THREE.Group();
-  tanks.add(K.box(1.3, 0.12, 2.65, M.graphite, s5.x + 14.6, Y, s5.z - 3.45));
-  tanks.add(K.box(1.32, 0.03, 0.04, M.amberMatte, s5.x + 14.6, Y + 0.12, s5.z - 4.76));
-  [s5.z - 4.05, s5.z - 2.85].forEach((z) => {
-    const x = s5.x + 14.6;
+  tanks.add(K.box(1.3, 0.12, 2.65, M.graphite, ibcX, Y, ibcZ));
+  tanks.add(K.box(1.32, 0.03, 0.04, M.amberMatte, ibcX, Y + 0.12, ibcZ - 1.31));
+  [ibcZ - 0.6, ibcZ + 0.6].forEach((z) => {
+    const x = ibcX;
     tanks.add(K.box(1.0, 0.12, 1.16, M.darkSteel, x, Y + 0.12, z));
     tanks.add(K.rbox(0.92, 0.94, 1.08, M.ivory, x, Y + 0.25, z, 0.07));
     [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => tanks.add(K.box(0.035, 1.0, 0.035, M.darkSteel, x + sx * 0.48, Y + 0.24, z + sz * 0.56)));
@@ -1124,23 +1189,49 @@ export function buildRecycling(ctx) {
     tanks.add(lid);
     tanks.add(K.box(0.12, 0.1, 0.12, M.graphite, x - 0.5, Y + 0.3, z));
   });
+  // tanque de drenaje: cubeto con canto ámbar, depósito vertical marfil, aros, boca de hombre y bajante
+  const dX = s5.x - 5.5;
+  const dZ = s5.z - 5.1;
+  tanks.add(K.box(2.0, 0.28, 2.0, M.concreteLight, dX, Y, dZ));
+  tanks.add(K.box(2.02, 0.04, 0.06, M.amberMatte, dX, Y + 0.28, dZ + 0.98));
+  tanks.add(K.box(0.06, 0.04, 2.02, M.amberMatte, dX - 0.98, Y + 0.28, dZ));
+  const dBody = K.cyl(0.62, 0.62, 1.7, M.ivory, 20);
+  dBody.position.set(dX, Y + 0.28 + 0.85, dZ);
+  tanks.add(dBody);
+  const dTop = K.cyl(0.3, 0.64, 0.22, M.ivory, 20);
+  dTop.position.set(dX, Y + 2.09, dZ);
+  tanks.add(dTop);
+  [0.75, 1.55].forEach((y) => {
+    const r = K.cyl(0.635, 0.635, 0.05, M.darkSteel, 20);
+    r.position.set(dX, Y + y, dZ);
+    tanks.add(r);
+  });
+  const dLid = K.cyl(0.17, 0.17, 0.08, M.graphite, 12);
+  dLid.position.set(dX, Y + 2.24, dZ);
+  tanks.add(dLid);
+  tanks.add(K.box(0.1, 1.1, 0.1, M.darkSteel, dX + 0.55, Y + 0.28, dZ + 0.55));
+  tanks.add(K.box(0.04, 0.04, 0.6, M.amberMatte, dX - 0.4, Y + 0.6, dZ + 0.62));
+  // bajante desde la bandeja bajo el túnel de entrada de la cinta
+  tanks.add(K.pipe([V(s5.x - 8.6, Y + 0.32, s5.z - 2.6), V(s5.x - 7.4, Y + 0.35, s5.z - 4.1), V(dX - 0.5, Y + 0.9, dZ + 0.25)], 0.06, M.darkSteel, 14));
   ctx.add(tanks);
-  ctx.shadows.push({ x: s5.x + 14.6, y: Y, z: s5.z - 3.45, w: 1.8, d: 3.1 });
+  ctx.shadows.push({ x: ibcX, y: Y, z: ibcZ, w: 1.8, d: 3.1 });
+  ctx.shadows.push({ x: dX, y: Y, z: dZ, w: 2.4, d: 2.4 });
+  stagePost(0, dX - 1.15, dZ - 0.4, -2.2);
 
-  // ---------- contenedores troncocónicos con los materiales recuperados (posiciones fijas) ----------
+  // ---------- contenedores troncocónicos con lo que sale de la separación (posiciones fijas) ----------
+  // De oeste a este: pasta de plomo (junto al reactor de desulfuración), rejillas y bornes de plomo (al horno) y
+  // polipropileno triturado (bajo la tolva de la nave). Sin cobre (§9.6).
   const binOut = K.geo('binOut', () => frustumShell(3.4, 2.6, 0.88, 1.6));
   const binIn = K.geo('binIn', () => frustumShell(3.26, 2.46, 0.88, 1.58, true));
-  const tz = Math.atan(0.156 / 1.6);
+  const tz = Math.atan(0.156 / 1.6); // (inclinación de las paredes de los contenedores)
   const tx = Math.atan(0.204 / 1.6);
-  const piles = { ingot: [], chunk: [], shard: [], rod: [] };
-  const fills = ['rod', 'chunk', 'ingot', 'ingot', 'shard'];
-  const cells = { ingot: 0, chunk: 1, shard: 2, rod: 3 };
+  const piles = { chunk: [], shard: [] };
+  const BIN_Z = s5.z + 5.95;
+  const bins = [['paste', 3, s5.x + 2.4], ['chunk', 1, s5.x + 6.6], ['shard', 2, s5.x + 10.8]];
   // por tipo: piezas, semiejes del montón (la pieza no atraviesa la pared interior) y altura de la cima
   const heapSpec = {
-    ingot: [300, 1.4, 1.0, 0.55],
-    chunk: [760, 1.5, 1.1, 0.55],
-    shard: [760, 1.5, 1.1, 0.5],
-    rod: [300, 1.3, 0.9, 0.42],
+    chunk: [520, 1.5, 1.1, 0.55],
+    shard: [620, 1.5, 1.1, 0.5],
   };
   // montón que llega a las paredes: secuencia R2 repartida por todo el rectángulo (también las
   // esquinas) y cima redondeada en el centro que asoma unos 0,4 m sobre el labio
@@ -1153,10 +1244,8 @@ export function buildRecycling(ctx) {
       list.push([cx + u * rx, top - (k % 3 === 0 ? 0.05 : 0), cz + v * rz, k + seed * 31]);
     }
   };
-  fills.forEach((kind, i) => {
-    const cell = cells[kind];
-    const bx = s5.x - 6 + i * 4.2;
-    const bz = s5.z + 5.6;
+  bins.forEach(([kind, cell, bx], i) => {
+    const bz = BIN_Z;
     const bin = new THREE.Group();
     // patines longitudinales y bolsillos para la carretilla
     [-0.8, 0.8].forEach((z) => bin.add(K.box(2.9, 0.12, 0.22, M.darkSteel, 0, 0, z)));
@@ -1193,55 +1282,30 @@ export function buildRecycling(ctx) {
     bin.add(plate);
     bin.add(K.box(0.08, 0.08, 0.03, ind, 0.95, 1.22, -1.27));
     bin.add(K.box(3.12, 0.05, 2.34, M.shard, 0, 1.52, 0));
+    if (kind === 'paste') {
+      // pasta de plomo: un montón continuo, mate
+      const mound = new THREE.Mesh(K.geo('pasteMound', () => new THREE.SphereGeometry(1, 14, 5, 0, Math.PI * 2, 0, Math.PI / 2).scale(1.48, 0.42, 1.08)), M.concrete);
+      mound.position.y = 1.5;
+      bin.add(mound);
+    }
     bin.position.set(bx, Y, bz);
     ctx.add(bin);
     ctx.shadows.push({ x: bx, y: Y, z: bz, w: 4.3, d: 3.5 });
-    const [n, rx, rz, peak] = heapSpec[kind];
-    heap(piles[kind], bx, bz, rx, rz, Y + 1.6, peak, n, i + 1);
-  });
-
-  // ---------- muelles de acopio al norte: plástico triturado y paquetes de lingotes ----------
-  const bays = new THREE.Group();
-  bays.add(K.box(6.4, 2.0, 0.3, M.concrete, s5.x + 4.4, Y, s5.z - 9.25));
-  bays.add(K.box(6.5, 0.07, 0.42, M.concreteLight, s5.x + 4.4, Y + 2.0, s5.z - 9.25));
-  for (let x = s5.x + 1.6; x < s5.x + 7.5; x += 1.6) bays.add(K.box(0.035, 1.94, 0.012, M.panel, x, Y + 0.03, s5.z - 9.094));
-  [s5.x + 1.35, s5.x + 4.45, s5.x + 7.45].forEach((x) => {
-    bays.add(K.box(0.3, 1.5, 2.6, M.concrete, x, Y, s5.z - 7.8));
-    bays.add(K.box(0.4, 0.06, 2.62, M.concreteLight, x, Y + 1.5, s5.z - 7.8));
-  });
-  const mound = new THREE.Mesh(K.geo('mound', () => new THREE.SphereGeometry(1, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2).scale(1.3, 0.72, 1.12)), M.shard);
-  mound.position.set(s5.x + 2.9, Y, s5.z - 8.0);
-  bays.add(mound);
-  for (let k = 0; k < 320; k++) {
-    const r = Math.sqrt((k * 0.6180339) % 1) * 0.97;
-    const a = k * 2.39996;
-    piles.shard.push([s5.x + 2.9 + Math.cos(a) * r * 1.3, Y + 0.72 * Math.sqrt(1 - r * r) + 0.01, s5.z - 8.0 + Math.sin(a) * r * 1.12, k + 500]);
-  }
-  const bundles = [];
-  [[5.0, -8.6], [5.85, -8.6], [6.7, -8.6], [5.0, -7.45], [5.85, -7.45], [6.7, -7.45]].forEach(([ox, oz], b) => {
-    const layers = 4 + (b % 3);
-    bays.add(K.box(0.72, 0.1, 0.62, M.wood, s5.x + ox, Y, s5.z + oz));
-    for (let L = 0; L < layers; L++) {
-      for (let j = 0; j < 2; j++) {
-        const rot = L % 2 === 0 ? 0 : Math.PI / 2;
-        const off = (j - 0.5) * 0.25;
-        bundles.push([s5.x + ox + (rot ? off : 0), Y + 0.1 + L * 0.175, s5.z + oz + (rot ? 0 : off), rot]);
-      }
+    if (heapSpec[kind]) {
+      const [n, rx, rz, peak] = heapSpec[kind];
+      heap(piles[kind], bx, bz, rx, rz, Y + 1.6, peak, n, i + 1);
     }
   });
-  ctx.add(bays);
 
   // instancias de los montones: una malla por tipo de pieza para todo el gestor
   const pileGeo = {
-    ingot: () => ingotGeometry(),
     chunk: () => nuggetGeometry(),
     shard: () => new THREE.OctahedronGeometry(0.06, 0).scale(1.3, 0.38, 1),
-    rod: () => new THREE.CylinderGeometry(0.032, 0.032, 0.52, 6).rotateZ(Math.PI / 2),
   };
-  const pileMat = { ingot: leadMat, chunk: M.copper, shard: M.shard, rod: M.steel };
+  const pileMat = { chunk: leadMat, shard: M.shard };
   Object.keys(piles).forEach((kind) => {
     const list = piles[kind];
-    const extra = kind === 'ingot' ? bundles.length : kind === 'shard' ? CHIPS + GCHIPS : 0;
+    const extra = kind === 'shard' ? CHIPS : 0;
     const im = new THREE.InstancedMesh(K.geo(`pile-${kind}`, pileGeo[kind]), pileMat[kind], list.length + extra);
     if (kind === 'shard') {
       shardMesh = im;
@@ -1254,32 +1318,359 @@ export function buildRecycling(ctx) {
       o3.updateMatrix();
       im.setMatrixAt(i, o3.matrix);
     });
-    if (kind === 'ingot') {
-      bundles.forEach(([x, y, z, r], j) => {
-        o3.position.set(x, y + 0.085, z);
-        o3.rotation.set(0, r, 0);
-        o3.scale.set(1.55, 1.55, 1.55);
-        o3.updateMatrix();
-        im.setMatrixAt(list.length + j, o3.matrix);
-      });
-    }
     im.castShadow = true;
     im.receiveShadow = true;
     ctx.add(im);
   });
 
-  // ---------- pasarela entre cinta y contenedores: barandilla ámbar y líneas de luz ----------
-  const walk = new THREE.Group();
-  railing(walk, s5.x - 7.6, s5.z + 3.85, s5.x + 12.6, s5.z + 3.85, Y, { step: 1.34 });
-  walk.add(K.box(19.6, 0.012, 0.05, M.lime, s5.x + 2.6, Y, s5.z + 3.62));
-  ctx.add(walk);
-  belt.add(K.box(11.4, 0.012, 0.05, M.lime, -0.6, 0, 1.32));
-  [[-4.4, 1.62], [0.9, 1.62], [4.2, 1.62]].forEach(([x, z]) => {
-    lp.set(x, 0, z).applyMatrix4(belt.matrix);
-    ctx.lamps.push({ x: lp.x, y: Y, z: lp.z });
+  // ---------- 4 · Desulfuración: reactor agitado junto al contenedor de pasta ----------
+  // La pasta se trata con carbonato o hidróxido de sodio (hecho proceso_reciclaje-f4); el sulfato de sodio que
+  // resulta, junto con el del electrolito, sale cristalizado en sacos (proceso_reciclaje-f7 y f19).
+  const rX = s5.x - 1.85;
+  const rZ = BIN_Z;
+  const reactor = new THREE.Group();
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
+    reactor.add(K.box(0.1, 1.05, 0.1, M.darkSteel, rX + sx * 0.56, Y, rZ + sz * 0.56));
+    reactor.add(K.box(0.22, 0.02, 0.22, M.darkSteel, rX + sx * 0.56, Y, rZ + sz * 0.56));
   });
+  const rCone = K.cyl(0.85, 0.22, 0.55, M.steel, 20);
+  rCone.position.set(rX, Y + 1.05, rZ);
+  reactor.add(rCone);
+  const rBody = K.cyl(0.85, 0.85, 1.9, M.steel, 20);
+  rBody.position.set(rX, Y + 2.27, rZ);
+  reactor.add(rBody);
+  [1.75, 2.75].forEach((y) => {
+    const ring = K.cyl(0.865, 0.865, 0.05, M.darkSteel, 20);
+    ring.position.set(rX, Y + y, rZ);
+    reactor.add(ring);
+  });
+  const rDish = K.cyl(0.42, 0.87, 0.22, M.darkSteel, 20);
+  rDish.position.set(rX, Y + 3.33, rZ);
+  reactor.add(rDish);
+  // agitador: motor, reductor y soporte
+  reactor.add(K.rbox(0.42, 0.46, 0.42, M.graphiteLight, rX, Y + 3.44, rZ, 0.04));
+  const rGear = K.cyl(0.2, 0.2, 0.28, M.darkSteel, 12);
+  rGear.position.set(rX, Y + 4.04, rZ);
+  reactor.add(rGear);
+  reactor.add(K.box(0.07, 0.07, 0.02, ind, rX + 0.18, Y + 3.7, rZ - 0.22));
+  // tornillo de pasta desde el contenedor y bomba de descarga hacia la cristalización
+  reactor.add(bar(V(s5.x + 0.75, Y + 1.72, rZ - 0.3), V(rX + 0.5, Y + 3.3, rZ - 0.3), 0.11, M.darkSteel, 8));
+  reactor.add(K.rbox(0.5, 0.36, 0.34, M.graphite, rX - 1.0, Y, rZ - 0.55, 0.03));
+  reactor.add(bar(V(rX - 0.75, Y + 0.25, rZ - 0.55), V(rX - 0.18, Y + 0.85, rZ - 0.2), 0.045, M.darkSteel, 8));
+  ctx.add(reactor);
+  ctx.shadows.push({ x: rX, y: Y, z: rZ, w: 2.2, d: 2.2 });
+  stagePost(3, rX - 0.6, rZ - 1.35, -2.5);
+  // sacos de sulfato de sodio en dos palés (producto del electrolito y de la desulfuración)
+  [[s5.x - 4.9, BIN_Z - 0.35], [s5.x - 4.9, BIN_Z + 0.85]].forEach(([x, z], p) => {
+    pallet(x, Y, z);
+    for (let L = 0; L < 3 - p; L++) {
+      const rot = L % 2 === 1;
+      for (let j = 0; j < 4; j++) {
+        const a = (j % 2) - 0.5;
+        const b = Math.floor(j / 2) - 0.5;
+        const sk = rot ? K.box(0.36, 0.2, 0.5, M.ivoryPanel, x + a * 0.56, Y + 0.144 + L * 0.205, z + b * 0.44) : K.box(0.54, 0.2, 0.4, M.ivoryPanel, x + a * 0.58, Y + 0.144 + L * 0.205, z + b * 0.44);
+        yard.add(sk);
+      }
+    }
+    ctx.shadows.push({ x, y: Y, z, w: 1.6, d: 1.4 });
+  });
+  platePost(8, s5.x - 6.3, BIN_Z - 1.0, -2.3);
 
-  // ---------- farolas ----------
+  // ---------- 5 · Fundición: horno rotativo con la boca encendida hacia el norte ----------
+  // Pasta desulfurada y rejillas se funden con fundentes y un reductor; se sangra plomo bruto (proceso_reciclaje-f5).
+  // La boca es emisiva (sin luz real); el charco de luz lo pone una baliza del suelo.
+  const fX = s5.x - 13.4;
+  const fZ = s5.z + 6.0;
+  const fY = Y + 1.55;
+  const furnace = new THREE.Group();
+  furnace.add(K.box(2.5, 0.32, 4.7, M.concreteLight, fX, Y, fZ));
+  furnace.add(K.box(2.52, 0.03, 0.05, M.amberMatte, fX, Y + 0.32, fZ - 2.33));
+  [fZ - 1.05, fZ + 1.05].forEach((z) => {
+    // estación de rodillos y aro de rodadura
+    [-1, 1].forEach((s) => {
+      furnace.add(K.box(0.42, 0.42, 0.5, M.darkSteel, fX + s * 0.66, Y + 0.32, z));
+      const roller = K.cyl(0.17, 0.17, 0.3, M.graphite, 12);
+      roller.rotation.x = Math.PI / 2;
+      roller.position.set(fX + s * 0.66, Y + 0.86, z);
+      furnace.add(roller);
+    });
+    const tyre = K.cyl(1.0, 1.0, 0.2, M.darkSteel, 24);
+    tyre.rotation.x = Math.PI / 2;
+    tyre.position.set(fX, fY, z);
+    furnace.add(tyre);
+  });
+  const shell = K.cyl(0.9, 0.9, 3.9, M.darkSteel, 24);
+  shell.rotation.x = Math.PI / 2;
+  shell.position.set(fX, fY, fZ);
+  furnace.add(shell);
+  // corona dentada y motorreductor
+  const girth = K.cyl(1.04, 1.04, 0.1, M.graphite, 24);
+  girth.rotation.x = Math.PI / 2;
+  girth.position.set(fX, fY, fZ + 0.2);
+  furnace.add(girth);
+  furnace.add(K.rbox(0.55, 0.5, 0.6, M.graphiteLight, fX + 1.25, Y + 0.32, fZ + 0.2, 0.04));
+  // boca: aro oscuro, brasa ámbar y núcleo cálido (por encima del umbral del resplandor)
+  const mouthZ = fZ - 1.95;
+  const lip = K.cyl(0.94, 0.94, 0.12, M.graphite, 24);
+  lip.rotation.x = Math.PI / 2;
+  lip.position.set(fX, fY, mouthZ - 0.02);
+  furnace.add(lip);
+  const ember = K.cyl(0.66, 0.66, 0.02, M.amberGlow, 24);
+  ember.rotation.x = Math.PI / 2;
+  ember.position.set(fX, fY, mouthZ - 0.09);
+  furnace.add(ember);
+  const core = K.cyl(0.42, 0.42, 0.02, M.warmGlow, 20);
+  core.rotation.x = Math.PI / 2;
+  core.position.set(fX, fY - 0.08, mouthZ - 0.1);
+  furnace.add(core);
+  // puerta abierta sobre su bisagra, campana de humos y chimenea hacia la depuración de gases
+  const door = K.box(1.35, 1.35, 0.14, M.darkSteel, -0.675, -0.675, 0);
+  const doorG = new THREE.Group();
+  doorG.add(door);
+  doorG.add(K.box(1.0, 1.0, 0.02, M.panel, -0.675, -0.5, 0.08));
+  doorG.position.set(fX + 0.95, fY, mouthZ - 0.12);
+  doorG.rotation.y = -1.75;
+  furnace.add(doorG);
+  furnace.add(K.rbox(2.0, 0.5, 1.15, M.steel, fX, fY + 1.15, mouthZ - 0.35, 0.04));
+  const fStack = K.cyl(0.24, 0.24, 3.2, M.steel, 14);
+  fStack.position.set(fX, fY + 3.2, mouthZ - 0.3);
+  furnace.add(fStack);
+  const fCapH = K.cyl(0.3, 0.3, 0.07, M.darkSteel, 14);
+  fCapH.position.set(fX, fY + 2.2, mouthZ - 0.3);
+  furnace.add(fCapH);
+  // quemador en el extremo sur
+  const burner = K.cyl(0.36, 0.5, 0.5, M.graphiteLight, 16);
+  burner.rotation.x = Math.PI / 2;
+  burner.position.set(fX, fY, fZ + 2.2);
+  furnace.add(burner);
+  furnace.add(K.rbox(0.6, 0.6, 0.55, M.graphite, fX + 0.75, Y + 0.32, fZ + 2.15, 0.04));
+  furnace.add(K.box(0.07, 0.07, 0.02, ind, fX + 0.75, Y + 0.8, fZ + 1.86));
+  ctx.add(furnace);
+  ctx.shadows.push({ x: fX, y: Y, z: fZ, w: 3.0, d: 5.2 });
+  stagePost(4, fX - 1.55, mouthZ + 0.35, -2.45);
+  // charcos de luz de las balizas: delante de la boca y a lo largo de la colada
+  ctx.lamps.push({ x: fX - 1.0, y: Y, z: mouthZ - 1.55 });
+  ctx.lamps.push({ x: s5.x - 8.6, y: Y, z: s5.z + 1.2 });
+
+  // ---------- 6 · Refino: dos calderos empotrados en su banco, con agitador ----------
+  // El plomo bruto se refina en calderas hasta plomo blando (proceso_reciclaje-f6). Mirillas de los quemadores.
+  const kX = s5.x - 9.8;
+  const kZ = fZ;
+  const kettles = new THREE.Group();
+  kettles.add(K.box(1.9, 0.95, 4.1, M.concreteLight, kX, Y, kZ));
+  kettles.add(K.box(1.92, 0.05, 4.12, M.darkSteel, kX, Y + 0.95, kZ));
+  const kz = [kZ - 1.0, kZ + 1.0];
+  kz.forEach((z) => {
+    const rim = K.cyl(0.8, 0.8, 0.12, M.darkSteel, 24);
+    rim.position.set(kX, Y + 1.06, z);
+    kettles.add(rim);
+    const melt = K.cyl(0.7, 0.7, 0.02, leadMat, 24);
+    melt.position.set(kX, Y + 1.115, z);
+    kettles.add(melt);
+    // mirillas de los quemadores en la cara oeste
+    kettles.add(K.box(0.02, 0.12, 0.28, M.amberGlow, kX - 0.96, Y + 0.32, z));
+    kettles.add(K.box(0.03, 0.2, 0.36, M.darkSteel, kX - 0.955, Y + 0.28, z));
+  });
+  // pórtico del agitador sobre el primer caldero
+  [-1, 1].forEach((s) => kettles.add(K.box(0.08, 1.6, 0.08, M.darkSteel, kX + s * 0.85, Y + 1.0, kz[1])));
+  kettles.add(K.box(1.8, 0.1, 0.12, M.darkSteel, kX, Y + 2.6, kz[1]));
+  kettles.add(K.rbox(0.36, 0.4, 0.36, M.graphiteLight, kX, Y + 2.7, kz[1], 0.03));
+  kettles.add(K.box(0.05, 1.5, 0.05, M.steel, kX, Y + 1.2, kz[1]));
+  ctx.add(kettles);
+  ctx.shadows.push({ x: kX, y: Y, z: kZ, w: 2.4, d: 4.6 });
+  stagePost(5, kX + 1.35, kz[1] + 0.2, -2.3);
+
+  // ---------- 7 · Colada: lingotera de cadena desde el primer caldero hasta la mesa de apilado ----------
+  // Las lingoteras avanzan; tras el caño se llenan y, al final, el lingote sale hacia las pilas.
+  const cx0 = s5.x - 9.4;
+  const cLen = 8.0;
+  const cz = s5.z + 2.3;
+  const cTop = Y + 0.72;
+  const cast = new THREE.Group();
+  [-1, 1].forEach((s) => cast.add(K.box(cLen, 0.12, 0.07, M.darkSteel, cx0 + cLen / 2, cTop - 0.14, cz + s * 0.34)));
+  for (let x = cx0 + 0.3; x < cx0 + cLen; x += 1.6) {
+    [-1, 1].forEach((s) => cast.add(K.box(0.08, cTop - 0.14 - Y, 0.08, M.darkSteel, x, Y, cz + s * 0.34)));
+  }
+  [cx0 + 0.05, cx0 + cLen - 0.05].forEach((x) => {
+    const sp = K.cyl(0.16, 0.16, 0.74, M.graphite, 12);
+    sp.rotation.x = Math.PI / 2;
+    sp.position.set(x, cTop - 0.14, cz);
+    cast.add(sp);
+  });
+  cast.add(K.rbox(0.5, 0.42, 0.4, M.graphiteLight, cx0 + cLen - 0.3, Y, cz + 0.62, 0.03));
+  // caño de colada: del caldero a la primera lingotera, con el chorro de plomo
+  const pourX = cx0 + 0.75;
+  cast.add(bar(V(kX + 0.2, Y + 1.35, kz[0] - 0.55), V(pourX, cTop + 0.42, cz + 0.05), 0.07, M.darkSteel, 8));
+  cast.add(K.box(0.04, 0.3, 0.04, leadMat, pourX, cTop + 0.1, cz));
+  // mesa de apilado al final de la línea
+  const tabX = cx0 + cLen + 0.55;
+  cast.add(K.box(0.9, 0.62, 0.9, M.darkSteel, tabX, Y, cz));
+  cast.add(K.box(0.94, 0.04, 0.94, M.steel, tabX, Y + 0.62, cz));
+  ctx.add(cast);
+  ctx.shadows.push({ x: cx0 + cLen / 2, y: Y, z: cz, w: cLen + 1, d: 1.2 });
+  stagePost(6, cx0 + 5.6, cz - 0.95, -2.6);
+  // lingoteras y lingotes: dos instanciadas que avanzan (no proyectan sombra: el mapa es estático)
+  const MOLDS = 16;
+  const pitch = cLen / MOLDS;
+  const molds = new THREE.InstancedMesh(K.geo('castMold', () => new THREE.BoxGeometry(0.44, 0.12, 0.27)), M.darkSteel, MOLDS);
+  const castIngots = new THREE.InstancedMesh(K.geo('ingot', ingotGeometry), leadMat, MOLDS + 6);
+  [molds, castIngots].forEach((im) => {
+    im.castShadow = false;
+    im.receiveShadow = true;
+    im.boundingSphere = new THREE.Sphere(new THREE.Vector3(cx0 + cLen / 2 + 0.3, cTop, cz), cLen / 2 + 1.2);
+    ctx.add(im);
+  });
+  // seis lingotes ya enfriados en la mesa de apilado (fijos)
+  for (let j = 0; j < 6; j++) {
+    o3.position.set(tabX - 0.2 + (j % 2) * 0.4, Y + 0.72 + Math.floor(j / 2) * 0.11, cz + (Math.floor(j / 2) % 2 ? -0.12 : 0.1));
+    o3.rotation.set(0, Math.floor(j / 2) % 2 ? Math.PI / 2 : 0, 0);
+    o3.scale.setScalar(1);
+    o3.updateMatrix();
+    castIngots.setMatrixAt(MOLDS + j, o3.matrix);
+  }
+  o3.rotation.set(0, 0, 0);
+  const castV = 0.22;
+  const wrapN = (v, m) => ((v % m) + m) % m;
+  const placeCasting = (tt) => {
+    for (let j = 0; j < MOLDS; j++) {
+      const d = wrapN(tt * castV + j * pitch, cLen);
+      const x = cx0 + 0.1 + d * ((cLen - 0.2) / cLen);
+      // entra y sale por debajo de la cadena en los extremos
+      const edge = Math.min(1, d / 0.25, (cLen - d) / 0.25);
+      o3.position.set(x, cTop - 0.12 * (1 - edge), cz);
+      o3.scale.set(1, Math.max(edge, 0.001), 1);
+      o3.updateMatrix();
+      molds.setMatrixAt(j, o3.matrix);
+      // el lingote aparece al pasar bajo el caño y se retira antes del final
+      const fill = clamp((x - pourX + 0.1) / 0.3, 0, 1) * clamp((cx0 + cLen - 0.35 - x) / 0.2, 0, 1);
+      o3.position.set(x, cTop + 0.02, cz);
+      o3.scale.setScalar(Math.max(fill, 0.001));
+      o3.updateMatrix();
+      castIngots.setMatrixAt(j, o3.matrix);
+    }
+    o3.scale.setScalar(1);
+    molds.instanceMatrix.needsUpdate = true;
+    const ca = castIngots.instanceMatrix;
+    ca.clearUpdateRanges();
+    ca.addUpdateRange(0, MOLDS * 16);
+    ca.needsUpdate = true;
+  };
+
+  // ---------- salidas: pilas de lingotes de plomo y big bags de granza de polipropileno ----------
+  const outs = new THREE.Group();
+  [[s5.x + 0.6, cz - 0.05, 0], [s5.x + 2.25, cz - 0.05, 0], [s5.x + 1.45, cz + 1.25, Math.PI / 2]].forEach(([x, z, r], j) => {
+    const st = makeIngotStack(M, { rows: 3, cols: 4, layers: j === 2 ? 3 : 4 });
+    st.position.set(x, Y, z);
+    st.rotation.y = r;
+    outs.add(st);
+    ctx.shadows.push({ x, y: Y, z, w: 1.5, d: 1.3 });
+  });
+  [[s5.x + 4.15, s5.z + 1.75], [s5.x + 5.35, s5.z + 1.75], [s5.x + 4.75, s5.z + 2.95]].forEach(([x, z], j) => {
+    const bag = makePelletBag(M);
+    bag.position.set(x, Y, z);
+    bag.rotation.y = j * 0.35;
+    outs.add(bag);
+    ctx.shadows.push({ x, y: Y, z, w: 1.3, d: 1.3 });
+  });
+  ctx.add(outs);
+  platePost(0, s5.x + 1.45, cz - 1.0, -2.75);
+  platePost(9, s5.x + 3.35, s5.z + 3.2, -2.4);
+
+  // ---------- personas: operarios de planta (casco y chaleco) y, junto al horno, traje aluminizado ----------
+  const person = (role, pose, x, z, ry) => {
+    const p = makePerson(M, { role, pose });
+    p.position.set(x, Y, z);
+    p.rotation.y = ry;
+    ctx.add(p);
+    ctx.shadows.push({ x, y: Y, z, w: 0.75, d: 0.6 });
+  };
+  person('horno', 'work', fX + 0.35, mouthZ - 1.05, 0.12);
+  person('planta', 'work', cx0 + 3.6, cz - 0.95, 0);
+  person('planta', 'look', s5.x - 0.75, BIN_Z - 2.05, 0.15);
+
+  // ---------- camión de salida: lingotes y granza hacia la fábrica de baterías nuevas ----------
+  // Espera cargado en el paso del murete este (ACCESS.east) durante el reciclaje; desde la trazabilidad hasta el
+  // cierre sale por la calzada este hacia la fábrica (ACCESS.factory). Compactado, una malla por material; no
+  // proyecta sombra (el mapa de sombras es estático). Con movimiento reducido se queda aparcado.
+  // (K.compact une cabina, caja y carga en una malla por material: 12 llamadas en vez de 14)
+  const truck = K.compact(makeTruck(M, { kind: 'lingotes', loaded: true, mergeCargo: true, dynamic: true }));
+  truck.userData.dynamic = true;
+  truck.traverse((o) => {
+    if (!o.isMesh) return;
+    o.castShadow = false;
+    o.receiveShadow = true;
+  });
+  const tBox = new THREE.Box3().setFromObject(truck);
+  const tC = tBox.getCenter(new THREE.Vector3());
+  const tHalf = (tBox.max.z - tBox.min.z) / 2;
+  truck.position.set(-tC.x, 0, -tC.z);
+  const truckRig = new THREE.Group();
+  truckRig.userData.dynamic = true;
+  truckRig.add(truck);
+  ctx.add(truckRig);
+  // Recorrido por las carreteras del entorno (environment.js): carril derecho de la calzada este, giro a la izquierda
+  // a la carretera de la orilla (eje x = orilla + 23), y a la derecha por el acceso de la fábrica hasta su explanada.
+  // Cotas: suelo de la isla, rasante recta de la calzada (de 1,5 cm sobre la isla al firme de la orilla, 0,39) y
+  // explanada de la fábrica (0,37).
+  const E = ACCESS.east;
+  const fac = ACCESS.factory;
+  const ROAD_Y = E.shore.y + 0.08;
+  const yAt = (x) => {
+    if (x <= E.rim.x - 0.5) return Y;
+    if (x < E.shore.x) return THREE.MathUtils.lerp(E.rim.y + 0.015, ROAD_Y, (x - (E.rim.x - 0.5)) / (E.shore.x - (E.rim.x - 0.5)));
+    return x > fac.x - 29 ? E.shore.y + 0.06 : ROAD_Y;
+  };
+  const P = (x, z) => V(x, yAt(x), z);
+  const laneE = E.rim.z + 1.6; // carril derecho hacia el este
+  const mainX = E.shore.x + 23 + 1.7; // carril derecho hacia el norte de la carretera de la orilla
+  const accZ = fac.z + 17 + 10 + 1.6; // carril derecho del acceso de la fábrica (eje en z = fachada + 10)
+  const parkX = E.rim.x - 0.45 - tHalf;
+  const route = new THREE.CatmullRomCurve3([
+    P(parkX, E.rim.z),
+    P(E.rim.x + 1.5, E.rim.z + 0.6),
+    P(E.rim.x + 7, laneE),
+    P(E.shore.x - 7, laneE),
+    P(mainX - 10, laneE),
+    P(mainX - 4, laneE - 2.6),
+    P(mainX, laneE - 8.5),
+    P(mainX, accZ + 5),
+    P(mainX + 3, accZ + 0.4),
+    P(fac.x - 27, accZ),
+    // se detiene en la explanada, delante del bloque de oficinas (antes de la farola de los muelles)
+    P(fac.x - 15, accZ + 0.4),
+  ], false, 'centripetal');
+  // fracción del recorrido al terminar el tramo de la trazabilidad: el camión ya va por la calzada, cerca de la orilla
+  let shoreU = 0.4;
+  {
+    const q = new THREE.Vector3();
+    for (let k = 0; k <= 400; k++) {
+      route.getPointAt(k / 400, q);
+      if (q.x >= E.shore.x - 12) {
+        shoreU = k / 400;
+        break;
+      }
+    }
+  }
+  const tPos = new THREE.Vector3();
+  const tTan = new THREE.Vector3();
+  const smooth = (x) => x * x * (3 - 2 * x);
+  const departure = (story) => {
+    if (!story || story.reduced || story.index < CH.trazabilidad) return 0;
+    if (story.index === CH.trazabilidad) return shoreU * smooth(clamp(story.local, 0, 1));
+    return shoreU + (1 - shoreU) * smooth(clamp(story.local, 0, 1));
+  };
+  let truckU = -1;
+  const placeTruck = (u) => {
+    if (u === truckU) return;
+    truckU = u;
+    route.getPointAt(u, tPos);
+    route.getTangentAt(Math.min(u, 0.999), tTan);
+    truckRig.position.copy(tPos);
+    truckRig.rotation.y = Math.atan2(tTan.x, tTan.z);
+  };
+  placeTruck(0);
+
+  // farolas
   const lampPost = (x, z, ry) => {
     const g = new THREE.Group();
     g.add(K.box(0.32, 0.05, 0.32, M.darkSteel, 0, 0, 0));
@@ -1297,71 +1688,16 @@ export function buildRecycling(ctx) {
   lampPost(s5.x + 8.1, s5.z - 9.45, -Math.PI / 2);
   lampPost(s5.x - 8.0, s5.z + 8.9, Math.PI * 0.25);
 
-  // ---------- silo de plástico triturado en la esquina libre entre el transportador y la valla ----------
-  // Pieza vertical del fondo en el encuadre de exposición; queda a más de 1,5 m de la salida de cámara.
-  const silo = new THREE.Group();
-  const SR = 0.55;
-  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
-    silo.add(K.box(0.09, 2.05, 0.09, M.darkSteel, sx * 0.4, 0, sz * 0.4));
-    silo.add(K.box(0.22, 0.02, 0.22, M.darkSteel, sx * 0.4, 0, sz * 0.4));
-  });
-  [-1, 1].forEach((s) => {
-    silo.add(bar(V(-0.4, 0.25, s * 0.4), V(0.4, 1.7, s * 0.4), 0.018, M.darkSteel, 6));
-    silo.add(bar(V(s * 0.4, 0.25, -0.4), V(s * 0.4, 1.7, 0.4), 0.018, M.darkSteel, 6));
-  });
-  const sCone = K.cyl(SR, 0.13, 0.75, M.steel, 20);
-  sCone.position.y = 2.425;
-  silo.add(sCone);
-  const sBody = K.cyl(SR, SR, 3.1, M.steel, 24);
-  sBody.position.y = 4.35;
-  silo.add(sBody);
-  [2.85, 3.85, 4.85, 5.85].forEach((y) => {
-    const ring = K.cyl(SR + 0.015, SR + 0.015, 0.05, M.darkSteel, 24);
-    ring.position.y = y;
-    silo.add(ring);
-  });
-  const sRoof = K.cyl(0.12, SR + 0.03, 0.3, M.darkSteel, 24);
-  sRoof.position.y = 6.05;
-  silo.add(sRoof);
-  // salida con válvula de guillotina (maneta ámbar)
-  silo.add(K.box(0.2, 0.16, 0.2, M.darkSteel, 0, 1.86, 0));
-  silo.add(K.box(0.42, 0.03, 0.06, M.amberMatte, 0.12, 1.92, 0));
-  // plataforma de coronación con barandilla ámbar y foco
-  silo.add(K.box(1.24, 0.05, 1.24, M.darkSteel, 0, 5.9, 0));
-  railing(silo, -0.62, 0.62, 0.62, 0.62, 5.95, { step: 1.24 });
-  railing(silo, -0.62, -0.62, -0.62, 0.62, 5.95, { step: 1.24 });
-  railing(silo, 0.62, -0.62, 0.62, 0.62, 5.95, { step: 1.24 });
-  railing(silo, -0.62, -0.62, -0.28, -0.62, 5.95, { step: 0.4 });
-  railing(silo, 0.28, -0.62, 0.62, -0.62, 5.95, { step: 0.4 });
-  silo.add(K.box(0.05, 0.75, 0.05, M.graphite, -0.6, 5.95, 0.6));
-  silo.add(K.rbox(0.36, 0.1, 0.22, M.graphite, -0.72, 6.66, 0.72, 0.03));
-  silo.add(K.box(0.3, 0.02, 0.16, M.warmGlow, -0.72, 6.65, 0.72));
-  // escalera con jaula en la cara norte
-  const lz = -SR - 0.1;
-  [-0.2, 0.2].forEach((x) => silo.add(K.box(0.04, 5.65, 0.04, M.amberMatte, x, 0.3, lz)));
-  for (let y = 0.6; y < 5.9; y += 0.3) silo.add(K.box(0.4, 0.025, 0.025, M.amberMatte, 0, y, lz));
-  for (let y = 2.3; y < 5.95; y += 0.65) {
-    silo.add(K.box(0.66, 0.035, 0.035, M.amberMatte, 0, y, lz - 0.62));
-    [-1, 1].forEach((s) => silo.add(K.box(0.035, 0.035, 0.62, M.amberMatte, s * 0.33, y, lz - 0.31)));
-  }
-  [[0, lz - 0.62], [-0.33, lz - 0.31], [0.33, lz - 0.31]].forEach(([x, z]) => silo.add(K.box(0.03, 3.65, 0.03, M.amberMatte, x, 2.3, z)));
-  silo.position.set(s5.x + 14.8, Y, s5.z + 1.9);
-  ctx.add(silo);
-  ctx.shadows.push({ x: s5.x + 14.8, y: Y, z: s5.z + 1.9, w: 1.4, d: 1.4 });
-  // tubería de alimentación desde la nave de separación
-  ctx.add(K.pipe([V(s5.x + 14.8, Y + 5.5, s5.z + 2.42), V(s5.x + 14.8, Y + 5.5, s5.z + 2.95), V(s5.x + 14.8, Y + 4.8, s5.z + 3.55), V(s5.x + 14.8, Y + 4.15, s5.z + 3.75)], 0.08, M.steel, 28));
-
   // única luz de la planta (sin luces nuevas: cada una recompila todos los sombreadores al cargar).
-  // Delante de la boca de la nave de separación: ilumina su interior, los montones y la pasarela.
+  // En el centro de la banda sur: alcanza el horno y los calderos, los contenedores y la boca de la separación.
   const plantLight = new THREE.PointLight('#ffc27a', 34, 26, 1.6);
-  plantLight.position.set(s5.x + 7.8, s5.y + 6.4, s5.z + 4.6);
+  plantLight.position.set(s5.x + 0.5, s5.y + 6.4, s5.z + 4.0);
   ctx.add(plantLight);
 
-  // ---------- movimiento: banda, rodillos, baterías, virutas, pilotos y pantalla ----------
+  // ---------- movimiento: banda, rodillos, baterías, virutas, lingoteras, pilotos y pantalla ----------
   const riderPhase = (beltLen - 3.5) / RIDERS;
   const span = beltLen - 3.5;
   const wrap = (v, m) => ((v % m) + m) % m;
-  let first = true;
   const step = (t, story) => {
     const tt = story.reduced ? 0 : t;
     const run = tt * beltV;
@@ -1412,38 +1748,32 @@ export function buildRecycling(ctx) {
       o3.updateMatrix();
       shardMesh.setMatrixAt(chipBase + j, o3.matrix);
     }
-    // virutas sobre la banda en artesa: suben a 0,4 m/s (con movimiento reducido quedan repartidas, quietas)
-    for (let j = 0; j < GCHIPS; j++) {
-      const ph = wrap(tt + (j * galCycle) / GCHIPS, galCycle);
-      // repartidas por toda la artesa: las del ala este se ven desde la pasarela
-      const x = ((j * 0.377) % 0.84) - 0.42;
-      const ax = Math.abs(x);
-      const yb = ax <= 0.21 ? -0.023 : -0.0257 + (ax - 0.21) * 0.577;
-      lp.set(x, yb + 0.018 + (j % 3) * 0.008, ph * galV - 0.35).applyMatrix4(gal.matrix);
-      o3.position.copy(lp);
-      o3.rotation.set(j * 1.7, j * 2.3, j * 0.9);
-      o3.scale.setScalar(1.0 + (j % 5) * 0.12);
-      o3.updateMatrix();
-      shardMesh.setMatrixAt(chipBase + CHIPS + j, o3.matrix);
-    }
     const sa = shardMesh.instanceMatrix;
     sa.clearUpdateRanges();
-    sa.addUpdateRange(chipBase * 16, (CHIPS + GCHIPS) * 16);
+    sa.addUpdateRange(chipBase * 16, CHIPS * 16);
     sa.needsUpdate = true;
     o3.rotation.set(0, 0, 0);
     o3.scale.setScalar(1);
+    placeCasting(tt);
     // solo late la baliza de marcha (puerta y columna de la línea); el resto de pilotos queda fijo
     beacon.emissiveIntensity = story.reduced ? 1.1 : 0.5 + 0.9 * Math.pow(0.5 + 0.5 * Math.sin(t * 3.4), 3);
   };
-  step(0, { index: 5, reduced: false, local: 0 });
+  step(0, { index: CH.reciclaje, reduced: false, local: 0 });
+  // ?debug: window.__ecobatStory sustituye campos del estado narrativo en esta estación (pruebas de la zona
+  // mientras el recorrido de la v2 no tiene aún sus capítulos)
+  const dbgStory = typeof location !== 'undefined' && /[?&]debug/.test(location.search);
+  let first = true;
   let stillDrawn = false;
   let drawnK = -1;
   let lastDraw = -Infinity;
   let lastT = -1;
   let reducedStepped = false;
-  ctx.anim((t, dt, story) => {
-    // la cinta solo entra en cuadro en el capítulo 5 y en los tramos que llegan a él o salen de él
-    const near = story.index === 5 || (story.index === 4 && story.local > 1) || (story.index === 6 && story.local < 0);
+  ctx.anim((t, dt, storyIn) => {
+    const story = dbgStory && typeof window !== 'undefined' && window.__ecobatStory ? { ...storyIn, ...window.__ecobatStory } : storyIn;
+    // camión: sigue al recorrido en todos los capítulos (una matriz, solo si cambia)
+    placeTruck(departure(story));
+    // la planta solo entra en cuadro en el reciclaje y en los tramos que llegan a él o salen de él
+    const near = story.index === CH.reciclaje || (story.index === CH.segundaVida && story.local > 1) || (story.index === CH.trazabilidad && story.local < 0);
     if (!near && !first) return;
     first = false;
     // con movimiento reducido la planta queda en su estado fijo: un solo paso
@@ -1458,7 +1788,7 @@ export function buildRecycling(ctx) {
       // como mucho 12 redibujos por segundo; si el reloj está congelado, sigue al scroll
       const k = regK(story);
       const moved = Math.abs(k - drawnK) > 0.015;
-      const due = t - lastDraw >= 1 / 12 && (moved || (story.index === 5 && k < 0.97));
+      const due = t - lastDraw >= 1 / 12 && (moved || (story.index === CH.reciclaje && k < 0.97));
       if (due || (moved && t === lastT)) {
         live.update(t, story, true);
         lastDraw = t;

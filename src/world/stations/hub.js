@@ -1,7 +1,12 @@
 import * as THREE from 'three';
+import { CH } from '../chapters.js';
+import { makePerson } from '../actors.js';
 
-// 6 · Centro de trazabilidad: plaza circular con gradas concéntricas, pasaporte digital, pantallas curvas,
+// 8 · Centro de trazabilidad: plaza circular con gradas concéntricas, pasaporte digital, pantallas curvas,
 // baterías expuestas sobre zócalos, jardineras y bancos. Referencia: context/ref-centro-final.png.
+// v2: la red de trazabilidad tiene un nodo por zona del recorrido, el historial sigue la ruta de la batería
+// protagonista (recogida, laboratorio, clasificación y reciclaje) y hay dos visitantes ante el monolito y una
+// persona del personal en el terminal de consulta. Se anima en CH.trazabilidad; en el cierre queda el estado final.
 export const HUB_FACE = 0.93; // la pantalla mira hacia el este, de cara a la cámara que contempla el mundo detrás
 
 const D2R = Math.PI / 180;
@@ -25,10 +30,14 @@ const smooth = (a, b, v) => {
 // Pasos del pasaporte: mismos umbrales que la línea de tiempo del texto (main.js, conn > i · 0,22).
 const STEPS = ['Registro y QR', 'Diagnóstico', 'Ruta validada', 'Destino documentado'];
 const stepOn = (i, conn) => (i ? smooth(i * 0.22 - 0.008, i * 0.22 + 0.02, conn) : smooth(0, 0.02, conn));
-// Cada arco del mundo hacia la estación i avanza con (conn − 0,1 i) / 0,5 (world.js).
-const arcAt = (i, conn) => clamp01((conn - i * 0.1) / 0.5);
+// Zonas del recorrido en el orden de los capítulos 1-7, una por isla: s1, s3, s4, s2, sB, sA y s5.
+const ZONES = ['Recogida', 'Laboratorio', 'Clasificación', 'Reutilización', 'Desmontaje', 'Segunda vida', 'Reciclaje'];
+// El nodo de la zona i se enciende con (conn − i · 0,4/6) / 0,5: el primero llega a 0,5 y el último a 0,9, el mismo
+// final que los arcos del mundo (world.js, setConnections).
+const NODE_STEP = 0.4 / (ZONES.length - 1);
+const arcAt = (i, conn) => clamp01((conn - i * NODE_STEP) / 0.5);
 // Estado final estable para movimiento reducido.
-const FINAL = { conn: 1, index: 6, reduced: true };
+const FINAL = { conn: 1, index: CH.trazabilidad, reduced: true };
 
 // ---------- Pantallas vivas (canvas) ----------
 
@@ -201,9 +210,10 @@ function drawHistory() {
     const u = i / N;
     ys[i] = 182 - 52 * Math.sin(u * Math.PI * 3.2 - 0.9) * (0.55 + 0.45 * u) - 34 * u + 8 * Math.sin(u * 23);
   }
-  const ev = [0.06, 0.28, 0.5, 0.72, 0.94];
-  const labels = ['Recogida', 'Taller', 'Diagnóstico', 'Clasificación', 'Reciclaje'];
-  const counts = ['0/5', '1/5', '2/5', '3/5', '4/5', '5/5'];
+  // ruta de ECB-0427: no supera la prueba de carga en el laboratorio y su destino es el reciclaje
+  const ev = [0.08, 0.36, 0.64, 0.92];
+  const labels = ['Recogida', 'Laboratorio', 'Clasificación', 'Reciclaje'];
+  const counts = ['0/4', '1/4', '2/4', '3/4', '4/4'];
   const yAt = (u) => {
     const f = clamp01(u) * N;
     const i = Math.min(N - 1, Math.floor(f));
@@ -281,7 +291,7 @@ function drawHistory() {
     g.fillStyle = AMBER;
     g.fillRect(X0, 289, (X1 - X0) * end, 2);
     let reached = 0;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < ev.length; i++) {
       if (end >= ev[i]) reached++;
       const k = smooth(ev[i] - 0.02, ev[i], end);
       const x = X0 + (X1 - X0) * ev[i];
@@ -331,29 +341,55 @@ function drawHistory() {
     g.fillStyle = IVORY;
     g.fillText(counts[reached], 466, 204);
     g.fillStyle = AMBER;
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < ev.length; i++) {
       g.globalAlpha = i < reached ? 0.9 : 0.16;
-      g.fillRect(466 + i * 31, 222, 25, 6);
+      g.fillRect(466 + i * 39, 222, 33, 6);
     }
     g.globalAlpha = 1;
   };
 }
 
 function drawNetwork() {
-  // red de trazabilidad (nodos que se encienden con los arcos del mundo), barras y anillo de pasos.
-  // La red va a la derecha: es la parte que la cámara de lectura ve entera junto al monolito.
-  const HX = 482;
-  const HY = 200;
-  const angs = [-150, -96, -38, 22, 84, 146].map((a) => a * D2R);
-  const rads = [100, 92, 104, 98, 90, 104];
-  const nx = angs.map((a, i) => HX + Math.cos(a) * rads[i]);
-  const ny = angs.map((a, i) => HY + Math.sin(a) * rads[i] * 0.86);
-  const vals = [0.36, 0.52, 0.45, 0.66, 0.8, 0.94];
-  const rows = [0.92, 0.64, 0.78];
-  const counts = ['0/4', '1/4', '2/4', '3/4', '4/4'];
+  // Red de trazabilidad: el pasaporte en el centro y un nodo por zona del recorrido, que se enciende cuando su arco
+  // llega al mundo. Debajo, el dato del Reglamento sobre el pasaporte de las baterías adaptadas o remanufacturadas.
+  // Todo lo que se lee va en los dos tercios derechos: desde el puente y desde la lectura el monolito tapa el
+  // borde izquierdo de esta pantalla (x < 150 del lienzo).
+  const HX = 380;
+  const HY = 178;
+  const RX = 122;
+  const RY = 80;
+  const n = ZONES.length;
+  const nodes = ZONES.map((label, i) => {
+    const a = -Math.PI / 2 + (i * Math.PI * 2) / n;
+    const c = Math.cos(a);
+    const s = Math.sin(a);
+    const x = HX + c * RX;
+    const y = HY + s * RY;
+    // rótulo hacia fuera: al lado si el nodo queda a izquierda o derecha, encima si queda arriba
+    if (c > 0.35) return { x, y, label, lx: x + 21, ly: y + 6, align: 'left' };
+    if (c < -0.35) return { x, y, label, lx: x - 21, ly: y + 6, align: 'right' };
+    return { x, y, label, lx: x, ly: y - 22, align: 'center' };
+  });
+  const counts = ZONES.map((_, i) => `${i}/${n}`).concat(`${n}/${n}`);
+  // dato real (Reglamento (UE) 2023/1542, art. 77.7; hechos-verificados.json): una frase en dos renglones
+  const FACT = ['Al adaptar o remanufacturar una batería,', 'recibe un pasaporte nuevo vinculado al original'];
+  const SRC = 'Reglamento (UE) 2023/1542, art. 77.7';
+  const FX = 172;
+  let factFont = null;
+  let fontsReady = false;
   return (g, w, h, t, story) => {
     const conn = story ? story.conn : 0;
     const live = story && !story.reduced;
+    if (!factFont || !fontsReady) {
+      // el dato cabe entero en la parte visible: se reduce el cuerpo si hiciera falta (se vuelve a medir hasta
+      // que la tipografía está cargada; después queda fijo)
+      fontsReady = typeof document === 'undefined' || document.fonts?.status === 'loaded';
+      let px = 17;
+      const fits = () => FACT.every((l) => g.measureText(l).width <= w - 24 - FX);
+      g.font = `500 ${px}px "Archivo Variable", sans-serif`;
+      while (px > 12 && !fits()) g.font = `500 ${--px}px "Archivo Variable", sans-serif`;
+      factFont = g.font;
+    }
     g.globalAlpha = 1;
     g.fillStyle = '#0e1011';
     g.fillRect(0, 0, w, h);
@@ -362,48 +398,52 @@ function drawNetwork() {
     g.textAlign = 'right';
     g.fillStyle = IVORY;
     g.fillText('Red de trazabilidad', w - 24, 38);
-    g.globalAlpha = 1;
-    // enlaces secundarios entre estaciones vecinas
+    // órbita tenue que une las zonas, sin orden de paso (cada una informa al pasaporte)
+    g.globalAlpha = 0.12;
     g.strokeStyle = LIME;
     g.lineWidth = 2;
-    for (let i = 0; i < 5; i++) {
-      g.globalAlpha = 0.1 + 0.25 * arcAt(i + 1, conn);
-      g.beginPath();
-      g.moveTo(nx[i], ny[i]);
-      g.lineTo(nx[i + 1], ny[i + 1]);
-      g.stroke();
-    }
-    for (let i = 0; i < 6; i++) {
-      const k = i < 5 ? arcAt(i, conn) : smooth(0.9, 0.97, conn);
+    g.beginPath();
+    g.ellipse(HX, HY, RX, RY, 0, 0, Math.PI * 2);
+    g.stroke();
+    let lit = 0;
+    for (let i = 0; i < n; i++) {
+      const { x, y } = nodes[i];
+      const k = arcAt(i, conn);
       g.lineWidth = 3;
       g.globalAlpha = 0.16;
       g.beginPath();
       g.moveTo(HX, HY);
-      g.lineTo(nx[i], ny[i]);
+      g.lineTo(x, y);
       g.stroke();
       if (k > 0.001) {
         g.globalAlpha = 1;
         glow(g, GLOW_LIME, 8);
         g.beginPath();
         g.moveTo(HX, HY);
-        g.lineTo(HX + (nx[i] - HX) * k, HY + (ny[i] - HY) * k);
+        g.lineTo(HX + (x - HX) * k, HY + (y - HY) * k);
         g.stroke();
         noGlow(g);
       }
-      const on = k >= 1 ? 1 : 0;
+    }
+    g.font = F_SMALL;
+    for (let i = 0; i < n; i++) {
+      const { x, y, label, lx, ly, align } = nodes[i];
+      const on = arcAt(i, conn) >= 1 ? 1 : 0;
+      lit += on;
+      g.strokeStyle = LIME;
       if (on && live) {
         // halo que respira en secuencia por la red: lento, se ve continuo aunque se redibuje a 8 fps
-        const b = 0.5 + 0.5 * Math.sin(t * 1.25 - i * 1.05);
+        const b = 0.5 + 0.5 * Math.sin(t * 1.25 - i * 0.9);
         g.globalAlpha = 0.12 + 0.3 * b;
         g.lineWidth = 2;
         g.beginPath();
-        g.arc(nx[i], ny[i], 18 + 4 * b, 0, Math.PI * 2);
+        g.arc(x, y, 18 + 4 * b, 0, Math.PI * 2);
         g.stroke();
       }
       g.fillStyle = '#0e1011';
       g.globalAlpha = 1;
       g.beginPath();
-      g.arc(nx[i], ny[i], 13, 0, Math.PI * 2);
+      g.arc(x, y, 13, 0, Math.PI * 2);
       g.fill();
       g.lineWidth = 3.5;
       g.globalAlpha = 0.3 + 0.7 * on;
@@ -412,10 +452,14 @@ function drawNetwork() {
       if (on) {
         g.fillStyle = LIME;
         g.beginPath();
-        g.arc(nx[i], ny[i], 6, 0, Math.PI * 2);
+        g.arc(x, y, 6, 0, Math.PI * 2);
         g.fill();
       }
       noGlow(g);
+      g.globalAlpha = 0.4 + 0.55 * on;
+      g.fillStyle = IVORY;
+      g.textAlign = align;
+      g.fillText(label, lx, ly);
     }
     // hexágono central: el pasaporte
     g.globalAlpha = 1;
@@ -423,13 +467,14 @@ function drawNetwork() {
     g.beginPath();
     for (let k = 0; k < 6; k++) {
       const a = (k / 6) * Math.PI * 2 + Math.PI / 6;
-      const x = HX + Math.cos(a) * 36;
-      const y = HY + Math.sin(a) * 36;
+      const x = HX + Math.cos(a) * 34;
+      const y = HY + Math.sin(a) * 34;
       if (k) g.lineTo(x, y);
       else g.moveTo(x, y);
     }
     g.closePath();
     g.fill();
+    g.strokeStyle = LIME;
     g.lineWidth = 4.5;
     glow(g, GLOW_LIME, 12);
     g.stroke();
@@ -437,53 +482,30 @@ function drawNetwork() {
     g.globalAlpha = 0.25 + 0.75 * smooth(0, 0.05, conn);
     g.fillRect(HX - 13, HY - 9, 26, 18);
     noGlow(g);
-    g.globalAlpha = 1;
-    // barras: baterías documentadas por etapa (ilustrativo)
-    g.fillStyle = IVORY;
+    // zonas conectadas
+    g.globalAlpha = 0.6;
     g.font = F_SMALL;
-    g.textAlign = 'left';
-    g.globalAlpha = 0.65;
-    g.fillText('Baterías trazadas · ejemplo', 160, 74);
-    g.globalAlpha = 0.2;
-    g.fillRect(160, 190, 186, 2);
-    for (let i = 0; i < 6; i++) {
-      const gk = smooth(0.12 + i * 0.09, 0.42 + i * 0.09, conn);
-      const bh = vals[i] * 96 * gk;
-      g.fillStyle = LIME;
-      g.globalAlpha = i === 5 ? 1 : 0.5;
-      g.fillRect(166 + i * 30, 188 - bh, 20, bh);
-    }
-    // anillo: pasos del pasaporte completados
-    let done = 0;
-    for (let i = 0; i < 4; i++) done += stepOn(i, conn);
-    g.globalAlpha = 1;
-    g.lineWidth = 11;
-    g.strokeStyle = 'rgba(241,238,230,0.14)';
-    g.beginPath();
-    g.arc(196, 282, 30, 0, Math.PI * 2);
-    g.stroke();
-    if (done > 0.01) {
-      g.strokeStyle = AMBER;
-      g.beginPath();
-      g.arc(196, 282, 30, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * done) / 4);
-      g.stroke();
-    }
+    g.textAlign = 'right';
     g.fillStyle = IVORY;
+    g.fillText('Zonas conectadas', w - 66, 66);
+    g.globalAlpha = 1;
     g.font = F_COUNT;
-    g.textAlign = 'center';
-    g.fillText(counts[Math.round(done)], 196, 289);
+    g.fillStyle = LIME;
+    g.fillText(counts[lit], w - 24, 67);
+    // dato del Reglamento: pasaporte nuevo vinculado al original (se afirma con la red completa)
+    const fk = smooth(0.6, 0.9, conn);
+    g.globalAlpha = 0.14;
+    g.fillStyle = IVORY;
+    g.fillRect(FX, 282, w - 24 - FX, 2);
     g.textAlign = 'left';
+    g.font = factFont;
+    g.globalAlpha = 0.5 + 0.5 * fk;
+    g.fillText(FACT[0], FX, 306);
+    g.fillText(FACT[1], FX, 327);
     g.font = F_SMALL;
-    g.globalAlpha = 0.65;
-    g.fillText('Pasos', 242, 268);
-    for (let i = 0; i < 3; i++) {
-      g.globalAlpha = 0.16;
-      g.fillRect(242, 280 + i * 14, 100, 6);
-      g.globalAlpha = 0.9;
-      g.fillStyle = i === 1 ? AMBER : LIME;
-      g.fillRect(242, 280 + i * 14, 100 * rows[i] * smooth(0.5 + i * 0.1, 0.8 + i * 0.06, conn), 6);
-      g.fillStyle = IVORY;
-    }
+    g.fillStyle = AMBER;
+    g.globalAlpha = 0.45 + 0.45 * fk;
+    g.fillText(SRC, FX, 350);
     g.globalAlpha = 1;
   };
 }
@@ -881,6 +903,35 @@ export function buildHub(ctx) {
     });
   }
 
+  // ---------- Personas: dos visitantes ante el monolito y una persona del personal en el terminal ----------
+  // Estáticas (sin animación): bakeStatic las fusiona con el resto de la plaza por material. Ropa elegida entre los
+  // materiales que la plaza ya usa (variante 2: panel y grafito) salvo el ámbar de una visitante y el chaleco del
+  // personal: dos llamadas de dibujo más en el fragmento s6 y ningún programa nuevo.
+  {
+    const person = (role, pose, x, y, z, ry, variant = 0) => {
+      const p = makePerson(M, { role, pose, variant });
+      p.position.set(x, y, z);
+      p.rotation.y = ry;
+      ctx.add(p);
+      ctx.shadows.push({ x, y, z, w: 0.8, d: 0.6, r: ry });
+    };
+    const lookAt = (x, z, tx, tz) => Math.atan2(tx - x, tz - z);
+    // visitantes sobre la huella del escalón bajo del podio (r 3,7-4,6, a 0,3 m), a un lado del eje del monolito
+    // (36,7°) para no tapar la batería expuesta: de espaldas a quien llega por el puente o mira desde la lectura,
+    // con la cabeza alzada hacia el pasaporte. Dos variantes de ropa (la 1 lleva el pelo recogido).
+    const [mx, mz] = [passport.position.x, passport.position.z];
+    [[57, 4.2, 0.05, 2], [66, 4.25, -0.1, 1]].forEach(([a, r, turn, v]) => {
+      const [x, z] = pol(a, r);
+      person('visitante', 'look', x, Y + 0.3, z, lookAt(x, z, mx, mz) + turn, v);
+    });
+    // personal: consulta el pasaporte en el terminal, del lado del puente
+    const [kx, kz] = pol(58, 7.9);
+    const kd = Math.hypot(B.x - kx, B.z - kz);
+    const sx = kx + ((B.x - kx) / kd) * 0.6;
+    const sz = kz + ((B.z - kz) / kd) * 0.6;
+    person('conductor', 'work', sx, Y, sz, lookAt(sx, sz, kx, kz));
+  }
+
   // ---------- Luces ----------
   const hubLight = new THREE.PointLight('#ffd8a0', 18, 20, 1.6);
   hubLight.position.set(s6.x + 3, Y + 6, s6.z + 3);
@@ -896,6 +947,8 @@ export function buildHub(ctx) {
   // Escaneo breve: un barrido de 1,3 s sobre el QR justo antes de que se encienda «Destino documentado»
   // (conn 0,66). Se dispara una vez por visita al cruzar SCAN_AT hacia delante con la cámara ya en la
   // lectura (pasada la clave «in», conn ≈ 0,55); un salto lejano no lo dispara y al retroceder se corta.
+  // Capítulos: se anima en CH.trazabilidad; en el anterior (CH.reciclaje) y en el cierre (CH.cierre, con las
+  // conexiones sobre todo el mundo) solo se redibuja si cambia el progreso.
   const SCAN_AT = 0.585;
   const SCAN_S = 1.3;
   let acc = 1;
@@ -916,14 +969,15 @@ export function buildHub(ctx) {
     }
     reducedDrawn = false;
     const c = story.conn;
-    if (armed && story.index === 6 && prevConn < SCAN_AT && c >= SCAN_AT && c < SCAN_AT + 0.12) {
+    const here = story.index === CH.trazabilidad;
+    if (armed && here && prevConn < SCAN_AT && c >= SCAN_AT && c < SCAN_AT + 0.12) {
       fx.scan = 0;
       armed = false;
     }
     if (c < 0.3) armed = true;
     prevConn = c;
-    // fuera del capítulo 6 no queda escaneo ni destello pendiente que obligue a redibujar
-    if (story.index !== 6) {
+    // fuera del capítulo no queda escaneo ni destello pendiente que obligue a redibujar
+    if (!here) {
       fx.scan = -1;
       fx.flash = 0;
     }
@@ -934,13 +988,13 @@ export function buildHub(ctx) {
         fx.flash = 1;
       }
     } else if (fx.flash > 0) fx.flash = c < 0.5 ? 0 : Math.max(0, fx.flash - dt / 0.9);
-    if (story.index < 5 || story.index > 7) return;
+    if (story.index < CH.reciclaje || story.index > CH.cierre) return;
     acc += dt;
     const moved = Math.abs(c - lastConn) > 1e-3;
     const fxOn = fx.scan >= 0 || fx.flash > 0;
-    // capítulo 6: 12 fps mientras avanza o escanea y 8 fps para la respiración ambiental;
+    // en el capítulo: 12 fps mientras avanza o escanea y 8 fps para la respiración ambiental;
     // vecinos: solo si cambia el progreso
-    const due = story.index === 6 ? acc >= (moved || fxOn ? 1 / 12 : 1 / 8) : (moved || fxWas) && acc >= 1 / 12;
+    const due = here ? acc >= (moved || fxOn ? 1 / 12 : 1 / 8) : (moved || fxWas) && acc >= 1 / 12;
     if (!due) return;
     acc = 0;
     lastConn = c;
