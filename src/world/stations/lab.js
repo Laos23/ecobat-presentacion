@@ -1205,10 +1205,10 @@ export function buildLab(ctx) {
   scanLine.visible = false;
   lb.add(scanLine);
   // técnica de laboratorio detrás de la mesa, inclinada sobre la batería (las manos, justo tras el canto)
-  lb.add(at(makePerson(M, { role: 'laboratorio', pose: 'work' }), 0.25, 0, -0.86));
+  lb.add(at(makePerson(M, { role: 'laboratorio', pose: 'work' }), 0.25, 0, -0.88));
   ctx.add(lb);
   ctx.shadows.push({ x: s3.x - 4.4, y: FY, z: s3.z + 0.75, w: 2.0, d: 0.95 });
-  ctx.shadows.push({ x: s3.x - 4.15, y: FY, z: s3.z - 0.11, w: 0.7, d: 0.6 });
+  ctx.shadows.push({ x: s3.x - 4.15, y: FY, z: s3.z - 0.13, w: 0.7, d: 0.6 });
 
   // técnico de laboratorio (bata, gafas y guantes resistentes al ácido) detrás del banco, a la derecha del
   // comprobador: no tapa la batería, las pinzas ni las pantallas del fondo desde el frente del banco

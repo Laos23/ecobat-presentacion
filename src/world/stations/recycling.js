@@ -443,6 +443,11 @@ export function buildRecycling(ctx) {
 
   // ---------- nave de recepción (posición fija) y su fachada norte ----------
   const intake = K.makeCutaway(M, { w: 7, d: 6, h: 5, roofDepth: 0.7, light: 12 });
+  // la cinta sale de la nave por la esquina sureste, abierta: el pilar suelto de esa esquina (no sostiene la cubierta,
+  // que acaba en z local 1) atravesaba el túnel, los largueros y los rodillos, y en el resto de la esquina no cabe
+  // (bajante del drenaje, traza del reciclaje y túnel de la cinta): se quita
+  const sePillar = intake.children.find((m) => m.isMesh && m.position.x === 3.5 && m.position.z === 3);
+  if (sePillar) intake.remove(sePillar);
   intake.position.set(s5.x - 11, Y, s5.z - 4.5);
   ctx.add(intake);
   const rsign = K.framedScreen(M, T.recycleWallTexture(), 2.2, 2.2, 0.4);
@@ -610,7 +615,10 @@ export function buildRecycling(ctx) {
   ]));
   const rollerAt = [];
   for (let x = -8.6; x <= 8.61; x += 0.43) rollerAt.push([x, 0.95]);
-  for (let x = -7.7; x <= 7.71; x += 1.925) rollerAt.push([x, 0.5]);
+  // rodillos de retorno: uno por vano del bastidor, a 0,2 m del montante (la diagonal del vano cruza su altura al
+  // final del vano), y dos dentro de la tolva, donde no hay bastidor
+  for (let x = -7.7; x < 4.7; x += 2.1) rollerAt.push([x, 0.5]);
+  [5.775, 7.7].forEach((x) => rollerAt.push([x, 0.5]));
   const rollers = new THREE.InstancedMesh(rollerGeo, M.graphite, rollerAt.length);
   rollers.castShadow = true;
   rollers.receiveShadow = true;
@@ -777,6 +785,11 @@ export function buildRecycling(ctx) {
   // baterías sobre la cinta (misma lógica de recorrido) y en los palés: una malla instanciada por
   // material de la batería; las de la cinta se actualizan cada fotograma, las de los palés quedan fijas
   const RIDERS = 6;
+  // media longitud de una batería de la cinta (zócalo de 1,66 m a escala 0,62) y planos de las dos cortinas de
+  // lamas, a 1 cm de su cara: la del túnel de entrada y la de la boca de la tolva
+  const RIDER_HALF = 0.83 * 0.62;
+  const CURTAIN_IN = tx1 - 0.05 + 0.005 + 0.01;
+  const CURTAIN_OUT = hx0 + 0.36 - 0.012 - 0.006 - 0.01;
   const beltInv = belt.matrix.clone().invert();
   const batBox = new THREE.Box3(new THREE.Vector3(-9.2, 0.9, -0.6), new THREE.Vector3(7.3, 1.9, 0.6));
   const batMat = new THREE.Matrix4();
@@ -1161,7 +1174,15 @@ export function buildRecycling(ctx) {
   const runT = chLen / chipV;
   const chipCycle = runT + fallT;
   // (las virutas son instancias extra de la malla de plástico triturado, al final de su lista)
-  const chipDir = new THREE.Vector3().subVectors(chB, chA).normalize();
+  // en el marco de la tolva: eje del tambor de cabeza (y = -0,07, radio 0,12), media altura de una viruta plana
+  // (0,023 × 1,48) más holgura, radio por el que la viruta pasa sobre él y giro con el que vuelca al montón
+  const HEAD_Y = -0.07;
+  const CHIP_Y = 0.02 + 0.038;
+  const CHIP_R = 0.12 + 0.04;
+  const CHIP_TIP = 0.6;
+  const AX = new THREE.Vector3(1, 0, 0);
+  const chipTilt = new THREE.Quaternion();
+  const chipSpin = new THREE.Quaternion();
   let shardMesh = null;
   let chipBase = 0;
 
@@ -1296,6 +1317,17 @@ export function buildRecycling(ctx) {
       heap(piles[kind], bx, bz, rx, rz, Y + 1.6, peak, n, i + 1);
     }
   });
+
+  // el tambor de cabeza de la tolva (r 0,12) queda sobre el montón de granza: fuera las piezas cuyo centro está a menos de
+  // 0,2 m de su eje, que lo atravesarían (las demás conservan su giro y su tamaño, que dependen de su índice propio)
+  {
+    const inv = chute.matrix.clone().invert();
+    const q = new THREE.Vector3();
+    piles.shard = piles.shard.filter(([x, y, z]) => {
+      q.set(x, y, z).applyMatrix4(inv);
+      return !(Math.abs(q.x) < 0.43 && Math.hypot(q.y + 0.07, q.z - chLen) < 0.2);
+    });
+  }
 
   // instancias de los montones: una malla por tipo de pieza para todo el gestor
   const pileGeo = {
@@ -1491,10 +1523,12 @@ export function buildRecycling(ctx) {
   for (let x = cx0 + 0.3; x < cx0 + cLen; x += 1.6) {
     [-1, 1].forEach((s) => cast.add(K.box(0.08, cTop - 0.14 - Y, 0.08, M.darkSteel, x, Y, cz + s * 0.34)));
   }
+  // tambores de los extremos, bajo los largueros: las lingoteras que entran y salen por debajo de la cadena
+  // (hasta 0,12 m bajo su cota) pasan por encima, sin atravesarlos
   [cx0 + 0.05, cx0 + cLen - 0.05].forEach((x) => {
     const sp = K.cyl(0.16, 0.16, 0.74, M.graphite, 12);
     sp.rotation.x = Math.PI / 2;
-    sp.position.set(x, cTop - 0.14, cz);
+    sp.position.set(x, cTop - 0.3, cz);
     cast.add(sp);
   });
   cast.add(K.rbox(0.5, 0.42, 0.4, M.graphiteLight, cx0 + cLen - 0.3, Y, cz + 0.62, 0.03));
@@ -1502,8 +1536,8 @@ export function buildRecycling(ctx) {
   const pourX = cx0 + 0.75;
   cast.add(bar(V(kX + 0.2, Y + 1.35, kz[0] - 0.55), V(pourX, cTop + 0.42, cz + 0.05), 0.07, M.darkSteel, 8));
   cast.add(K.box(0.04, 0.3, 0.04, leadMat, pourX, cTop + 0.1, cz));
-  // mesa de apilado al final de la línea
-  const tabX = cx0 + cLen + 0.55;
+  // mesa de apilado al final de la línea (separada lo justo para que la última lingotera no entre en ella)
+  const tabX = cx0 + cLen + 0.61;
   cast.add(K.box(0.9, 0.62, 0.9, M.darkSteel, tabX, Y, cz));
   cast.add(K.box(0.94, 0.04, 0.94, M.steel, tabX, Y + 0.62, cz));
   ctx.add(cast);
@@ -1624,8 +1658,11 @@ export function buildRecycling(ctx) {
   const P = (x, z) => V(x, yAt(x), z);
   const laneE = E.rim.z + 1.6; // carril derecho hacia el este
   const mainX = E.shore.x + 23 + 1.7; // carril derecho hacia el norte de la carretera de la orilla
-  const accZ = fac.z + 17 + 10 + 1.6; // carril derecho del acceso de la fábrica (eje en z = fachada + 10)
-  const parkX = E.rim.x - 0.45 - tHalf;
+  // lado derecho del acceso de la fábrica (eje en z = fachada + 10; el firme llega a fachada + 16): el bloque de
+  // oficinas sobresale hasta fachada + 11, y el camión pasa y se detiene a más de 0,5 m de él
+  const accZ = fac.z + 17 + 10 + 3.3;
+  // aparcado con el morro en el borde de la isla: la trasera queda libre de la tolva de la trituradora
+  const parkX = E.rim.x - tHalf;
   const route = new THREE.CatmullRomCurve3([
     P(parkX, E.rim.z),
     P(E.rim.x + 1.5, E.rim.z + 0.6),
@@ -1637,7 +1674,7 @@ export function buildRecycling(ctx) {
     P(mainX, accZ + 5),
     P(mainX + 3, accZ + 0.4),
     P(fac.x - 27, accZ),
-    // se detiene en la explanada, delante del bloque de oficinas (antes de la farola de los muelles)
+    // se detiene en la explanada, junto al bloque de oficinas (antes de la farola de los muelles)
     P(fac.x - 15, accZ + 0.4),
   ], false, 'centripetal');
   // fracción del recorrido al terminar el tramo de la trazabilidad: el camión ya va por la calzada, cerca de la orilla
@@ -1706,9 +1743,20 @@ export function buildRecycling(ctx) {
     const run = tt * beltV;
     for (let i = 0; i < RIDERS; i++) {
       const u = (tt * 0.06 + i / RIDERS) % 1;
-      o3.position.set(-beltLen / 2 + 0.8 + u * span, 1.12, 0);
+      // las cortinas de lamas (salida del túnel y boca de la tolva) tapan lo que está al otro lado: la batería se
+      // dibuja solo en el tramo visible entre las dos, comprimida contra la cortina, y no las atraviesa
+      const cx = -beltLen / 2 + 0.8 + u * span;
       o3.rotation.set(0, 0, 0);
-      o3.scale.setScalar(0.62);
+      if (cx - RIDER_HALF >= CURTAIN_IN && cx + RIDER_HALF <= CURTAIN_OUT) {
+        o3.position.set(cx, 1.12, 0);
+        o3.scale.setScalar(0.62);
+      } else {
+        const x0 = Math.max(cx - RIDER_HALF, CURTAIN_IN);
+        const x1 = Math.min(cx + RIDER_HALF, CURTAIN_OUT);
+        const k = x1 > x0 ? (x1 - x0) / (2 * RIDER_HALF) : 0;
+        o3.position.set(k > 0 ? (x0 + x1) / 2 : cx, 1.12, 0);
+        o3.scale.set(0.62 * Math.max(k, 0.001), k > 0 ? 0.62 : 0.001, k > 0 ? 0.62 : 0.001);
+      }
       o3.updateMatrix();
       for (let p = 0; p < riderParts.length; p++) riderParts[p].setMatrixAt(i, o3.matrix);
     }
@@ -1736,18 +1784,30 @@ export function buildRecycling(ctx) {
     rollers.instanceMatrix.needsUpdate = true;
     for (let j = 0; j < CHIPS; j++) {
       const ph = wrap(tt + (j * chipCycle) / CHIPS, chipCycle);
-      const x = ((j * 0.377) % 0.48) - 0.24;
+      // planas sobre la banda, entre los cantos, y por encima del tambor de cabeza: lo rodean por fuera y caen
+      const x = ((j * 0.377) % 0.36) - 0.18;
+      let yl;
+      let zl;
+      let tilt = 0;
+      let fall = 0;
       if (ph < runT) {
-        lp.set(x, 0.045 + (j % 3) * 0.015, ph * chipV).applyMatrix4(chute.matrix);
-        o3.position.copy(lp);
+        zl = ph * chipV;
+        const dz = chLen - zl;
+        yl = Math.max(CHIP_Y + (j % 3) * 0.015, HEAD_Y + Math.sqrt(Math.max(0, CHIP_R * CHIP_R - dz * dz)));
       } else {
-        const f = ph - runT;
-        lp.set(x, 0.045, chLen).applyMatrix4(chute.matrix);
-        o3.position.set(lp.x + chipDir.x * chipV * f, lp.y + chipDir.y * chipV * f - 4.9 * f * f, lp.z + chipDir.z * chipV * f);
+        // el montón llega hasta el tambor de cabeza: la viruta vuelca por encima del tambor y se pierde en él
+        fall = (ph - runT) / fallT;
+        tilt = CHIP_TIP * fall;
+        yl = HEAD_Y + CHIP_R * Math.cos(tilt);
+        zl = chLen + CHIP_R * Math.sin(tilt);
       }
-      o3.rotation.set(j * 1.7, j * 2.3 + (ph > runT ? ph * 6 : 0), j * 0.9);
+      lp.set(x, yl, zl).applyMatrix4(chute.matrix);
+      o3.position.copy(lp);
+      chipTilt.setFromAxisAngle(AX, tilt);
+      chipSpin.setFromAxisAngle(UP, j * 2.3 + (ph > runT ? ph * 6 : 0));
+      o3.quaternion.copy(chute.quaternion).multiply(chipTilt).multiply(chipSpin);
       // en el estado fijo (movimiento reducido) no quedan virutas suspendidas en el aire
-      o3.scale.setScalar(story.reduced && ph > runT ? 0 : 1.0 + (j % 5) * 0.12);
+      o3.scale.setScalar(story.reduced && ph > runT ? 0 : (1.0 + (j % 5) * 0.12) * Math.max(1 - fall, 0.001));
       o3.updateMatrix();
       shardMesh.setMatrixAt(chipBase + j, o3.matrix);
     }

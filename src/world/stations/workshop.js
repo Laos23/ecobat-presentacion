@@ -168,9 +168,14 @@ export function buildWorkshop(ctx) {
   });
   drop.forEach((o) => o.parent && o.parent.remove(o));
   ctx.add(shop);
-  ctx.add(K.box(0.35, 3.77, 6.6, shopWall, s2.x + 8, s2.y + 2.73, s2.z - 1 - 2.7));
-  for (let z = -6; z <= -0.4; z += 2) ctx.add(K.box(0.02, 3.6, 0.04, M.graphiteLight, s2.x + 8 - 0.185, s2.y + 2.75, s2.z - 1 + z + 2));
-  ctx.add(K.box(0.05, 0.03, 6.4, M.warmGlow, s2.x + 8 - 0.2, s2.y + 4.5, s2.z - 1 - 2.7));
+  // tramo alto del muro este, sobre el muro bajo del corte (2,73 m): solo detrás del muelle de expedición, hasta su
+  // frente (DZ1). Delante, la caja del camión asoma por encima del muro bajo desde las cámaras del este; con el tramo
+  // alto hasta z = 3,6 su canto libre cortaba la caja y parecía que el camión entraba en la pared
+  const EW0 = s2.z - 7; // fondo de la nave
+  const EW1 = s2.z - 4.45; // frente del muelle (DZ1)
+  ctx.add(K.box(0.35, 3.77, EW1 - EW0, shopWall, s2.x + 8, s2.y + 2.73, (EW0 + EW1) / 2));
+  for (let z = EW0 + 2; z < EW1; z += 2) ctx.add(K.box(0.02, 3.6, 0.04, M.graphiteLight, s2.x + 8 - 0.185, s2.y + 2.75, z));
+  ctx.add(K.box(0.05, 0.03, EW1 - EW0 - 0.2, M.warmGlow, s2.x + 8 - 0.2, s2.y + 4.5, (EW0 + EW1) / 2));
   // la tira cálida del muro (makeCutaway) pasa a ser una luminaria: canal grafito con tapa, labio frontal y testeros
   const stripY = s2.y + 4.16;
   ctx.add(K.box(13.92, 0.015, 0.15, M.graphite, s2.x, stripY + 0.06, BZ + 0.075));
@@ -355,9 +360,12 @@ export function buildWorkshop(ctx) {
     add(A.makePerson(M, { role: 'reutilizacion', pose, variant }), x, FY, z, ry);
     shadow(x, z, 0.6, 0.5);
   };
-  person(CLEAN_X + 0.1, LZ + 0.74, Math.PI, 'work', 0);
-  person(REPAIR_X - 0.3, LZ + 0.74, Math.PI + 0.18, 'work', 1);
-  person(TEST_X + 0.25, LZ + 0.78, Math.PI - 0.22, 'work', 2);
+  // la pose «work» deja las manos a 0,84–0,93 m, a la altura del tablero (0,86–0,92 m): cada operario queda lo bastante
+  // atrás para que manos y antebrazos lleguen justo al canto del banco (≈ 5–8 mm por delante) sin meterse en el tablero
+  // ni en el reborde de la mesa de limpieza
+  person(CLEAN_X + 0.1, LZ + 0.87, Math.PI, 'work', 0);
+  person(REPAIR_X - 0.3, LZ + 0.92, Math.PI + 0.18, 'work', 1);
+  person(TEST_X + 0.25, LZ + 0.925, Math.PI - 0.22, 'work', 2);
 
   // ---------- muro del fondo: cuadro de los cargadores, taquilla, extintor, botiquín ----------
   const panelBox = new THREE.Group();
@@ -564,6 +572,9 @@ export function buildWorkshop(ctx) {
   ctx.add(K.box(DX1 - DX0, 0.03, 0.08, M.darkSteel, dcx, FY + Hd - 0.029, DZ1 - 0.04));
   for (let x = DX0 + 0.2; x < DX1 - 0.1; x += 0.4) ctx.add(K.box(0.2, 0.1, 0.01, M.amberMatte, x, FY + Hd - 0.16, DZ1 + 0.005));
   [-1, 1].forEach((s) => ctx.add(K.box(0.16, 0.32, 0.12, M.rubber, TX + s * 1.05, FY + Hd - 0.5, DZ1 + 0.06)));
+  // chapa de protección de acero en el frente del muelle, detrás del camión: bajo la caja se ve chapa oscura y no el
+  // hormigón claro (sin ella, el frente seguía por detrás del bastidor y la trasera parecía meterse en el bloque)
+  ctx.add(K.box(2.7, Hd - 0.03, 0.006, M.darkSteel, TX, FY, DZ1 + 0.003));
   // rampa niveladora: chapa en el muelle y labio apoyado en el piso del camión
   ctx.add(K.box(2.0, 0.025, 0.9, M.darkSteel, TX, FY + Hd - 0.02, DZ1 - 0.45));
   ctx.add(K.box(2.0, 0.02, 0.4, M.darkSteel, TX, FY + Hd, DZ1 + 0.2));

@@ -431,10 +431,12 @@ function buildFactory(ctx, lamps, trees, rnd) {
   });
   // un camión de expedición en el muelle (camino de vuelta al mercado de las baterías nuevas)
   if (typeof makeTruck === 'function') {
+    // la trasera (las hojas cerradas) queda 1,5 cm por delante de la cara de los topes de goma, sin meterse en ellos
+    const truckZ = z1 + 3 + 4.49;
     const truck = makeTruck(M, { kind: 'expedicion', loaded: true });
-    truck.position.set(doors[1], b, z1 + 3 + 4.4);
+    truck.position.set(doors[1], b, truckZ);
     ctx.add(truck);
-    ctx.shadows.push({ x: doors[1], y: b, z: z1 + 3 + 4.4, w: 3.2, d: 9.4 });
+    ctx.shadows.push({ x: doors[1], y: b, z: truckZ, w: 3.2, d: 9.4 });
   }
   // farolas del patio
   [x0 + 10, f.x + 3, x1 - 4].forEach((x) => lamps.push({ x, z: z1 + 19.4, y: PAD, dx: 0, dz: -1, py: PAD + 0.03, pool: 8.5 }));

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import * as CAM from '../camera.js';
-import { V, TOP, F, STATIONS, PLATFORMS, BRIDGES, ACCESS } from './layout.js';
+import { V, TOP, F, STATIONS, PLATFORMS, BRIDGES, ACCESS, SIM } from './layout.js';
 
 // Terreno común: agua, islas con acantilado estratificado, puentes y mobiliario de borde (bordillo por
 // piezas, pasamanos tubular con pies embridados, balizas, vegetación, rocas y focos en la roca).
@@ -9,6 +9,9 @@ import { V, TOP, F, STATIONS, PLATFORMS, BRIDGES, ACCESS } from './layout.js';
 
 const DECK_W = 3; // ancho de los puentes
 const KERB = { w: 0.42, h: 0.12, inset: 0.27, len: 1.05 }; // piezas de bordillo sobre el canto de la losa
+// bordillo estrecho de los pasos de tractores (layout.js · SIM.kerbPasses): solo el apoyo de la barandilla, del canto
+// de la losa al pie de los montantes (sus pletinas de 0,15-0,17 m caben enteras)
+const KERB_NARROW = { w: 0.19, inset: 0.155 };
 const RAIL = { y: 0.98, inset: 0.12, step: 2 }; // eje del pasamanos sobre el suelo (≤ 1,15 m)
 const MID_Y = 0.55; // travesaño intermedio
 const LAMP = { inset: 0.66, step: 4.6 }; // balizas en el suelo, justo dentro del bordillo
@@ -496,10 +499,10 @@ function chords(xa, xb, step, cuts = []) {
   return out;
 }
 
-function kerbGeo(K, len) {
+function kerbGeo(K, len, w = KERB.w) {
   const l = Math.max(0.1, Math.round(len * 100) / 100);
-  return K.geo(`edgeKerb|${l}`, () => {
-    const { w, h } = KERB;
+  return K.geo(w === KERB.w ? `edgeKerb|${l}` : `edgeKerb|${l}|${w}`, () => {
+    const { h } = KERB;
     const ch = 0.028;
     const s = new THREE.Shape();
     s.moveTo(-w / 2, 0);
@@ -1118,17 +1121,25 @@ function islandFurniture(ctx, isl, occ, mats) {
   const fl = isl.floor;
   const pa = {};
   const pb = {};
-  // bordillo por piezas
+  // bordillo por piezas; en los pasos de tractores de la simulación, estrecho
+  const passes = (SIM.kerbPasses || []).filter((q) => Math.abs(q.y - fl) < 0.05);
   runs(isl, 'kerb').forEach(([s0, s1]) => {
     const len = s1 - s0;
     const n = Math.max(1, Math.round(len / KERB.len));
     for (let k = 0; k < n; k++) {
-      const a = isl.at(s0 + (k * len) / n, KERB.inset, pa);
-      const b = isl.at(s0 + ((k + 1) * len) / n, KERB.inset, pb);
-      const mx = (a.x + b.x) / 2;
-      const mz = (a.z + b.z) / 2;
+      let a = isl.at(s0 + (k * len) / n, KERB.inset, pa);
+      let b = isl.at(s0 + ((k + 1) * len) / n, KERB.inset, pb);
+      let mx = (a.x + b.x) / 2;
+      let mz = (a.z + b.z) / 2;
       if (occ.hit(mx, mz, fl + 0.07, fl + KERB.h, 0.12) || occ.hit(a.x, a.z, fl + 0.07, fl + KERB.h, 0.03) || occ.hit(b.x, b.z, fl + 0.07, fl + KERB.h, 0.03)) continue;
-      const m = new THREE.Mesh(kerbGeo(K, Math.hypot(b.x - a.x, b.z - a.z) - 0.03), mats.kerb);
+      const narrow = passes.some((q) => Math.hypot(mx - q.x, mz - q.z) < q.r);
+      if (narrow) {
+        a = isl.at(s0 + (k * len) / n, KERB_NARROW.inset, pa);
+        b = isl.at(s0 + ((k + 1) * len) / n, KERB_NARROW.inset, pb);
+        mx = (a.x + b.x) / 2;
+        mz = (a.z + b.z) / 2;
+      }
+      const m = new THREE.Mesh(kerbGeo(K, Math.hypot(b.x - a.x, b.z - a.z) - 0.03, narrow ? KERB_NARROW.w : KERB.w), mats.kerb);
       m.position.set(mx, fl, mz);
       m.rotation.y = Math.atan2(-(b.z - a.z), b.x - a.x);
       ctx.add(m);
@@ -1193,7 +1204,26 @@ function nearestS(isl, x, z) {
   return best;
 }
 
-// Jardineras en las esquinas libres de las islas rectangulares (como en ref-cruce-rutas).
+// ¿Pasa la ruta de algún tractor de la simulación (layout.js · SIM, la misma curva que world.js) a menos de r m de (x, z)?
+let simSamples = null;
+function nearSimRoute(x, z, r) {
+  if (!simSamples) {
+    simSamples = SIM.tractors.flatMap((t) => {
+      const curve = new THREE.CatmullRomCurve3(t.path.map(([px, pz]) => new THREE.Vector3(px, 0, pz)), false, 'centripetal');
+      return curve.getSpacedPoints(Math.ceil(curve.getLength() * 4)).map((q) => [q.x, q.z]);
+    });
+  }
+  return simSamples.some(([px, pz]) => Math.hypot(px - x, pz - z) < r);
+}
+
+// Jardineras sin árbol, solo con sus matas: la de la esquina suroeste de s2 queda, al pasar del capítulo 3 al 4, abajo a
+// la izquierda, a 5-15 m de la cámara y bajo el velo oscuro de los textos (styles.css · .scrim), y su copa se leía como
+// una mancha negra.
+const PLANTERS_NO_TREE = [[-39.34, 11.29]];
+
+// Jardineras en las esquinas libres de las islas rectangulares (como en ref-cruce-rutas). En la esquina por la que gira
+// un tractor de la simulación no hay jardinera: su árbol y sus matas quedan en la lista con escala casi nula, para que el
+// reparto aleatorio y los índices (tono y copa) de las demás plantas no cambien (igual el árbol de PLANTERS_NO_TREE).
 function cornerPlanters(ctx, isl, occ, guard, trees, rnd, mats) {
   const { K, M } = ctx;
   const shape = PLATFORMS[isl.key];
@@ -1208,12 +1238,22 @@ function cornerPlanters(ctx, isl, occ, guard, trees, rnd, mats) {
     const c = isl.at(best.s, 1.5);
     if (occ.hit(c.x, c.z, fl + 0.07, fl + 2.6, 0.75)) return;
     if (!guard.free(c.x, fl + 1.7, c.z, 0.95) || !guard.free(c.x, fl + 0.4, c.z, 0.7)) return;
-    ctx.add(K.rbox(1.15, 0.48, 1.15, mats.stone, c.x, fl, c.z, 0.05));
-    ctx.add(K.box(0.99, 0.04, 0.99, M.trunk, c.x, fl + 0.45, c.z));
-    trees.push({ x: c.x, y: fl + 0.46, z: c.z, s: 0.72 + rnd() * 0.12, kind: 'tree', r: rnd() * 6.28 });
-    trees.push({ x: c.x + 0.28, y: fl + 0.46, z: c.z - 0.22, s: 0.55, kind: 'low', r: rnd() * 6.28 });
-    trees.push({ x: c.x - 0.25, y: fl + 0.46, z: c.z + 0.26, s: 0.5, kind: 'low', r: rnd() * 6.28 });
-    ctx.shadows.push({ x: c.x, y: fl, z: c.z, w: 1.7, d: 1.7 });
+    // jardinera de 1,15 m (semidiagonal 0,81) y remolque de 1,3 m (semiancho 0,65) con su barrido en la curva
+    const turn = nearSimRoute(c.x, c.z, 1.75);
+    // (kit.js · scatterTrees toma `s || 1`: escala casi nula, no cero, y 2 m bajo la tapa, dentro de la roca)
+    const k = turn ? 1e-4 : 1;
+    const y = turn ? fl - 2 : fl + 0.46;
+    if (!turn) {
+      ctx.add(K.rbox(1.15, 0.48, 1.15, mats.stone, c.x, fl, c.z, 0.05));
+      ctx.add(K.box(0.99, 0.04, 0.99, M.trunk, c.x, fl + 0.45, c.z));
+    }
+    const noTree = PLANTERS_NO_TREE.some(([x, z]) => Math.hypot(c.x - x, c.z - z) < 0.5);
+    trees.push({ x: c.x, y: noTree ? fl - 2 : y, z: c.z, s: (noTree ? 1e-4 : k) * (0.72 + rnd() * 0.12), kind: 'tree', r: rnd() * 6.28 });
+    // sin árbol, las matas algo mayores llenan la jardinera
+    const tuft = noTree ? 1.7 : 1;
+    trees.push({ x: c.x + 0.28, y, z: c.z - 0.22, s: k * 0.55 * tuft, kind: 'low', r: rnd() * 6.28 });
+    trees.push({ x: c.x - 0.25, y, z: c.z + 0.26, s: k * 0.5 * tuft, kind: 'low', r: rnd() * 6.28 });
+    if (!turn) ctx.shadows.push({ x: c.x, y: fl, z: c.z, w: 1.7, d: 1.7 });
   });
 }
 
