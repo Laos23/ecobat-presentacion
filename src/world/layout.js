@@ -79,3 +79,20 @@ export const SIM = {
     recycle: [V(13.5, fy('s4'), -5.2), V(17.2, fy('s4'), -4.2), V(18.4, fy('s4'), -0.6), V(19, fy('s4'), 1.6), V(20.4, fy('s4') - 0.5, 3.6)],
   },
 };
+
+// v2 · Accesos del polígono: contrato entre el entorno (orillas, calzadas, ciudad, fábrica) y las estaciones que
+// usan camiones. Calzadas de 7 m de ancho; la cota del firme es la del suelo de la isla en el borde y la de la orilla.
+export const ACCESS = {
+  // calzada oeste: la ciudad (al noroeste) → isla s1 (recogida); entra por el borde oeste de s1 a la altura z = 14.
+  // En s1 la franja x ∈ [-71, -60], z ∈ [10,5, 17,5] queda libre para el camión de recogida y su descarga.
+  west: { rim: V(-71, F.s1, 14), shore: V(-125, 0.31, 14), width: 7 },
+  // calzada este: isla s5 (reciclaje) → orilla este → fábrica de baterías nuevas. En s5 la franja x ∈ [44, 55],
+  // z ∈ [19,5, 24,5] queda libre para el camión que sale con lingotes y granza.
+  east: { rim: V(55, F.s5, 22), shore: V(105, 0.31, 22), width: 7 },
+  // orillas: tierra firme a la cota 0,31 (el agua está a -2,6)
+  shoreWestX: -125,
+  shoreEastX: 105,
+  // ciudad iluminada al fondo (noroeste) y fábrica de baterías nuevas (fuera del polígono, en la orilla este)
+  city: { center: V(-190, 0, -300), width: 320, depth: 140 },
+  factory: V(165, 0.31, -35),
+};

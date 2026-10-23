@@ -378,6 +378,7 @@ async function start3D() {
   const timer = new THREE.Timer();
   timer.connect(document);
   let frozenTime = null;
+  let debugCam = null;
   const passportSteps = [...document.querySelectorAll('.passport li')];
   const counts = [...document.querySelectorAll('.route__count')];
   const ch4 = tl.chapters[4];
@@ -435,7 +436,13 @@ async function start3D() {
     }
 
     const shot = sample(tl, p, camera.aspect, camPos, camTgt);
-    if (!reduced) {
+    // ?debug: cámara manual (debug.setCamera) para revisar una zona sin depender del recorrido
+    if (debugCam) {
+      camPos.copy(debugCam.pos);
+      camTgt.copy(debugCam.target);
+      shot.fov = debugCam.fov;
+    }
+    if (!reduced && !debugCam) {
       // balanceo mínimo con el ratón, proporcional a la distancia al sujeto para no rozar objetos cercanos
       sway.lerp(swayTarget, 1 - Math.exp(-dt * 2));
       const dist = camPos.distanceTo(camTgt);
@@ -680,6 +687,11 @@ async function start3D() {
       },
       freeze(time) {
         frozenTime = time;
+      },
+      // cámara manual: setCamera([x, y, z], [x, y, z], fov) o setCamera(null) para volver al recorrido
+      setCamera(pos, target, fov = 45) {
+        debugCam = pos ? { pos: new THREE.Vector3(...pos), target: new THREE.Vector3(...target), fov } : null;
+        needsRender = 6;
       },
       shot(p, aspect = camera.aspect) {
         const s = sample(tl, p, aspect, tmpP, tmpT);
