@@ -187,7 +187,7 @@ Below 900px scenes stack to a single bottom-anchored column, rail labels and key
 
 Depth belongs to the 3D world: ACES filmic tone mapping (exposure 1.05), a light exponential graphite fog (0.0045) for distance only, a cool hemisphere fill, a warm key and cool rim light, warm spot lights inside each cutaway, and a tight bloom (strength 0.2, radius 0.12, threshold 2.2) that only lamp heads and light strips reach; graphite, concrete and screens never pick up a haze. There is no tilt-shift or depth-of-field pass: geometry and materials must hold up sharp, and neither bloom, fog nor blur may hide a defect. Every shot is layered as foreground, mid-ground and background, and transitions pass close to real props for parallax. The HTML layer is flat; it separates from the world with translucent graphite backplates, a radial scrim and text shadows, all functional for projector legibility.
 
-World material tints (albedos in `src/world/kit.js` and the station modules, such as warm concrete, brushed steel, painted car body or copper) describe physical surfaces, not interface colour; they sit outside the UI palette on purpose and never introduce a new accent light.
+World material tints (albedos in `src/world/kit.js` and the station modules, such as warm concrete, brushed steel, lead or rubber) describe physical surfaces, not interface colour; they sit outside the UI palette on purpose and never introduce a new accent light.
 
 ### Shadow Vocabulary
 - **Scene headline shadow** (`text-shadow: 0 2px 24px rgba(22, 24, 25, 0.9), 0 0 2px rgba(22, 24, 25, 0.6)`): headlines over the diorama.

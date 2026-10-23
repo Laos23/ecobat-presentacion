@@ -9,8 +9,10 @@ import { buildLab } from './stations/lab.js';
 import { buildJunction } from './stations/junction.js';
 import { buildRecycling } from './stations/recycling.js';
 import { buildHub } from './stations/hub.js';
-import { CHUNK_KEYS, chunkKeyFor, findLightViolations, lightSetForBoxes, padLightClasses, routeBox } from './chunks.js';
+import { buildEnvironment } from './stations/environment.js';
+import { CHUNK_KEYS, chunkKeyFor, findLightViolations, lightSetForBoxes, padLightClasses } from './chunks.js';
 import { createMaterialFactory, createChunkLightState, isLit, drawKeys } from './chunkLights.js';
+import * as A from './actors.js';
 
 export { STATIONS };
 
@@ -185,10 +187,10 @@ function lightsOnTriangles(o, lights, margin) {
 const CHUNK_ORDER = [...CHUNK_KEYS, 'agua', 'agua-lejana', 'dinamico', 'resto'];
 
 // Cajas de los fragmentos para sus conjuntos de luces (ver buildWorld): margen de toda caja, margen de los objetos
-// que mueve una estación (en su pose inicial) y tamaño de una batería de la simulación sobre la curva de su ruta.
+// que mueve una estación (en su pose inicial) y tamaño de un tractor de la simulación sobre la curva de su ruta.
 const BOX_MARGIN = 0.5;
 const DYNAMIC_MARGIN = 2;
-const BATTERY_MARGIN = 1.5;
+const SIM_MARGIN = 2.6; // medio tractor con su remolque (≈ 6 m) alrededor de cada muestra de su ruta
 // clases de tamaño de los conjuntos de luces de las islas (padLightClasses): 5 deja el total de programas de
 // sombreado por debajo de 120 (con una clase por isla serían unos 130) añadiendo una sola luz a dos islas
 const LIGHT_CLASSES = 5;
@@ -248,6 +250,7 @@ export function buildWorld(scene, { debug = false } = {}) {
   station('cruce', buildJunction);
   station('reciclaje', buildRecycling);
   station('centro', buildHub);
+  station('entorno', buildEnvironment);
   station('bordes', buildEdges);
 
   const s4 = STATIONS.s4;
@@ -311,106 +314,162 @@ export function buildWorld(scene, { debug = false } = {}) {
     });
   });
 
-  // ---------- Simulación del capítulo 4 (hipotética: 2 / 1 / 7) ----------
-  // Las baterías esperan en cola sobre la franja este del laboratorio y la rampa, cada una apoyada en el
-  // suelo y con la inclinación del tablero, y salen por orden hacia su destino (layout.js · SIM).
-  const routeCurves = Object.fromEntries(Object.entries(SIM.routes).map(([k, pts]) => [k, new THREE.CatmullRomCurve3([...SIM.entry, ...pts])]));
-  // longitud de la entrada común (hasta su último punto de control) medida sobre cada curva
-  const entryLen = (curve) => {
-    const n = curve.points.length - 1;
-    const tEnd = (SIM.entry.length - 1) / n;
-    let L = 0;
-    const a = curve.getPoint(0);
-    const b = new THREE.Vector3();
-    for (let i = 1; i <= 200; i++) {
-      curve.getPoint((tEnd * i) / 200, b);
-      L += a.distanceTo(b);
-      a.copy(b);
-    }
-    return L;
-  };
-  const routeInfo = Object.fromEntries(Object.entries(routeCurves).map(([k, c]) => [k, { curve: c, len: c.getLength(), entry: entryLen(c) }]));
-  const counters = { service: 0, second: 0, recycle: 0 };
-  // distancia sobre la curva al punto más cercano a (x, z): codos de la rampa 2 (pie y coronación)
-  const along = (curve, x, z) => {
-    let best = 0;
-    let bd = Infinity;
-    const q = new THREE.Vector3();
-    for (let k = 0; k <= 2000; k++) {
-      curve.getPointAt(k / 2000, q);
-      const dd = Math.hypot(q.x - x, q.z - z);
-      if (dd < bd) {
-        bd = dd;
-        best = k / 2000;
-      }
-    }
-    return best * curve.getLength();
-  };
-  const B2 = BRIDGES[2];
-  Object.values(routeInfo).forEach((info) => (info.knees = [along(info.curve, B2[0].x, B2[0].z), along(info.curve, B2[1].x, B2[1].z)]));
-  let queueD = null;
-  const tokens = SIM.plan.map((route, i) => {
-    const slot = counters[route]++;
-    const info = routeInfo[route];
-    let qd = queueD === null ? info.entry - SIM.head : queueD - SIM.gap;
-    for (const k of info.knees) if (Math.abs(qd - k) < 0.65) qd = k - 0.65;
-    queueD = qd;
-    const b = K.compact(K.makeBattery(M, { scale: 0.72, label: false }));
-    b.userData.dynamic = true;
+  // ---------- Simulación del capítulo de clasificación (hipotética: 2 / 1 / 7) ----------
+  // Tres tractores de arrastre (actors.js) esperan cargados en las bocas del cruce y salen escalonados hacia su destino
+  // (layout.js · SIM). Tractor y remolque son dos piezas dinámicas: cada una va compactada (una malla por material) y el
+  // remolque sigue la ruta detrás del tractor, articulado en su enganche. Ninguno proyecta sombra en el mapa (se genera
+  // una sola vez): cada pieza lleva una sombra de contacto que se mueve con ella. Las poses solo se recalculan cuando
+  // cambia el avance de la simulación.
+  const blobMat = (() => {
+    const c = document.createElement('canvas');
+    c.width = 64;
+    c.height = 64;
+    const g = c.getContext('2d');
+    g.filter = 'blur(5px)';
+    g.fillStyle = 'rgba(0,0,0,0.75)';
+    g.beginPath();
+    g.roundRect(10, 8, 44, 48, 8);
+    g.fill();
+    return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), color: '#000000', transparent: true, depthWrite: false });
+  })();
+  const blob = (w, d, z = 0) => {
+    const b = new THREE.Mesh(K.geo('simBlob', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), blobMat);
+    b.scale.set(w, 1, d);
+    b.position.set(0, 0.02, z);
+    b.renderOrder = 1;
     b.userData.noCollide = true;
-    b.rotation.order = 'YZX';
-    root.add(b);
-    // distancias sobre la curva: puesto en la cola y plaza en el destino
-    return { b, route, i, info, from: qd, to: info.len - 0.15 - slot * (route === 'recycle' ? 1.3 : SIM.gap) };
+    return b;
+  };
+  // carga de un remolque plano: palé europeo con `n` baterías de arranque (tapas en los bornes y fleje) sujeto al
+  // bastidor con dos cinchas ámbar, como en los palés de actors.js
+  const LEAD = { w: 0.28, h: 0.19, d: 0.175 };
+  const leadLoad = (n) => {
+    const g = new THREE.Group();
+    const y0 = 0.42; // piso del remolque (actors.js · buildCart)
+    g.add(K.box(1.2, 0.022, 0.8, M.wood, 0, y0 + 0.122, 0));
+    [-0.55, 0, 0.55].forEach((x) => g.add(K.box(0.1, 0.1, 0.8, M.wood, x, y0 + 0.022, 0)));
+    g.add(K.box(1.2, 0.022, 0.72, M.wood, 0, y0, 0));
+    const yb = y0 + 0.144;
+    const rows = n <= 4 ? [n] : [Math.ceil(n / 2), Math.floor(n / 2)];
+    rows.forEach((cnt, r) => {
+      const z = rows.length === 1 ? 0 : (r - 0.5) * (LEAD.d + 0.02);
+      for (let i = 0; i < cnt; i++) {
+        const x = (i - (cnt - 1) / 2) * (LEAD.w + 0.012);
+        g.add(K.box(LEAD.w, LEAD.h, LEAD.d, M.casing, x, yb, z));
+        [-0.09, 0.09].forEach((dx) => g.add(K.box(0.05, 0.03, 0.05, M.grip, x + dx, yb + LEAD.h, z + 0.045)));
+      }
+      // fleje blanco a lo largo de cada fila
+      g.add(K.box(cnt * (LEAD.w + 0.012), 0.006, 0.03, M.ivory, 0, yb + LEAD.h + 0.001, z));
+    });
+    [-0.3, 0.3].forEach((x) => g.add(K.box(0.04, 0.33, 0.04 + rows.length * LEAD.d, M.amberMatte, x, y0 + 0.07, 0)));
+    return g;
+  };
+  const simCurve = (path) => new THREE.CatmullRomCurve3(path.map(([x, z]) => V(x, 0, z)), false, 'centripetal');
+  const _sp = new THREE.Vector3();
+  const _sa = new THREE.Vector3();
+  const _sb = new THREE.Vector3();
+  // suelo bajo (x, z) o, sobre el agua, la cota de referencia
+  const ground = (x, z, fallback) => {
+    const s = surfaceY(x, z);
+    return s === null ? fallback : s;
+  };
+  // pose de una pieza sobre la curva: origen en el punto a `d` m del comienzo, rumbo de la tangente y cabeceo del suelo
+  // entre sus dos ejes (±`half` m)
+  const poseOn = (obj, info, d, half) => {
+    const L = info.len;
+    const u = THREE.MathUtils.clamp(d / L, 0, 1);
+    info.curve.getPointAt(u, _sp);
+    info.curve.getPointAt(THREE.MathUtils.clamp((d + 0.4) / L, 0, 1), _sa);
+    info.curve.getPointAt(THREE.MathUtils.clamp((d - 0.4) / L, 0, 1), _sb);
+    let hx = _sa.x - _sb.x;
+    let hz = _sa.z - _sb.z;
+    const hl = Math.hypot(hx, hz) || 1;
+    hx /= hl;
+    hz /= hl;
+    const y0 = ground(_sp.x, _sp.z, obj.position.y);
+    const yf = ground(_sp.x + hx * half, _sp.z + hz * half, y0);
+    const yb = ground(_sp.x - hx * half, _sp.z - hz * half, y0);
+    obj.position.set(_sp.x, Math.max(y0, (yf + yb) / 2), _sp.z);
+    obj.rotation.set(-Math.atan2(yf - yb, 2 * half), Math.atan2(hx, hz), 0);
+  };
+  const tractors = SIM.tractors.map((spec) => {
+    const curve = simCurve(spec.path);
+    const len = curve.getLength();
+    // distancia sobre la curva del punto de espera
+    let wait = 0;
+    for (let i = 1; i <= spec.wait; i++) wait += Math.hypot(spec.path[i][0] - spec.path[i - 1][0], spec.path[i][1] - spec.path[i - 1][1]);
+    const tug = A.makeTowTractor(M, { carts: 1, load: spec.load === 'litio' ? 'litio' : 'vacio', driver: true });
+    const cart = tug.userData.carts[0];
+    const hitch = -cart.position.z; // distancia del origen del tractor al centro del remolque
+    tug.remove(cart);
+    cart.position.set(0, 0, 0);
+    if (spec.load !== 'litio') cart.add(leadLoad(spec.count));
+    const parts = [tug, cart].map((g) => {
+      const c = K.compact(g);
+      c.traverse((o) => {
+        if (!o.isMesh) return;
+        o.castShadow = false;
+        o.receiveShadow = true;
+      });
+      c.rotation.order = 'YXZ';
+      c.userData.dynamic = true;
+      c.userData.noCollide = true;
+      root.add(c);
+      return c;
+    });
+    const cartLen = spec.load === 'litio' ? 2.6 : 1.7;
+    parts[0].add(blob(1.7, 3.0, -0.05));
+    parts[1].add(blob(spec.load === 'litio' ? 2.1 : 1.7, cartLen + 0.3));
+    return { spec, curve, len, info: { curve, len }, wait, hitch, cartLen, tug: parts[0], cart: parts[1], d: -1 };
   });
-  const tp = new THREE.Vector3();
-  const ta = new THREE.Vector3();
-  const tb = new THREE.Vector3();
+  // perfil de velocidad de cada viaje: arranca y frena en el 15 % de su tramo y va a velocidad constante en medio (la
+  // cámara de la clasificación acompaña al de reutilización a un ritmo regular)
+  const ACC = 0.15;
+  const easeTrip = (x) => {
+    const vmax = 1 / (1 - ACC);
+    if (x < ACC) return (0.5 * vmax * x * x) / ACC;
+    if (x > 1 - ACC) return 1 - (0.5 * vmax * (1 - x) * (1 - x)) / ACC;
+    return vmax * (x - ACC / 2);
+  };
   let lastU = null;
   let lastArrived = null;
   function setSimulation(u) {
-    // u: 0 → baterías en cola; 1 → cada una en su destino. Devuelve cuántas han llegado por ruta y la ruta
-    // de la batería en marcha a menos de 3 m del bordillo de la isleta central (la que muestra la rosa del
-    // cruce; las ya aparcadas no cuentan, así la rosa repasa A, B y C cuando terminan todas).
+    // u: 0 → los tres esperan en el cruce; 1 → cada uno en su destino. Devuelve las baterías llegadas por ruta (el lote
+    // de cada tractor al llegar) y la ruta del tractor que sale del cruce más cerca de su isleta central (la que muestra
+    // la rosa; sin ninguno en marcha sobre el cruce, null y la rosa repasa las tres).
+    if (debug && typeof window !== 'undefined' && typeof window.__ecobatSimOverride === 'number') u = window.__ecobatSimOverride;
     if (u === lastU) return lastArrived;
     lastU = u;
     const arrived = { service: 0, second: 0, recycle: 0, near: null };
-    let nearD = 3;
-    tokens.forEach(({ b, route, i, info, from, to }) => {
-      const local = THREE.MathUtils.clamp((u - i * SIM.stagger) / SIM.span, 0, 1);
-      const e = local * local * (3 - 2 * local);
-      const d = THREE.MathUtils.lerp(from, to, e);
-      const L = info.len;
-      onCurve(info.curve, d / L, tp);
-      onCurve(info.curve, (d + 0.45) / L, ta);
-      onCurve(info.curve, (d - 0.45) / L, tb);
-      const hx = ta.x - tb.x;
-      const hz = ta.z - tb.z;
-      const hl = Math.hypot(hx, hz) || 1;
-      const yf = surfaceY(tp.x + (hx / hl) * 0.6, tp.z + (hz / hl) * 0.6);
-      const yb = surfaceY(tp.x - (hx / hl) * 0.6, tp.z - (hz / hl) * 0.6);
-      // sin suelo conocido (hueco entre isla y tablero) manda el punto apoyado de la propia curva
-      const ff = yf !== null ? yf + 0.012 : ta.y;
-      const fb = yb !== null ? yb + 0.012 : tb.y;
-      b.position.copy(tp);
-      b.position.y = Math.max(tp.y, (ff + fb) / 2);
-      b.rotation.set(0, Math.atan2(hx, hz) + Math.PI / 2, -Math.atan2(ff - fb, 1.2));
-      if (local >= 1) arrived[route]++;
-      const k = Math.hypot(tp.x - s4.x, tp.z - s4.z) - 2.2;
+    let nearD = 9.5;
+    for (const t of tractors) {
+      const [a, b] = t.spec.go;
+      const local = THREE.MathUtils.clamp((u - a) / (b - a), 0, 1);
+      const d = THREE.MathUtils.lerp(t.wait, t.len, easeTrip(local));
+      if (d !== t.d) {
+        t.d = d;
+        poseOn(t.tug, t.info, d, 0.78);
+        poseOn(t.cart, t.info, d - t.hitch, t.cartLen / 2 - 0.3);
+      }
+      if (local >= 1) arrived[t.spec.route] += t.spec.count;
+      const k = Math.hypot(t.tug.position.x - s4.x, t.tug.position.z - s4.z);
       if (local > 0 && local < 1 && k < nearD) {
         nearD = k;
-        arrived.near = route;
+        arrived.near = t.spec.route;
       }
-    });
+    }
     lastArrived = arrived;
     return arrived;
   }
   setSimulation(0);
 
-  // ---------- Conexiones del capítulo 6 ----------
+  // ---------- Conexiones del capítulo de trazabilidad ----------
+  // Un arco del centro a cada zona, en el orden de los capítulos (el mismo de la red de la pantalla del centro, hub.js):
+  // recogida, laboratorio, clasificación, reutilización, desmontaje, segunda vida y reciclaje.
   const arcMat = new THREE.MeshBasicMaterial({ color: new THREE.Color('#C2F230').multiplyScalar(1.15), transparent: true, opacity: 0.85 });
   const hubTop = V(s6.x - 1.2, s6.y + 6.4, s6.z - 1.4);
-  const arcs = [STATIONS.s1, STATIONS.s2, STATIONS.s3, STATIONS.s4, STATIONS.s5].map((s) => {
+  const arcs = ['s1', 's3', 's4', 's2', 'sB', 'sA', 's5'].map((key) => {
+    const s = STATIONS[key];
     const end = s.clone().add(V(0, 3, 0));
     const mid = new THREE.Vector3().lerpVectors(hubTop, end, 0.5).add(V(0, 4 + hubTop.distanceTo(end) * 0.045, 0));
     const geom = new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(hubTop, mid, end), 120, 0.065, 6, false);
@@ -427,13 +486,25 @@ export function buildWorld(scene, { debug = false } = {}) {
   });
   function setConnections(u) {
     arcs.forEach(({ m, node, total }, i) => {
-      const local = THREE.MathUtils.clamp((u - i * 0.1) / 0.5, 0, 1);
+      const local = THREE.MathUtils.clamp((u - (i * 0.4) / (arcs.length - 1)) / 0.5, 0, 1);
       m.geometry.setDrawRange(0, Math.floor((total * local) / 3) * 3);
       node.scale.setScalar(local >= 1 ? 1 : 0.001);
     });
   }
   setConnections(0);
 
+  // las balizas de bordillo que quedan en el paso de un tractor de la simulación (las del borde de s3 y s2 junto a la ruta
+  // de reutilización) se quitan: el tractor (1,3 m de ancho, 1,8 m el remolque del embalaje) no cabe entre ellas y los
+  // pilares o parterres de las esquinas
+  {
+    const samples = tractors.flatMap((t) => t.curve.getSpacedPoints(Math.ceil(t.len * 3)).map((q) => [q.x, q.z, t.spec.load === 'litio' ? 1.3 : 1.15]));
+    for (let i = lamps.length - 1; i >= 0; i--) {
+      const l = lamps[i];
+      // las del cruce (bordillos de los parterres) quedan fuera de las calzadas: se conservan
+      if (chunkKeyFor(l.x, l.z) === 's4') continue;
+      if (samples.some(([x, z, r]) => Math.hypot(l.x - x, l.z - z) < r)) lamps.splice(i, 1);
+    }
+  }
   const lampsMesh = K.scatterLamps(M, lamps);
   root.add(lampsMesh);
   const contact = K.contactShadows(shadows);
@@ -446,6 +517,116 @@ export function buildWorld(scene, { debug = false } = {}) {
 
   performance.mark('eb:trazas');
   const colliders = debug ? collectColliders(root) : null;
+  if (debug) {
+    // los tractores se mueven: cuentan como sólidos en su pose de espera y en la de llegada (la holgura de la cámara
+    // con ellos en marcha se mide aparte, __ecobatSim.cameraGap)
+    const solid = (u) => {
+      setSimulation(u);
+      root.updateMatrixWorld(true);
+      tractors.forEach(({ tug, cart }) => [tug, cart].forEach((g) => {
+        g.userData.noCollide = false;
+        collectColliders(g).forEach((c) => colliders.push({ ...c, label: `tractor:${g === tug ? 'tug' : 'cart'}` }));
+        g.userData.noCollide = true;
+      }));
+    };
+    solid(1);
+    solid(0);
+    if (typeof window !== 'undefined') {
+      const local = new THREE.Vector3();
+      const inv = new THREE.Matrix4();
+      // puntos de muestra de la caja de cada pieza (en sus ejes): tractor con conductor y remolque con su carga
+      const grid = (x0, x1, y0, y1, z0, z1, nx, ny, nz) => {
+        const out = [];
+        for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) for (let k = 0; k < nz; k++) out.push(V(x0 + ((x1 - x0) * i) / (nx - 1), y0 + ((y1 - y0) * j) / (ny - 1), z0 + ((z1 - z0) * k) / (nz - 1)));
+        return out;
+      };
+      const tugPts = grid(-0.64, 0.64, 0.22, 1.55, -1.42, 1.32, 3, 3, 6);
+      window.__ecobatSim = {
+        tractors,
+        // cajas (en mundo, alineadas con los ejes) de lo sólido que corta el rectángulo [x0, x1] × [z0, z1] entre y0 e y1
+        solids(x0, x1, z0, z1, y0 = -1, y1 = 50) {
+          const out = [];
+          const b = new THREE.Box3();
+          for (const c of colliders) {
+            b.set(c.min, c.max).applyMatrix4(c.m);
+            if (b.max.x < x0 || b.min.x > x1 || b.max.z < z0 || b.min.z > z1 || b.max.y < y0 || b.min.y > y1) continue;
+            out.push({ label: c.label, min: b.min.toArray().map((v) => +v.toFixed(2)), max: b.max.toArray().map((v) => +v.toFixed(2)) });
+          }
+          return out;
+        },
+        // cambia la ruta de un tractor (solo para probar trazados con check())
+        setPath(route, path, wait) {
+          const t = tractors.find((x) => x.spec.route === route);
+          t.spec = { ...t.spec, path, wait: wait ?? t.spec.wait };
+          t.curve = simCurve(path);
+          t.len = t.curve.getLength();
+          t.info = { curve: t.curve, len: t.len };
+          t.wait = 0;
+          for (let i = 1; i <= t.spec.wait; i++) t.wait += Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]);
+          t.d = -1;
+          lastU = null;
+        },
+        // líneas de las rutas (solo para revisar en capturas)
+        showPaths() {
+          for (const t of tractors) {
+            const pts = t.curve.getSpacedPoints(Math.ceil(t.len * 4)).map((q) => V(q.x, ground(q.x, q.z, 0) + 0.08, q.z));
+            const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: '#ff2bd6' }));
+            root.add(line);
+          }
+        },
+        // choques de cada tractor con lo fijo a lo largo de su ruta: [{ route, part, d, label, at }]
+        check(step = 0.3) {
+          const statics = colliders.filter((c) => !c.label.startsWith('tractor'));
+          const hits = [];
+          const wp = new THREE.Vector3();
+          for (const t of tractors) {
+            const W = t.spec.load === 'litio' ? 1.8 : 1.4;
+            const cartPts = grid(-W / 2 + 0.05, W / 2 - 0.05, 0.22, t.spec.load === 'litio' ? 1.1 : 0.85, -t.cartLen / 2, t.cartLen / 2, 3, 2, 4);
+            for (let d = t.wait - t.hitch - t.cartLen / 2; d <= t.len + 1e-6; d += step) {
+              poseOn(t.tug, t.info, Math.max(d, t.wait), 0.78);
+              poseOn(t.cart, t.info, Math.max(d, t.wait) - t.hitch, t.cartLen / 2 - 0.3);
+              for (const [part, pts] of [['tug', tugPts], ['cart', cartPts]]) {
+                const g = part === 'tug' ? t.tug : t.cart;
+                g.updateMatrixWorld(true);
+                for (const q of pts) {
+                  wp.copy(q).applyMatrix4(g.matrixWorld);
+                  for (const c of statics) {
+                    local.copy(wp).applyMatrix4(c.inv);
+                    if (local.x > c.min.x + 0.01 && local.x < c.max.x - 0.01 && local.y > c.min.y + 0.01 && local.y < c.max.y - 0.01 && local.z > c.min.z + 0.01 && local.z < c.max.z - 0.01) {
+                      hits.push({ route: t.spec.route, part, d: +d.toFixed(2), label: c.label, at: wp.toArray().map((v) => +v.toFixed(2)) });
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+            t.d = -1;
+          }
+          lastU = null;
+          setSimulation(0);
+          return hits;
+        },
+        // distancia mínima de un punto a las cajas de los tractores con la simulación en `u`
+        gap(point, u) {
+          setSimulation(u);
+          let best = Infinity;
+          const pt = V(...point);
+          for (const t of tractors) {
+            for (const g of [t.tug, t.cart]) {
+              g.updateMatrixWorld(true);
+              const box = new THREE.Box3();
+              g.children.forEach((m) => m.isMesh && !m.userData.noCollide && box.union(m.geometry.boundingBox || (m.geometry.computeBoundingBox(), m.geometry.boundingBox)));
+              inv.copy(g.matrixWorld).invert();
+              local.copy(pt).applyMatrix4(inv);
+              const cl = local.clone().clamp(box.min, box.max).applyMatrix4(g.matrixWorld);
+              best = Math.min(best, cl.distanceTo(pt));
+            }
+          }
+          return best;
+        },
+      };
+    }
+  }
   // Todo lo fijo se fusiona por fragmento y material: el detalle no multiplica las llamadas de dibujo y cada
   // isla queda en sus propias mallas (ver chunks.js). Cada pieza va al fragmento del centro de su caja en
   // mundo; el agua entera (edges.js, `waterWhole`) va aparte, al fragmento 'agua'.
@@ -481,15 +662,15 @@ export function buildWorld(scene, { debug = false } = {}) {
       return key;
     };
     const merged = new Set(K.bakeStatic(root, chunkOfPiece).children);
-    // lo que no se ha fusionado (instanciadas, dinámicas, transparentes) también lleva su fragmento: las diez
-    // baterías de la simulación, que recorren varias islas, van a 'dinamico'; el resto, por su caja
+    // lo que no se ha fusionado (instanciadas, dinámicas, transparentes) también lleva su fragmento: los tres
+    // tractores de la simulación, que recorren varias islas, van a 'dinamico'; el resto, por su caja
     root.updateMatrixWorld(true);
-    const batteries = new Set();
-    tokens.forEach(({ b }) => b.traverse((o) => {
+    const simParts = new Set();
+    tractors.forEach(({ tug, cart }) => [tug, cart].forEach((g) => g.traverse((o) => {
       if (!o.isMesh) return;
       o.userData.chunk = 'dinamico';
-      batteries.add(o);
-    }));
+      simParts.add(o);
+    })));
     const isDynamic = (o) => {
       for (let p = o; p; p = p.parent) if (p.userData.dynamic) return true;
       return false;
@@ -508,14 +689,23 @@ export function buildWorld(scene, { debug = false } = {}) {
       if (o.isInstancedMesh) forEachInstanceBox(o, (b) => addPiece(k, b.clone()));
       else {
         const b = worldBox(o, new THREE.Box3());
-        if (isDynamic(o) && !batteries.has(o)) b.expandByScalar(DYNAMIC_MARGIN);
+        if (isDynamic(o) && !simParts.has(o)) b.expandByScalar(DYNAMIC_MARGIN);
         addPiece(k, b);
       }
     });
-    // 'dinamico': las baterías van de la cola a su plaza por las rutas de SIM (la entrada común y el tramo de su
-    // destino, las curvas de `routeCurves`); a su pose actual (en cola) se suma la caja que barren esas curvas,
-    // ampliada con el tamaño de una batería
-    if (pieces.has('dinamico')) addPiece('dinamico', routeBox(Object.values(routeCurves), 200, BATTERY_MARGIN));
+    // 'dinamico': los tractores van del cruce a su destino por las rutas de SIM; a su pose actual (en espera) se suman
+    // cajas a lo largo de cada ruta (cada 2 m, en su cota, ampliadas con el tamaño de un tractor con su remolque): el
+    // conjunto de luces es el del pasillo que recorren, no el de la caja que une las tres rutas
+    if (pieces.has('dinamico')) {
+      for (const t of tractors) {
+        const n = Math.ceil(t.len / 2);
+        for (let i = 0; i <= n; i++) {
+          t.curve.getPointAt(i / n, _sp);
+          _sp.y = ground(_sp.x, _sp.z, 0) + 1;
+          addPiece('dinamico', new THREE.Box3().setFromCenterAndSize(_sp, V(2, 2, 2)).expandByScalar(SIM_MARGIN));
+        }
+      }
+    }
     const rank = (k) => (CHUNK_ORDER.includes(k) ? CHUNK_ORDER.indexOf(k) : CHUNK_ORDER.length);
     chunks = [...tally.values()].sort((a, b) => rank(a.key) - rank(b.key) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     // Cada malla de material iluminado recibe el clon de su material para su fragmento y su tipo (chunkLights.js).

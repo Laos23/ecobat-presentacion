@@ -14,6 +14,7 @@ import { opaqueSort } from './world/chunkLights.js';
 import { buildTimeline, sample, chapterState } from './camera.js';
 import { buildOverlay, buildChrome, buildAnnex, buildStatic, icons } from './ui.js';
 import { chapters, SITE_URL } from './content.js';
+import { CH } from './world/chapters.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,7 +22,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const html = document.documentElement;
 const params = new URLSearchParams(location.search);
 const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
-const POSTER = `${import.meta.env.BASE_URL}referencia-ecobat.png`;
+const POSTER = `${import.meta.env.BASE_URL}vista-ecobat.jpg`;
 const DEBUG = params.has('debug');
 
 function hasWebGL() {
@@ -53,10 +54,12 @@ function smoothDamp(current, target, state, smoothTime, dt, maxSpeed = Infinity)
 
 // ---------- Anexos (comunes a la vista 3D y a la estática) ----------
 const annexEl = $('#anexos');
-buildAnnex(annexEl);
+const annexTabs = buildAnnex(annexEl);
 let annexReturn = null;
 const behind = () => document.querySelectorAll('#stage, #chrome, .skip, #static');
-function openAnnex() {
+// tab: pestaña con la que se abre (las tarjetas de datos abren «Datos»); sin ella, la última elegida
+function openAnnex(tab) {
+  if (tab) annexTabs.show(tab);
   annexReturn = document.activeElement;
   behind().forEach((el) => (el.inert = true));
   annexEl.hidden = false;
@@ -79,7 +82,7 @@ document.addEventListener('click', (e) => {
   if (!a) return;
   if (a.dataset.action === 'annex') {
     e.preventDefault();
-    annexOpen() ? closeAnnex() : openAnnex();
+    annexOpen() ? closeAnnex() : openAnnex(a.dataset.tab);
   } else if (a.dataset.action === 'annex-close') closeAnnex();
 });
 
@@ -144,8 +147,49 @@ async function start3D() {
   renderer.shadowMap.autoUpdate = false;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#161819');
-  scene.fog = new THREE.FogExp2('#161819', 0.0045);
+  // v2 · anochecer: cielo en degradado equirectangular (grafito arriba, azul grisáceo y un leve tono cálido junto al
+  // horizonte, algo más intenso sobre la ciudad, al noroeste: layout.js · ACCESS.city) y niebla del color del
+  // horizonte, para que el agua y la tierra lejanas se fundan con él sin costura
+  scene.background = (() => {
+    const W = 512;
+    const H = 256;
+    const c = document.createElement('canvas');
+    c.width = W;
+    c.height = H;
+    const g = c.getContext('2d');
+    const img = g.createImageData(W, H);
+    const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+    const top = [22, 24, 25];
+    const mid = [28, 33, 39];
+    const horizon = [32, 38, 45];
+    const warm = [54, 48, 43];
+    const cityU = Math.atan2(-300, -190) / (2 * Math.PI) + 0.5; // acimut de ACCESS.city visto desde el polígono
+    for (let y = 0; y < H; y++) {
+      const e = 90 - ((y + 0.5) * 180) / H; // elevación en grados
+      for (let x = 0; x < W; x++) {
+        let col;
+        if (e <= 0) col = horizon;
+        else {
+          col = e < 12 ? mix(horizon, mid, e / 12) : mix(mid, top, Math.min(1, (e - 12) / 33));
+          let du = Math.abs((x + 0.5) / W - cityU);
+          du = Math.min(du, 1 - du);
+          const glow = Math.exp(-e / 3.2) * (0.45 + 0.55 * Math.exp(-((du / 0.07) ** 2)));
+          col = mix(col, warm, Math.min(1, glow));
+        }
+        const i = (y * W + x) * 4;
+        img.data[i] = col[0];
+        img.data[i + 1] = col[1];
+        img.data[i + 2] = col[2];
+        img.data[i + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    const t = new THREE.CanvasTexture(c);
+    t.mapping = THREE.EquirectangularReflectionMapping;
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  })();
+  scene.fog = new THREE.FogExp2('#20262d', 0.0045);
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environmentIntensity = 0.42;
@@ -345,7 +389,8 @@ async function start3D() {
     } else if (k === 'End') {
       e.preventDefault();
       goTo(tl.anchors.length - 1);
-    } else if (/^[1-6]$/.test(k)) {
+    } else if (/^[1-9]$/.test(k) && +k <= chapters.length) {
+      // teclas 1-8: capítulo por número (el mismo de la barra)
       goTo(+k);
     } else if (k === 'f' || k === 'F') {
       toggleFullscreen();
@@ -369,7 +414,8 @@ async function start3D() {
   });
 
   const veil = $('.veil');
-  const lastIndex = chapters.length + 1;
+  // portada = CH.portada (0), capítulos 1..8 y cierre = CH.cierre (content.js tiene los ocho capítulos en el orden de CH)
+  const lastIndex = CH.cierre;
   let shownIndex = -1;
   let cutIndex = -1;
   let lastRaw = 0;
@@ -378,10 +424,28 @@ async function start3D() {
   const timer = new THREE.Timer();
   timer.connect(document);
   let frozenTime = null;
+  let debugCam = null;
   const passportSteps = [...document.querySelectorAll('.passport li')];
   const counts = [...document.querySelectorAll('.route__count')];
-  const ch4 = tl.chapters[4];
-  const ch6 = tl.chapters[6];
+  // La simulación 2/1/7 llega a su final en la marca 'simEnd' y las conexiones, en el ancla de la trazabilidad;
+  // empiezan en las marcas 'sim' y 'conn' del recorrido (camera.js). Si el recorrido aún no tiene esos capítulos o
+  // marcas (recorrido de la v1, con menos capítulos), se toman el penúltimo capítulo y la salida del anterior.
+  const chSim = tl.chapters[CH.clasificacion];
+  const chConn = tl.chapters[CH.trazabilidad] ?? tl.chapters[tl.chapters.length - 2];
+  const simFrom = tl.marks.sim ?? tl.chapters[CH.clasificacion - 1].out;
+  const connFrom = tl.marks.conn ?? tl.chapters[tl.chapters.indexOf(chConn) - 1].out;
+  // la simulación termina en la marca 'simEnd' (salida de la ventana de la clasificación): la cámara sigue al tractor de
+  // la reutilización hasta la nave; sin la marca, en el ancla de la clasificación
+  const simTo = tl.marks.simEnd ?? chSim.anchor;
+  const simAt = (p) => THREE.MathUtils.clamp((p - simFrom) / Math.max(simTo - simFrom, 1e-4), 0, 1);
+  // Los contadores del panel muestran el resultado de la clasificación, no la llegada de los tractores: las 10
+  // baterías del ejemplo se clasifican una a una entre la entrada del capítulo y su ancla, donde se para la
+  // presentación con el panel en 2/1/7; después los tractores las llevan a su destino (la simulación sigue hasta
+  // 'simEnd'). Mismo reparto que layout.js · SIM: 2 de servicio, 1 de coche eléctrico y 7 de reciclaje.
+  const CLASS_ORDER = ['recycle', 'service', 'recycle', 'second', 'recycle', 'recycle', 'service', 'recycle', 'recycle', 'recycle'];
+  const classAt = (p) => THREE.MathUtils.clamp((p - chSim.in) / Math.max(chSim.anchor - chSim.in, 1e-4), 0, 1);
+  const classified = { service: 0, second: 0, recycle: 0 };
+  const connAt = (p) => THREE.MathUtils.clamp((p - connFrom) / Math.max(chConn.anchor - connFrom, 1e-4), 0, 1);
   const story = { index: 0, vis: 1, local: 0, p: 0, sim: 0, route: null, conn: 0, reduced: false };
 
   // Ritmo de la GPU. Cuando la gráfica va justa, el navegador entrega a veces varios rAF seguidos (a 3-6 ms) y, sin
@@ -435,7 +499,13 @@ async function start3D() {
     }
 
     const shot = sample(tl, p, camera.aspect, camPos, camTgt);
-    if (!reduced) {
+    // ?debug: cámara manual (debug.setCamera) para revisar una zona sin depender del recorrido
+    if (debugCam) {
+      camPos.copy(debugCam.pos);
+      camTgt.copy(debugCam.target);
+      shot.fov = debugCam.fov;
+    }
+    if (!reduced && !debugCam) {
       // balanceo mínimo con el ratón, proporcional a la distancia al sujeto para no rozar objetos cercanos
       sway.lerp(swayTarget, 1 - Math.exp(-dt * 2));
       const dist = camPos.distanceTo(camTgt);
@@ -453,15 +523,18 @@ async function start3D() {
 
     // Estado narrativo: capítulo activo y procesos ligados al recorrido.
     current = cs.index;
-    const sim = reduced ? (current >= 4 ? 1 : 0) : THREE.MathUtils.clamp((p - tl.marks.sim) / (ch4.anchor - tl.marks.sim), 0, 1);
+    const sim = reduced ? (current >= CH.clasificacion ? 1 : 0) : simAt(p);
     const arrived = world.setSimulation(sim);
+    const nClass = Math.round((reduced ? (current >= CH.clasificacion ? 1 : 0) : classAt(p)) * CLASS_ORDER.length);
+    classified.service = classified.second = classified.recycle = 0;
+    for (let i = 0; i < nClass; i++) classified[CLASS_ORDER[i]]++;
     counts.forEach((el) => {
-      const v = String(arrived[el.dataset.route]);
+      const v = String(classified[el.dataset.route]);
       if (el.textContent !== v) el.textContent = v;
     });
-    const conn = reduced ? (current >= 6 ? 1 : 0) : THREE.MathUtils.clamp((p - tl.marks.conn) / (ch6.anchor - tl.marks.conn), 0, 1);
+    const conn = reduced ? (current >= CH.trazabilidad ? 1 : 0) : connAt(p);
     world.setConnections(conn);
-    passportSteps.forEach((li, i) => li.classList.toggle('is-on', current > 6 || (current === 6 && conn > i * 0.22)));
+    passportSteps.forEach((li, i) => li.classList.toggle('is-on', current > CH.trazabilidad || (current === CH.trazabilidad && conn > i * 0.22)));
     story.index = cs.index;
     story.vis = cs.vis;
     story.local = cs.local;
@@ -521,12 +594,14 @@ async function start3D() {
     }
     // mismas fórmulas que frame() sin movimiento reducido; las dos son funciones puras de su valor y warmUp() las
     // devuelve a 0
-    world.setSimulation(THREE.MathUtils.clamp((p - tl.marks.sim) / (ch4.anchor - tl.marks.sim), 0, 1));
-    world.setConnections(THREE.MathUtils.clamp((p - tl.marks.conn) / (ch6.anchor - tl.marks.conn), 0, 1));
+    world.setSimulation(simAt(p));
+    world.setConnections(connAt(p));
     composer.render(1 / 60);
   }
-  // portada, anclajes, arranque de la simulación y de las conexiones, y los tramos de vuelo largos
-  const WARMUP_POINTS = [0, ...tl.anchors.slice(1), tl.marks.sim, tl.marks.conn, 0.2525, 0.512, 0.668, 0.915];
+  // portada, anclajes, arranque de la simulación y de las conexiones, y el punto medio de los vuelos largos entre
+  // capítulos (los de más de una vigésima parte del recorrido): sale del recorrido, sin progresos escritos a mano
+  const midFlights = tl.chapters.slice(1).flatMap((c, i) => (c.in - tl.chapters[i].out > 0.05 ? [(c.in + tl.chapters[i].out) / 2] : []));
+  const WARMUP_POINTS = [0, ...tl.anchors.slice(1), simFrom, simTo, connFrom, ...midFlights];
   async function warmUp() {
     const fov = camera.fov;
     // solo el compositor dibuja a 64×36 y el lienzo no cambia de tamaño. Encogerlo bloquea unos 160 ms en la RTX 5090
@@ -680,6 +755,11 @@ async function start3D() {
       },
       freeze(time) {
         frozenTime = time;
+      },
+      // cámara manual: setCamera([x, y, z], [x, y, z], fov) o setCamera(null) para volver al recorrido
+      setCamera(pos, target, fov = 45) {
+        debugCam = pos ? { pos: new THREE.Vector3(...pos), target: new THREE.Vector3(...target), fov } : null;
+        needsRender = 6;
       },
       shot(p, aspect = camera.aspect) {
         const s = sample(tl, p, aspect, tmpP, tmpT);

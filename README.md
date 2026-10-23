@@ -1,6 +1,8 @@
 # EcoBat · Una batería. Más de una vida.
 
-Presentación web cinematográfica del proyecto académico **EcoBat** (sostenibilidad informática): identificación de baterías de coche con QR, registro de diagnósticos, clasificación validada por técnicos y trazabilidad hasta un destino documentado.
+Presentación web cinematográfica del proyecto académico **EcoBat** (sostenibilidad informática): gestión de baterías de coche de plomo (arranque) y de litio (coche eléctrico), con identificación por QR, registro de diagnósticos, clasificación validada por técnicos, reutilización, desmontaje, segunda vida, reciclaje y trazabilidad hasta un destino documentado.
+
+El mundo representa las instalaciones de un **gestor de baterías** en un polígono industrial al anochecer: recibe baterías ya sueltas de muchos talleres y desguaces de la ciudad (iluminada al fondo) y las envía a su destino; el plomo reciclado sale en camión hacia una fábrica de baterías nuevas.
 
 La presentación es un **mundo 3D en tiempo real** (Three.js) que la cámara recorre al hacer scroll (GSAP ScrollTrigger) en una sola trayectoria continua, con una coreografía propia en cada tramo: entra en cada estación a la altura de los bancos y pasa junto a los objetos. Es la adaptación del concepto *scroll-world* sin vídeo generado ni servicios de pago.
 
@@ -13,42 +15,46 @@ La presentación es un **mundo 3D en tiempo real** (Three.js) que la cámara rec
 
 | # | Escena | Titular |
 |---|--------|---------|
-| — | Vista general del mundo | EcoBat · Una batería. Más de una vida. |
-| 1 | Depósito de recogida y batería protagonista | ¿Aquí termina todo? |
-| 2 | Taller abierto en sección, lector QR y ficha digital | Ahora tiene historia. |
-| 3 | Laboratorio de diagnóstico | Medir antes de decidir. |
-| 4 | Cruce con tres rutas (servicio, evaluación de segunda vida, reciclaje) y simulación hipotética 2 / 1 / 7 | Cada batería, su camino. |
-| 5 | Gestor autorizado y materiales separados | Los materiales siguen. |
-| 6 | Centro de trazabilidad con pasaporte y conexiones | Todo queda conectado. |
-| — | Cierre con QR a esta web | Conocer su estado. Documentar su destino. |
+| — | Vista general del polígono con la ciudad al fondo | EcoBat · Una batería. Más de una vida. |
+| 1 | Recogida: camión de recogida, carretilla que descarga los palés y embalaje de la batería de coche eléctrico | ¿Aquí termina todo? |
+| 2 | Identificación y diagnóstico: puesto de etiquetado con QR, ficha digital y comprobador | Ahora tiene historia. |
+| 3 | Clasificación en el cruce y tres tractores de arrastre con la simulación hipotética 2 / 1 / 7 | Cada batería, su camino. |
+| 4 | Reutilización: limpieza, reparación, carga, nueva comprobación y muelle de expedición | Si funciona, sigue. |
+| 5 | Desmontaje de baterías de coche eléctrico por técnicos de alta tensión | Se abre por módulos. |
+| 6 | Segunda vida: contenedor de almacenamiento estacionario bajo la marquesina solar | Otra vida, solo con pruebas. |
+| 7 | Reciclaje de plomo-ácido en siete etapas, con lingotes y granza a la salida | Los materiales siguen. |
+| 8 | Centro de trazabilidad con pasaporte y conexiones con las siete zonas | Todo queda conectado. |
+| — | Cierre: el camión de lingotes y granza llega a la fábrica de baterías nuevas; QR a esta web | Conocer su estado. Documentar su destino. |
 
-Anexos (botón o tecla `A`): ocho pestañas con datos reales, citas y fuentes numeradas. Arquitectura propuesta con versiones y licencias, calendario (plan de ocho semanas del equipo y fechas del Reglamento (UE) 2023/1542), presupuesto con precios consultados, indicadores con referencias reales, ODS 9/12/13 con sus indicadores oficiales, datos de referencia (composición, pesos, tensiones, recogida y reciclaje, energía y CO2, peligros), normativa, seguridad y limitaciones, y las 121 fuentes. Los datos reales llevan una cita `[n]` que abre su fuente; lo que no tiene datos reales se rotula como ejemplo o como decisión del equipo.
+Anexos (botón o tecla `A`): ocho pestañas con datos reales, citas y fuentes numeradas. Arquitectura propuesta con versiones y licencias, calendario (plan de ocho semanas del equipo y fechas del Reglamento (UE) 2023/1542), presupuesto con precios consultados, indicadores con referencias reales, ODS 9/12/13 con sus indicadores oficiales, datos de referencia (composición, pesos, tensiones, recogida y reciclaje, energía y CO2, peligros), normativa, seguridad y limitaciones, y las 127 fuentes. Los datos reales llevan una cita `[n]` que abre su fuente; lo que no tiene datos reales se rotula como ejemplo o como decisión del equipo.
 
 ## Recorrido de la cámara
 
 | Tramo | Movimiento |
 |-------|------------|
-| Apertura | Vista del conjunto; descenso en espiral sobre el depósito hasta la batería |
-| 1 · Recogida | Dentro del patio: aproximación a la carcasa y a la etiqueta QR, con la carretilla en plano medio y el taller al fondo |
-| 1 → 2 | Rodea la carcasa, cruza el agua y entra en el taller por el frente abierto a la altura del banco, a menos de 2 m del brazo del elevador, hasta el lector QR |
-| 2 → 3 | Salida lateral con el pilar del frente en primer plano; llegada al laboratorio por su fachada |
-| 3 · Diagnóstico | A la altura del banco, desplazamiento lateral: bornes, después sondas y por último la pantalla del comprobador |
-| 3 → 4 | Grúa atrás y arriba sobre el laboratorio, junto a la cola de baterías de la rampa, hasta revelar las tres rutas y sus destinos |
-| 4 → 5 | Descenso siguiendo la ruta C y su puente; la cámara sigue la cinta a baja altura hasta la boca de la trituradora |
-| 5 · Reciclaje | Entre la cinta y los contenedores de materiales separados |
-| 5 → 6 | Subida por el puente largo hasta la plaza |
-| 6 · Trazabilidad | Acercamiento al pasaporte; después, retirada amplia con las conexiones hacia todas las estaciones |
+| Apertura | El polígono entero con la ciudad iluminada al fondo; descenso en espiral hacia la recogida |
+| 1 · Recogida | El camión con las puertas abiertas, la carretilla descargando el palé, el embalaje y el personal de muelle |
+| 1 → 2 | Vuelo bajo junto al frente de la nave de reutilización hasta el laboratorio |
+| 2 · Identificación | A la altura de los ojos: puesto de etiquetado, banco del comprobador y ficha digital junto a la esfera de 12,6 V |
+| 2 → 3 | Salida por el frente del laboratorio y ascenso que revela el cruce y sus tres tractores |
+| 3 · Clasificación | Los tractores salen escalonados y la cámara acompaña al de reutilización hasta la nave |
+| 4 · Reutilización | La nave entera y después la línea de bancos y el muelle de expedición a la altura de los ojos |
+| 4 → 5 → 6 | Vuelo alto al este hasta el puesto de alta tensión (a través del cristal) y subida a la isla de segunda vida |
+| 6 → 7 | Vuelta al sur sobre el cruce y descenso por el puente del sureste hasta la planta |
+| 7 · Reciclaje | Desulfuración, fundición, refino y colada; al final, lingotes y big bags de granza |
+| 7 → 8 | Subida por el puente largo hasta la plaza del pasaporte |
+| 8 → cierre | Retirada amplia con las conexiones sobre todo el polígono; el camión de lingotes sale hacia la fábrica |
 
 Cómo funciona (`src/camera.js`): posición y mirada siguen dos curvas Catmull-Rom centrípetas con los mismos nudos. Cada nudo fija dónde cae el sujeto en pantalla (en panorámico deja el tercio izquierdo al texto; en vertical, la mitad inferior), la focal y la velocidad relativa. El horizonte siempre queda nivelado. La longitud del scroll se reparte según el esfuerzo visual de cada tramo (metros recorridos y giro de la mirada), así la velocidad cambia de forma continua y no hay frenadas entre capítulos. La cámara sigue al scroll con un muelle de amortiguamiento crítico (0,26 s) y se queda quieta cuando el scroll para.
 
-Movimiento ambiental, solo mientras su capítulo está cerca: escaneo breve del QR y ficha que se rellena en el taller; curva, aguja, barras y traza del comprobador en el laboratorio; rosa de rutas y simulación 2 / 1 / 7 en el cruce; rodillos, tacos y baterías de la cinta, virutas y pantallas de registro en el reciclaje; línea de tiempo del pasaporte y gráficas en el centro; pulso de luz por las trazas.
+Movimiento ambiental, solo mientras su capítulo está cerca: descarga del camión de recogida con la carretilla; etiqueta, lectura del QR y ficha que se rellena en el laboratorio, con la curva, la aguja y las barras del comprobador; rosa de rutas y tres tractores en el cruce; batería que pasa por la línea de reutilización y cargadores que terminan; grúa que saca un módulo del paquete abierto; pantalla del almacenamiento de segunda vida; cinta, lingoteras y pantallas en el reciclaje; red de trazabilidad y pasaporte en el centro; camión de lingotes hacia la fábrica en el cierre.
 
 ## Controles para presentar
 
 | Acción | Teclas / control |
 |--------|------------------|
 | Siguiente / anterior capítulo | `→` `↓` `Espacio` `AvPág` · `←` `↑` `RePág` (sirve un mando de presentaciones). Las pulsaciones seguidas encadenan el vuelo sin frenar; la rueda lo cancela |
-| Ir a un capítulo | `1`–`6` o la barra inferior (a dos o más capítulos de distancia, fundido breve y corte) |
+| Ir a un capítulo | `1`–`8` o la barra inferior (a dos o más capítulos de distancia, fundido breve y corte) |
 | Portada / cierre | `Inicio` / `Fin` |
 | Pantalla completa | `F` o botón |
 | Anexos | `A` o botón; `Esc` cierra |
@@ -75,11 +81,13 @@ El build usa rutas relativas (`base: './'`), así que `dist/` funciona en GitHub
 index.html                 Documento y contenedores
 src/main.js                Render, posprocesado, scroll, navegación y bucle
 src/camera.js              Coreografía: nudos de cámara, reparto del scroll y encuadre
-src/world/layout.js        Estaciones, plataformas, puentes, trazas y simulación del capítulo 4
+src/world/layout.js        Estaciones, plataformas, puentes, trazas, accesos del polígono y simulación del capítulo 3
 src/world/world.js         Montaje del mundo, trazas apoyadas en suelos y tableros, simulación y conexiones
 src/world/edges.js         Islas, acantilados, puentes, agua, vegetación y balizas
-src/world/stations/        Depósito, taller, laboratorio, cruce, reciclaje y centro (un módulo cada una)
-src/world/kit.js           Materiales y piezas reutilizables: batería, edificio en sección, coche...
+src/world/chapters.js      Índices de los capítulos (CH) que usan la cámara, las estaciones y el bucle
+src/world/actors.js        Personas, camiones, carretilla, tractores, palés, paquetes de litio y contenedor de almacenamiento
+src/world/stations/        Recogida, reutilización, laboratorio, cruce (con desmontaje y segunda vida), reciclaje, centro y entorno
+src/world/kit.js           Materiales y piezas reutilizables: batería, edificio en sección, fusión de lo estático...
 src/world/pbr.js           Texturas PBR procedurales (hormigón, roca, metal cepillado, plástico)
 src/world/textures.js      Texturas dibujadas en canvas y pantallas vivas
 src/content.js             Textos de los capítulos y de los anexos, con las citas [n]
@@ -88,7 +96,26 @@ src/ui.js                  Capas HTML, controles, anexos y vista estática
 public/                    Favicon e ilustración de referencia (vista estática)
 ```
 
+## Versión 2: comprobaciones (23/10/2026)
+
+Build de producción servido en local, Chrome sin ventana con ANGLE D3D11. La GPU y los tirones se midieron en la integrada de referencia (Radeon del Ryzen 9 9950X3D, 2 CU), igual que en la versión anterior.
+
+| Comprobación | Resultado |
+|--------------|-----------|
+| Pruebas y build | `npm test`: 99 de 99. `vite build` sin errores |
+| GPU por ancla, integrada (mediana) | Portada 23,9 ms · Recogida 30,8 · Identificación 36,0 · Clasificación 30,4 · Reutilización 27,3 · Desmontaje 26,8 · Segunda vida 20,0 · Reciclaje 24,7 · Trazabilidad 27,6 · Cierre 20,6 (objetivo: 45 ms o menos) |
+| Tirones tras el velo, integrada | 0 fotogramas de más de 120 ms en un recorrido completo (rueda rápida, lenta y hacia atrás, y teclas); intervalo máximo entre rAF de 66 ms |
+| Carga hasta la presentación lista, integrada | 3,56 s (3,31 s en la primera versión) |
+| Escena | 848 000 triángulos en total (880 000 en la primera versión); personas, vehículos y entorno reutilizan los materiales del mundo, así que los programas de sombreado siguen siendo 104 |
+| Holgura de la cámara | Nunca a menos de 1,315 m de un sólido, incluido el balanceo con el ratón (0 violaciones con un límite de 1,2 m) |
+| Giros | 76,8° por pantalla como máximo, en los tránsitos; 55° como máximo en las ventanas de lectura |
+| Luces por fragmento | `checkLights()`: 0 violaciones en los 14 encuadres y 0 uniformes distintos de three |
+| Consola | Sin errores ni avisos, salvo los X4122 del compilador HLSL que imprime three con `?debug` |
+| Encuadres revisados | Las 10 anclas a 1440×810, 1280×720 y 390×844; entrada y salida de cada ventana de lectura; 9 tránsitos; movimiento reducido; vista estática; las 8 pestañas de los anexos a 1440 y 390 px de ancho |
+
 ## Rendimiento
+
+Las cifras de esta sección son las de la primera versión, con seis capítulos.
 
 La presentación está pensada para ir con soltura también en una gráfica integrada, y se consigue **sin cambiar nada de lo que se ve**: ni geometría, ni materiales, ni luces, ni cámara, ni posprocesado. No hay ningún escalón automático de calidad (ni resolución menor, ni MSAA reducido, ni bloom apagado): en cualquier equipo se dibuja lo mismo.
 
@@ -154,20 +181,23 @@ El workflow `.github/workflows/deploy.yml` compila y publica en cada push a `mai
 ## Fidelidad al contenido académico
 
 - La clasificación la sugiere el software y la **valida personal técnico**.
-- La segunda vida está **condicionada a pruebas específicas**.
+- La segunda vida está **condicionada a pruebas específicas** y es la de los módulos de litio de coche eléctrico: una batería de arranque no está hecha para descargas profundas.
+- Reutilización (plomo), remanufacturación (litio que vuelve a un coche), segunda vida (litio en almacenamiento estacionario) y reciclaje son **rutas distintas** y no se cuentan dos veces.
+- En el reciclaje de plomo-ácido **no hay cobre**: salen lingotes de plomo, granza de polipropileno y el producto del electrolito (sulfato de sodio).
+- La ropa y la protección de las personas del mundo 3D son ilustrativas; las que tienen fuente (alta tensión, ácido y horno) se citan en Límites.
 - El ejemplo 2 / 1 / 7 sobre diez baterías y el 90 % de trazabilidad son **hipotéticos** y se etiquetan así: no hay datos publicados de ese reparto.
 - No se afirma que EcoBat reduzca emisiones o contaminación. Las cifras de energía y CO2 del reciclaje del plomo son datos publicados sobre el proceso industrial (estudios de la industria), no resultados del proyecto.
 - Los QR de las baterías del mundo 3D son decorativos. El QR del cierre es funcional y abre esta web.
 - Los registros de las pantallas del mundo 3D son **ejemplos del prototipo**, no mediciones, y las pantallas los rotulan como «ejemplo»: el código ECB-0427, los lotes, las fechas, las lecturas de prueba y los contadores; las curvas y gráficos sin cifras son ilustrativos. Sus valores se mantienen dentro de rangos con fuente (por ejemplo, 12,6 V tras 24 h de reposo en una batería inundada cargada, o 324 kg para 18 baterías de 18 kg). Son datos reales la tensión nominal de 12 V, la composición típica en masa (plomo 60 %, electrolito 30 % y plástico 7 %, aproximados), el código de residuo 16 06 01* y la clasificación de transporte UN 2794.
 - La batería de ejemplo no supera la prueba de carga (por debajo de 9,6 V) y por eso termina en el reciclaje, coherente con «Medir antes de decidir».
 - El monolito dice «Pasaporte EcoBat» y «Ejemplo · prototipo académico»: no es el pasaporte de baterías del Reglamento (UE) 2023/1542, que no se exige a las baterías de arranque de plomo (llevan QR, no pasaporte).
-- La ilustración `public/referencia-ecobat.png` es conceptual: se generó con la herramienta de imágenes de Codex como dirección artística. El mundo 3D está modelado con geometría procedural, sin modelos externos.
+- La imagen de la versión estática (`public/vista-ecobat.jpg`) es una captura del propio mundo 3D. Las referencias de la primera versión (`context/ref-*.png`) se generaron con la herramienta de imágenes de Codex como dirección artística. El mundo 3D está modelado con geometría procedural, sin modelos externos.
 
 ## Datos y fuentes
 
 La presentación separa lo que tiene datos reales de lo que es ejemplo:
 
-- **Dato real.** Todo número, fecha, nombre propio o afirmación factual que la web presenta como dato tiene detrás un hecho verificado de la investigación y sus fuentes. Los anexos citan cada dato real con un número `[n]` que abre la fuente (121 fuentes, consultadas el 21 y el 22 de octubre de 2026). Los textos del recorrido no llevan citas: sus fuentes están en la pestaña Datos.
+- **Dato real.** Todo número, fecha, nombre propio o afirmación factual que la web presenta como dato tiene detrás un hecho verificado de la investigación y sus fuentes. Los anexos citan cada dato real con un número `[n]` que abre la fuente (127 fuentes, consultadas del 21 al 23 de octubre de 2026). Los textos del recorrido no llevan citas: sus fuentes están en la pestaña Datos.
 - **Ejemplo o hipótesis.** Lo que no tiene datos reales se rotula y no se presenta como dato: el reparto 2 / 1 / 7 de diez baterías y el ejemplo del 90 % de trazabilidad; los registros de ejemplo del prototipo (el código ECB-0427, las fechas, los lotes y los resultados de prueba); y las decisiones del equipo (arquitectura, calendario de ocho semanas y partidas del presupuesto). La pestaña Fuentes explica cada ejemplo («Qué es real y qué es ejemplo en las pantallas 3D») con su valor de referencia real y su cita.
 - **Formulación prudente.** «Sin datos personales» es un principio de diseño, no una garantía legal. Las baterías de arranque de plomo llevan QR, no pasaporte. Las cifras con definiciones distintas no se mezclan (por ejemplo, el índice oficial de recogida de España y el porcentaje autodeclarado por el Acuerdo Voluntario del sector). No hay absolutos como «100 %» o «siempre», ni nombres de empresas o marcas salvo como fuente citada o dato verificado, ni afiliación afirmada con ninguna entidad.
 
@@ -181,7 +211,7 @@ node --test tests/content.test.mjs
 
 La prueba funciona sin navegador y comprueba que cada cita `[n]` existe en `src/sources.js`, que cada fuente se cita y que los números van por orden de primera aparición, que cada fuente tiene título, editor, fecha, URL `https` y tipo y que no hay fuentes duplicadas, que los textos del recorrido no llevan citas y que el reparto 2 / 1 / 7 y el ejemplo del 90 % siguen rotulados como ejemplos.
 
-Enlaces de las fuentes: `node -e "import('./src/sources.js').then(({sources})=>console.log(sources.map(s=>s.url).join('\n')))"` lista las 121 URL para pasarlas por un comprobador de enlaces. El 22-10-2026 ninguna estaba rota. EUR-Lex, tres páginas de comercios y, a veces, el registro de npm no responden con normalidad a las herramientas automáticas, y abren bien en un navegador.
+Enlaces de las fuentes: `node -e "import('./src/sources.js').then(({sources})=>console.log(sources.map(s=>s.url).join('\n')))"` lista las 127 URL para pasarlas por un comprobador de enlaces. El 22-10-2026 ninguna estaba rota. EUR-Lex, tres páginas de comercios y, a veces, el registro de npm no responden con normalidad a las herramientas automáticas, y abren bien en un navegador.
 
 Las capturas PNG de [`docs/evidencia/`](docs/evidencia/) se regeneraron el 22-10-2026 con estos textos. La grabación `recorrido-tramos.webm` es del 21-10-2026, anterior a los datos reales: las pantallas del mundo 3D que muestra tienen los valores y los rótulos de entonces.
 
@@ -189,7 +219,7 @@ Las capturas PNG de [`docs/evidencia/`](docs/evidencia/) se regeneraron el 22-10
 
 - Materiales PBR con mapas de color, rugosidad y relieve generados por código en `src/world/pbr.js`: hormigón con grano y juntas, roca con grietas, metal cepillado claro y oscuro, plástico satinado y caucho. Las UV se proyectan en coordenadas de mundo para que la escala sea coherente en todo el diorama.
 - La batería sigue `context/ref-bateria.png`, también en proporciones: carcasa grafito lisa y baja, zócalo con asideros, línea lima fina bajo la tapa, bornes de acero pulido, asa grafito con inserto lima y QR pequeño abajo a la derecha. Las baterías instanciadas tienen la misma silueta.
-- Cada estación tiene primer plano, plano medio y fondo con geometría de detalle: patio con jaulas, palés, carretilla y báscula; taller con coche eléctrico en el elevador, panel de herramientas y estanterías; laboratorio con comprobador, pinzas, lupa y pantallas; cruce con isletas plantadas y destinos; planta con cinta de rodillos, trituradora, transportador inclinado y contenedores; plaza con pasaporte y pantallas. Todo lo fijo se fusiona por fragmento y material (`bakeStatic`), así que el detalle apenas multiplica las llamadas de dibujo (la portada pasa de 237 a 594 por la partición en fragmentos; ver «Rendimiento»).
+- Cada estación tiene primer plano, plano medio y fondo con geometría de detalle: patio de recogida con camión, carretilla, jaulas, palés y báscula; laboratorio con puesto de etiquetado, comprobador, pinzas y pantallas; cruce con isletas plantadas y tres tractores de arrastre; nave de reutilización con bancos, estanterías de carga y muelle de expedición; puesto de alta tensión con el paquete abierto; contenedor de almacenamiento bajo la marquesina solar; planta de reciclaje en siete etapas; plaza con pasaporte y pantallas; y el entorno (orillas, calzadas, aparcamiento, ciudad y fábrica). Personas y vehículos se generan por código (`actors.js`), sin modelos externos. Todo lo fijo se fusiona por fragmento y material (`bakeStatic`), así que el detalle apenas multiplica las llamadas de dibujo (la portada pasa de 237 a 594 por la partición en fragmentos; ver «Rendimiento»).
 - El bloom solo alcanza las luces (umbral alto): no hay desenfoque de maqueta ni velos que oculten la geometría. Hay sombras de contacto, focos cálidos en los interiores, roca estratificada con luces de pie y reflejos cálidos en el agua.
 - Las trazas luminosas se apoyan en el suelo y en los tableros de los puentes, con puntas de flecha planas inclinadas con cada rampa.
 - Las referencias `context/ref-*.png` se generaron con IA mediante Codex. Se usaron como guía artística: no se aplican como texturas.

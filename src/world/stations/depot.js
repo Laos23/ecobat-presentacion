@@ -1,9 +1,14 @@
 import * as THREE from 'three';
+import { CH } from '../chapters.js';
+import { ACCESS } from '../layout.js';
+import { makePerson, makeTruck, makeForklift, makePallet, makeEVCrate } from '../actors.js';
 
-// 1 · Depósito de recogida (estación 01): patio de acopio ordenado alrededor de la batería protagonista.
-// Oeste: caseta de recepción, báscula (origen de la traza) y bahía de carga. Suroeste: jaulas de rejilla.
-// Centro: calles de palés y la carretilla llevando el lote recién pesado. Norte: almacén cubierto con
-// estantería. Este: contenedor cerrado y bahía de salida junto al puente del taller.
+// 1 · Recogida (isla s1): el patio del gestor de baterías, ordenado alrededor de la batería protagonista.
+// Oeste: franja de descarga libre para el camión de recogida, que llega por la calzada oeste con baterías de
+// muchos talleres y desguaces (ACCESS.west); la carretilla saca un palé de baterías de arranque por la trasera y
+// junto al camión queda la batería de coche eléctrico en su embalaje. Noroeste: caseta de recepción y mástil de
+// iluminación. Suroeste: báscula (origen de la traza) y jaulas de rejilla. Centro: calles de palés. Norte:
+// almacén cubierto con estantería. Este: contenedor cerrado y bahía de salida junto al puente hacia el laboratorio.
 // Referencias: context/EcoBat-scroll-world-referencia.png (01), context/ref-bateria.png, context/ref-borde-isla-noche.png.
 export function buildDepot(ctx) {
   const { K, M, T, STATIONS } = ctx;
@@ -52,8 +57,7 @@ export function buildDepot(ctx) {
     diamond: [0, 224, 128, 128],
     fire: [128, 224, 128, 128],
     spill: [256, 224, 256, 128],
-    taller: [512, 224, 256, 128],
-    charge: [768, 224, 256, 128],
+    lab: [512, 224, 512, 128],
     fA: [0, 352, 128, 128],
     fB: [128, 352, 128, 128],
     fC: [256, 352, 128, 128],
@@ -151,33 +155,19 @@ export function buildDepot(ctx) {
     text('KIT', CELLS.spill[0] + 128, CELLS.spill[1] + 46, 46, PAL.amber);
     text('ANTIDERRAMES', CELLS.spill[0] + 128, CELLS.spill[1] + 92, 26, PAL.ivory, 700);
     {
-      const c = CELLS.taller;
+      // rótulo de la cabeza del puente: las baterías siguen hacia el laboratorio (identificación y diagnóstico);
+      // «LABORATORIO» a 44 px mide unos 330 px y termina antes de la cola de la flecha (x = 420)
+      const c = CELLS.lab;
       plate(c, '#1b1e20', PAL.ivory);
-      // «Taller» (129 px) termina antes de la cola de la flecha (x = 176); «TALLER» (186 px) la pisaba
-      text('Taller', c[0] + 108, c[1] + 64, 46, PAL.ivory);
+      text('LABORATORIO', c[0] + 218, c[1] + 64, 44, PAL.ivory);
       g.fillStyle = PAL.lime;
       g.beginPath();
-      g.moveTo(c[0] + 196, c[1] + 44);
-      g.lineTo(c[0] + 236, c[1] + 64);
-      g.lineTo(c[0] + 196, c[1] + 84);
+      g.moveTo(c[0] + 440, c[1] + 42);
+      g.lineTo(c[0] + 484, c[1] + 64);
+      g.lineTo(c[0] + 440, c[1] + 86);
       g.closePath();
       g.fill();
-      g.fillRect(c[0] + 176, c[1] + 58, 24, 12);
-    }
-    {
-      const c = CELLS.charge;
-      plate(c, '#1b1e20', PAL.amber);
-      g.fillStyle = PAL.amber;
-      g.beginPath();
-      g.moveTo(c[0] + 52, c[1] + 24);
-      g.lineTo(c[0] + 30, c[1] + 70);
-      g.lineTo(c[0] + 50, c[1] + 70);
-      g.lineTo(c[0] + 40, c[1] + 104);
-      g.lineTo(c[0] + 74, c[1] + 54);
-      g.lineTo(c[0] + 54, c[1] + 54);
-      g.closePath();
-      g.fill();
-      text('CARGA', c[0] + 160, c[1] + 64, 40, PAL.ivory);
+      g.fillRect(c[0] + 420, c[1] + 58, 24, 12);
     }
     // placa de normas junto a la ventanilla sur: solo normas con base en el anexo (seguridad y transporte ADR)
     {
@@ -495,97 +485,11 @@ export function buildDepot(ctx) {
   }
 
   // ======================================================================
-  // Carretilla eléctrica llevando el lote recién pesado desde la báscula hasta su hueco en la calle B
-  // (horquillas a altura de traslado; plano medio del encuadre de lectura, a la izquierda de la protagonista)
-  // ======================================================================
-  const beaconMat = new THREE.MeshStandardMaterial({ color: '#E5AE50', emissive: '#E5AE50', emissiveIntensity: 1.1, roughness: 0.35 });
-  {
-    const forkY = 0.15;
-    const g = new THREE.Group();
-    g.add(K.rbox(1.1, 0.72, 1.85, M.amberMatte, 0, 0.2, -0.05, 0.08));
-    g.add(K.rbox(1.12, 0.8, 0.52, M.graphite, 0, 0.16, -1.05, 0.14));
-    g.add(K.rbox(0.96, 0.1, 0.95, M.graphite, 0, 0.92, -0.4, 0.04));
-    g.add(K.rbox(0.48, 0.1, 0.44, M.graphite, 0, 1.02, -0.45, 0.04));
-    const back = K.rbox(0.48, 0.5, 0.09, M.graphite, 0, 0, 0, 0.04);
-    back.position.set(0, 1.12, -0.7);
-    back.rotation.x = -0.12;
-    g.add(back);
-    g.add(K.rbox(0.62, 0.3, 0.3, M.graphite, 0, 0.92, 0.5, 0.05));
-    const col = K.cyl(0.03, 0.03, 0.45, M.darkSteel, 8);
-    col.position.set(0, 1.4, 0.44);
-    col.rotation.x = -0.55;
-    g.add(col);
-    const wheel = new THREE.Mesh(K.geo('depFlWheel', () => new THREE.TorusGeometry(0.16, 0.018, 6, 20)), M.rubber);
-    wheel.position.set(0, 1.58, 0.33);
-    wheel.rotation.x = Math.PI / 2 - 0.55;
-    g.add(wheel);
-    // guarda superior con lamas
-    [[-0.5, 0.62], [0.5, 0.62], [-0.5, -0.95], [0.5, -0.95]].forEach(([x, z]) => g.add(K.box(0.06, 1.18, 0.06, M.darkSteel, x, 0.92, z)));
-    [0.62, -0.95].forEach((z) => g.add(K.box(1.06, 0.05, 0.06, M.darkSteel, 0, 2.08, z)));
-    [-0.5, 0.5].forEach((x) => g.add(K.box(0.06, 0.05, 1.63, M.darkSteel, x, 2.08, -0.165)));
-    for (let i = 0; i < 4; i++) g.add(K.box(0.04, 0.03, 1.55, M.darkSteel, -0.3 + i * 0.2, 2.1, -0.165));
-    // baliza ámbar (animada) y faros de trabajo
-    const bcn = K.cyl(0.055, 0.065, 0.12, beaconMat, 14);
-    bcn.position.set(0.36, 2.2, -0.86);
-    g.add(bcn);
-    g.add(cylAt(0.075, 0.075, 0.035, M.graphite, 14, 0.36, 2.12, -0.86));
-    [-0.5, 0.5].forEach((x) => {
-      g.add(K.box(0.1, 0.07, 0.05, M.graphite, x, 1.95, 0.68));
-      g.add(K.box(0.08, 0.045, 0.01, M.warmGlow, x, 1.962, 0.706));
-    });
-    [-0.42, 0.42].forEach((x) => g.add(K.box(0.12, 0.05, 0.02, M.amberGlow, x, 0.74, -1.32)));
-    // ruedas motrices delante y directrices detrás
-    [[-0.5, 0.55, 0.27, 0.2], [0.5, 0.55, 0.27, 0.2], [-0.44, -0.85, 0.22, 0.16], [0.44, -0.85, 0.22, 0.16]].forEach(([x, z, r, w]) => {
-      const t = K.cyl(r, r, w, M.rubber, 20);
-      t.rotation.z = Math.PI / 2;
-      t.position.set(x, r, z);
-      g.add(t);
-      const h = K.cyl(r * 0.55, r * 0.55, w + 0.02, M.steel, 14);
-      h.rotation.z = Math.PI / 2;
-      h.position.set(x, r, z);
-      g.add(h);
-    });
-    g.add(K.box(0.3, 0.04, 0.2, M.darkSteel, -0.62, 0.32, 0.15));
-    // mástil dúplex: canales exteriores fijos, interiores elevados, cadenas y cilindro de elevación
-    const outerTop = 2.4;
-    const innerBot = Math.max(0.12, forkY - 1.1);
-    const innerTop = innerBot + 2.3;
-    [-0.36, 0.36].forEach((x) => {
-      g.add(K.box(0.1, outerTop - 0.1, 0.12, M.darkSteel, x, 0.1, 0.98));
-      g.add(K.box(0.075, 2.3, 0.09, M.steel, x * 0.8, innerBot, 1.03));
-      g.add(K.box(0.03, innerTop - forkY - 0.4, 0.02, M.panel, x * 0.42, forkY + 0.36, 1.07));
-    });
-    g.add(K.box(0.82, 0.08, 0.1, M.darkSteel, 0, outerTop - 0.08, 0.98));
-    g.add(K.box(0.66, 0.08, 0.09, M.steel, 0, innerTop - 0.08, 1.03));
-    g.add(cylAt(0.045, 0.045, outerTop - 0.2, M.steel, 10, 0, 0.15, 0.9));
-    // tablero portahorquillas, respaldo de carga y horquillas
-    g.add(K.box(0.95, 0.42, 0.06, M.darkSteel, 0, forkY + 0.04, 1.12));
-    [-0.45, 0.45].forEach((x) => g.add(K.box(0.05, 0.72, 0.04, M.darkSteel, x, forkY + 0.46, 1.12)));
-    g.add(K.box(0.95, 0.05, 0.04, M.darkSteel, 0, forkY + 1.16, 1.12));
-    [-0.15, 0.15].forEach((x) => g.add(K.box(0.03, 0.7, 0.03, M.darkSteel, x, forkY + 0.46, 1.12)));
-    [-0.26, 0.26].forEach((x) => {
-      g.add(K.box(0.1, 0.42, 0.045, M.darkSteel, x, forkY + 0.04, 1.17));
-      g.add(K.box(0.1, 0.04, 1.1, M.darkSteel, x, forkY, 1.72));
-    });
-    // posición: entre la bahía D y la traza, rumbo NE hacia la cabeza del puente con un palé para el taller;
-    // desde la cámara de lectura queda en plano medio a la izquierda de la protagonista, sobre el titular
-    const FX = 6.5;
-    const FZ = 2.2;
-    const FR = 2.36;
-    place(g, FX, FZ, FR, 0, 'carretilla');
-    const ff = rot(FX, FZ, FR);
-    shadow(...ff(0, -0.15), 1.5, 2.9, FR);
-    // palé en las horquillas: las horquillas entran por las aberturas entre tacos
-    const [px, pz] = ff(0, 1.72);
-    loadedPallet(px, pz, FR, 2, forkY - 0.03);
-    shadow(px, pz, 1.4, 1.2, FR);
-  }
-
-  // ======================================================================
   // Centro: calles de palés A y B con baterías, contornos y letras pintadas
   // ======================================================================
-  const rowsA = { x0: -3.6, z: -3.9, n: 5 };
-  const rowsB = { x0: -1.8, z: -0.4, n: 4 };
+  // (v2) las dos calles empiezan en x = -0,25: letras, postes y contornos quedan al este de la franja de descarga
+  const rowsA = { x0: -0.25, z: -3.9, n: 5 };
+  const rowsB = { x0: -0.25, z: -0.4, n: 4 };
   // capas por palé (norte, sur) de oeste a este; 0 = palé vacío, -1 = hueco libre (destino de la carretilla)
   [[rowsA, 'A', [2, 1, 2, 3, 1, 2, 2, 2, 1, 0]], [rowsB, 'B', [1, 2, 2, -1, 2, 2, 1, 1]]].forEach(([r, letter, lay]) => {
     for (let i = 0; i < r.n; i++) {
@@ -605,9 +509,12 @@ export function buildDepot(ctx) {
   });
 
   // ======================================================================
-  // Oeste: caseta de recepción con ventanilla iluminada y marquesina
+  // Noroeste: caseta de recepción con ventanilla iluminada y marquesina (v2: al norte de la franja de descarga;
+  // su fachada sur da al camión)
   // (marco local: +z = ventanilla hacia el patio (este), −x = fachada sur, la que ve la cámara de lectura)
   // ======================================================================
+  const KX = -7.2;
+  const KZ = -6.4;
   {
     const g = new THREE.Group();
     const w = 3.2;
@@ -710,15 +617,15 @@ export function buildDepot(ctx) {
     g.add(rs2);
     g.add(K.box(w, 0.035, 0.08, M.warmGlow, 0, b + h - 0.05, d / 2 + 1.2));
     [-1, 1].forEach((s) => g.add(K.box(0.07, h, 0.07, M.darkSteel, s * (w / 2 + 0.12), b, d / 2 + 1.26)));
-    place(g, -7.9, 1.0, Math.PI / 2, 0, 'caseta');
-    shadow(-7.5, 1.0, 4.4, 4.0);
+    place(g, KX, KZ, Math.PI / 2, 0, 'caseta');
+    shadow(KX + 0.4, KZ, 4.0, 4.4);
   }
 
-  // mástil de iluminación del patio tras la caseta: verticalidad en el fondo izquierdo del encuadre
-  // de lectura y luz cálida real sobre la recepción (segunda luz nueva de la estación)
+  // mástil de iluminación entre la caseta y la franja de descarga: su foco cálido (luz que ya existía, ahora
+  // reorientada) alumbra la trasera del camión y la carretilla
   {
     const MX = -10.4;
-    const MZ = 0.9;
+    const MZ = -4.4;
     const g = new THREE.Group();
     g.add(K.box(0.7, 0.25, 0.7, M.concreteLight, 0, 0, 0));
     g.add(K.box(0.36, 0.02, 0.36, M.darkSteel, 0, 0.25, 0));
@@ -735,19 +642,20 @@ export function buildDepot(ctx) {
       head.rotation.set(0.5, Math.PI / 2, 0, 'YXZ');
       g.add(head);
     });
-    place(g, MX, MZ, 0, 0, 'mastil');
+    // proyectores hacia el sur (la franja de descarga)
+    place(g, MX, MZ, -Math.PI / 2, 0, 'mastil');
     shadow(MX, MZ, 0.9, 0.9);
     const flood = new THREE.SpotLight('#ffc98a', 70, 17, 0.78, 0.6, 1.6);
-    flood.position.set(s1.x + MX + 0.4, y0 + 5.3, s1.z + MZ);
-    flood.target.position.set(s1.x - 5.6, y0, s1.z + 2.6);
+    flood.position.set(s1.x + MX, y0 + 5.3, s1.z + MZ + 0.4);
+    flood.target.position.set(s1.x - 9.6, y0, s1.z + 0.8);
     ctx.add(flood);
     ctx.add(flood.target);
   }
-  bollard(-4.95, -0.85);
-  bollard(-4.95, 2.85);
-  extinguisher(-5.15, -1.55, Math.PI / 2);
-  // punto de entrega pintado ante la ventanilla
-  decal('fBat', -5.05, 1.0, Math.PI / 2, 0.75, 0.75);
+  // bolardos, extintor y punto de entrega pintado ante la ventanilla (al este de la caseta)
+  bollard(KX + 2.95, KZ - 1.85);
+  bollard(KX + 2.95, KZ + 1.85);
+  extinguisher(KX + 2.75, KZ - 2.55, Math.PI / 2);
+  decal('fBat', KX + 2.85, KZ, Math.PI / 2, 0.75, 0.75);
 
   // ======================================================================
   // Báscula de recepción con visor de patio: el lote se pesa mientras la cámara se acerca y la lectura
@@ -757,8 +665,8 @@ export function buildDepot(ctx) {
   const WEIGHT = 324;
   const weigh = (story) => {
     if (!story) return 0;
-    if (story.reduced || story.index > 1) return 1;
-    if (story.index < 1) return 0;
+    if (story.reduced || story.index > CH.recogida) return 1;
+    if (story.index < CH.recogida) return 0;
     const u = Math.min(1, Math.max(0, (story.local + 0.75) / 0.75));
     return u * u * (3 - 2 * u);
   };
@@ -793,11 +701,12 @@ export function buildDepot(ctx) {
     g.fillRect(18, 146, Math.round((w - 36) * k), 5);
   }, 8);
   // La traza luminosa nace bajo la báscula (-6, 4): la batería empieza su recorrido al pesarse en recepción.
+  // (v2) Báscula girada con las rampas al este y al oeste, justo al sur de la franja de descarga.
   {
     const SX = -6.4;
-    const SZ = 3.8;
+    const SZ = 4.45;
     const g = new THREE.Group();
-    // plataforma de 1,5 × 1,5 m y 0,2 m de alto con rampas norte y sur (el tubo de la traza sale por su costado este)
+    // plataforma de 1,5 × 1,5 m y 0,2 m de alto con rampas este y oeste (la traza sale bajo la rampa este)
     g.add(K.box(1.56, 0.17, 1.56, M.darkSteel, 0, 0, 0));
     g.add(K.rbox(1.5, 0.05, 1.5, M.steel, 0, 0.15, 0, 0.012));
     for (let i = 0; i < 7; i++) g.add(K.box(1.4, 0.006, 0.02, M.darkSteel, 0, 0.2, -0.6 + i * 0.2));
@@ -807,8 +716,7 @@ export function buildDepot(ctx) {
       ramp.rotation.x = s * 0.32;
       g.add(ramp);
     });
-    // columna con terminal y visor de patio (1,3 × 0,54 m) girado hacia la cámara de lectura; queda a la
-    // izquierda de la caseta en el encuadre, sobre fondo oscuro, sin tapar su fachada sur
+    // columna con terminal y visor de patio (1,3 × 0,54 m) al sur de la plataforma, mirando al sur
     const col = new THREE.Group();
     col.add(K.box(0.34, 0.02, 0.34, M.darkSteel, 0, 0, 0));
     col.add(K.box(0.1, 2.12, 0.1, M.graphite, 0, 0, 0));
@@ -821,11 +729,11 @@ export function buildDepot(ctx) {
     const ks = sign('kg', 0.22, 0.11);
     ks.position.set(0, 1.84, 0.055);
     col.add(ks);
-    col.position.set(-1.15, 0, 0.7);
-    col.rotation.y = 1.05;
+    col.position.set(-1.15, 0, -0.5);
+    col.rotation.y = 0.1 - Math.PI / 2;
     g.add(col);
-    place(g, SX, SZ, 0, 0, 'bascula');
-    outline(SX, SZ, 1.95, 3.2, 0, 0.08, M.amberMatte);
+    place(g, SX, SZ, Math.PI / 2, 0, 'bascula');
+    outline(SX, SZ, 3.2, 1.75, 0, 0.08, M.amberMatte);
     // lote entrante: tres capas completas (18 baterías) sobre la plataforma
     loadedPallet(SX, SZ, 0, 3, 0.2);
   }
@@ -833,7 +741,7 @@ export function buildDepot(ctx) {
   let shownK = -1;
   let shownT = -1;
   ctx.anim((t, dt, story) => {
-    if (story.index > 2) return;
+    if (story.index > CH.identificacion) return;
     const k = Math.round(weigh(story) * 1000);
     if (k === shownK || (t > shownT && t - shownT < 0.125)) return;
     shownK = k;
@@ -904,7 +812,7 @@ export function buildDepot(ctx) {
     ramp.position.set(0, 0.09, L / 2 + 0.42);
     ramp.rotation.x = 0.17;
     g.add(ramp);
-    // junto a la salida: las baterías esperan cerradas antes de cruzar al taller (puertas hacia el patio);
+    // junto a la salida: las baterías esperan cerradas antes de cruzar hacia el laboratorio (puertas hacia el patio);
     // deja libre la visual hacia la carretilla desde la cámara de lectura y de salida
     const cx = 7.9;
     const cz = -5.4;
@@ -916,10 +824,11 @@ export function buildDepot(ctx) {
     extinguisher(...f(W2 / 2 + 0.45, L / 2 - 0.45), ry);
   }
 
-  // jaulas de rejilla en dos filas, alguna apilada, con contorno de zona C
+  // jaulas de rejilla en dos filas, alguna apilada, con contorno de zona C (v2: 0,9 m al este y 0,7 m al sur,
+  // para dejar sitio a la báscula)
   {
-    const cx = -3.6;
-    const cz = 7.0;
+    const cx = -2.7;
+    const cz = 7.7;
     const ry = -0.42;
     const f = rot(cx, cz, ry);
     // dos niveles de 2 × 2 por jaula; sobre las jaulas 1 y 4 va otra apilada (una vacía, de retorno)
@@ -933,7 +842,7 @@ export function buildDepot(ctx) {
     decal('fC', ...f(3.6, 0.1), ry, 0.9, 0.9);
     shadow(cx, cz, 6.0, 2.4, ry);
     signPost('C', ...f(2.9, 1.35), ry + 0.5, 0.42, 0.42, 1.9);
-    // kit antiderrames y sacos de absorbente junto a las jaulas
+    // kit antiderrames y sacos de absorbente: (v2) junto a la cuarentena de baterías dañadas, frente al sur
     const k = new THREE.Group();
     k.add(K.cabinet(M, { w: 0.9, h: 0.95, d: 0.55, drawers: 2, mat: M.amberMatte, top: M.graphite }));
     k.add(K.box(0.92, 0.5, 0.03, M.graphite, 0, 1.12, -0.3));
@@ -946,14 +855,13 @@ export function buildDepot(ctx) {
     broom.position.set(-0.55, 0.62, -0.18);
     broom.rotation.z = 0.18;
     k.add(broom);
-    const [kx, kz] = f(-3.55, 0.2);
-    place(k, kx, kz, ry + Math.PI / 2, 0, 'kit');
-    shadow(kx, kz, 1.6, 1.0, ry + Math.PI / 2);
+    place(k, -0.75, 2.5, 0, 0, 'kit');
+    shadow(-0.55, 2.45, 1.8, 0.8);
   }
 
-  // pila de palés vacíos contra la fachada norte de la caseta (se cambian por los que llegan a la báscula)
-  for (let i = 0; i < 5; i++) place(pallet(), -8.55 + (i % 2) * 0.03, -1.45, (i % 3) * 0.02, i * 0.145);
-  shadow(-8.55, -1.45, 1.5, 1.3);
+  // pila de palés vacíos al oeste de la báscula (se cambian por los que llegan a ella)
+  for (let i = 0; i < 5; i++) place(pallet(), -9.6 + (i % 2) * 0.03, 6.1, (i % 3) * 0.02, i * 0.145);
+  shadow(-9.6, 6.1, 1.5, 1.3);
 
   // cuarentena: baterías dañadas aisladas sobre cubetos de retención (bajos: quedan tras la protagonista
   // desde la cámara de lectura y ordenan el centro en el descenso)
@@ -987,7 +895,7 @@ export function buildDepot(ctx) {
   }
 
   // ======================================================================
-  // Este: bahía D de salida hacia el taller (jaulas y palés listos) con transpalet
+  // Este: bahía D de salida hacia el laboratorio (jaulas y palés listos) con transpalet
   // ======================================================================
   {
     const x = 7.0;
@@ -1020,42 +928,221 @@ export function buildDepot(ctx) {
     place(pj, ...f(-2.35, 0.2), ry + 0.5, 0, 'transpalet');
   }
 
-  // ======================================================================
-  // Oeste: bahía de carga de la carretilla eléctrica con calzos y poste (junto a la caseta; vacía mientras
-  // la carretilla trabaja en el patio)
-  // ======================================================================
-  {
-    const x = -7.0;
-    const z = -3.1;
-    const ry = Math.PI / 2;
-    const f = rot(x, z, ry);
-    outline(x, z, 1.7, 3.0, ry, 0.08, M.amberMatte);
-    [-0.45, 0.45].forEach((u) => {
-      const st = new THREE.Group();
-      st.add(K.rbox(0.5, 0.12, 0.16, M.rubber, 0, 0, 0, 0.03));
-      [-0.12, 0.12].forEach((k) => st.add(K.box(0.06, 0.122, 0.165, M.amberMatte, k, 0, 0)));
-      place(st, ...f(u, -1.05), ry, 0, 'calzo');
-    });
-    const post = new THREE.Group();
-    post.add(K.box(0.4, 0.04, 0.3, M.darkSteel, 0, 0, 0));
-    post.add(K.rbox(0.42, 1.3, 0.28, M.graphite, 0, 0.04, 0, 0.04));
-    post.add(K.box(0.2, 0.05, 0.01, M.limeLine, 0, 1.05, 0.145));
-    post.add(K.box(0.06, 0.06, 0.01, M.amberGlow, 0.12, 0.9, 0.145));
-    const coil = new THREE.Mesh(K.geo('depCoil', () => new THREE.TorusGeometry(0.14, 0.025, 6, 20)), M.rubber);
-    coil.position.set(0, 0.62, 0.17);
-    post.add(coil);
-    post.add(K.box(0.54, 0.29, 0.03, M.graphite, 0, 1.37, -0.02));
-    const cs = sign('charge', 0.5, 0.25);
-    cs.position.set(0, 1.515, 0);
-    post.add(cs);
-    place(post, ...f(0, -1.75), ry, 0, 'cargador');
-    decal('fArrow', ...f(0, 0.65), ry + Math.PI, 0.7, 0.7);
-  }
   // cabeza del puente: bolardos, rótulo y balizas del borde este
   bollard(11.4, -2.8);
   bollard(10.25, -6.25);
-  signPost('taller', 11.75, -1.3, -0.64, 0.7, 0.35, 2.1);
+  signPost('lab', 11.75, -1.3, -0.64, 1.0, 0.25, 2.1);
   [[11.5, 1.6], [10.7, 4.6], [9.7, -7.9]].forEach(([x, z]) => ctx.lamps.push({ x: s1.x + x, y: y0, z: s1.z + z }));
+
+  // ======================================================================
+  // v2 · Franja de descarga (oeste, x ∈ [-13, -2], z ∈ [-3,5, 3,5] locales, libre por contrato: ACCESS.west).
+  // El camión de recogida llega por la calzada oeste con baterías de muchos talleres y desguaces, se detiene con
+  // el morro al este y abre las puertas traseras; la carretilla (con su conductor) da la vuelta en la boca de la
+  // calzada, entra con las horquillas a la altura de la caja y saca un palé de baterías de arranque, que queda a
+  // media altura durante la ventana de lectura. Junto al camión, ya en el suelo, la batería de coche eléctrico en
+  // su embalaje (lo primero que se descarga: viaja junto a las puertas), y dos operarios de muelle.
+  // Rendimiento: lo que se mueve va compactado (una malla por material; userData.dynamic) y se construye en su pose
+  // final, la de la ventana de lectura, que es la que ven la fusión y los conjuntos de luces del fragmento s1. No
+  // proyecta sombra en el mapa (se genera una sola vez, en el primer fotograma): lleva su sombra de contacto.
+  // ======================================================================
+  // sombra de contacto difusa (la de la protagonista y la de los vehículos que se mueven): un único material
+  const blobMat = (() => {
+    const c = document.createElement('canvas');
+    c.width = 256;
+    c.height = 160;
+    const g = c.getContext('2d');
+    g.filter = 'blur(9px)';
+    g.fillStyle = 'rgba(0,0,0,0.8)';
+    g.beginPath();
+    g.roundRect(24, 24, 208, 112, 12);
+    g.fill();
+    return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), color: '#000000', transparent: true, depthWrite: false });
+  })();
+  const blob = (w, d, x = 0, y = 0.012, z = 0) => {
+    const b = new THREE.Mesh(K.geo('depBlob', () => new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), blobMat);
+    b.scale.set(w, 1, d);
+    b.position.set(x, y, z);
+    b.renderOrder = 1;
+    b.userData.noCollide = true;
+    return b;
+  };
+  const noCast = (g) => g.traverse((o) => o.isMesh && (o.castShadow = false));
+  {
+    const TX = -6.9; // centro del camión parado (local); morro al este
+    const TZ = -0.5;
+    const TRY = Math.PI / 2;
+    // el camión arranca en la calzada, 8 m dentro de la orilla
+    const T0 = ACCESS.west.shore.x - s1.x + 8;
+    const src = makeTruck(M, { kind: 'recogida', loaded: true });
+    const { cargo, doors, doorOpen } = src.userData;
+    // el embalaje ya está en el suelo: se quita de la carga (los palés llevan userData.kind)
+    [...cargo.children].forEach((o) => !o.userData.kind && cargo.remove(o));
+    const deckY = cargo.position.y; // suelo de carga
+    const boxB = doors[0].position.z + 0.03; // trasera de la caja
+    // Caja, cabina y carga restante en una malla por material, en tres versiones que comparten materiales (solo se
+    // ve una): puertas cerradas (en marcha), puertas abiertas (parado; la de la lectura) y sin puertas, con las dos
+    // hojas sueltas girando sobre sus bisagras mientras se abren. Así parado o en marcha son 12 dibujos, no 18.
+    const swing = (k) => doors.forEach((d, i) => (d.rotation.y = doorOpen[i] * k));
+    swing(0);
+    const vClosed = K.compact(src);
+    swing(1);
+    const vOpen = K.compact(src);
+    doors.forEach((d) => src.remove(d));
+    const vSwing = K.compact(src);
+    doors.forEach((d) => vSwing.add(d));
+    const truck = new THREE.Group();
+    truck.add(vClosed, vOpen, vSwing, blob(2.9, 8.9));
+    noCast(truck);
+    truck.userData.dynamic = true;
+    const setDoors = (k) => {
+      vClosed.visible = k <= 0;
+      vOpen.visible = k >= 1;
+      vSwing.visible = k > 0 && k < 1;
+      if (vSwing.visible) swing(k);
+    };
+
+    // carretilla con su conductor; userData.forks sube y baja (y = 0: cara inferior de los brazos)
+    const fl = makeForklift(M, { forkHeight: 0.2, pallet: null, driver: true, dynamic: true });
+    const forks = fl.userData.forks;
+    noCast(fl);
+    fl.add(blob(1.6, 3.2, 0, 0.012, -0.1));
+    // palé de baterías de arranque (fleje y tapas en los bornes), girado 90° para que los brazos entren por sus
+    // aberturas. Sobre los brazos como el de makeForklift: 6 cm por debajo de su cara inferior y centrado a 1,72 m
+    // del origen de la carretilla
+    const pal = makePallet(M, { kind: 'plomo', dynamic: true });
+    noCast(pal);
+    const REACH = 1.72;
+    const PAL_DY = -0.06;
+    const palInTruck = boxB + 0.75; // centro del palé dentro de la caja (z local del camión)
+    const palInTruckX = TX + palInTruck;
+    // recorrido de la carretilla (origen en el suelo, frente hacia +z local): espera al sur del camión mirando al
+    // oeste, gira en la boca de la calzada (radio 1,5 m) y vuelve hacia el este por detrás del camión
+    const W = [-8.4, 2.5];
+    const R = 1.5;
+    const CX = -13.6;
+    const CZ = 1.0;
+    const pickX = palInTruckX - REACH;
+    const holdX = pickX - 1.45;
+    const L1 = W[0] - CX;
+    const L2 = Math.PI * R;
+    const L3 = pickX - CX;
+    const L4 = pickX - holdX;
+    const LT = L1 + L2 + L3 + L4;
+    const hDrive = 0.2;
+    const hPick = deckY - PAL_DY; // el palé apoyado en el suelo de carga
+    const hLift = hPick + 0.07;
+    const hHold = 0.9; // a media altura durante la lectura
+    const smooth = (u) => u * u * (3 - 2 * u);
+    const clamp01 = (u) => Math.min(1, Math.max(0, u));
+    const pose = { x: 0, z: 0, ry: 0, h: 0, held: false };
+    // s ∈ [0, 1] a lo largo del recorrido → pose (velocidad uniforme; arranca y para con suavidad)
+    const flPose = (s) => {
+      let d = smooth(clamp01(s)) * LT;
+      if (d <= L1) Object.assign(pose, { x: W[0] - d, z: W[1], ry: -Math.PI / 2, h: hDrive, held: false });
+      else if ((d -= L1) <= L2) {
+        const th = d / R;
+        Object.assign(pose, { x: CX - R * Math.sin(th), z: CZ + R * Math.cos(th), ry: Math.atan2(-Math.cos(th), -Math.sin(th)), h: hDrive, held: false });
+      } else if ((d -= L2) <= L3) {
+        // de frente hacia la caja, subiendo las horquillas a la altura del suelo de carga
+        Object.assign(pose, { x: CX + d, z: CZ - R, ry: Math.PI / 2, h: hDrive + (hPick - hDrive) * smooth(clamp01((d / L3) * 1.5)), held: false });
+      } else {
+        // levanta 7 cm en el sitio y sale marcha atrás bajando el palé a media altura
+        const k = (d - L3) / L4;
+        const lift = clamp01(k / 0.2);
+        const back = smooth(clamp01((k - 0.2) / 0.8));
+        Object.assign(pose, { x: pickX - L4 * back, z: CZ - R, ry: Math.PI / 2, h: hPick + (hLift - hPick) * lift + (hHold - hLift) * back, held: lift > 0 });
+      }
+      return pose;
+    };
+    place(truck, TX, TZ, TRY, 0, 'camionRecogida');
+    place(fl, holdX, CZ - R, Math.PI / 2, 0, 'carretilla');
+    place(pal, palInTruckX, TZ, TRY + Math.PI / 2, deckY, 'paleDescarga');
+    // Pose de lectura (la carretilla quieta con el palé a media altura): carretilla, horquillas, palé y sombra en
+    // una sola pieza rígida, una malla por material (16 dibujos en lugar de 19). Solo se ve con m = 1.
+    const flHold = (() => {
+      const g = makeForklift(M, { forkHeight: hHold, pallet: null, driver: true });
+      const p2 = makePallet(M, { kind: 'plomo' });
+      p2.position.set(0, hHold + PAL_DY, REACH);
+      p2.rotation.y = Math.PI / 2;
+      g.add(p2, blob(1.6, 3.2, 0, 0.012, -0.1));
+      const c = K.compact(g);
+      noCast(c);
+      c.children.forEach((o) => o.material === blobMat && (o.renderOrder = 1));
+      c.userData.dynamic = true;
+      return c;
+    })();
+    place(flHold, holdX, CZ - R, Math.PI / 2, 0, 'carretillaLectura');
+
+    // m ∈ [0, 1]: llegada del camión (0 → 0,5), puertas (0,5 → 0,6) y carretilla (0,58 → 1)
+    // por la calzada va por su carril (el derecho, al sur del eje z = 14) y se cambia al centro antes de entrar
+    const LANE = ACCESS.west.rim.z - s1.z + ACCESS.west.width / 4;
+    const laneZ = (a) => LANE + (TZ - LANE) * smooth(clamp01((a - 0.55) / 0.25));
+    // rasante de la calzada (environment.js): 1,5 cm sobre el suelo de la isla en su borde y sube recta hasta el
+    // firme de la orilla (8 cm sobre la tierra firme)
+    const RIM = ACCESS.west.rim.x - s1.x + 0.5;
+    const SHORE = ACCESS.west.shore.x - s1.x;
+    const roadY = (x) => (x >= RIM ? 0 : 0.015 + (ACCESS.west.shore.y + 0.08 - y0 - 0.015) * clamp01((RIM - x) / (RIM - SHORE)));
+    const apply = (m) => {
+      const a = smooth(clamp01(m / 0.5));
+      const tx = T0 + (TX - T0) * a;
+      const tz = laneZ(a);
+      // rumbo: tangente de la trayectoria (pequeño giro durante el cambio de carril)
+      const yaw = TRY - Math.atan2(laneZ(a + 0.002) - laneZ(a - 0.002), (TX - T0) * 0.004);
+      truck.position.set(s1.x + tx, y0 + roadY(tx), s1.z + tz);
+      truck.rotation.y = yaw;
+      setDoors(smooth(clamp01((m - 0.5) / 0.1)));
+      const p = flPose((m - 0.58) / 0.42);
+      const hold = m >= 1;
+      flHold.visible = hold;
+      fl.visible = !hold;
+      pal.visible = !hold;
+      fl.position.set(s1.x + p.x, y0 + roadY(p.x), s1.z + p.z);
+      fl.rotation.y = p.ry;
+      forks.position.y = p.h;
+      if (p.held) {
+        pal.position.set(fl.position.x + Math.sin(p.ry) * REACH, fl.position.y + p.h + PAL_DY, fl.position.z + Math.cos(p.ry) * REACH);
+        pal.rotation.y = p.ry + Math.PI / 2;
+      } else {
+        // dentro de la caja: viaja con el camión
+        pal.position.set(truck.position.x + Math.sin(yaw) * palInTruck, truck.position.y + deckY, truck.position.z + Math.cos(yaw) * palInTruck);
+        pal.rotation.y = yaw + Math.PI / 2;
+      }
+    };
+    // estado final (pose de lectura) para la fusión y los conjuntos de luces
+    apply(1);
+
+    // Avance ligado al recorrido: 0 en la portada; en CH.recogida sube en el último tramo antes de la ventana de
+    // lectura y llega a 1 al entrar en ella (y después). Un seguimiento suave (0,25 s) cubre el cambio de índice a
+    // mitad del tramo y los saltos del menú; con movimiento reducido, estado final. Solo se recoloca si cambia.
+    const target = (story) => {
+      if (!story || story.reduced || story.index > CH.recogida) return 1;
+      if (story.index < CH.recogida) return 0;
+      return clamp01((story.local + 1.0) / 0.95);
+    };
+    let m = -1;
+    let shown = -1;
+    ctx.anim((t, dt, story) => {
+      const goal = target(story);
+      if (m < 0 || story?.reduced) m = goal;
+      else m += (goal - m) * (1 - Math.exp(-dt / 0.25));
+      if (Math.abs(goal - m) < 2e-4) m = goal;
+      if (Math.abs(m - shown) < 1e-5) return;
+      shown = m;
+      apply(m);
+    });
+  }
+  // la batería de coche eléctrico en su embalaje, ya en el suelo al sur del camión (paralela a él), y los dos
+  // operarios de muelle: uno junto al embalaje, de espaldas al patio, y otro en la esquina trasera guiando a la
+  // carretilla
+  place(makeEVCrate(M), -4.9, 2.3, Math.PI / 2, 0, 'embalajeVE');
+  shadow(-4.9, 2.3, 2.6, 1.9);
+  place(makePerson(M, { role: 'muelle', pose: 'look' }), -4.5, 3.55, Math.PI - 0.15, 0, 'operarioMuelle');
+  shadow(-4.5, 3.55, 0.7, 0.5);
+  place(makePerson(M, { role: 'muelle', pose: 'stand' }), -11.9, -2.45, Math.atan2(-1.6, 1.9), 0, 'operarioMuelle');
+  shadow(-11.9, -2.45, 0.7, 0.5);
+  // bahía de descarga: líneas discontinuas a ambos lados del camión
+  dashed(-12.4, -2.0, -2.6, -2.0, 0.6, 0.4, 0.08, M.amberMatte);
+  dashed(-12.4, 1.05, -2.6, 1.05, 0.6, 0.4, 0.08, M.amberMatte);
 
   // ======================================================================
   // Borde sur: arbustos, matas y un arbolillo en primer plano del descenso y la aproximación
@@ -1098,21 +1185,8 @@ export function buildDepot(ctx) {
   ctx.add(hero);
   ctx.shadows.push({ x: heroPos.x, y: heroPos.y + 0.345, z: heroPos.z, w: 4.4, d: 2.8, r: HERO_RY });
   {
-    const c = document.createElement('canvas');
-    c.width = 256;
-    c.height = 160;
-    const g = c.getContext('2d');
-    g.filter = 'blur(9px)';
-    g.fillStyle = 'rgba(0,0,0,0.8)';
-    g.beginPath();
-    g.roundRect(24, 24, 208, 112, 12);
-    g.fill();
-    const tex = new THREE.CanvasTexture(c);
-    const contact = new THREE.Mesh(new THREE.PlaneGeometry(4.3, 2.9).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: tex, color: '#000000', transparent: true, depthWrite: false }));
-    contact.position.set(heroPos.x, heroPos.y + 0.354, heroPos.z);
+    const contact = blob(4.3, 2.9, heroPos.x, heroPos.y + 0.354, heroPos.z);
     contact.rotation.y = HERO_RY;
-    contact.renderOrder = 1;
-    contact.userData.noCollide = true;
     ctx.add(contact);
   }
   // foco blanco cálido casi neutro delante de la cara del QR: la carcasa sigue siendo grafito y la línea, lima
@@ -1122,16 +1196,8 @@ export function buildDepot(ctx) {
   ctx.add(heroSpot);
   ctx.add(heroSpot.target);
 
-  // ---------- baterías instanciadas y baliza ----------
+  // ---------- baterías instanciadas ----------
   const inst = K.batteryInstances(M, bats);
   inst.name = 'baterias';
   ctx.add(inst);
-  ctx.anim((t, dt, story) => {
-    // destello lento y suave; fijo con movimiento reducido
-    if (story.reduced) beaconMat.emissiveIntensity = 1.0;
-    else if (story.index <= 2) {
-      const ph = (t * 0.7) % 1;
-      beaconMat.emissiveIntensity = 0.25 + 1.25 * Math.exp(-((ph - 0.15) ** 2) / 0.012);
-    }
-  });
 }

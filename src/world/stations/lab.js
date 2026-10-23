@@ -1,10 +1,13 @@
 import * as THREE from 'three';
+import { CH } from '../chapters.js';
+import { makePerson } from '../actors.js';
 
-// 3 · Laboratorio de diagnóstico: banco de pruebas con la batería, comprobador, pinzas, lupa y pantallas que
-// avanzan mientras se mide. Alrededor, un laboratorio completo y ordenado por funciones: estanterías iluminadas
-// con módulos, pared de cables de prueba, encimera de instrumentos, estación de ciclado, puesto de registro,
-// zona de seguridad y ventanal hacia el resto del recorrido.
-// Referencia: context/ref-laboratorio.png.
+// 2 · Identificación y diagnóstico (isla s3). Al llegar, cada batería recibe en el puesto de etiquetado de la
+// entrada su QR y su ficha digital; después, en el banco de pruebas, un técnico conecta el comprobador y mide su
+// estado. En la pared del fondo, la ficha ECB-0427 (ejemplo) junto a la esfera de 12,6 V. Alrededor, un
+// laboratorio completo y ordenado por funciones: estanterías iluminadas con módulos, pared de cables de prueba,
+// encimera de instrumentos, estación de ciclado, puesto de registro, zona de seguridad y ventanal hacia el resto
+// del recorrido. Referencia: context/ref-laboratorio.png.
 export function buildLab(ctx) {
   const { K, M, T, V, STATIONS } = ctx;
   const s3 = STATIONS.s3;
@@ -21,9 +24,10 @@ export function buildLab(ctx) {
     return o;
   };
   // coloca una batería instanciada en un punto local de un grupo ya situado (sin escala)
-  const batAt = (g, x, y, z, r = 0, s = 0.4) => {
+  // (qr = false: batería aún sin etiqueta; su QR instanciado se anula y la tanda sigue siendo una sola)
+  const batAt = (g, x, y, z, r = 0, s = 0.4, qr = true) => {
     tmp.set(x, y, z).applyEuler(g.rotation).add(g.position);
-    bats.push({ x: tmp.x, y: tmp.y, z: tmp.z, r: g.rotation.y + r, s });
+    bats.push({ x: tmp.x, y: tmp.y, z: tmp.z, r: g.rotation.y + r, s, qr });
   };
   const knob = (r, h, mat, x, y, z, seg = 12) => {
     const k = K.cyl(r, r, h, mat, seg);
@@ -186,6 +190,10 @@ export function buildLab(ctx) {
   // valores mostrados (suavizados) y los últimos que se dibujaron: solo se redibuja lo que cambia
   const st = { link: 0, wave: 0, dial: 0, bars: 0, rows: 0 };
   const drawn = { link: -1, wave: -1, dial: -1, bars: -1, barsB: -1, rows: -1 };
+  // ficha digital: scan, avance de la lectura del QR (-1 sin lectura); read, QR leído; fill, campos escritos
+  // (0..5); diag, resultado del diagnóstico (0 pendiente, 0..1 midiendo, 1 resultado)
+  const fc = { scan: -1, read: 0, fill: 0, diag: 0 };
+  const fcDrawn = { scan: -2, read: -1, fill: -1, diag: -1 };
   let reducedNow = false;
   const volts = Array.from({ length: 127 }, (_, i) => `${Math.floor(i / 10)},${i % 10} V`);
   const WN = 128;
@@ -444,10 +452,116 @@ export function buildLab(ctx) {
     }
     drawn.rows = st.rows;
   }
+  // ficha digital ECB-0427 (datos de ejemplo) junto a la esfera: se abre al leer el QR en el puesto de etiquetado,
+  // escribe sus campos y, al terminar la medida, anota el diagnóstico. Al pie, separado del ejemplo, el dato real
+  // de la norma (hecho verificado: QR en todas las baterías desde el 18-2-2027, art. 13.6)
+  const qrImg = T.qrLabelTexture(11).image;
+  const FICHA = [
+    ['Tipo', 'Plomo-ácido · 12 V'],
+    ['Entrada', 'Recogida · 21/10'],
+    ['Procedencia', 'Taller de la ciudad'],
+    ['Estado visual', 'Sin fugas'],
+    ['Diagnóstico', ''],
+  ];
+  const FONT_K = '600 16px "Archivo Variable", sans-serif';
+  const fitFont = (g, text, weight, size, maxW) => {
+    let s = size;
+    g.font = `${weight} ${s}px "Archivo Variable", sans-serif`;
+    while (s > 11 && g.measureText(text).width > maxW) g.font = `${weight} ${--s}px "Archivo Variable", sans-serif`;
+  };
+  function drawFicha(g, w, h) {
+    g.fillStyle = '#0f1112';
+    g.fillRect(0, 0, w, h);
+    g.fillStyle = LIME;
+    g.fillRect(0, 0, w, 6);
+    g.textAlign = 'left';
+    g.font = FONT_K;
+    g.fillStyle = 'rgba(241,238,230,0.62)';
+    g.fillText('FICHA DIGITAL · EJEMPLO', 24, 42);
+    g.font = '800 40px "Archivo Variable", sans-serif';
+    g.fillStyle = fc.read ? LIME : 'rgba(194,242,48,0.35)';
+    g.fillText('ECB-0427', 22, 92);
+    // QR de la etiqueta; el marco se enciende al leerlo
+    g.fillStyle = '#f4f2ec';
+    g.fillRect(w - 118, 20, 96, 96);
+    g.drawImage(qrImg, w - 114, 24, 88, 88);
+    if (!fc.read) {
+      g.fillStyle = 'rgba(15,17,18,0.55)';
+      g.fillRect(w - 118, 20, 96, 96);
+    }
+    if (fc.scan >= 0) {
+      g.fillStyle = LIME;
+      g.fillRect(w - 122, 18 + 98 * fc.scan, 104, 4);
+    }
+    if (fc.read || fc.scan >= 0) {
+      g.strokeStyle = LIME;
+      g.lineWidth = 3;
+      g.strokeRect(w - 123.5, 14.5, 107, 107);
+    }
+    // estado de la lectura
+    g.font = '700 19px "Archivo Variable", sans-serif';
+    if (fc.read) {
+      g.fillStyle = LIME;
+      g.fillText('QR leído ✓', 24, 128);
+    } else if (fc.scan >= 0) {
+      g.fillStyle = LIME;
+      g.fillText('Leyendo QR…', 24, 128);
+    } else {
+      g.fillStyle = 'rgba(241,238,230,0.38)';
+      g.fillText('Pendiente de lectura', 24, 128);
+    }
+    for (let i = 0; i < FICHA.length; i++) {
+      const y = 166 + i * 58;
+      const k = clamp01(fc.fill - i);
+      g.font = FONT_K;
+      g.fillStyle = k > 0 ? 'rgba(241,238,230,0.55)' : 'rgba(241,238,230,0.25)';
+      g.fillText(FICHA[i][0], 24, y);
+      let val = FICHA[i][1];
+      let col = IVORY;
+      if (i === FICHA.length - 1) {
+        if (fc.diag >= 1) {
+          val = 'No supera la prueba de carga';
+          col = AMBER;
+        } else if (fc.diag > 0) {
+          val = 'Midiendo…';
+          col = LIME;
+        } else val = 'Pendiente';
+      }
+      if (k > 0) {
+        g.save();
+        g.beginPath();
+        g.rect(22, y + 4, (w - 44) * k, 32);
+        g.clip();
+        fitFont(g, val, 700, 24, w - 48);
+        g.fillStyle = col;
+        g.fillText(val, 24, y + 29);
+        g.restore();
+      } else {
+        g.fillStyle = 'rgba(241,238,230,0.07)';
+        g.fillRect(24, y + 11, 190 - i * 14, 20);
+      }
+      g.fillStyle = 'rgba(241,238,230,0.1)';
+      g.fillRect(24, y + 39, w - 48, 2);
+    }
+    // dato real de la norma, separado del ejemplo
+    g.fillStyle = LIME;
+    g.fillRect(24, h - 74, 36, 4);
+    fitFont(g, 'QR obligatorio en la UE desde el 18-2-2027', 700, 19, w - 48);
+    g.fillStyle = IVORY;
+    g.fillText('QR obligatorio en la UE desde el 18-2-2027', 24, h - 44);
+    g.font = '500 16px "Archivo Variable", sans-serif';
+    g.fillStyle = 'rgba(241,238,230,0.6)';
+    g.fillText('Reglamento (UE) 2023/1542', 24, h - 20);
+    fcDrawn.scan = fc.scan;
+    fcDrawn.read = fc.read;
+    fcDrawn.fill = fc.fill;
+    fcDrawn.diag = fc.diag;
+  }
   const wallA = T.liveScreen(640, 384, drawWave, 12);
   const wallB = T.liveScreen(512, 384, drawDial, 12);
   const trace = T.liveScreen(320, 192, drawTrace, 12);
   const rec = T.liveScreen(512, 320, drawRecords, 12);
+  const ficha = T.liveScreen(400, 520, drawFicha, 12);
 
   // ---------- Banco de pruebas (grupo y anclas conservados) ----------
   // encimera de 1,15 m de fondo: la batería queda a 10 cm del canto, con los cajones y la tira cálida debajo
@@ -779,14 +893,18 @@ export function buildLab(ctx) {
     bc.add(at(K.cyl(0.016, 0.014, 0.1, mat, 8), 2.42 + i * 0.065, CY + 0.18, (i % 2) * 0.04 - 0.02));
   });
   ctx.shadows.push({ x: s3.x + 1.7 - 0.98, y: FY, z: BZ + 0.36, w: 8.4, d: 1.1 });
-  // dos pantallas enmarcadas: curva con barras y esfera de tensión, con la tira cálida debajo
+  // tres pantallas enmarcadas: curva con barras, esfera de tensión y, junto a ella, la ficha digital (las dos
+  // en el mismo encuadre), con la tira cálida debajo
   const scrA = K.framedScreen(M, wallA.texture, 2.2, 1.3, 0.9);
-  scrA.position.set(s3.x + 0.58, FY + 2.49, BZ + 0.07);
+  scrA.position.set(s3.x + 0.26, FY + 2.49, BZ + 0.07);
   ctx.add(scrA);
   const scrB = K.framedScreen(M, wallB.texture, 1.76, 1.3, 0.9);
-  scrB.position.set(s3.x + 2.75, FY + 2.49, BZ + 0.07);
+  scrB.position.set(s3.x + 2.52, FY + 2.49, BZ + 0.07);
   ctx.add(scrB);
-  ctx.add(K.box(4.4, 0.025, 0.04, M.warmGlow, s3.x + 1.6, FY + 1.68, BZ + 0.05));
+  const scrF = K.framedScreen(M, ficha.texture, 1.0, 1.3, 0.9);
+  scrF.position.set(s3.x + 4.2, FY + 2.49, BZ + 0.07);
+  ctx.add(scrF);
+  ctx.add(K.box(5.6, 0.025, 0.04, M.warmGlow, s3.x + 1.92, FY + 1.68, BZ + 0.05));
 
   // ---------- Fondo D · armario de herramientas y cubetas (rincón derecho) ----------
   const chest = K.cabinet(M, { w: 1.3, h: 1.4, d: 0.62, drawers: 7, mat: M.graphite, top: M.steel });
@@ -812,7 +930,8 @@ export function buildLab(ctx) {
     ctx.add(c);
   });
   for (let x = s3.x - 6.3; x <= s3.x + 6.4; x += 1.6) ctx.add(K.box(0.04, 0.14, 0.4, M.darkSteel, x, FY + 3.37, BZ + 0.2));
-  [[s3.x - 5.0, FY + 3.33], [s3.x - 0.9, FY + 1.2], [s3.x + 4.4, FY + 1.2], [s3.x + 5.24, FY + 1.05]].forEach(([x, yb]) => {
+  // bajantes: armario, encimera (junto a la pared de cables), alimentación de la ficha y regleta del rincón
+  [[s3.x - 5.0, FY + 3.33], [s3.x - 1.0, FY + 1.2], [s3.x + 4.2, FY + 3.22], [s3.x + 5.24, FY + 1.05]].forEach(([x, yb]) => {
     ctx.add(at(K.cyl(0.022, 0.022, FY + 3.5 - yb, M.steel, 8), x, (FY + 3.5 + yb) / 2, BZ + 0.05));
   });
   ctx.add(K.box(0.09, 0.13, 0.05, M.graphiteLight, s3.x + 5.24, FY + 0.95, BZ + 0.03));
@@ -974,7 +1093,7 @@ export function buildLab(ctx) {
   ctx.shadows.push({ x: s3.x + 4.05, y: FY, z: s3.z + 0.75, w: 1.2, d: 0.8, r: -0.55 });
 
   // ---------- Entrada de muestras junto al frente abierto (primer plano de la llegada) ----------
-  // jaula con cuatro baterías etiquetadas pendientes de diagnóstico sobre una zona rotulada en ámbar; todo por
+  // jaula con cuatro baterías pendientes de registro sobre una zona rotulada en ámbar; todo por
   // debajo de 1,3 m y a unos 2,5 m del recorrido de la cámara, fuera de los encuadres de lectura
   const cage = at(new THREE.Group(), s3.x - 5.65, FY, s3.z + 3.3, 0.35);
   cage.add(K.box(1.2, 0.05, 0.66, M.darkSteel, 0, 0.1, 0));
@@ -994,7 +1113,7 @@ export function buildLab(ctx) {
   cage.add(K.box(0.006, 0.24, 0.17, M.ivoryPanel, 0.594, 0.66, 0.12));
   cage.add(K.box(0.007, 0.04, 0.17, M.amberMatte, 0.596, 0.86, 0.12));
   [[-0.285, 0.15], [0.285, 0.15], [-0.285, 0.65], [0.285, 0.65]].forEach(([x, y], i) => {
-    batAt(cage, x, y, 0.0, i % 2 ? 0.04 : -0.03, 0.33);
+    batAt(cage, x, y, 0.0, i % 2 ? 0.04 : -0.03, 0.33, false);
     cage.add(K.box(0.06, 0.045, 0.004, M.amberMatte, x + 0.14, y + 0.2, 0.172));
   });
   // zona rotulada: contorno ámbar y franja rayada delante del frente de la jaula
@@ -1021,7 +1140,7 @@ export function buildLab(ctx) {
     g.fillText('ENTRADA', 16, 33);
     g.font = '600 23px "Archivo Variable", sans-serif';
     g.fillText('Pendiente de', 16, 90);
-    g.fillText('diagnóstico', 16, 122);
+    g.fillText('registro y QR', 16, 122);
     g.fillRect(16, 138, 64, 5);
     signTex.needsUpdate = true;
   };
@@ -1037,6 +1156,65 @@ export function buildLab(ctx) {
   cage.add(sign);
   ctx.add(cage);
   ctx.shadows.push({ x: s3.x - 5.65, y: FY, z: s3.z + 3.3, w: 1.4, d: 0.85, r: 0.35 });
+  // ---------- Puesto de etiquetado junto a la entrada: cada batería recibe aquí su QR y su ficha ----------
+  // mesa con la impresora de etiquetas, la batería recién llegada (sin etiqueta hasta que empieza el capítulo) y
+  // un lector fijo que lee el QR en cuanto se pega; la técnica, con bata, gafas y guantes, coloca la etiqueta
+  const lb = at(new THREE.Group(), s3.x - 4.4, FY, s3.z + 0.75);
+  const LT = 0.93; // altura del tablero
+  lb.add(K.rbox(1.7, 0.05, 0.72, M.stoneTop, 0, LT - 0.05, 0, 0.015));
+  [[-0.8, -0.31], [0.8, -0.31], [-0.8, 0.31], [0.8, 0.31]].forEach(([x, z]) => lb.add(K.box(0.05, LT - 0.05, 0.05, M.darkSteel, x, 0, z)));
+  lb.add(K.box(1.62, 0.03, 0.62, M.darkSteel, 0, 0.2, 0));
+  lb.add(K.box(1.62, 0.06, 0.03, M.darkSteel, 0, LT - 0.11, 0.33));
+  lb.add(K.box(1.5, 0.02, 0.03, M.warmGlow, 0, LT - 0.08, 0.35));
+  // abajo: caja de etiquetas y rollos de repuesto
+  lb.add(K.rbox(0.42, 0.22, 0.34, M.graphite, -0.5, 0.23, 0, 0.02));
+  lb.add(K.box(0.2, 0.06, 0.006, M.ivoryPanel, -0.5, 0.32, 0.172));
+  [0.0, 0.16, 0.32].forEach((x) => lb.add(at(knob(0.065, 0.1, M.ivoryPanel, 0, 0, 0, 14), x, 0.3, 0.02)));
+  // impresora de etiquetas: cuerpo, tapa clara, ranura, pantallita y piloto; la etiqueta siguiente asoma
+  const pr = at(new THREE.Group(), -0.48, LT, -0.06, 0.18);
+  pr.add(K.rbox(0.26, 0.15, 0.3, M.graphite, 0, 0, 0, 0.025));
+  pr.add(K.rbox(0.24, 0.035, 0.2, M.ivoryPanel, 0, 0.14, -0.035, 0.012));
+  pr.add(K.box(0.18, 0.012, 0.012, M.darkSteel, 0, 0.085, 0.152));
+  pr.add(K.box(0.07, 0.03, 0.006, M.amberGlow, -0.06, 0.112, 0.152));
+  pr.add(K.box(0.025, 0.012, 0.006, M.lime, 0.085, 0.118, 0.152));
+  pr.add(at(K.box(0.1, 0.003, 0.12, M.ivoryPanel, 0, 0, 0), 0, 0.089, 0.21));
+  const tagGeo = K.geo('labTag', () => new THREE.PlaneGeometry(0.085, 0.085).rotateX(-Math.PI / 2));
+  pr.add(at(new THREE.Mesh(tagGeo, M.qr), 0, 0.094, 0.215));
+  lb.add(pr);
+  // batería recién llegada, todavía sin QR (en la tanda instanciada), y su etiqueta, que aparece al pegarla
+  batAt(lb, 0.18, LT, -0.12, 0, 0.4, false);
+  const SX = 0.44; // centro de la etiqueta sobre la tapa, en el canto delantero derecho
+  const SZ = -0.03;
+  const tag = ctx.dyn(new THREE.Mesh(K.geo('labTagTop', () => new THREE.PlaneGeometry(0.1, 0.1).rotateX(-Math.PI / 2)), M.qr));
+  tag.position.set(SX, LT + 0.284, SZ);
+  tag.userData.noCollide = true;
+  tag.visible = false;
+  tag.scale.setScalar(0.001);
+  lb.add(tag);
+  // lector fijo sobre un poste: el cabezal queda encima de la etiqueta y su ventana se enciende al leer
+  lb.add(K.rbox(0.14, 0.025, 0.16, M.graphite, 0.72, LT, -0.22, 0.01));
+  lb.add(at(K.cyl(0.012, 0.012, 0.44, M.darkSteel, 8), 0.72, LT + 0.245, -0.22));
+  lb.add(strut(V(0.72, LT + 0.46, -0.22), V(SX + 0.05, LT + 0.5, SZ - 0.03), 0.01, M.darkSteel));
+  lb.add(K.rbox(0.1, 0.05, 0.13, M.graphite, SX, LT + 0.475, SZ, 0.015));
+  lb.add(K.box(0.08, 0.008, 0.012, M.limeInsert, SX, LT + 0.52, SZ + 0.06));
+  const scanWin = ctx.dyn(K.box(0.07, 0.004, 0.04, M.amberGlow, SX, LT + 0.471, SZ));
+  scanWin.userData.noCollide = true;
+  lb.add(scanWin);
+  const scanLine = ctx.dyn(K.box(0.11, 0.003, 0.006, M.lime, SX, LT + 0.285, SZ));
+  scanLine.userData.noCollide = true;
+  scanLine.visible = false;
+  lb.add(scanLine);
+  // técnica de laboratorio detrás de la mesa, inclinada sobre la batería (las manos, justo tras el canto)
+  lb.add(at(makePerson(M, { role: 'laboratorio', pose: 'work' }), 0.25, 0, -0.86));
+  ctx.add(lb);
+  ctx.shadows.push({ x: s3.x - 4.4, y: FY, z: s3.z + 0.75, w: 2.0, d: 0.95 });
+  ctx.shadows.push({ x: s3.x - 4.15, y: FY, z: s3.z - 0.11, w: 0.7, d: 0.6 });
+
+  // técnico de laboratorio (bata, gafas y guantes resistentes al ácido) detrás del banco, a la derecha del
+  // comprobador: no tapa la batería, las pinzas ni las pantallas del fondo desde el frente del banco
+  ctx.add(at(makePerson(M, { role: 'laboratorio', pose: 'work', variant: 1 }), s3.x + 1.45, FY, s3.z - 0.58, -0.25));
+  ctx.shadows.push({ x: s3.x + 1.45, y: FY, z: s3.z - 0.58, w: 0.7, d: 0.6 });
+
   // pasillo peatonal señalizado a lo largo del frente, de la entrada de muestras a la salida este
   [s3.z + 2.45, s3.z + 4.2].forEach((z) => ctx.add(K.box(10.2, 0.004, 0.05, M.amberMatte, s3.x + 0.7, FY + 0.001, z)));
   // contenedor de cuarentena para baterías dañadas (las que no superan la inspección), a un lado del pasillo
@@ -1071,7 +1249,11 @@ export function buildLab(ctx) {
   [4.4, 5.6].forEach((y) => ctx.add(K.box(0.3, 0.05, 0.06, M.darkSteel, EX - 0.15, s3.y + y, s3.z + 1.4)));
 
   // ---------- Baterías de apoyo instanciadas y luces cálidas sin sombra ----------
-  ctx.add(K.batteryInstances(M, bats));
+  const batGroup = K.batteryInstances(M, bats);
+  const qrIM = batGroup.children.find((c) => c.material === M.qr);
+  const none = new THREE.Matrix4().makeScale(0, 0, 0);
+  bats.forEach((b, i) => !b.qr && qrIM.setMatrixAt(i, none));
+  ctx.add(batGroup);
   const shelfLight = new THREE.PointLight('#ffc98c', 3.4, 5, 2);
   shelfLight.position.set(s3.x - 5.4, FY + 2.4, s3.z - 4.7);
   ctx.add(shelfLight);
@@ -1079,44 +1261,70 @@ export function buildLab(ctx) {
   counterLight.position.set(s3.x + 1.7, FY + 1.45, BZ + 1.05);
   ctx.add(counterLight);
 
-  // ---------- Proceso: pinzas, curva, aguja, barras y registro siguen la lectura ----------
-  // como mucho una pantalla se redibuja (y se sube a la GPU) por fotograma, cada una a 12 fps como máximo
+  // ---------- Proceso: etiqueta, lectura del QR, ficha y medida siguen la lectura del capítulo ----------
+  // Todo ocurre en la ventana de CH.identificacion: al empezar, la etiqueta se pega y el lector fijo la lee (la
+  // ficha se abre y escribe sus campos); después, el comprobador mide (curva, esfera, barras y registro) y la ficha
+  // anota el diagnóstico. La secuencia avanza con el reloj desde que el capítulo está en pantalla y nunca va por
+  // detrás del scroll: si se sigue bajando, a 3/4 de la ventana ya está completa. Desde CH.clasificacion queda en
+  // su estado final y antes de CH.identificacion vuelve al inicial. Con movimiento reducido, estado final.
+  // Como mucho una pantalla se redibuja (y se sube a la GPU) por fotograma, cada una a 12 fps como máximo.
   const FRAME = 1 / 12;
+  const SEQ = 7.5; // segundos de la secuencia completa
+  const seg = (u, a, b) => clamp01((u - a) / (b - a));
+  const fichaDirty = () => Math.abs(fc.scan - fcDrawn.scan) > 0.02 || fc.read !== fcDrawn.read || Math.abs(fc.fill - fcDrawn.fill) > 0.02 || fc.diag !== fcDrawn.diag;
   const queue = [
     { s: wallA, acc: 0, dirty: () => Math.abs(st.wave - drawn.wave) > 0.004 || Math.abs(st.bars - drawn.bars) > 0.004 },
-    // el comprobador barre como un osciloscopio solo mientras se lee el capítulo 3
-    { s: trace, acc: 0, dirty: () => (idxNow === 3 && !reducedNow) || Math.abs(st.link - drawn.link) > 0.004 },
+    // el comprobador barre como un osciloscopio solo mientras se lee el capítulo
+    { s: trace, acc: 0, dirty: () => (idxNow === CH.identificacion && !reducedNow) || Math.abs(st.link - drawn.link) > 0.004 },
     { s: wallB, acc: 0, dirty: () => Math.abs(st.dial - drawn.dial) > 0.003 || Math.abs(st.bars - drawn.barsB) > 0.004 },
+    { s: ficha, acc: 0, dirty: fichaDirty },
     { s: rec, acc: 0, dirty: () => Math.abs(st.rows - drawn.rows) > 0.004 },
   ];
   let turn = 0;
   let idxNow = 0;
+  let clk = 0; // reloj de la secuencia: avanza con t (con el tiempo congelado de las capturas, solo el scroll)
+  let lastT = null;
+  let settled = false;
   ctx.anim((t, dt, story) => {
-    if (!story || story.index < 2 || story.index > 4) return;
+    if (!story) return;
+    const step = lastT === null ? 0 : t - lastT;
+    lastT = t;
+    const idx = story.index;
+    // lejos del laboratorio, o ya asentado tras la medida: nada que hacer
+    if (idx < CH.recogida || (idx > CH.clasificacion && settled)) return;
     reducedNow = story.reduced;
-    idxNow = story.index;
-    let tl = 0;
-    let tw = 0;
-    let td = 0;
-    let tb2 = 0;
-    let tr = 0;
-    if (story.reduced || story.index === 4) {
-      tl = tw = td = tb2 = tr = 1;
-    } else if (story.index === 3) {
-      // todo termina justo antes del ancla: si el usuario se detiene, la medida ya está asentada
-      const l = story.local;
-      tl = clamp01((l + 0.8) / 0.4);
-      tw = clamp01((l + 0.6) / 0.85);
-      td = clamp01((l + 0.25) / 0.5);
-      tb2 = clamp01((l + 0.15) / 0.4);
-      tr = clamp01((l + 0.35) / 0.6);
+    idxNow = idx;
+    let u;
+    if (story.reduced) u = idx >= CH.identificacion ? 1 : 0;
+    else if (idx > CH.identificacion) {
+      u = 1;
+      clk = SEQ;
+    } else if (idx < CH.identificacion) {
+      u = 0;
+      clk = 0;
+    } else {
+      if (story.vis > 0.9 || story.local >= 0) clk += step > 0 && step < 0.25 ? step : 0;
+      u = clamp01(Math.max(clk / SEQ, (story.local + 0.05) / 0.8));
     }
+    // etiqueta y lectura del QR en el puesto de la entrada
+    const tagK = seg(u, 0, 0.05);
+    tag.visible = tagK > 0.001;
+    tag.scale.setScalar(Math.max(0.001, tagK * tagK * (3 - 2 * tagK)));
+    const scanU = u >= 0.06 && u < 0.17 ? (u - 0.06) / 0.11 : -1;
+    scanLine.visible = scanU >= 0;
+    if (scanU >= 0) scanLine.position.z = SZ - 0.045 + 0.09 * scanU;
+    scanWin.material = scanU >= 0 ? M.lime : M.amberGlow;
+    fc.scan = scanU;
+    fc.read = u >= 0.17 ? 1 : 0;
+    fc.fill = seg(u, 0.18, 0.38) * FICHA.length;
+    fc.diag = u >= 0.94 ? 1 : u >= 0.4 ? 0.5 : 0;
+    // medida en el banco del comprobador
     const k = story.reduced ? 1 : 1 - Math.exp(-dt * 4.5);
-    st.link += (tl - st.link) * k;
-    st.wave += (tw - st.wave) * k;
-    st.dial += (td - st.dial) * k;
-    st.bars += (tb2 - st.bars) * k;
-    st.rows += (tr - st.rows) * k;
+    st.link += (seg(u, 0.38, 0.44) - st.link) * k;
+    st.wave += (seg(u, 0.42, 0.8) - st.wave) * k;
+    st.dial += (seg(u, 0.48, 0.74) - st.dial) * k;
+    st.bars += (seg(u, 0.52, 0.82) - st.bars) * k;
+    st.rows += (seg(u, 0.46, 0.92) - st.rows) * k;
     if (story.reduced) {
       // movimiento reducido: la escena solo se renderiza unos fotogramas tras cada corte, y con la cadencia de
       // 12 fps y una pantalla por fotograma la esfera quedaba sin redibujar («0,0 V»). Se redibuja todo lo
@@ -1135,5 +1343,6 @@ export function buildLab(ctx) {
       }
     }
     led.material = st.dial > 0.985 ? M.lime : M.amberGlow;
+    settled = u >= 1 && st.rows > 0.995 && st.wave > 0.995 && st.dial > 0.995 && st.bars > 0.995 && !queue.some((q) => q.dirty());
   });
 }

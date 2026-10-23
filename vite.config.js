@@ -6,7 +6,8 @@ export default defineConfig({
   build: {
     target: 'es2020',
     // El anexo con datos reales y más de cien fuentes añade unos 65 kB de texto al único chunk (main.js importa
-    // content.js de forma estática); el margen sigue avisando si crece el código del mundo 3D.
-    chunkSizeWarningLimit: 1300,
+    // content.js de forma estática). La v2 suma unos 40 kB de código del mundo (personas, vehículos y entorno del
+    // polígono); el margen sigue avisando si crece más.
+    chunkSizeWarningLimit: 1400,
   },
 });

@@ -1,6 +1,6 @@
 # Investigación de EcoBat
 
-Esta carpeta guarda la investigación que respalda los datos de la presentación: 298 hechos verificados con sus fuentes, el informe consolidado y la correspondencia con las 121 fuentes que cita la web. Se investigó y se verificó de forma independiente el 21 y el 22 de octubre de 2026.
+Esta carpeta guarda la investigación que respalda los datos de la presentación: 328 hechos verificados con sus fuentes, el informe consolidado y la correspondencia con las 127 fuentes que cita la web. Se investigó y se verificó de forma independiente el 21 y el 22 de octubre de 2026; los 30 hechos de la v2 (tema `v2`: rutas legales, segunda vida, transporte y protección) se verificaron el 23 de octubre de 2026.
 
 Es la base de la política de datos del proyecto (véase [Datos y fuentes](../../README.md#datos-y-fuentes) en el README): todo número, fecha, nombre propio o afirmación factual de la web debe tener detrás un hecho de esta carpeta, por su `id`, y sus fuentes. Lo que no tiene respaldo se muestra como ejemplo o hipótesis, con un rótulo visible.
 
@@ -8,10 +8,10 @@ Es la base de la política de datos del proyecto (véase [Datos y fuentes](../..
 
 | Archivo | Contenido |
 |---------|-----------|
-| `hechos-verificados.json` | Lista de 298 hechos de 15 temas. Cada hecho tiene su afirmación, su valor, su ámbito, los números de sus fuentes, su confianza y el veredicto del verificador |
-| `fuentes.json` | Las 469 fuentes numeradas de la investigación (`n`): título, editor, URL, fecha de publicación, fecha de consulta (todas, 2026-10-21), tipo, idioma, temas y hechos que sostienen |
+| `hechos-verificados.json` | Lista de 328 hechos de 16 temas (los 30 del tema `v2` llevan además `usedFor` y `verifiedOn`). Cada hecho tiene su afirmación, su valor, su ámbito, los números de sus fuentes, su confianza y el veredicto del verificador |
+| `fuentes.json` | Las 470 fuentes numeradas de la investigación (la 470, añadida en la v2) (`n`): título, editor, URL, fecha de publicación, fecha de consulta (todas, 2026-10-21), tipo, idioma, temas y hechos que sostienen |
 | `informe.md` | Informe consolidado: resumen, cobertura de cada elemento de la web (A a I), 23 contradicciones entre temas, los hechos por tema, descartados, huecos y lista numerada de fuentes |
-| `mapa-fuentes.json` | Las 121 fuentes que cita la web: su número en la web (`n`), su número en `fuentes.json` (`fuente`), título, editor, tipo original, grupo y URL, y los hechos que respaldan lo que la web cita con ella (`hechos`). `urlOriginal` aparece en 7 entradas, cuando la web enlaza otra dirección del mismo documento |
+| `mapa-fuentes.json` | Las 127 fuentes que cita la web: su número en la web (`n`), su número en `fuentes.json` (`fuente`), título, editor, tipo original, grupo y URL, y los hechos que respaldan lo que la web cita con ella (`hechos`). `urlOriginal` aparece en 7 entradas, cuando la web enlaza otra dirección del mismo documento |
 
 El texto de `informe.md` llama `verified-facts.json` y `sources.json` a los archivos que aquí se llaman `hechos-verificados.json` y `fuentes.json`. Son los mismos: se renombraron al incorporarlos al repositorio y su contenido es idéntico.
 
@@ -38,7 +38,8 @@ Cada hecho lleva en `topic` el tema que lo recopiló. La última columna cuenta 
 | `proceso_reciclaje` | Proceso industrial de reciclaje y fracciones obtenidas | 20 | 8 |
 | `taller_resultados` | Averías por batería y resultados de pruebas en taller | 20 | 1 |
 | `vehiculo_electrico` | Baterías de vehículos eléctricos: composición y alta tensión | 20 | 10 |
-| | **Total** | **298** | **128** |
+| `v2` | Versión 2: preparación para la reutilización, remanufacturación, adaptación, casos de segunda vida, transporte (ADR), pasaporte nuevo, contenido reciclado y protección por zona | 30 | 28 |
+| | **Total** | **328** | **156** |
 
 ### Campos de un hecho
 
@@ -57,14 +58,14 @@ Cada hecho lleva en `topic` el tema que lo recopiló. La última columna cuenta 
 
 ### Dos numeraciones de fuentes
 
-Los números de `fuentes.json`, de `informe.md` y del campo `sources` de cada hecho son los de la investigación (1 a 469). La web numera sus 121 fuentes por orden de primera aparición en la página (1 a 121, en `src/sources.js`) y son otros números: `mapa-fuentes.json` traduce unos a otros. Por ejemplo, la cita [63] de la web es la fuente 14 de la investigación.
+Los números de `fuentes.json`, de `informe.md` y del campo `sources` de cada hecho son los de la investigación (1 a 470). La web numera sus 127 fuentes por orden de primera aparición en la página (tarjetas de datos de los capítulos y después anexos; 1 a 127, en `src/sources.js`) y son otros números: `mapa-fuentes.json` traduce unos a otros. Por ejemplo, la cita [9] de la web es la fuente 14 de la investigación.
 
 ## Cómo se verificó
 
 1. **Investigación por temas.** Quince temas. Cada uno recopiló hechos con su valor, su ámbito, sus fuentes y los huecos que no pudo cubrir.
 2. **Verificación independiente de cada hecho.** Un verificador leyó las fuentes directamente, comprobó que cargaban y emitió un veredicto por hecho: «confirmado» (266) o «confirmado con corrección» (32). Ningún hecho se descartó: no hubo veredictos de «no confirmado» ni de «fuente inaccesible». Los verificadores añadieron fuentes propias cuando hizo falta.
 3. **Consolidación.** Se partió de 562 entradas de fuentes (451 de los investigadores y 111 de los verificadores). Se excluyeron 5 marcadas como «no citar» o «solo contexto», se eliminaron los duplicados por URL final y se fusionaron las variantes de un mismo documento: quedaron 469 fuentes numeradas. Las 23 contradicciones entre temas se resolvieron con el criterio de fuente primaria y más reciente (16 resueltas) o se marcaron con la indicación de cómo citarlas (7).
-4. **Uso en la web.** Los textos se redactaron a partir de los hechos, respetando `caveat`, `conflicts` y los apartados «Límites» y «Cómo redactarlo» de la sección 2 del informe. `tests/content.test.mjs` comprueba la coherencia de las citas y las fuentes. Las URL de las 121 fuentes se comprobaron el 22-10-2026.
+4. **Uso en la web.** Los textos se redactaron a partir de los hechos, respetando `caveat`, `conflicts` y los apartados «Límites» y «Cómo redactarlo» de la sección 2 del informe. `tests/content.test.mjs` comprueba la coherencia de las citas y las fuentes. Las URL de las 121 fuentes de la v1 se comprobaron el 22-10-2026, y las 6 nuevas de la v2, el 23-10-2026.
 
 Fechas: las 469 fuentes constan como consultadas el 2026-10-21; algunos verificadores consultaron fuentes el 2026-10-22. Los datos están, por tanto, a esas fechas.
 
