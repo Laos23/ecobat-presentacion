@@ -76,26 +76,41 @@ export const TRACES = {
 //   service · reutilización: palé con 2 baterías de plomo aptas o reparables; vuelve al oeste por el mismo camino por el
 //     que llegaron (carril de salida de la calzada oeste, puente s4-s3, franja este y zona de recepción del laboratorio,
 //     su explanada, franja oeste, puente s3-s2 y franja este de s2) y entra en la nave de reutilización hasta el palé de
-//     ENTRADA. En la franja oeste de s3 (1,7 m entre la fachada del laboratorio y la barandilla) el giro hacia el puente
-//     roza la fachada de cristal unos centímetros: no hay sitio para más.
-//   second · desmontaje: la batería de coche eléctrico en su embalaje; calzada este y puente hasta la puerta de sB.
-//   recycle · reciclaje: palé con 7 baterías de plomo; calzada y puente del sureste hasta la puerta de recepción de s5.
+//     ENTRADA. Espera en la boca del puente s4-s3 casi alineado con él y entra en el tablero con unos 11° de ángulo: más
+//     cruzado, al pasar del llano a la rampa una rueda quedaba hasta 7 cm en el aire. La franja oeste de s3 mide 1,45 m
+//     entre la fachada del laboratorio y el bordillo estrecho del paso (kerbPasses): el tractor (1,29 m de buje a buje) la recorre centrado y gira hacia el puente por la boca, a unos
+//     5-8 cm de la fachada, del pilar de esquina, del pie de remate de la barandilla y del bordillo. En la esquina
+//     sureste de s2 gira donde no hay jardinera (edges.js · cornerPlanters la omite en las esquinas por las que pasa una
+//     ruta).
+//   second · desmontaje: la batería de coche eléctrico en su embalaje; calzada este y puente hasta la puerta de sB, donde
+//     para con el paragolpes a medio metro del montante y el embalaje (1,8 m) centrado en la boca del puente, a unos 40 cm
+//     de los pies de remate de sus barandillas.
+//   recycle · reciclaje: palé con 7 baterías de plomo; calzada y puente del sureste hasta la puerta de recepción de s5,
+//     donde para con el paragolpes a medio metro de la persiana cerrada.
 export const SIM = {
+  // pasos de tractores junto al borde de una isla: las piezas de bordillo con el centro a menos de `r` m de (x, z), en la
+  // isla de suelo `y`, se estrechan hasta el pie de la barandilla (edges.js · KERB_NARROW). En la franja oeste de s3, entre
+  // la fachada del laboratorio y la barandilla, el bordillo entero dejaba 1,32 m de paso a las ruedas.
+  kerbPasses: [{ x: -14.72, y: F.s3, z: 2.81, r: 0.7 }],
   tractors: [
     {
       route: 'second', load: 'litio', count: 1, go: [0.04, 0.3], wait: 1,
-      path: [[19.0, -7.45], [24.3, -7.62], [25.9, -7.95], [27.3, -8.1], [28.3, -8.25]],
+      path: [[19.0, -7.6], [24.3, -7.95], [25.9, -8.05], [27.3, -8.15], [27.75, -8.18]],
     },
     {
       route: 'recycle', load: 'plomo', count: 7, go: [0.12, 0.5], wait: 2,
-      path: [[16.45, -4.5], [16.95, -2.6], [17.95, 0.34], [19.28, 2.02], [21.75, 5.78], [24.23, 9.53], [25.05, 10.65]],
+      path: [[16.45, -4.5], [16.95, -2.6], [17.95, 0.34], [19.28, 2.02], [21.75, 5.78], [24.23, 9.53], [24.73, 10.21]],
     },
     {
-      route: 'service', load: 'plomo', count: 2, go: [0.24, 0.94], wait: 2,
+      // lanza de 1,2 m (world.js · placeTrain; las otras dos, 0,64 m): en la boca del puente s3-s2 y en la esquina
+      // sureste de s2 tractor y remolque llegan a formar unos 100°, y con una lanza más corta el remolque, que sigue la
+      // huella del tractor, se metía en él y la lanza cruzaba su paragolpes
+      route: 'service', load: 'plomo', count: 2, go: [0.24, 0.94], wait: 2, bar: 1.2,
       path: [
-        [13.48, -8.07], [11.18, -7.2], [8.78, -6.29], [7.06, -6.38], [5.13, -4.79], [3.2, -3.2], [2.2, -2.0], [1.55, -0.4],
-        [1.05, 0.85], [-0.4, 1.4], [-4, 1.5], [-7.4, 1.55], [-9.2, 2.5], [-10.6, 3.9], [-12.5, 4.5], [-13.7, 4.1],
-        [-14.1, 3.0], [-14.12, 1.9], [-14.4, 0.9], [-15.3, 0.42], [-16.6, 0.8], [-19.2, 2.0], [-20.4, 3.3], [-20.6, 6.2], [-20.7, 9.0],
+        [13.48, -8.07], [11.18, -7.2], [8.76, -6.79], [7.08, -5.88], [5.13, -4.79], [3.2, -3.2], [2.2, -2.0], [1.55, -0.4],
+        [1.05, 0.85], [-0.4, 1.4], [-4, 1.5], [-7.4, 1.55], [-9.2, 2.5], [-10.7, 3.56], [-12.28, 4.07], [-13.4, 3.79],
+        [-13.91, 3.14], [-13.98, 1.98], [-14.17, 1.01], [-14.54, 0.27], [-14.96, 0.04], [-16.8, 0.62], [-19.2, 2.0], [-20.4, 3.3],
+        [-20.6, 6.2], [-20.7, 9.0],
         [-21.1, 10.8], [-22.8, 11.3], [-26.6, 10.9], [-29.6, 8.6], [-31.8, 7.3], [-34.0, 7.0],
       ],
     },

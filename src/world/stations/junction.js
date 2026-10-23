@@ -882,12 +882,17 @@ export function buildJunction(ctx) {
   kHead.rotation.x = 0.62;
   kiosk.add(kHead);
   kiosk.add(K.box(0.05, 0.05, 0.02, M.amberGlow, 0.15, 0.86, 0.14));
-  // de cara al flujo que llega por la entrada y a la cámara del capítulo
-  kiosk.position.set(BAY[0], y4, BAY[1]);
+  // de cara al flujo que llega por la entrada y a la cámara del capítulo; 7 cm por detrás del centro del ensanche,
+  // para que las manos del técnico queden ante el piloto y el canto de la pantalla sin entrar en ellos (y sus talones,
+  // a 0,62 m del centro, sigan lejos del bordillo)
+  const KIOSK_BACK = 0.07;
+  const kx = BAY[0] - Math.sin(-0.5) * KIOSK_BACK;
+  const kz = BAY[1] - Math.cos(-0.5) * KIOSK_BACK;
+  kiosk.position.set(kx, y4, kz);
   kiosk.rotation.y = -0.5;
   ctx.add(kiosk);
   claim(BAY[0], BAY[1], 0.5);
-  ctx.shadows.push({ x: BAY[0], y: y4, z: BAY[1], w: 0.9, d: 0.7, r: -0.5 });
+  ctx.shadows.push({ x: kx, y: y4, z: kz, w: 0.9, d: 0.7, r: -0.5 });
   // técnico que valida la ruta propuesta: de espaldas a la cámara, inclinado sobre la pantalla del puesto
   const validator = A.makePerson(M, { role: 'conductor', pose: 'work' });
   validator.position.set(BAY[0] + Math.sin(-0.5) * 0.62, y4, BAY[1] + Math.cos(-0.5) * 0.62);
@@ -1091,11 +1096,12 @@ export function buildJunction(ctx) {
   storeStand.rotation.y = -0.35;
   ctx.add(storeStand);
   // técnico especialista con guantes aislantes, de espaldas, revisando los racks por la puerta abierta
+  // (dentro del vano central, fuera del giro de las hojas que abren junto al montante derecho, x ≈ 19,1–19,4)
   const specialist = A.makePerson(M, { role: 'especialista', pose: 'work' });
-  specialist.position.set(19.2, yA, -27.85);
+  specialist.position.set(18.7, yA, -27.85);
   specialist.rotation.y = Math.PI;
   ctx.add(specialist);
-  ctx.shadows.push({ x: 19.2, y: yA, z: -27.85, w: 0.6, d: 0.5 });
+  ctx.shadows.push({ x: 18.7, y: yA, z: -27.85, w: 0.6, d: 0.5 });
   // palé de módulos recién llegados del desmontaje, junto a la llegada del puente
   const palA = A.makePallet(M, { kind: 'modulos' });
   palA.position.set(15.7, yA, -26.95);

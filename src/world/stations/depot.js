@@ -977,6 +977,11 @@ export function buildDepot(ctx) {
     const { cargo, doors, doorOpen } = src.userData;
     // el embalaje ya está en el suelo: se quita de la carga (los palés llevan userData.kind)
     [...cargo.children].forEach((o) => !o.userData.kind && cargo.remove(o));
+    // los palés que quedan van 1,32 m más hacia la cabina (al hueco que deja el embalaje): junto a las puertas viaja
+    // solo el palé que saca la carretilla, sin ocupar el sitio de otro
+    cargo.children.forEach((o) => {
+      o.position.z += 1.32;
+    });
     const deckY = cargo.position.y; // suelo de carga
     const boxB = doors[0].position.z + 0.03; // trasera de la caja
     // Caja, cabina y carga restante en una malla por material, en tres versiones que comparten materiales (solo se
@@ -1006,21 +1011,27 @@ export function buildDepot(ctx) {
     const forks = fl.userData.forks;
     noCast(fl);
     fl.add(blob(1.6, 3.2, 0, 0.012, -0.1));
-    // palé de baterías de arranque (fleje y tapas en los bornes), girado 90° para que los brazos entren por sus
-    // aberturas. Sobre los brazos como el de makeForklift: 6 cm por debajo de su cara inferior y centrado a 1,72 m
-    // del origen de la carretilla
-    const pal = makePallet(M, { kind: 'plomo', dynamic: true });
+    // palé de baterías de arranque (fleje y tapas en los bornes), girado 90°: los brazos entran por su costado de 0,8 m,
+    // por las entalladuras de sus tacos (palé de cuatro entradas, actors.js · palletBase). Sobre los brazos como el de
+    // makeForklift: 6 cm por debajo de su cara inferior, centrado a 1,78 m del origen de la carretilla (su base toca el
+    // talón de los brazos sin meterse en el tablero)
+    const pal = makePallet(M, { kind: 'plomo', dynamic: true, across: true });
     noCast(pal);
-    const REACH = 1.72;
+    const REACH = 1.78;
     const PAL_DY = -0.06;
-    const palInTruck = boxB + 0.75; // centro del palé dentro de la caja (z local del camión)
+    // centro del palé dentro de la caja (z local del camión): a 9 cm de la trasera, para que al cogerlo el mástil
+    // quede 3 cm por detrás del travesaño trasero del suelo de carga
+    const palInTruck = boxB + 0.69;
     const palInTruckX = TX + palInTruck;
     // recorrido de la carretilla (origen en el suelo, frente hacia +z local): espera al sur del camión mirando al
-    // oeste, gira en la boca de la calzada (radio 1,5 m) y vuelve hacia el este por detrás del camión
+    // oeste, se arrima 30 cm al camión mientras avanza, gira en la boca de la calzada (radio 1,35 m: con 1,5 m el
+    // contrapeso, que se abre en el giro, pisaba el bordillo y la bionda de la calzada) y vuelve hacia el este por
+    // detrás del camión. Sube las horquillas a la altura del suelo de carga en la segunda mitad del giro, con las
+    // puntas aún fuera de la caja, y entra recto
     const W = [-8.4, 2.5];
-    const R = 1.5;
+    const R = 1.35;
     const CX = -13.6;
-    const CZ = 1.0;
+    const CZ = TZ + R; // el giro acaba en el eje del camión
     const pickX = palInTruckX - REACH;
     const holdX = pickX - 1.45;
     const L1 = W[0] - CX;
@@ -1038,19 +1049,25 @@ export function buildDepot(ctx) {
     // s ∈ [0, 1] a lo largo del recorrido → pose (velocidad uniforme; arranca y para con suavidad)
     const flPose = (s) => {
       let d = smooth(clamp01(s)) * LT;
-      if (d <= L1) Object.assign(pose, { x: W[0] - d, z: W[1], ry: -Math.PI / 2, h: hDrive, held: false });
-      else if ((d -= L1) <= L2) {
+      if (d <= L1) {
+        // cambio de carril suave de z = W[1] (espera) a z = CZ + R (entrada del giro); rumbo según la tangente
+        const u = d / L1;
+        const dz = CZ + R - W[1];
+        Object.assign(pose, { x: W[0] - d, z: W[1] + dz * smooth(u), ry: Math.atan2(-1, (dz * 6 * u * (1 - u)) / L1), h: hDrive, held: false });
+      } else if ((d -= L1) <= L2) {
         const th = d / R;
-        Object.assign(pose, { x: CX - R * Math.sin(th), z: CZ + R * Math.cos(th), ry: Math.atan2(-Math.cos(th), -Math.sin(th)), h: hDrive, held: false });
+        const up = smooth(clamp01((2 * th) / Math.PI - 1));
+        Object.assign(pose, { x: CX - R * Math.sin(th), z: CZ + R * Math.cos(th), ry: Math.atan2(-Math.cos(th), -Math.sin(th)), h: hDrive + (hPick - hDrive) * up, held: false });
       } else if ((d -= L2) <= L3) {
-        // de frente hacia la caja, subiendo las horquillas a la altura del suelo de carga
-        Object.assign(pose, { x: CX + d, z: CZ - R, ry: Math.PI / 2, h: hDrive + (hPick - hDrive) * smooth(clamp01((d / L3) * 1.5)), held: false });
+        // de frente hacia la caja, con las horquillas ya a la altura del suelo de carga
+        Object.assign(pose, { x: CX + d, z: CZ - R, ry: Math.PI / 2, h: hPick, held: false });
       } else {
-        // levanta 7 cm en el sitio y sale marcha atrás bajando el palé a media altura
+        // levanta 7 cm en el sitio, sale marcha atrás hasta que el palé queda fuera de la caja y lo baja a media altura
         const k = (d - L3) / L4;
         const lift = clamp01(k / 0.2);
-        const back = smooth(clamp01((k - 0.2) / 0.8));
-        Object.assign(pose, { x: pickX - L4 * back, z: CZ - R, ry: Math.PI / 2, h: hPick + (hLift - hPick) * lift + (hHold - hLift) * back, held: lift > 0 });
+        const back = smooth(clamp01((k - 0.2) / 0.6));
+        const lower = smooth(clamp01((k - 0.8) / 0.2));
+        Object.assign(pose, { x: pickX - L4 * back, z: CZ - R, ry: Math.PI / 2, h: hPick + (hLift - hPick) * lift + (hHold - hLift) * lower, held: lift > 0 });
       }
       return pose;
     };
@@ -1061,7 +1078,7 @@ export function buildDepot(ctx) {
     // una sola pieza rígida, una malla por material (16 dibujos en lugar de 19). Solo se ve con m = 1.
     const flHold = (() => {
       const g = makeForklift(M, { forkHeight: hHold, pallet: null, driver: true });
-      const p2 = makePallet(M, { kind: 'plomo' });
+      const p2 = makePallet(M, { kind: 'plomo', across: true });
       p2.position.set(0, hHold + PAL_DY, REACH);
       p2.rotation.y = Math.PI / 2;
       g.add(p2, blob(1.6, 3.2, 0, 0.012, -0.1));
@@ -1133,13 +1150,14 @@ export function buildDepot(ctx) {
   }
   // la batería de coche eléctrico en su embalaje, ya en el suelo al sur del camión (paralela a él), y los dos
   // operarios de muelle: uno junto al embalaje, de espaldas al patio, y otro en la esquina trasera guiando a la
-  // carretilla
+  // carretilla (fuera del barrido de la hoja derecha de las puertas traseras, que gira 1,28 m alrededor de su
+  // bisagra, en (-11,18, -1,78), mientras se abren)
   place(makeEVCrate(M), -4.9, 2.3, Math.PI / 2, 0, 'embalajeVE');
   shadow(-4.9, 2.3, 2.6, 1.9);
   place(makePerson(M, { role: 'muelle', pose: 'look' }), -4.5, 3.55, Math.PI - 0.15, 0, 'operarioMuelle');
   shadow(-4.5, 3.55, 0.7, 0.5);
-  place(makePerson(M, { role: 'muelle', pose: 'stand' }), -11.9, -2.45, Math.atan2(-1.6, 1.9), 0, 'operarioMuelle');
-  shadow(-11.9, -2.45, 0.7, 0.5);
+  place(makePerson(M, { role: 'muelle', pose: 'stand' }), -11.55, -3.38, Math.atan2(-2.02, 2.88), 0, 'operarioMuelle');
+  shadow(-11.55, -3.38, 0.7, 0.5);
   // bahía de descarga: líneas discontinuas a ambos lados del camión
   dashed(-12.4, -2.0, -2.6, -2.0, 0.6, 0.4, 0.08, M.amberMatte);
   dashed(-12.4, 1.05, -2.6, 1.05, 0.6, 0.4, 0.08, M.amberMatte);

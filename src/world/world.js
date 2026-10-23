@@ -366,41 +366,113 @@ export function buildWorld(scene, { debug = false } = {}) {
   };
   const simCurve = (path) => new THREE.CatmullRomCurve3(path.map(([x, z]) => V(x, 0, z)), false, 'centripetal');
   const _sp = new THREE.Vector3();
+  const _st = new THREE.Vector3();
   const _sa = new THREE.Vector3();
   const _sb = new THREE.Vector3();
-  // suelo bajo (x, z) o, sobre el agua, la cota de referencia
+  // losas interiores (suelo M.floor de ≥ 2 × 2 m): las de los edificios de kit.js · makeCutaway, 6 cm sobre la tapa de la
+  // isla (laboratorio, nave de reutilización, puesto de desmontaje de sB y nave de recepción de s5), y el suelo de la
+  // zona de separación del reciclaje. Los tractores solo entran en el laboratorio y en la nave (los otros dos se detienen
+  // ante la puerta de sB y la persiana de s5), pero el filtro las recoge todas: dentro de ellas las ruedas apoyan en la
+  // losa, no en la tapa
+  const slabs = [];
+  {
+    const b = new THREE.Box3();
+    root.updateMatrixWorld(true);
+    root.traverse((o) => {
+      if (!o.isMesh || o.material !== M.floor) return;
+      b.setFromObject(o);
+      if (b.max.y - b.min.y > 0.1 || b.max.x - b.min.x < 2 || b.max.z - b.min.z < 2) return;
+      slabs.push([b.min.x, b.max.x, b.min.z, b.max.z, b.max.y]);
+    });
+  }
+  // suelo bajo (x, z) (tablero, tapa de la isla o losa interior) o, sobre el agua, la cota de referencia
   const ground = (x, z, fallback) => {
-    const s = surfaceY(x, z);
+    let s = surfaceY(x, z);
+    for (const [x0, x1, z0, z1, y] of slabs) if (x > x0 && x < x1 && z > z0 && z < z1 && (s === null || y > s)) s = y;
     return s === null ? fallback : s;
   };
-  // pose de una pieza sobre la curva: origen en el punto a `d` m del comienzo, rumbo de la tangente y cabeceo del suelo
-  // entre sus dos ejes (±`half` m)
-  const poseOn = (obj, info, d, half) => {
+  // punto de la curva a `s` m de su comienzo; fuera de [0, L] sigue la tangente del extremo
+  const pointAtDist = (info, s, out) => {
     const L = info.len;
-    const u = THREE.MathUtils.clamp(d / L, 0, 1);
-    info.curve.getPointAt(u, _sp);
-    info.curve.getPointAt(THREE.MathUtils.clamp((d + 0.4) / L, 0, 1), _sa);
-    info.curve.getPointAt(THREE.MathUtils.clamp((d - 0.4) / L, 0, 1), _sb);
-    let hx = _sa.x - _sb.x;
-    let hz = _sa.z - _sb.z;
-    const hl = Math.hypot(hx, hz) || 1;
-    hx /= hl;
-    hz /= hl;
-    const y0 = ground(_sp.x, _sp.z, obj.position.y);
-    const yf = ground(_sp.x + hx * half, _sp.z + hz * half, y0);
-    const yb = ground(_sp.x - hx * half, _sp.z - hz * half, y0);
-    obj.position.set(_sp.x, Math.max(y0, (yf + yb) / 2), _sp.z);
-    obj.rotation.set(-Math.atan2(yf - yb, 2 * half), Math.atan2(hx, hz), 0);
+    if (s >= 0 && s <= L) return info.curve.getPointAt(s / L, out);
+    const end = s > L ? 1 : 0;
+    info.curve.getPointAt(end, out);
+    info.curve.getTangentAt(end, _st);
+    return out.addScaledVector(_st, s > L ? s - L : s);
   };
+  // cota de apoyo de una rueda de radio `r` en (x, z): la rueda es un círculo en el plano de la marcha cuyo punto de
+  // apoyo nominal, (x, z), queda bajo su eje en perpendicular al bastidor, cabeceado `sa` (seno del cabeceo, + morro
+  // arriba); con cabeceo, el centro de la rueda queda r·sa detrás de ese punto. Cada punto de la huella a `q` m del
+  // centro (a lo largo de la marcha) sostiene el punto de apoyo √(r² − q²) − r·cos(cabeceo) más arriba o más abajo; a
+  // lo ancho (±9 cm) la banda es plana. En una pendiente uniforme manda el propio punto de apoyo (la rueda la toca bajo
+  // su eje, sin quedar en el aire); en un escalón (borde de una losa, canto del rebaje de un tablero) o en una cresta la
+  // rueda se apoya en la arista en vez de meterse en ella. null fuera de islas, tableros y losas.
+  const WHEEL_Q = [0, 0.4, -0.4, 0.65, -0.65, 0.85, -0.85];
+  const wheelGround = (x, z, ux, uz, r, sa) => {
+    const rc = r * Math.sqrt(1 - sa * sa);
+    let best = null;
+    const probe = (da, dl, lift) => {
+      const y = ground(x + ux * da + uz * dl, z + uz * da - ux * dl, null);
+      if (y !== null && (best === null || y + lift > best)) best = y + lift;
+    };
+    probe(0, 0, 0);
+    for (const k of WHEEL_Q) probe((k - sa) * r, 0, r * Math.sqrt(1 - k * k) - rc);
+    probe(0, 0.09, 0);
+    probe(0, -0.09, 0);
+    return best;
+  };
+  // pose de una pieza sobre la curva con sus dos ejes (a ±`half` m del punto a `d` m del comienzo) apoyados en ella,
+  // como un bogie: el centro queda en el punto medio de los ejes y el rumbo va del eje trasero al delantero. En las
+  // curvas el centro se mete hacia dentro y los extremos apenas barren por fuera. La altura, el cabeceo y el balanceo
+  // salen del apoyo de cada rueda (a ±`side` m del eje, radio `r`): en los cambios de pendiente y en los bordes de los
+  // tableros y las losas ninguna rueda flota ni se hunde (plano medio de las cuatro).
+  const poseOn = (obj, info, d, half, side, r) => {
+    pointAtDist(info, d + half, _sa);
+    pointAtDist(info, d - half, _sb);
+    const hx = _sa.x - _sb.x;
+    const hz = _sa.z - _sb.z;
+    const hl = Math.hypot(hx, hz) || 1;
+    const ux = hx / hl;
+    const uz = hz / hl;
+    // lateral +x local (hacia la izquierda de la marcha)
+    const lx = uz * side;
+    const lz = -ux * side;
+    // dos pasadas: la primera sin cabeceo y la segunda con el cabeceo que sale de ella (la huella de cada rueda depende
+    // de él). Una rueda en el canto de una boca de puente, fuera del contorno de la isla y del tablero (surfaceY null),
+    // toma la cota de la otra rueda de su eje o, si tampoco, la del otro eje
+    let fl, fr, bl, br;
+    let sa = 0;
+    for (let pass = 0; pass < 2; pass++) {
+      fl = wheelGround(_sa.x + lx, _sa.z + lz, ux, uz, r, sa);
+      fr = wheelGround(_sa.x - lx, _sa.z - lz, ux, uz, r, sa);
+      bl = wheelGround(_sb.x + lx, _sb.z + lz, ux, uz, r, sa);
+      br = wheelGround(_sb.x - lx, _sb.z - lz, ux, uz, r, sa);
+      fl ??= fr;
+      fr ??= fl;
+      bl ??= br;
+      br ??= bl;
+      fl ??= bl ?? obj.position.y;
+      fr ??= br ?? obj.position.y;
+      bl ??= fl;
+      br ??= fr;
+      const dy = (fl + fr - bl - br) / 2;
+      sa = dy / Math.hypot(dy, hl);
+    }
+    obj.position.set((_sa.x + _sb.x) / 2, (fl + fr + bl + br) / 4, (_sa.z + _sb.z) / 2);
+    obj.rotation.set(-Math.atan2((fl + fr - bl - br) / 2, hl), Math.atan2(ux, uz), Math.atan2((fl + bl - fr - br) / 2, 2 * side));
+  };
+  // bulón del enganche del tractor (actors.js · buildTug: boca en y 0,35 que acaba en z -1,65; el bulón, en su fondo)
+  const HITCH = new THREE.Vector3(0, 0.35, -1.66);
   const tractors = SIM.tractors.map((spec) => {
     const curve = simCurve(spec.path);
     const len = curve.getLength();
     // distancia sobre la curva del punto de espera
     let wait = 0;
     for (let i = 1; i <= spec.wait; i++) wait += Math.hypot(spec.path[i][0] - spec.path[i - 1][0], spec.path[i][1] - spec.path[i - 1][1]);
-    const tug = A.makeTowTractor(M, { carts: 1, load: spec.load === 'litio' ? 'litio' : 'vacio', driver: true });
+    const tug = A.makeTowTractor(M, { carts: 1, load: spec.load === 'litio' ? 'litio' : 'vacio', driver: true, drawbar: false });
     const cart = tug.userData.carts[0];
-    const hitch = -cart.position.z; // distancia del origen del tractor al centro del remolque
+    // distancia del origen del tractor al centro del remolque con los dos en línea (la de actors.js · makeTowTractor)
+    let hitch = -cart.position.z;
     tug.remove(cart);
     cart.position.set(0, 0, 0);
     if (spec.load !== 'litio') cart.add(leadLoad(spec.count));
@@ -417,11 +489,119 @@ export function buildWorld(scene, { debug = false } = {}) {
       root.add(c);
       return c;
     });
-    const cartLen = spec.load === 'litio' ? 2.6 : 1.7;
+    const { L: cartLen, W: cartW } = A.CART[spec.load === 'litio' ? 'litio' : 'vacio'];
+    // semivía de las ruedas del remolque (actors.js · buildCart: a 0,12 m de cada costado)
+    const cartSide = cartW / 2 - 0.12;
     parts[0].add(blob(1.7, 3.0, -0.05));
     parts[1].add(blob(spec.load === 'litio' ? 2.1 : 1.7, cartLen + 0.3));
-    return { spec, curve, len, info: { curve, len }, wait, hitch, cartLen, tug: parts[0], cart: parts[1], d: -1 };
+    // lanza: gira bajo el frente del remolque (actors.js · buildCart: plataforma de 0,32 a 0,42 m), donde puede abrirse
+    // de lado sin rozar su canto, y llega al bulón del enganche del tractor, así que en las curvas y en los cambios de
+    // pendiente no se clava en el suelo, no queda en el aire ni cambia de largo
+    const bar = new THREE.Mesh(K.geo('simDrawbar', () => new THREE.BoxGeometry(0.06, 0.06, 1).translate(0, 0, 0.5)), M.darkSteel);
+    bar.position.set(0, 0.26, cartLen / 2 - 0.02);
+    bar.receiveShadow = true;
+    parts[1].add(bar);
+    // largo de la lanza (rígida): la que deja el remolque a `hitch` m o la de la ruta (layout.js · SIM, `bar`), que
+    // entonces fija `hitch`
+    const dy = HITCH.y - bar.position.y;
+    let barLen = Math.hypot(hitch + HITCH.z - bar.position.z, dy);
+    if (spec.bar) {
+      barLen = spec.bar;
+      hitch = -HITCH.z + Math.sqrt(barLen * barLen - dy * dy) + bar.position.z;
+    }
+    return { spec, curve, len, info: { curve, len }, wait, hitch, cartLen, cartSide, bar, barLen, tug: parts[0], cart: parts[1], d: -1 };
   });
+  // orienta la lanza del remolque hasta el bulón del enganche del tractor. Con el remolque colocado por placeTrain mide
+  // siempre barLen (la escala solo absorbe los milímetros de la búsqueda)
+  const _hp = new THREE.Vector3();
+  const _bz = new THREE.Vector3(0, 0, 1);
+  function aimDrawbar(t) {
+    t.tug.updateMatrixWorld(true);
+    t.cart.updateMatrixWorld(true);
+    t.cart.worldToLocal(t.tug.localToWorld(_hp.copy(HITCH))).sub(t.bar.position);
+    const l = _hp.length() || 1;
+    t.bar.quaternion.setFromUnitVectors(_bz, _hp.multiplyScalar(1 / l));
+    t.bar.scale.set(1, 1, l);
+  }
+  // Tren de arrastre: el tractor va sobre la curva a `d` m de su comienzo y el remolque, de seguimiento (sus dos ejes
+  // giran y pisan la huella del tractor, como los de los trenes de arrastre de las naves), también sobre la curva, a
+  // la distancia que deja su lanza. En recta el remolque queda a `hitch` m del tractor; en las curvas, algo más cerca,
+  // porque el enganche barre por fuera. Se busca sobre la curva, junto a d − hitch, la posición del remolque cuyo bulón
+  // queda a barLen del enganche (en planta, corregida después con el cabeceo y el balanceo reales del remolque).
+  const _hw = new THREE.Vector3();
+  const _pw = new THREE.Vector3();
+  const _pa = new THREE.Vector3();
+  const _pb = new THREE.Vector3();
+  const _piv = [0, 0];
+  // bulón del remolque en planta con el remolque apoyado en `dc` (sin cabeceo ni balanceo)
+  const pivotAt = (t, dc) => {
+    const hc = t.cartLen / 2 - 0.3;
+    pointAtDist(t.info, dc + hc, _pa);
+    pointAtDist(t.info, dc - hc, _pb);
+    const hx = _pa.x - _pb.x;
+    const hz = _pa.z - _pb.z;
+    const k = t.bar.position.z / (Math.hypot(hx, hz) || 1);
+    _piv[0] = (_pa.x + _pb.x) / 2 + hx * k;
+    _piv[1] = (_pa.z + _pb.z) / 2 + hz * k;
+    return _piv;
+  };
+  // raíz de f (creciente hacia atrás: más lejos del enganche) más cercana a s0, por pasos de 5 cm y bisección
+  const rootNear = (f, s0) => {
+    let a = s0;
+    let fa = f(a);
+    if (Math.abs(fa) < 1e-5) return a;
+    const dir = fa > 0 ? 1 : -1;
+    for (let k = 1; k <= 40; k++) {
+      const b = s0 + dir * k * 0.05;
+      const fb = f(b);
+      if (fb === 0 || Math.sign(fb) !== Math.sign(fa)) {
+        let lo = a;
+        let hi = b;
+        for (let i = 0; i < 16; i++) {
+          const m = (lo + hi) / 2;
+          const fm = f(m);
+          if (Math.sign(fm) === Math.sign(fa)) lo = m;
+          else hi = m;
+        }
+        return (lo + hi) / 2;
+      }
+      a = b;
+      fa = fb;
+    }
+    return s0;
+  };
+  function placeTrain(t, d) {
+    poseOn(t.tug, t.info, d, 0.78, A.TUG_TRACK, 0.27);
+    t.tug.updateMatrixWorld(true);
+    t.tug.localToWorld(_hw.copy(HITCH));
+    // primera aproximación en planta (sin cabeceo ni balanceo del remolque) y ajuste fino, por secantes, con el remolque
+    // ya apoyado en el suelo: en las rampas de los puentes el bulón sube o baja respecto al enganche
+    const lh = Math.sqrt(t.barLen * t.barLen - (HITCH.y - t.bar.position.y) ** 2);
+    const err = (dc) => {
+      poseOn(t.cart, t.info, dc, t.cartLen / 2 - 0.3, t.cartSide, 0.16);
+      t.cart.updateMatrixWorld(true);
+      t.cart.localToWorld(_pw.copy(t.bar.position));
+      return _pw.distanceTo(_hw) - t.barLen;
+    };
+    let a = rootNear((s) => {
+      const [px, pz] = pivotAt(t, s);
+      return Math.hypot(px - _hw.x, pz - _hw.z) - lh;
+    }, d - t.hitch);
+    let ea = err(a);
+    if (Math.abs(ea) > 0.001) {
+      let b = a + ea;
+      let eb = err(b);
+      for (let i = 0; i < 6 && Math.abs(eb) > 0.0005 && eb !== ea; i++) {
+        const c = b - (eb * (b - a)) / (eb - ea);
+        a = b;
+        ea = eb;
+        b = c;
+        eb = err(b);
+      }
+      if (Math.abs(eb) > Math.abs(ea)) err(a);
+    }
+    aimDrawbar(t);
+  }
   // perfil de velocidad de cada viaje: arranca y frena en el 15 % de su tramo y va a velocidad constante en medio (la
   // cámara de la clasificación acompaña al de reutilización a un ritmo regular)
   const ACC = 0.15;
@@ -448,8 +628,7 @@ export function buildWorld(scene, { debug = false } = {}) {
       const d = THREE.MathUtils.lerp(t.wait, t.len, easeTrip(local));
       if (d !== t.d) {
         t.d = d;
-        poseOn(t.tug, t.info, d, 0.78);
-        poseOn(t.cart, t.info, d - t.hitch, t.cartLen / 2 - 0.3);
+        placeTrain(t, d);
       }
       if (local >= 1) arrived[t.spec.route] += t.spec.count;
       const k = Math.hypot(t.tug.position.x - s4.x, t.tug.position.z - s4.z);
@@ -495,14 +674,16 @@ export function buildWorld(scene, { debug = false } = {}) {
 
   // las balizas de bordillo que quedan en el paso de un tractor de la simulación (las del borde de s3 y s2 junto a la ruta
   // de reutilización) se quitan: el tractor (1,3 m de ancho, 1,8 m el remolque del embalaje) no cabe entre ellas y los
-  // pilares o parterres de las esquinas
+  // pilares o parterres de las esquinas. La de la esquina suroeste de s3 (-13,2; 5,3) se quita también: la ruta pasaba
+  // a 1 m de ella y ahora, más ceñida al laboratorio, a 1,37 m, pero sigue en el paso y el encuadre no cambia
   {
     const samples = tractors.flatMap((t) => t.curve.getSpacedPoints(Math.ceil(t.len * 3)).map((q) => [q.x, q.z, t.spec.load === 'litio' ? 1.3 : 1.15]));
+    const DROP = [[-13.19, 5.26]];
     for (let i = lamps.length - 1; i >= 0; i--) {
       const l = lamps[i];
       // las del cruce (bordillos de los parterres) quedan fuera de las calzadas: se conservan
       if (chunkKeyFor(l.x, l.z) === 's4') continue;
-      if (samples.some(([x, z, r]) => Math.hypot(l.x - x, l.z - z) < r)) lamps.splice(i, 1);
+      if (DROP.some(([x, z]) => Math.hypot(l.x - x, l.z - z) < 0.2) || samples.some(([x, z, r]) => Math.hypot(l.x - x, l.z - z) < r)) lamps.splice(i, 1);
     }
   }
   const lampsMesh = K.scatterLamps(M, lamps);
@@ -543,6 +724,8 @@ export function buildWorld(scene, { debug = false } = {}) {
       const tugPts = grid(-0.64, 0.64, 0.22, 1.55, -1.42, 1.32, 3, 3, 6);
       window.__ecobatSim = {
         tractors,
+        // suelo de la simulación bajo (x, z) (null fuera de islas, tableros y losas)
+        ground: (x, z) => ground(x, z, null),
         // cajas (en mundo, alineadas con los ejes) de lo sólido que corta el rectángulo [x0, x1] × [z0, z1] entre y0 e y1
         solids(x0, x1, z0, z1, y0 = -1, y1 = 50) {
           const out = [];
@@ -580,11 +763,10 @@ export function buildWorld(scene, { debug = false } = {}) {
           const hits = [];
           const wp = new THREE.Vector3();
           for (const t of tractors) {
-            const W = t.spec.load === 'litio' ? 1.8 : 1.4;
+            const W = A.CART[t.spec.load === 'litio' ? 'litio' : 'vacio'].W;
             const cartPts = grid(-W / 2 + 0.05, W / 2 - 0.05, 0.22, t.spec.load === 'litio' ? 1.1 : 0.85, -t.cartLen / 2, t.cartLen / 2, 3, 2, 4);
             for (let d = t.wait - t.hitch - t.cartLen / 2; d <= t.len + 1e-6; d += step) {
-              poseOn(t.tug, t.info, Math.max(d, t.wait), 0.78);
-              poseOn(t.cart, t.info, Math.max(d, t.wait) - t.hitch, t.cartLen / 2 - 0.3);
+              placeTrain(t, Math.max(d, t.wait));
               for (const [part, pts] of [['tug', tugPts], ['cart', cartPts]]) {
                 const g = part === 'tug' ? t.tug : t.cart;
                 g.updateMatrixWorld(true);

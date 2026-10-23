@@ -437,10 +437,16 @@ function leadTop(g, M, nx, nz, y, caps = true) {
 }
 
 // Palé europeo 1,2 × 0,8 m (x × z), 0,144 m de alto.
-function palletBase(g, M, w = 1.2, d = 0.8) {
+function palletBase(g, M, w = 1.2, d = 0.8, across = false) {
   ob(g, M.wood, w, 0.022, d, 0, 0.122, 0);
-  // tacos corridos a lo largo de z: las horquillas entran por el frente entre ellos
-  [-1, 0, 1].forEach((k) => ob(g, M.wood, 0.1, 0.1, d, k * (w / 2 - 0.05), 0.022, 0));
+  // tacos corridos a lo largo de z: las horquillas entran por el frente entre ellos. Con `across` (palé de cuatro
+  // entradas), cada taco lleva dos entalladuras en z = ±[0,19; 0,33] para los brazos que entran por el costado, a lo
+  // largo de x (buildForks: brazos de 0,1 m en ±0,26): pasan por ellas sin cruzar la madera
+  [-1, 0, 1].forEach((k) => {
+    const x = k * (w / 2 - 0.05);
+    if (!across) ob(g, M.wood, 0.1, 0.1, d, x, 0.022, 0);
+    else [[-d / 2, -0.33], [-0.19, 0.19], [0.33, d / 2]].forEach(([z0, z1]) => ob(g, M.wood, 0.1, 0.1, z1 - z0, x, 0.022, (z0 + z1) / 2));
+  });
   ob(g, M.wood, w, 0.022, d * 0.9, 0, 0, 0);
   return 0.144;
 }
@@ -454,9 +460,9 @@ function straps(g, mat, w, h, d, y, along = 'z', n = 2) {
   }
 }
 
-function buildLeadPallet(M, layers, detail) {
+function buildLeadPallet(M, layers, detail, across = false) {
   const g = new THREE.Group();
-  let y = palletBase(g, M);
+  let y = palletBase(g, M, 1.2, 0.8, across);
   const nx = 4;
   const nz = 4;
   const W = nx * LEAD.w;
@@ -556,7 +562,8 @@ function buildPelletBag(M) {
 // kind: 'plomo' (count = capas de baterías, por defecto 2) | 'modulos' (count = módulos, por defecto 8) |
 // 'lingotes' (count = capas de lingotes, por defecto 4) | 'granza' (un big bag). detail: 'low' quita las tapas
 // de los bornes (palés del fondo de un camión).
-export function makePallet(M, { kind = 'plomo', count, detail = 'high', dynamic = false } = {}) {
+// across: palé de baterías de plomo de cuatro entradas (las horquillas lo cogen por el costado de 0,8 m; palletBase)
+export function makePallet(M, { kind = 'plomo', count, detail = 'high', dynamic = false, across = false } = {}) {
   let g;
   if (kind === 'modulos') g = variant(M, `pallet|modulos|${count ?? 8}`, () => buildModulePallet(M, count ?? 8));
   else if (kind === 'lingotes') {
@@ -575,7 +582,7 @@ export function makePallet(M, { kind = 'plomo', count, detail = 'high', dynamic 
       b.add(bag);
       return b;
     });
-  } else g = variant(M, `pallet|plomo|${count ?? 2}|${detail}`, () => buildLeadPallet(M, Math.max(1, count ?? 2), detail));
+  } else g = variant(M, `pallet|plomo|${count ?? 2}|${detail}${across ? '|across' : ''}`, () => buildLeadPallet(M, Math.max(1, count ?? 2), detail, across));
   g.userData.kind = kind;
   return finish(g, { dynamic });
 }
@@ -806,7 +813,8 @@ function truckCargo(M, kind, s, loaded) {
   const rear = len / 2 - 0.5;
   if (kind === 'recogida' || kind === 'expedicion') {
     const rows = kind === 'recogida' ? 3 : 4;
-    for (let i = 0; i < rows; i++) [-0.62, 0.62].forEach((x) => add(makePallet(M, { kind: 'plomo', detail: i === 0 ? 'high' : 'low' }), x, rear - i * 0.86));
+    // dos filas de palés de 1,2 m entre los costados de la caja (2,4 m libres): ejes a ±0,6, pegados sin meterse en ellos
+    for (let i = 0; i < rows; i++) [-0.6, 0.6].forEach((x) => add(makePallet(M, { kind: 'plomo', detail: i === 0 ? 'high' : 'low' }), x, rear - i * 0.86));
     if (kind === 'recogida') add(makeEVCrate(M), 0, -len / 2 + 1.35);
   } else if (kind === 'ligero') {
     [0, 1].forEach((i) => [-0.45, 0.45].forEach((x) => add(makePallet(M, { kind: 'modulos', count: i ? 4 : 8 }), x, len / 2 - 0.7 - i * 1.3, Math.PI / 2)));
@@ -931,27 +939,31 @@ export function makeForklift(M, { forkHeight = 0.2, pallet = null, driver = true
 }
 
 // ---------- Tractor de arrastre ----------
-// Tractor de equipajes de aeropuerto (2,6 × 1,3 m) y remolques planos detrás (hacia -z), enganchados por lanza.
+// semivía de las ruedas del tractor (world.js apoya cada rueda en el suelo)
+export const TUG_TRACK = 0.53;
+// Tractor de equipajes de aeropuerto (2,6 × 1,18 m; 1,29 m de buje a buje) y remolques planos detrás (hacia -z),
+// enganchados por lanza. Compacto, como los de las naves: cabe por la franja oeste del laboratorio (layout.js · SIM).
 function buildTug(M, driver) {
   const g = new THREE.Group();
-  ext(g, M.graphite, [[-1.3, 0.2], [1.25, 0.2], [1.3, 0.5], [-1.3, 0.5]], 1.3, 0, 0.03);
-  ext(g, M.ivoryPanel, [[0.25, 0.5], [1.3, 0.5], [1.3, 0.78], [1.15, 0.92], [0.25, 0.95]], 1.24, 0, 0.03);
-  ext(g, M.ivoryPanel, [[-1.3, 0.5], [-0.8, 0.5], [-0.8, 0.72], [-1.3, 0.72]], 1.24, 0, 0.02);
-  bx(g, M.rubber, 1.36, 0.16, 0.12, 0, 0.32, 1.33);
-  bx(g, M.rubber, 1.36, 0.16, 0.1, 0, 0.32, -1.33);
+  ext(g, M.graphite, [[-1.3, 0.2], [1.25, 0.2], [1.3, 0.5], [-1.3, 0.5]], 1.18, 0, 0.03);
+  ext(g, M.ivoryPanel, [[0.25, 0.5], [1.3, 0.5], [1.3, 0.78], [1.15, 0.92], [0.25, 0.95]], 1.12, 0, 0.03);
+  ext(g, M.ivoryPanel, [[-1.3, 0.5], [-0.8, 0.5], [-0.8, 0.72], [-1.3, 0.72]], 1.12, 0, 0.02);
+  bx(g, M.rubber, 1.18, 0.16, 0.12, 0, 0.32, 1.33);
+  bx(g, M.rubber, 1.18, 0.16, 0.1, 0, 0.32, -1.33);
   // asiento, respaldo y volante
   bx(g, M.grip, 0.5, 0.1, 0.45, 0, 0.62, -0.4);
   bar(g, M.grip, new THREE.Vector3(0, 0.66, -0.66), new THREE.Vector3(0, 1.12, -0.74), 0.5, 0.08);
   bar(g, M.darkSteel, new THREE.Vector3(0, 0.88, 0.3), new THREE.Vector3(0, 0.97, 0.06), 0.05);
   put(g, new THREE.CylinderGeometry(0.15, 0.15, 0.03, 10, 1, true), M.grip, 0, 0.98, 0.04, -0.85);
-  // faros, baliza ámbar sobre mástil y enganche
-  [-1, 1].forEach((k) => bx(g, M.warmGlow, 0.18, 0.08, 0.03, k * 0.42, 0.74, 1.31));
-  bar(g, M.darkSteel, new THREE.Vector3(0.55, 0.72, -1.15), new THREE.Vector3(0.55, 1.55, -1.15), 0.04);
-  put(g, new THREE.CylinderGeometry(0.06, 0.07, 0.11, 6), M.amberGlow, 0.55, 1.6, -1.15);
-  bx(g, M.darkSteel, 0.14, 0.06, 0.2, 0, 0.35, -1.45);
+  // faros, baliza ámbar sobre mástil y enganche: boca de 0,3 m que sobresale 0,27 m del paragolpes (con el bulón en su
+  // fondo, en z -1,66, la lanza puede abrirse más de 90° sin tocar el paragolpes: world.js · HITCH)
+  [-1, 1].forEach((k) => bx(g, M.warmGlow, 0.18, 0.08, 0.03, k * 0.38, 0.74, 1.31));
+  bar(g, M.darkSteel, new THREE.Vector3(0.49, 0.72, -1.15), new THREE.Vector3(0.49, 1.55, -1.15), 0.04);
+  put(g, new THREE.CylinderGeometry(0.06, 0.07, 0.11, 6), M.amberGlow, 0.49, 1.6, -1.15);
+  bx(g, M.darkSteel, 0.14, 0.06, 0.3, 0, 0.35, -1.5);
   [-1, 1].forEach((k) => {
-    wheel(g, M.rubber, M.steel, 0.27, 0.2, k * 0.6, 0.27, 0.78, 8);
-    wheel(g, M.rubber, M.steel, 0.27, 0.2, k * 0.6, 0.27, -0.78, 8);
+    wheel(g, M.rubber, M.steel, 0.27, 0.2, k * TUG_TRACK, 0.27, 0.78, 8);
+    wheel(g, M.rubber, M.steel, 0.27, 0.2, k * TUG_TRACK, 0.27, -0.78, 8);
   });
   if (driver) {
     const p = buildPerson(M, 'conductor', 'seated', 0);
@@ -961,9 +973,11 @@ function buildTug(M, driver) {
   return g;
 }
 
-// Remolque plano: origen en el centro de la plataforma (y = 0 suelo); la lanza llega hasta z = +CART[load].reach.
-const CART = { plomo: { L: 1.7, W: 1.4 }, vacio: { L: 1.7, W: 1.4 }, litio: { L: 2.6, W: 1.8 } };
-function buildCart(M, load) {
+// Remolque plano: origen en el centro de la plataforma (y = 0 suelo); con `drawbar`, la lanza rígida va del frente
+// (z = L/2) hasta z = L/2 + 0,75.
+// El de palé (1,3 m) deja 5 cm por lado al palé europeo de 1,2 m y cabe con el tractor por la franja oeste de s3.
+export const CART = { plomo: { L: 1.7, W: 1.3 }, vacio: { L: 1.7, W: 1.3 }, litio: { L: 2.6, W: 1.8 } };
+function buildCart(M, load, drawbar = true) {
   const g = new THREE.Group();
   const { L, W } = CART[load] || CART.plomo;
   const dy = 0.42;
@@ -973,7 +987,8 @@ function buildCart(M, load) {
     [-1, 1].forEach((j) => ob(g, M.graphite, 0.05, 0.3, 0.05, k * (W / 2 - 0.025), dy, j * (L / 2 - 0.025)));
     bx(g, M.graphite, 0.04, 0.04, L, k * (W / 2 - 0.02), dy + 0.28, 0);
   });
-  bar(g, M.darkSteel, new THREE.Vector3(0, dy - 0.05, L / 2), new THREE.Vector3(0, 0.36, L / 2 + 0.75), 0.06);
+  // lanza rígida (sin `drawbar`, la pone quien mueve el remolque: world.js la articula hasta el enganche del tractor)
+  if (drawbar) bar(g, M.darkSteel, new THREE.Vector3(0, dy - 0.05, L / 2), new THREE.Vector3(0, 0.36, L / 2 + 0.75), 0.06);
   bx(g, M.darkSteel, 0.14, 0.06, 0.18, 0, 0.35, -L / 2 - 0.08);
   [-1, 1].forEach((k) => [-1, 1].forEach((j) => wheel(g, M.rubber, null, 0.16, 0.12, k * (W / 2 - 0.12), 0.16, j * (L / 2 - 0.3), 8)));
   // carga sujeta con cinchas de trinquete (ámbar) hasta el bastidor
@@ -993,13 +1008,14 @@ function buildCart(M, load) {
 
 // carts: número de remolques; load: 'plomo' (palé de baterías con bornes tapados) | 'litio' (embalaje del paquete
 // de coche eléctrico) | 'vacio'. userData.carts: grupos de cada remolque (giran en su enganche si se quiere).
-export function makeTowTractor(M, { carts = 1, load = 'plomo', driver = true, dynamic = false } = {}) {
+// drawbar: false deja los remolques sin lanza (la articula quien los mueve).
+export function makeTowTractor(M, { carts = 1, load = 'plomo', driver = true, drawbar = true, dynamic = false } = {}) {
   const g = variant(M, `tug|${driver}`, () => buildTug(M, driver));
   const list = [];
   const key = CART[load] ? load : 'plomo';
   let z = -1.5;
   for (let i = 0; i < carts; i++) {
-    const c = variant(M, `cart|${key}`, () => buildCart(M, key));
+    const c = variant(M, `cart|${key}|${drawbar}`, () => buildCart(M, key, drawbar));
     const { L } = CART[key];
     z -= 0.75 + L / 2 + 0.02;
     c.position.z = z;
@@ -1065,7 +1081,8 @@ function buildBESS(M, length, doorOpen) {
       ob(leaf, M.ivoryPanel, lw, dh, 0.04, -k * lw / 2, 0, 0.02);
       ob(leaf, M.darkSteel, 0.03, dh * 0.7, 0.03, -k * (lw - 0.1), dh * 0.15, 0.05);
       leaf.position.set(hx, y0 + 0.1, D / 2);
-      leaf.rotation.y = doorOpen ? k * 1.75 : 0;
+      // abiertas a 90°: las hojas vecinas giran en bisagras a 0,12 m y, más abiertas, se cruzarían entre sí
+      leaf.rotation.y = doorOpen ? (k * Math.PI) / 2 : 0;
       g.add(leaf);
     });
   }
