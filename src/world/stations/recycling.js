@@ -1591,7 +1591,8 @@ export function buildRecycling(ctx) {
   // ---------- camión de salida: lingotes y granza hacia la fábrica de baterías nuevas ----------
   // Espera cargado en el paso del murete este (ACCESS.east) durante el reciclaje; desde la trazabilidad hasta el
   // cierre sale por la calzada este hacia la fábrica (ACCESS.factory). Compactado, una malla por material; no
-  // proyecta sombra (el mapa de sombras es estático). Con movimiento reducido se queda aparcado.
+  // proyecta sombra (el mapa de sombras es estático). Con movimiento reducido está aparcado hasta la trazabilidad y,
+  // en el cierre, en la fábrica.
   // (K.compact une cabina, caja y carga en una malla por material: 12 llamadas en vez de 14)
   const truck = K.compact(makeTruck(M, { kind: 'lingotes', loaded: true, mergeCargo: true, dynamic: true }));
   truck.userData.dynamic = true;
@@ -1655,7 +1656,9 @@ export function buildRecycling(ctx) {
   const tTan = new THREE.Vector3();
   const smooth = (x) => x * x * (3 - 2 * x);
   const departure = (story) => {
-    if (!story || story.reduced || story.index < CH.trazabilidad) return 0;
+    // movimiento reducido: estado final de cada capítulo (aparcado hasta la trazabilidad; en el cierre, en la fábrica)
+    if (story && story.reduced) return story.index >= CH.cierre ? 1 : 0;
+    if (!story || story.index < CH.trazabilidad) return 0;
     if (story.index === CH.trazabilidad) return shoreU * smooth(clamp(story.local, 0, 1));
     return shoreU + (1 - shoreU) * smooth(clamp(story.local, 0, 1));
   };

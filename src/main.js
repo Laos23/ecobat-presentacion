@@ -22,7 +22,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const html = document.documentElement;
 const params = new URLSearchParams(location.search);
 const reducedQuery = matchMedia('(prefers-reduced-motion: reduce)');
-const POSTER = `${import.meta.env.BASE_URL}referencia-ecobat.png`;
+const POSTER = `${import.meta.env.BASE_URL}vista-ecobat.jpg`;
 const DEBUG = params.has('debug');
 
 function hasWebGL() {
@@ -438,6 +438,13 @@ async function start3D() {
   // la reutilización hasta la nave; sin la marca, en el ancla de la clasificación
   const simTo = tl.marks.simEnd ?? chSim.anchor;
   const simAt = (p) => THREE.MathUtils.clamp((p - simFrom) / Math.max(simTo - simFrom, 1e-4), 0, 1);
+  // Los contadores del panel muestran el resultado de la clasificación, no la llegada de los tractores: las 10
+  // baterías del ejemplo se clasifican una a una entre la entrada del capítulo y su ancla, donde se para la
+  // presentación con el panel en 2/1/7; después los tractores las llevan a su destino (la simulación sigue hasta
+  // 'simEnd'). Mismo reparto que layout.js · SIM: 2 de servicio, 1 de coche eléctrico y 7 de reciclaje.
+  const CLASS_ORDER = ['recycle', 'service', 'recycle', 'second', 'recycle', 'recycle', 'service', 'recycle', 'recycle', 'recycle'];
+  const classAt = (p) => THREE.MathUtils.clamp((p - chSim.in) / Math.max(chSim.anchor - chSim.in, 1e-4), 0, 1);
+  const classified = { service: 0, second: 0, recycle: 0 };
   const connAt = (p) => THREE.MathUtils.clamp((p - connFrom) / Math.max(chConn.anchor - connFrom, 1e-4), 0, 1);
   const story = { index: 0, vis: 1, local: 0, p: 0, sim: 0, route: null, conn: 0, reduced: false };
 
@@ -518,8 +525,11 @@ async function start3D() {
     current = cs.index;
     const sim = reduced ? (current >= CH.clasificacion ? 1 : 0) : simAt(p);
     const arrived = world.setSimulation(sim);
+    const nClass = Math.round((reduced ? (current >= CH.clasificacion ? 1 : 0) : classAt(p)) * CLASS_ORDER.length);
+    classified.service = classified.second = classified.recycle = 0;
+    for (let i = 0; i < nClass; i++) classified[CLASS_ORDER[i]]++;
     counts.forEach((el) => {
-      const v = String(arrived[el.dataset.route]);
+      const v = String(classified[el.dataset.route]);
       if (el.textContent !== v) el.textContent = v;
     });
     const conn = reduced ? (current >= CH.trazabilidad ? 1 : 0) : connAt(p);

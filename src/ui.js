@@ -281,8 +281,8 @@ export function buildStatic(root, reason, posterUrl) {
       <p class="static__reason">${esc(reason)}</p>
     </div>
     <figure class="static__poster">
-      <img src="${posterUrl}" alt="Ilustración de la primera versión del mundo EcoBat: depósito, taller, laboratorio, cruce de tres rutas, planta de reciclaje y centro de trazabilidad conectados por una línea lima." width="1983" height="793" loading="eager">
-      <figcaption>Ilustración conceptual de referencia de la primera versión; no muestra instalaciones reales ni la distribución actual del polígono.</figcaption>
+      <img src="${posterUrl}" alt="Vista general del mundo 3D de EcoBat: las islas del gestor de baterías (recogida, reutilización, laboratorio, cruce con desmontaje y segunda vida, reciclaje y centro de trazabilidad) unidas por una línea lima, con la ciudad iluminada al fondo." width="1600" height="640" loading="eager">
+      <figcaption>Captura del mundo 3D de esta presentación: el polígono del gestor de baterías, con la ciudad al fondo. Es una maqueta; no muestra instalaciones reales.</figcaption>
     </figure>
     <ol class="static__steps">
       ${chapters

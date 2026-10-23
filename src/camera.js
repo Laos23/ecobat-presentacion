@@ -76,13 +76,15 @@ export const KEYS = [
   { p: V(33.4, 6.6, -3.4), s: V(34.4, 4.3, -10), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 5, role: 'out' },
   // breve subida hacia el noroeste, a la isla de segunda vida
   { p: V(31, 10, -6), s: V(24, 6, -20), fov: 44, v: 0.8 },
-  { p: V(22, 12, -15), s: V(19.5, 7.5, -28), fov: 44, v: 0.8 },
-  // 6 · Segunda vida: el contenedor de almacenamiento bajo la marquesina solar, con su armario de conversión
-  { p: V(15.6, 10.2, -20.2), s: V(19.6, 7.6, -28.5), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'in' },
-  { p: V(17.0, 9.6, -21.0), s: V(20.5, 7.6, -28.5), sx: 0.22, fov: 44, v: 0.3, hold: 5, ch: 6, role: 'anchor' },
-  { p: V(18.6, 9.4, -21.4), s: V(21.5, 7.5, -28.6), sx: 0.2, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'out' },
+  { p: V(23.5, 11.6, -12.5), s: V(19.5, 7.5, -28), fov: 44, v: 0.8 },
+  // 6 · Segunda vida: el contenedor de almacenamiento bajo la marquesina solar, con su armario de conversión y la
+  // pantalla del ejemplo; a media distancia, para que el conjunto quede arriba a la derecha, libre del texto y de la
+  // tarjeta de datos, con la ciudad al fondo
+  { p: V(17.0, 10.6, -14.6), s: V(19.8, 7.4, -28.2), sx: 0.2, sy: 0.17, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'in' },
+  { p: V(18.6, 10.3, -15.2), s: V(20.6, 7.4, -28.2), sx: 0.22, sy: 0.19, fov: 44, v: 0.3, hold: 5, ch: 6, role: 'anchor' },
+  { p: V(20.2, 10.2, -15.6), s: V(21.4, 7.4, -28.2), sx: 0.2, sy: 0.17, fov: 44, v: 0.45, hold: 3, ch: 6, role: 'out' },
   // vuelta al sur sobre el cruce y descenso por el puente del sureste hasta la planta de reciclaje
-  { p: V(13.5, 12.5, -16), s: V(22, 5, -19), fov: 44, v: 0.6 },
+  { p: V(15.0, 12.6, -13.5), s: V(21.5, 5.5, -22.5), fov: 44, v: 0.6 },
   { p: V(11.5, 14, -8), s: V(24, 3.3, -8), fov: 44, v: 0.6 },
   { p: V(13.5, 12, -0.5), s: V(25, 2, 8), fov: 44, v: 0.6 },
   { p: V(18.2, 7.6, 3.0), s: V(26, 1.5, 12), fov: 45, v: 0.75 },
@@ -122,7 +124,7 @@ export const UNITS_PER_SCREEN = 24; // unidades de scroll por pantalla
 // 10 ventanas (portada, 8 capítulos y cierre) y 9 transiciones. La de clasificación es larga: en ella los tractores
 // salen del cruce y la cámara acompaña al de reutilización hasta la nave (layout.js · SIM).
 const WINDOW_SCREENS = [1.0, 1.15, 1.2, 2.0, 1.1, 1.1, 1.1, 1.3, 1.15, 1.2];
-const TRANSIT_SCREENS = [2.8, 2.6, 2.2, 1.7, 3.0, 1.6, 3.2, 3.2, 3.0];
+const TRANSIT_SCREENS = [2.8, 2.6, 2.2, 1.7, 3.0, 1.6, 3.2, 3.5, 3.0];
 
 // Dirección de mirada compuesta: el sujeto cae en (sx, sy) de la pantalla, horizonte siempre nivelado.
 function composeDir(pos, subject, sx, sy, vfov, aspect, out) {

@@ -71,7 +71,8 @@ export const TRACES = {
 // Cada ruta es una polilínea en el plano xz [[x, z], ...]: la cota la pone el suelo (tapa de la isla o tablero del
 // puente, world.js · surfaceY). El tractor espera con su origen sobre el punto `wait` (el remolque queda detrás, sobre
 // la misma ruta) y se detiene con el origen en el último punto. `go`: [salida, llegada] en fracción de la simulación;
-// `count`: baterías del lote, que suben al contador de su ruta en el panel al llegar.
+// `count`: baterías del lote. El panel del capítulo no espera a la llegada: cuenta las baterías clasificadas al
+// acercarse al ancla (main.js · CLASS_ORDER, con este mismo reparto).
 //   service · reutilización: palé con 2 baterías de plomo aptas o reparables; vuelve al oeste por el mismo camino por el
 //     que llegaron (carril de salida de la calzada oeste, puente s4-s3, franja este y zona de recepción del laboratorio,
 //     su explanada, franja oeste, puente s3-s2 y franja este de s2) y entra en la nave de reutilización hasta el palé de
@@ -90,7 +91,7 @@ export const SIM = {
       path: [[16.45, -4.5], [16.95, -2.6], [17.95, 0.34], [19.28, 2.02], [21.75, 5.78], [24.23, 9.53], [25.05, 10.65]],
     },
     {
-      route: 'service', load: 'plomo', count: 2, go: [0.24, 1], wait: 2,
+      route: 'service', load: 'plomo', count: 2, go: [0.24, 0.94], wait: 2,
       path: [
         [13.48, -8.07], [11.18, -7.2], [8.78, -6.29], [7.06, -6.38], [5.13, -4.79], [3.2, -3.2], [2.2, -2.0], [1.55, -0.4],
         [1.05, 0.85], [-0.4, 1.4], [-4, 1.5], [-7.4, 1.55], [-9.2, 2.5], [-10.6, 3.9], [-12.5, 4.5], [-13.7, 4.1],
